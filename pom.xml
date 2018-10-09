@@ -9,8 +9,8 @@
 		<version>1.1.0</version>
 	</parent>
 
-	<groupId>com.holon-platform.vaadin.flow</groupId>
-	<artifactId>holon-vaadin-root</artifactId>
+	<groupId>com.holon-platform.vaadin</groupId>
+	<artifactId>holon-vaadin-flow-root</artifactId>
 	<version>5.2.0-alpha2-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
@@ -65,6 +65,9 @@
 
 		<!-- Vaadin -->
 		<vaadin.version>11.0.0</vaadin.version>
+		
+		<!-- Servlet API -->
+		<servlet.version>3.1.0</servlet.version>
 
 	</properties>
 
@@ -81,9 +84,9 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<!--
 	<modules>
 		<module>core</module>
+		<!--
 		<module>navigator</module>
 		<module>spring</module>
 		<module>spring-boot</module>
@@ -91,8 +94,8 @@
 		<module>starter-undertow</module>
 		<module>bom</module>
 		<module>documentation</module>
+		-->
 	</modules>
-	  -->
 
 	<repositories>
 		<!-- Vaadin Addons -->

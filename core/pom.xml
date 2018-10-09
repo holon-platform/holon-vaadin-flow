@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.holon-platform.vaadin</groupId>
+		<artifactId>holon-vaadin-flow-root</artifactId>
+		<version>5.2.0-alpha2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>holon-vaadin-flow</artifactId>
+	<packaging>jar</packaging>
+
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Holon Vaadin Flow integration</description>
+
+	<url>https://holon-platform.com</url>
+
+	<dependencies>
+
+		<!-- Holon core -->
+		<dependency>
+			<groupId>com.holon-platform.core</groupId>
+			<artifactId>holon-core</artifactId>
+			<version>${holon.core.version}</version>
+		</dependency>
+
+		<!-- Holon auth -->
+		<dependency>
+			<groupId>com.holon-platform.core</groupId>
+			<artifactId>holon-auth</artifactId>
+			<version>${holon.core.version}</version>
+		</dependency>
+
+		<!-- Vaadin -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- JDK9 Automatic-Module-Name -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>com.holonplatform.vaadin.flow</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
