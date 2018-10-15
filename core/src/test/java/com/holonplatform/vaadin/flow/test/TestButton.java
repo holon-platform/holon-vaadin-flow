@@ -25,8 +25,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.support.Unit;
+import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
@@ -37,6 +42,26 @@ import com.vaadin.flow.dom.ElementConstants;
 public class TestButton {
 
 	@Test
+	public void testConfigurator() {
+
+		final Button button = new Button();
+
+		BaseButtonConfigurator cfg = ButtonConfigurator.configure(button);
+		assertNotNull(cfg);
+
+		cfg.id("testid");
+		assertTrue(button.getId().isPresent());
+		assertEquals("testid", button.getId().get());
+
+		cfg = Components.configure(button);
+		assertNotNull(cfg);
+
+		cfg.id("testid");
+		assertTrue(button.getId().isPresent());
+		assertEquals("testid", button.getId().get());
+	}
+
+	@Test
 	public void testBuilder() {
 
 		ButtonBuilder builder = ButtonBuilder.create();
@@ -44,6 +69,9 @@ public class TestButton {
 
 		Button button = builder.build();
 		assertNotNull(button);
+
+		builder = Components.button();
+		assertNotNull(builder);
 
 	}
 
@@ -174,6 +202,22 @@ public class TestButton {
 	}
 
 	@Test
+	public void testEnabled() {
+
+		Button button = ButtonBuilder.create().build();
+		assertTrue(button.isEnabled());
+
+		button = ButtonBuilder.create().enabled(true).build();
+		assertTrue(button.isEnabled());
+
+		button = ButtonBuilder.create().enabled(false).build();
+		assertFalse(button.isEnabled());
+
+		button = ButtonBuilder.create().disabled().build();
+		assertFalse(button.isEnabled());
+	}
+
+	@Test
 	public void testIcon() {
 
 		Button button = ButtonBuilder.create().icon(VaadinIcon.ASTERISK).build();
@@ -196,23 +240,155 @@ public class TestButton {
 				.color("green").add().build();
 		assertNotNull(button.getIcon());
 		assertTrue(button.getIcon() instanceof Icon);
-		
+
 		Icon icon = (Icon) button.getIcon();
 		assertEquals("20px", icon.getStyle().get(ElementConstants.STYLE_WIDTH));
 		assertEquals("20px", icon.getStyle().get(ElementConstants.STYLE_HEIGHT));
 		assertEquals("green", icon.getStyle().get(ElementConstants.STYLE_COLOR));
 		assertEquals("test", icon.getClassName());
-		
-		button = ButtonBuilder.create().iconConfigurator(new IronIcon("vaadin", "asterisk")).size("20px").styleName("test")
-				.color("green").add().build();
+
+		button = ButtonBuilder.create().iconConfigurator(new IronIcon("vaadin", "asterisk")).size("20px")
+				.styleName("test").color("green").add().build();
 		assertNotNull(button.getIcon());
 		assertTrue(button.getIcon() instanceof IronIcon);
-		
+
 		IronIcon iicon = (IronIcon) button.getIcon();
 		assertEquals("20px", iicon.getStyle().get(ElementConstants.STYLE_WIDTH));
 		assertEquals("20px", iicon.getStyle().get(ElementConstants.STYLE_HEIGHT));
 		assertEquals("green", iicon.getStyle().get(ElementConstants.STYLE_COLOR));
 		assertEquals("test", iicon.getClassName());
+
+		button = ButtonBuilder.create().icon(VaadinIcon.ASTERISK).build();
+		assertFalse(button.isIconAfterText());
+
+		button = ButtonBuilder.create().icon(VaadinIcon.ASTERISK).iconAfterText(false).build();
+		assertFalse(button.isIconAfterText());
+
+		button = ButtonBuilder.create().icon(VaadinIcon.ASTERISK).iconAfterText(true).build();
+		assertTrue(button.isIconAfterText());
+
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testText() {
+
+		Button button = ButtonBuilder.create().text(Localizable.builder().message("test").build()).build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().text("test").build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().text("test", "test.code").build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().text("test", "test.code", "arg").build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().caption(Localizable.builder().message("test").build()).build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().caption("test").build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().caption("test", "test.code").build();
+		assertEquals("test", button.getText());
+
+		button = ButtonBuilder.create().caption("test", "test.code", "arg").build();
+		assertEquals("test", button.getText());
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create()
+					.text(Localizable.builder().message("test").messageCode("test.code").build()).build();
+			assertEquals("TestUS", button2.getText());
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create().text("test", "test.code").build();
+			assertEquals("TestUS", button2.getText());
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create().deferLocalization().text("test", "test.code").build();
+			assertEquals("test", button2.getText());
+			ComponentUtil.onComponentAttach(button2, true);
+			assertEquals("TestUS", button2.getText());
+		});
+
+	}
+
+	@Test
+	public void testDescription() {
+
+		Button button = ButtonBuilder.create().title(Localizable.builder().message("test").build()).build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().title("test").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().title("test", "test.code").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().title("test", "test.code", "arg").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().description(Localizable.builder().message("test").build()).build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().description("test").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().description("test", "test.code").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		button = ButtonBuilder.create().description("test", "test.code", "arg").build();
+		assertEquals("test", button.getElement().getAttribute("title"));
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create()
+					.title(Localizable.builder().message("test").messageCode("test.code").build()).build();
+			assertEquals("TestUS", button2.getElement().getAttribute("title"));
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create().title("test", "test.code").build();
+			assertEquals("TestUS", button2.getElement().getAttribute("title"));
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create().deferLocalization().title("test", "test.code").build();
+			assertEquals("test", button2.getElement().getAttribute("title"));
+			ComponentUtil.onComponentAttach(button2, true);
+			assertEquals("TestUS", button2.getElement().getAttribute("title"));
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Button button2 = ButtonBuilder.create().withDeferredLocalization(true).text("test", "test.code")
+					.title("test", "test.code").build();
+			assertEquals("test", button2.getText());
+			assertEquals("test", button2.getElement().getAttribute("title"));
+			ComponentUtil.onComponentAttach(button2, true);
+			assertEquals("TestUS", button2.getText());
+			assertEquals("TestUS", button2.getElement().getAttribute("title"));
+		});
+
+	}
+
+	@Test
+	public void testFocus() {
+
+		Button button = ButtonBuilder.create().tabIndex(77).build();
+		assertEquals(77, button.getTabIndex());
+
+		button = ButtonBuilder.create().autofocus(false).build();
+		assertFalse(button.isAutofocus());
+
+		button = ButtonBuilder.create().autofocus(true).build();
+		assertTrue(button.isAutofocus());
+
+		button = ButtonBuilder.create().autofocus().build();
+		assertTrue(button.isAutofocus());
+
 	}
 
 }

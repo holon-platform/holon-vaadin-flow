@@ -105,6 +105,7 @@ public interface LabelConfigurator<L extends HtmlContainer & ClickNotifier, C ex
 	 * <p>
 	 * The component must be a {@link HtmlContainer} and {@link ClickNotifier}, such as {@link Span} or {@link Div}.
 	 * </p>
+	 * @param <L> Label component type
 	 * @param component The component to configure (not null)
 	 * @return A {@link LabelConfigurator} to configure given component
 	 */
