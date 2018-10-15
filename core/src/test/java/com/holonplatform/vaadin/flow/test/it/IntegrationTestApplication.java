@@ -15,24 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.test.it;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 
-import org.junit.jupiter.api.Test;
+@SpringBootApplication(scanBasePackageClasses = {
+		IntegrationTestView.class }, exclude = ErrorMvcAutoConfiguration.class)
+public class IntegrationTestApplication {
 
-import com.vaadin.flow.component.button.testbench.ButtonElement;
-import com.vaadin.flow.component.html.testbench.DivElement;
-
-public class ButtonIT extends AbstractIntegrationTest {
-
-	@Test
-	public void testButton() {
-
-		assertEquals("TEST", $(ButtonElement.class).id(IntegrationTestView.BUTTON1).getText());
-
-		$(ButtonElement.class).id(IntegrationTestView.BUTTON1).click();
-
-		assertEquals(IntegrationTestView.BUTTON1, $(DivElement.class).id(IntegrationTestView.LABEL1).getText());
-
+	public static void main(String[] args) {
+		SpringApplication.run(IntegrationTestApplication.class, args);
 	}
 
 }

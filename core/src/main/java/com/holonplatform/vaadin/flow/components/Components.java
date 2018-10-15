@@ -54,6 +54,7 @@ public interface Components {
 	 * <p>
 	 * The component must be a {@link HtmlContainer} and a {@link ClickNotifier}, such as {@link Span} or {@link Div}.
 	 * </p>
+	 * @param <L> Label element type
 	 * @param label The component to configure (not null)
 	 * @return A {@link LabelConfigurator}
 	 */
@@ -72,6 +73,17 @@ public interface Components {
 	}
 
 	// Builders
+
+	/**
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div} tag.
+	 * <p>
+	 * This is an alias for the {@link #div()} method.
+	 * </p>
+	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 */
+	static LabelBuilder<Div> label() {
+		return div();
+	}
 
 	/**
 	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Span} tag.

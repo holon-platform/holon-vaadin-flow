@@ -85,6 +85,7 @@
 	</dependencyManagement>
 
 	<modules>
+		<module>test</module>
 		<module>core</module>
 		<!--
 		<module>navigator</module>

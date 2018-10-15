@@ -15,24 +15,18 @@
  */
 package com.holonplatform.vaadin.flow.test.it;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.chrome.ChromeDriver;
 
-import org.junit.jupiter.api.Test;
+import com.holonplatform.vaadin.flow.test.utils.JupiterTestBenchTestCase;
+import com.vaadin.testbench.IPAddress;
 
-import com.vaadin.flow.component.button.testbench.ButtonElement;
-import com.vaadin.flow.component.html.testbench.DivElement;
+public class AbstractIntegrationTest extends JupiterTestBenchTestCase {
 
-public class ButtonIT extends AbstractIntegrationTest {
-
-	@Test
-	public void testButton() {
-
-		assertEquals("TEST", $(ButtonElement.class).id(IntegrationTestView.BUTTON1).getText());
-
-		$(ButtonElement.class).id(IntegrationTestView.BUTTON1).click();
-
-		assertEquals(IntegrationTestView.BUTTON1, $(DivElement.class).id(IntegrationTestView.LABEL1).getText());
-
+	@BeforeEach
+	public void setUp() throws Exception {
+		setDriver(new ChromeDriver());
+		getDriver().get("http://" + IPAddress.findSiteLocalAddress() + ":8080");
 	}
 
 }

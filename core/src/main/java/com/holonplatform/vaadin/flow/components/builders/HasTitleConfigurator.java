@@ -38,7 +38,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	 * <p>
 	 * A <code>null</code> value will remove the title.
 	 * </p>
-	 * @param text Localizable title message (may be null)
+	 * @param title Localizable title message (may be null)
 	 * @return this
 	 * @see LocalizationContext#getCurrent()
 	 */
