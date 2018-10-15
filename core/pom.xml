@@ -129,7 +129,8 @@
 				<version>1.0.17</version>
 				<configuration>
 					<onlyGetDriversForHostOperatingSystem>true</onlyGetDriversForHostOperatingSystem>
-					<rootStandaloneServerDirectory>.driver</rootStandaloneServerDirectory>
+					<downloadedZipFileDirectory>${project.basedir}/target/webdriver/zips</downloadedZipFileDirectory>
+					<rootStandaloneServerDirectory>${project.basedir}/target/webdriver</rootStandaloneServerDirectory>
 					<customRepositoryMap>${project.basedir}/src/test/resources/webdrivers.xml</customRepositoryMap>
 				</configuration>
 				<executions>
