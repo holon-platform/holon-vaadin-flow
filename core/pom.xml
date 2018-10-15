@@ -33,10 +33,10 @@
 			<version>${holon.core.version}</version>
 		</dependency>
 
-		<!-- Vaadin -->
+		<!-- Vaadin core -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin</artifactId>
+			<artifactId>vaadin-core</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
