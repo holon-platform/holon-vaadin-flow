@@ -15,11 +15,14 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.util.function.Function;
+
+import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasText;
+import com.vaadin.flow.dom.Element;
 
 /**
  * A {@link ValueHolder} component to display a value in UI.
@@ -28,18 +31,58 @@ import com.vaadin.flow.component.HasText;
  *
  * @since 5.2.0
  */
-public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, HasSize, HasStyle, HasEnabled, HasText {
+public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, HasLabel, HasSize, HasStyle, HasEnabled {
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.vaadin.flow.component.HasElement#getElement()
+	 */
+	@Override
+	default Element getElement() {
+		return getComponent().getElement();
+	}
 
 	/**
-	 * Gets a builder to create {@link ViewComponent} instances.
+	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given value type.
 	 * @param <T> Value type
-	 * @param valueType Value type handled by the ViewComponent
-	 * @return ViewComponent instance
+	 * @param valueType Value type (not null)
+	 * @return A {@link ViewComponentBuilder}
 	 */
 	static <T> ViewComponentBuilder<T> builder(Class<? extends T> valueType) {
-		// return new DefaultViewComponentBuilder<>(valueType);
-		// TODO
-		return null;
+		return ViewComponentBuilder.create(valueType);
+	}
+
+	/**
+	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label and
+	 * value presentation through the {@link Property#present(Object)} method.
+	 * @param <T> Value type
+	 * @param property The property to use (not null)
+	 * @return A {@link ViewComponentBuilder}
+	 */
+	static <T> ViewComponentBuilder<T> builder(Property<T> property) {
+		return ViewComponentBuilder.create(property);
+	}
+
+	/**
+	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given function to convert the value to
+	 * a {@link String} type representation.
+	 * @param <T> Value type
+	 * @param stringValueConverter Value converter function (not null)
+	 * @return A {@link ViewComponentBuilder}
+	 */
+	static <T> ViewComponentBuilder<T> builder(Function<T, String> stringValueConverter) {
+		return ViewComponentBuilder.create(stringValueConverter);
+	}
+
+	/**
+	 * Create a {@link ViewComponent} using given {@link Property} for label and value presentation through the
+	 * {@link Property#present(Object)} method.
+	 * @param <T> Value type
+	 * @param property The property to use (not null)
+	 * @return A {@link ViewComponent} instance
+	 */
+	static <T> ViewComponent<T> create(Property<T> property) {
+		return builder(property).build();
 	}
 
 }
