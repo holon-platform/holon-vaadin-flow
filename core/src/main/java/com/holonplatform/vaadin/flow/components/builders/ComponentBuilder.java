@@ -23,7 +23,7 @@ import com.vaadin.flow.component.Component;
  * @param <C> Concrete component type
  * @param <B> Concrete builder type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface ComponentBuilder<C extends Component, B extends ComponentBuilder<C, B>>
 		extends ComponentConfigurator<B> {

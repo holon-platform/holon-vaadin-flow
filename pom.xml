@@ -71,6 +71,14 @@
 
 	</properties>
 
+	<repositories>
+		<!-- Vaadin Addons -->
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- Vaadin BOM -->
@@ -97,14 +105,6 @@
 		<module>documentation</module>
 		-->
 	</modules>
-
-	<repositories>
-		<!-- Vaadin Addons -->
-		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<!-- JUnit 5 tests -->

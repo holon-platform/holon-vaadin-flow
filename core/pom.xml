@@ -116,8 +116,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<includes>
+						<include>**/test/Test*.java</include>
+					</includes>
 					<excludes>
-						<exclude>com.holonplatform.vaadin.flow.test.it/**</exclude>
+						<exclude>**/test/it/*.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

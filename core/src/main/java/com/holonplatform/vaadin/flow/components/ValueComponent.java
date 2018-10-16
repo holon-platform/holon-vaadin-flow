@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.io.Serializable;
-
 import com.vaadin.flow.component.Component;
 
 /**
@@ -26,7 +24,7 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.0.0
  */
-public interface ValueComponent<V> extends HasComponent, Serializable {
+public interface ValueComponent<V> extends HasComponent {
 
 	/**
 	 * Gets the current value of this value component.
