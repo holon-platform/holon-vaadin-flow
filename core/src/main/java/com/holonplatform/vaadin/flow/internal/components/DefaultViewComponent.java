@@ -74,6 +74,7 @@ public class DefaultViewComponent<T> extends Composite<Div>
 		this.stringValueConverter = stringValueConverter;
 
 		this.label = new Label();
+		this.label.addClassName("caption");
 		this.text = new Div();
 
 		getContent().addClassName("h-viewcomponent");

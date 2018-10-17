@@ -31,4 +31,27 @@ public interface HasComponent {
 	 */
 	Component getComponent();
 
+	/**
+	 * Sets the component visibility value.
+	 * <p>
+	 * When a component is set as invisible, all the updates of the component from the server to the client are blocked
+	 * until the component is set as visible again.
+	 * <p>
+	 * Invisible components don't receive any updates from the client-side. Unlike the server-side updates, client-side
+	 * updates, if any, are discarded while the component is invisible, and are not transmitted to the server when the
+	 * component is made visible.
+	 * @param visible the component visibility value
+	 */
+	default void setVisible(boolean visible) {
+		getComponent().setVisible(visible);
+	}
+
+	/**
+	 * Gets the component visibility value.
+	 * @return <code>true</code> if the component is visible, <code>false</code> otherwise
+	 */
+	default boolean isVisible() {
+		return getComponent().isVisible();
+	}
+
 }

@@ -66,17 +66,6 @@ public interface ViewComponentBuilder<T>
 	}
 
 	/**
-	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label and
-	 * value presentation through the {@link Property#present(Object)} method.
-	 * @param <T> Value type
-	 * @param property The property to use (not null)
-	 * @return A {@link ViewComponentBuilder}
-	 */
-	static <T> ViewComponentBuilder<T> create(Property<T> property) {
-		return new DefaultViewComponentBuilder<>(property);
-	}
-
-	/**
 	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given function to convert the value to
 	 * a {@link String} type representation.
 	 * @param <T> Value type
@@ -85,6 +74,17 @@ public interface ViewComponentBuilder<T>
 	 */
 	static <T> ViewComponentBuilder<T> create(Function<T, String> stringValueConverter) {
 		return new DefaultViewComponentBuilder<>(stringValueConverter);
+	}
+
+	/**
+	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label and
+	 * value presentation through the {@link Property#present(Object)} method.
+	 * @param <T> Value type
+	 * @param property The property to use (not null)
+	 * @return A {@link ViewComponentBuilder}
+	 */
+	static <T> ViewComponentBuilder<T> create(Property<T> property) {
+		return new DefaultViewComponentBuilder<>(property);
 	}
 
 }
