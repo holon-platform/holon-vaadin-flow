@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
@@ -26,6 +27,7 @@ import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
+import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.HtmlContainer;
 import com.vaadin.flow.component.button.Button;
@@ -238,14 +240,15 @@ public interface Components {
 			return ViewComponent.create(property);
 		}
 
-		// /**
-		// * Get a builder to create and setup a {@link PropertyViewGroup}.
-		// * @return {@link PropertyViewGroup} builder
-		// */
-		// static PropertyViewGroupBuilder propertyGroup() {
-		// return new DefaultPropertyViewGroup.DefaultBuilder();
-		// }
-		//
+		/**
+		 * Get a builder to create and setup a {@link PropertyViewGroup}, which provides functionalities to build and
+		 * manage a group of {@link ViewComponent}s bound to a {@link Property} set.
+		 * @return {@link PropertyViewGroup} builder
+		 */
+		static PropertyViewGroupBuilder propertyGroup() {
+			return new DefaultPropertyViewGroup.DefaultBuilder();
+		}
+
 		// /**
 		// * Gets a builder to create a {@link PropertyViewForm}.
 		// * @param <C> Content type

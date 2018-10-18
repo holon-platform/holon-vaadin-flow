@@ -22,27 +22,27 @@ import com.holonplatform.core.property.Property;
 /**
  * Represents an object bound to a {@link Property} set.
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface PropertySetBound {
 
 	/**
-	 * Gets the set of {@link Property}s to which this component is bound.
+	 * Gets the set of {@link Property}s to which this object is bound.
 	 * @return An {@link Iterable} on the property set (never null)
 	 */
 	@SuppressWarnings("rawtypes")
 	Iterable<Property> getProperties();
 
 	/**
-	 * Gets whether given <code>property</code> is part of the property set to which this component is bound.
+	 * Gets whether given <code>property</code> is part of the property set to which this object is bound.
 	 * @param property Property to check (not null)
-	 * @return <code>true</code> if given <code>property</code> is part of the property set to which this component is
+	 * @return <code>true</code> if given <code>property</code> is part of the property set to which this object is
 	 *         bound, <code>false</code> otherwise
 	 */
 	boolean hasProperty(Property<?> property);
 
 	/**
-	 * Get a {@link Stream} of the properties to which this component is bound.
+	 * Get a {@link Stream} of the properties to which this object is bound.
 	 * @return the property set {@link Stream}
 	 */
 	@SuppressWarnings("rawtypes")

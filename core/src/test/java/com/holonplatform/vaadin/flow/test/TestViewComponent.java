@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.property.BooleanProperty;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.Components;
@@ -450,6 +451,26 @@ public class TestViewComponent {
 		}).withValue("test2").build();
 
 		assertEquals(0, fired2.get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPropertyRenderer() {
+		final StringProperty p1 = StringProperty.create("test1");
+
+		ViewComponent<String> v1 = p1.render(ViewComponent.class);
+		assertNotNull(v1);
+
+		v1.setValue("a");
+		assertEquals("a", v1.getValue());
+
+		final BooleanProperty p2 = BooleanProperty.create("test2").message("caption");
+
+		ViewComponent<?> v2 = p2.render(ViewComponent.class);
+		assertNotNull(v2);
+
+		assertEquals("caption", v2.getLabel());
+
 	}
 
 	private class StringValue {
