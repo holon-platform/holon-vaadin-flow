@@ -75,6 +75,16 @@ public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, Has
 	}
 
 	/**
+	 * Create a {@link ViewComponent} using given value type.
+	 * @param <T> Value type
+	 * @param valueType Value type (not null)
+	 * @return A {@link ViewComponent} instance
+	 */
+	static <T> ViewComponent<T> create(Class<T> valueType) {
+		return builder(valueType).build();
+	}
+
+	/**
 	 * Create a {@link ViewComponent} using given {@link Property} for label and value presentation through the
 	 * {@link Property#present(Object)} method.
 	 * @param <T> Value type

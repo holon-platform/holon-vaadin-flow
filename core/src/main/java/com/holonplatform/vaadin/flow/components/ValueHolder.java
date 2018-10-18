@@ -45,11 +45,12 @@ public interface ValueHolder<V> extends Serializable {
 	V getValue();
 
 	/**
-	 * Get the current value of this value holder, if available (i.e. not <code>null</code>).
-	 * @return Optional current value
+	 * Gets the value as an {@link Optional}, which will be empty if the value holder is considered to be empty or the
+	 * value is <code>null</code>.
+	 * @return Optional value
 	 */
 	default Optional<V> getValueIfPresent() {
-		return Optional.ofNullable(getValue());
+		return isEmpty() ? Optional.empty() : Optional.ofNullable(getValue());
 	}
 
 	/**
@@ -85,7 +86,9 @@ public interface ValueHolder<V> extends Serializable {
 	 * Gets the current value of this value holder as an {@link Optional}, which will be empty if the value holder is
 	 * considered to be empty.
 	 * @return the current optional value
+	 * @deprecated Use {@link #getValueIfPresent()}
 	 */
+	@Deprecated
 	default Optional<V> getOptionalValue() {
 		return isEmpty() ? Optional.empty() : Optional.ofNullable(getValue());
 	}

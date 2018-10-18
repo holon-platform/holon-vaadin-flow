@@ -132,18 +132,29 @@ public class DefaultViewComponent<T> extends Composite<Div>
 		this.label.setText(label);
 	}
 
+	/**
+	 * Sets the component value.
+	 * @param value the value to set
+	 * @param fireEvent Whether to fire a value change event
+	 */
+	public void setValue(T value, boolean fireEvent) {
+		T oldValue = this.value;
+		this.value = value;
+		// update internal component
+		updateTextValue(value);
+		if (fireEvent) {
+			// fire value change
+			fireValueChange(oldValue, value);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#setValue(java.lang.Object)
 	 */
 	@Override
 	public void setValue(T value) {
-		T oldValue = this.value;
-		this.value = value;
-		// update internal component
-		updateTextValue(value);
-		// fire value change
-		fireValueChange(oldValue, value);
+		setValue(value, true);
 	}
 
 	/*

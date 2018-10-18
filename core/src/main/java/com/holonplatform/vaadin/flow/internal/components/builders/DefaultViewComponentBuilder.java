@@ -199,7 +199,7 @@ public class DefaultViewComponentBuilder<T>
 	 */
 	@Override
 	public ViewComponentBuilder<T> withValue(T value) {
-		getComponent().setValue(value);
+		getComponent().setValue(value, false);
 		return getConfigurator();
 	}
 

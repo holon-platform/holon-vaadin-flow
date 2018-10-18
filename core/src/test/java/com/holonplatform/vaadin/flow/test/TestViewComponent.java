@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -342,10 +343,119 @@ public class TestViewComponent {
 		});
 
 	}
-	
+
+	@Test
+	public void testPropertyConfig() {
+		ViewComponent<Integer> vc = ViewComponent.create(NumericProperty.integerType("test").message("Test"));
+		assertEquals("Test", vc.getLabel());
+
+	}
+
 	@Test
 	public void testValueHolder() {
-		// TODO
+
+		ViewComponent<String> vc = ViewComponent.create(String.class);
+
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+
+		vc = ViewComponent.builder(String.class).withValue("test").build();
+		assertFalse(vc.isEmpty());
+		assertEquals("test", vc.getValue());
+
+		vc = ViewComponent.create(String.class);
+
+		vc.setValue("test2");
+		assertFalse(vc.isEmpty());
+		assertEquals("test2", vc.getValue());
+		assertTrue(vc.getValueIfPresent().isPresent());
+		assertEquals("test2", vc.getValueIfPresent().orElse(null));
+
+		vc.clear();
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+
+		ViewComponent<Integer> vci = ViewComponent.create(Integer.class);
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+
+		vci.setValue(7);
+		assertFalse(vci.isEmpty());
+		assertEquals(Integer.valueOf(7), vci.getValue());
+		assertTrue(vci.getValueIfPresent().isPresent());
+		assertEquals(Integer.valueOf(7), vci.getValueIfPresent().orElse(null));
+
+		vci.clear();
+		assertNull(vci.getValue());
+		assertTrue(vci.isEmpty());
+
+		final AtomicInteger fired = new AtomicInteger(0);
+
+		final AtomicInteger ov = new AtomicInteger(-1);
+		final AtomicInteger nv = new AtomicInteger(-1);
+
+		vci.addValueChangeListener(e -> {
+			fired.incrementAndGet();
+			ov.set((e.getOldValue() == null) ? -1 : e.getOldValue());
+			nv.set((e.getValue() == null) ? -1 : e.getValue());
+		});
+
+		assertEquals(0, fired.get());
+		assertEquals(-1, ov.get());
+		assertEquals(-1, nv.get());
+
+		vci.setValue(7);
+
+		assertEquals(1, fired.get());
+		assertEquals(-1, ov.get());
+		assertEquals(7, nv.get());
+
+		vci.clear();
+
+		assertEquals(2, fired.get());
+		assertEquals(7, ov.get());
+		assertEquals(-1, nv.get());
+
+		final AtomicInteger fired2 = new AtomicInteger(0);
+
+		final StringValue osv = new StringValue();
+		final StringValue nsv = new StringValue();
+
+		vc = ViewComponent.builder(String.class).withValueChangeListener(e -> {
+			fired2.incrementAndGet();
+			osv.value = e.getOldValue();
+			nsv.value = e.getValue();
+		}).build();
+
+		assertEquals(0, fired2.get());
+		assertNull(osv.value);
+		assertNull(nsv.value);
+
+		vc.setValue("test");
+
+		assertEquals(1, fired2.get());
+		assertNull(osv.value);
+		assertEquals("test", nsv.value);
+
+		fired2.set(0);
+
+		vc = ViewComponent.builder(String.class).withValue("test2").withValueChangeListener(e -> {
+			fired2.incrementAndGet();
+		}).build();
+
+		assertEquals(0, fired2.get());
+
+		vc = ViewComponent.builder(String.class).withValueChangeListener(e -> {
+			fired2.incrementAndGet();
+		}).withValue("test2").build();
+
+		assertEquals(0, fired2.get());
+	}
+
+	private class StringValue {
+
+		String value;
+
 	}
 
 }

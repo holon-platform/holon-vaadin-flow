@@ -196,8 +196,8 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label and
-		 * value presentation through the {@link Property#present(Object)} method.
+		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label
+		 * and value presentation through the {@link Property#present(Object)} method.
 		 * @param <T> Value type
 		 * @param property The property to use (not null)
 		 * @return A {@link ViewComponentBuilder}
@@ -207,14 +207,24 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given function to convert the value to
-		 * a {@link String} type representation.
+		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given function to convert the
+		 * value to a {@link String} type representation.
 		 * @param <T> Value type
 		 * @param stringValueConverter Value converter function (not null)
 		 * @return A {@link ViewComponentBuilder}
 		 */
 		static <T> ViewComponentBuilder<T> component(Function<T, String> stringValueConverter) {
 			return ViewComponent.builder(stringValueConverter);
+		}
+
+		/**
+		 * Create a {@link ViewComponent} using given value type.
+		 * @param <T> Value type
+		 * @param valueType Value type (not null)
+		 * @return A {@link ViewComponent} instance
+		 */
+		static <T> ViewComponent<T> type(Class<T> valueType) {
+			return ViewComponent.builder(valueType).build();
 		}
 
 		/**
@@ -228,61 +238,64 @@ public interface Components {
 			return ViewComponent.create(property);
 		}
 
-//		/**
-//		 * Get a builder to create and setup a {@link PropertyViewGroup}.
-//		 * @return {@link PropertyViewGroup} builder
-//		 */
-//		static PropertyViewGroupBuilder propertyGroup() {
-//			return new DefaultPropertyViewGroup.DefaultBuilder();
-//		}
-//
-//		/**
-//		 * Gets a builder to create a {@link PropertyViewForm}.
-//		 * @param <C> Content type
-//		 * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
-//		 * @return {@link PropertyViewForm} builder
-//		 */
-//		static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
-//			return PropertyViewForm.builder(content);
-//		}
-//
-//		/**
-//		 * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
-//		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-//		 * @return {@link PropertyViewForm} builder
-//		 */
-//		static PropertyViewFormBuilder<FormLayout> form() {
-//			return PropertyViewForm.builder(formLayout().build())
-//					.composer(ComposableComponent.componentContainerComposer());
-//		}
-//
-//		/**
-//		 * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
-//		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-//		 * @return {@link PropertyViewForm} builder
-//		 */
-//		static PropertyViewFormBuilder<VerticalLayout> formVertical() {
-//			return PropertyViewForm.builder(vl().build()).composer(ComposableComponent.componentContainerComposer());
-//		}
-//
-//		/**
-//		 * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component and
-//		 * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-//		 * @return {@link PropertyViewForm} builder
-//		 */
-//		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-//			return PropertyViewForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
-//		}
-//
-//		/**
-//		 * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
-//		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-//		 * @return {@link PropertyViewForm} builder
-//		 */
-//		static PropertyViewFormBuilder<GridLayout> formGrid() {
-//			return PropertyViewForm.builder(gridLayout().build())
-//					.composer(ComposableComponent.componentContainerComposer());
-//		}
+		// /**
+		// * Get a builder to create and setup a {@link PropertyViewGroup}.
+		// * @return {@link PropertyViewGroup} builder
+		// */
+		// static PropertyViewGroupBuilder propertyGroup() {
+		// return new DefaultPropertyViewGroup.DefaultBuilder();
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyViewForm}.
+		// * @param <C> Content type
+		// * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
+		// * @return {@link PropertyViewForm} builder
+		// */
+		// static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
+		// return PropertyViewForm.builder(content);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
+		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		// * @return {@link PropertyViewForm} builder
+		// */
+		// static PropertyViewFormBuilder<FormLayout> form() {
+		// return PropertyViewForm.builder(formLayout().build())
+		// .composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and
+		// a
+		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		// * @return {@link PropertyViewForm} builder
+		// */
+		// static PropertyViewFormBuilder<VerticalLayout> formVertical() {
+		// return PropertyViewForm.builder(vl().build()).composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component
+		// and
+		// * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		// * @return {@link PropertyViewForm} builder
+		// */
+		// static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
+		// return PropertyViewForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and
+		// a
+		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		// * @return {@link PropertyViewForm} builder
+		// */
+		// static PropertyViewFormBuilder<GridLayout> formGrid() {
+		// return PropertyViewForm.builder(gridLayout().build())
+		// .composer(ComposableComponent.componentContainerComposer());
+		// }
 
 	}
 
