@@ -15,6 +15,28 @@
  */
 package com.holonplatform.vaadin.flow.test;
 
+import org.junit.jupiter.api.Test;
+
+import com.holonplatform.core.property.NumericProperty;
+import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.StringProperty;
+import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.vaadin.flow.components.PropertyViewForm;
+
 public class TestPropertyViewForm {
 
+	private static final NumericProperty<Long> ID = NumericProperty.longType("id");
+	private static final StringProperty NAME = StringProperty.create("name");
+	private static final VirtualProperty<String> VIRTUAL = VirtualProperty.create(String.class,
+			pb -> "[" + pb.getValue(NAME) + "]");
+
+	private static final PropertySet<?> SET = PropertySet.of(ID, NAME, VIRTUAL);
+
+	@Test
+	public void testBuilder() {
+		
+		//PropertyViewForm.builder(content)
+		
+	}
+	
 }

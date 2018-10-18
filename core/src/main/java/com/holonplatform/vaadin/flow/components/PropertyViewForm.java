@@ -23,8 +23,14 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
+import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder;
+import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewForm;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A {@link PropertyViewGroup} component to display the property {@link ViewComponent}s on a layout, using the
@@ -47,6 +53,30 @@ public interface PropertyViewForm extends Composable, ValueComponent<PropertyBox
 	static <C extends Component> PropertyViewFormBuilder<C> builder(C content) {
 		ObjectUtils.argumentNotNull(content, "Form content must be not null");
 		return new DefaultPropertyViewForm.DefaultBuilder<>(content);
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as content layout.
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	static PropertyViewFormBuilder<FormLayout> formLayout() {
+		return builder(FormLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as content layout.
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	static PropertyViewFormBuilder<VerticalLayout> verticalLayout() {
+		return builder(VerticalLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as content layout.
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	static PropertyViewFormBuilder<HorizontalLayout> horizontalLayout() {
+		return builder(HorizontalLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
 	}
 
 	/**

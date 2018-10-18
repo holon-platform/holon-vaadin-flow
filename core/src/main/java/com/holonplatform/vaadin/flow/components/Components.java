@@ -333,7 +333,7 @@ public interface Components {
 		 * @return {@link PropertyViewForm} builder
 		 */
 		static PropertyViewFormBuilder<FormLayout> form() {
-			return PropertyViewForm.builder(formLayout().build()).composer(Composable.componentContainerComposer());
+			return PropertyViewForm.formLayout();
 		}
 
 		/**
@@ -342,7 +342,7 @@ public interface Components {
 		 * @return {@link PropertyViewForm} builder
 		 */
 		static PropertyViewFormBuilder<VerticalLayout> formVertical() {
-			return PropertyViewForm.builder(vl().build()).composer(Composable.componentContainerComposer());
+			return PropertyViewForm.verticalLayout();
 		}
 
 		/**
@@ -351,7 +351,7 @@ public interface Components {
 		 * @return {@link PropertyViewForm} builder
 		 */
 		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-			return PropertyViewForm.builder(hl().build()).composer(Composable.componentContainerComposer());
+			return PropertyViewForm.horizontalLayout();
 		}
 
 	}
