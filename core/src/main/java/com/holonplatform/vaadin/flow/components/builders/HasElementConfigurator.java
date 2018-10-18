@@ -28,6 +28,12 @@ import com.vaadin.flow.dom.DomEventListener;
 public interface HasElementConfigurator<C extends HasElementConfigurator<C>> {
 
 	/**
+	 * Adds a theme name to this component.
+	 * @param themeName the theme name to add, not <code>null</code>
+	 */
+	C withThemeName(String themeName);
+
+	/**
 	 * Adds an event listener for the given event type.
 	 * <p>
 	 * Event listeners are triggered in the order they are registered.

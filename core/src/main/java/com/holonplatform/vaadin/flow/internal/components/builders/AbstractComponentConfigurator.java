@@ -137,4 +137,14 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 		return getConfigurator();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+	 */
+	@Override
+	public B withThemeName(String themName) {
+		getComponentConfigurator().withThemeName(themName);
+		return getConfigurator();
+	}
+
 }

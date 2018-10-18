@@ -28,6 +28,8 @@ import com.vaadin.flow.component.icon.IronIcon;
 
 /**
  * Base {@link ButtonConfigurator} implementation.
+ * 
+ * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */

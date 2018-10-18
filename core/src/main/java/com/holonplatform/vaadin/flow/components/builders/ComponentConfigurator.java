@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultComponentConfigurator;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -115,5 +116,21 @@ public interface ComponentConfigurator<C extends ComponentConfigurator<C>> exten
 
 	// TODO APICHG: removed
 	// C withContextClickListener(ContextClickListener listener);
+
+	/**
+	 * Base component configurator.
+	 */
+	public interface BaseComponentConfigurator extends ComponentConfigurator<BaseComponentConfigurator> {
+
+		/**
+		 * Create a new {@link BaseComponentConfigurator} on given <code>component</code>.
+		 * @param component Component to configure (not null)
+		 * @return A new {@link BaseComponentConfigurator} to configure given component
+		 */
+		static BaseComponentConfigurator create(Component component) {
+			return new DefaultComponentConfigurator(component);
+		}
+
+	}
 
 }

@@ -18,19 +18,31 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.Composable.Composer;
+import com.holonplatform.vaadin.flow.components.PropertyViewForm.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
+import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator.BaseFormLayoutConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.HorizontalLayoutConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.VerticalLayoutConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 import com.vaadin.flow.component.ClickNotifier;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HtmlContainer;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -41,6 +53,8 @@ import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * Main provider of UI components builders and configurators.
@@ -54,6 +68,7 @@ import com.vaadin.flow.component.html.Span;
 public interface Components {
 
 	// Configurators
+	// TODO APICHG: removed GridLayout, CssLayout and AbsoluteLayout configurators
 
 	/**
 	 * Get a {@link LabelConfigurator} to configure given <em>label</em> type component.
@@ -78,7 +93,35 @@ public interface Components {
 		return ButtonConfigurator.configure(button);
 	}
 
+	/**
+	 * Get a {@link VerticalLayoutConfigurator} to configure given {@link VerticalLayout}.
+	 * @param layout Layout to configure
+	 * @return A new {@link VerticalLayoutConfigurator}
+	 */
+	static VerticalLayoutConfigurator configure(VerticalLayout layout) {
+		return ThemableFlexComponentConfigurator.configure(layout);
+	}
+
+	/**
+	 * Get a {@link HorizontalLayoutConfigurator} to configure given {@link HorizontalLayout}.
+	 * @param layout Layout to configure
+	 * @return A new {@link HorizontalLayoutConfigurator}
+	 */
+	static HorizontalLayoutConfigurator configure(HorizontalLayout layout) {
+		return ThemableFlexComponentConfigurator.configure(layout);
+	}
+
+	/**
+	 * Get a {@link BaseFormLayoutConfigurator} to configure given {@link FormLayout}.
+	 * @param layout Layout to configure
+	 * @return A new {@link BaseFormLayoutConfigurator}
+	 */
+	static BaseFormLayoutConfigurator configure(FormLayout layout) {
+		return FormLayoutConfigurator.configure(layout);
+	}
+
 	// Builders
+	// TODO APICHG: removed GridLayout, CssLayout and AbsoluteLayout configurators
 
 	/**
 	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div} tag.
@@ -180,11 +223,36 @@ public interface Components {
 		return NativeButtonBuilder.create();
 	}
 
+	/**
+	 * Gets a builder to create {@link VerticalLayout}s.
+	 * @return A new {@link VerticalLayoutBuilder}
+	 */
+	static VerticalLayoutBuilder vl() {
+		return VerticalLayoutBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link HorizontalLayout}s.
+	 * @return A new {@link HorizontalLayoutBuilder}
+	 */
+	static HorizontalLayoutBuilder hl() {
+		return HorizontalLayoutBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link FormLayout}s.
+	 * @return A new {@link FormLayoutBuilder}
+	 */
+	static FormLayoutBuilder formLayout() {
+		return FormLayoutBuilder.create();
+	}
+
 	// View components
 
 	/**
 	 * {@link ViewComponent} and {@link PropertyViewGroup} builders provider.
 	 */
+	// TODO APICHG: removed formGrid - GridLayout non available in flow
 	static interface view {
 
 		/**
@@ -249,56 +317,42 @@ public interface Components {
 			return new DefaultPropertyViewGroup.DefaultBuilder();
 		}
 
-		// /**
-		// * Gets a builder to create a {@link PropertyViewForm}.
-		// * @param <C> Content type
-		// * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
-		// * @return {@link PropertyViewForm} builder
-		// */
-		// static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
-		// return PropertyViewForm.builder(content);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
-		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		// * @return {@link PropertyViewForm} builder
-		// */
-		// static PropertyViewFormBuilder<FormLayout> form() {
-		// return PropertyViewForm.builder(formLayout().build())
-		// .composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and
-		// a
-		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		// * @return {@link PropertyViewForm} builder
-		// */
-		// static PropertyViewFormBuilder<VerticalLayout> formVertical() {
-		// return PropertyViewForm.builder(vl().build()).composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component
-		// and
-		// * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		// * @return {@link PropertyViewForm} builder
-		// */
-		// static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-		// return PropertyViewForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and
-		// a
-		// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		// * @return {@link PropertyViewForm} builder
-		// */
-		// static PropertyViewFormBuilder<GridLayout> formGrid() {
-		// return PropertyViewForm.builder(gridLayout().build())
-		// .composer(ComposableComponent.componentContainerComposer());
-		// }
+		/**
+		 * Gets a builder to create a {@link PropertyViewForm}.
+		 * @param <C> Content type
+		 * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
+		 * @return {@link PropertyViewForm} builder
+		 */
+		static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
+			return PropertyViewForm.builder(content);
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
+		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		 * @return {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<FormLayout> form() {
+			return PropertyViewForm.builder(formLayout().build()).composer(Composable.componentContainerComposer());
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
+		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		 * @return {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<VerticalLayout> formVertical() {
+			return PropertyViewForm.builder(vl().build()).composer(Composable.componentContainerComposer());
+		}
+
+		/**
+		 * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component and
+		 * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
+		 * @return {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
+			return PropertyViewForm.builder(hl().build()).composer(Composable.componentContainerComposer());
+		}
 
 	}
 
@@ -313,59 +367,7 @@ public interface Components {
 	// return new DefaultFieldConfigurator<>(field);
 	// }
 	//
-	// /**
-	// * Get a {@link OrderedLayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseOrderedLayoutConfigurator configure(VerticalLayout layout) {
-	// return new DefaultOrderedLayoutConfigurator<>(layout);
-	// }
-	//
-	// /**
-	// * Get a {@link OrderedLayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseOrderedLayoutConfigurator configure(HorizontalLayout layout) {
-	// return new DefaultOrderedLayoutConfigurator<>(layout);
-	// }
-	//
-	// /**
-	// * Get a {@link OrderedLayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseOrderedLayoutConfigurator configure(FormLayout layout) {
-	// return new DefaultOrderedLayoutConfigurator<>(layout);
-	// }
-	//
-	// /**
-	// * Get a {@link LayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseLayoutConfigurator configure(GridLayout layout) {
-	// return new DefaultLayoutConfigurator<>(layout);
-	// }
-	//
-	// /**
-	// * Get a {@link ClickableLayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseClickableLayoutConfigurator configure(CssLayout layout) {
-	// return new DefaultClickableLayoutConfigurator<>(layout);
-	// }
-	//
-	// /**
-	// * Get a {@link ClickableLayoutConfigurator} to configure given layout.
-	// * @param layout Layout to configure
-	// * @return Layout configurator
-	// */
-	// static BaseClickableLayoutConfigurator configure(AbsoluteLayout layout) {
-	// return new DefaultClickableLayoutConfigurator<>(layout);
-	// }
+
 	//
 	// // Builders
 	//
@@ -378,85 +380,7 @@ public interface Components {
 	// return new Filler();
 	// }
 	//
-	// /**
-	// * Gets a builder to create {@link Label}s.
-	// * <p>
-	// * The Label is of undefined size by default.
-	// * </p>
-	// * @return Label builder
-	// */
-	// static LabelBuilder label() {
-	// return new DefaultLabelBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Button}s.
-	// * @return Button builder
-	// */
-	// static ButtonBuilder button() {
-	// return button(false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Button}s
-	// * @param nativeMode <code>true</code> to create a "native" button, i.e. implemented using the native button of
-	// web
-	// * browsers, using the HTML <code>&lt;button&gt;</code> element.
-	// * @return Button builder
-	// */
-	// static ButtonBuilder button(boolean nativeMode) {
-	// return new DefaultButtonBuilder(nativeMode);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link CssLayout}s.
-	// * @return CssLayout builder
-	// */
-	// static CssLayoutBuilder cssLayout() {
-	// return new DefaultCssLayoutBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link FormLayout}s.
-	// * @return FormLayout builder
-	// */
-	// static FormLayoutBuilder formLayout() {
-	// return new DefaultFormLayoutBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link FormLayout}s.
-	// * @return FormLayout builder
-	// */
-	// static GridLayoutBuilder gridLayout() {
-	// return gridLayout(1, 1);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link GridLayout}s.
-	// * @param columns Initial number of columns
-	// * @param rows Initial number of rows
-	// * @return GridLayout builder
-	// */
-	// static GridLayoutBuilder gridLayout(int columns, int rows) {
-	// return new DefaultGridLayoutBuilder(columns, rows);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link HorizontalLayout}s.
-	// * @return HorizontalLayout builder
-	// */
-	// static HorizontalLayoutBuilder hl() {
-	// return new DefaultHorizontalLayoutBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link VerticalLayout}s.
-	// * @return VerticalLayout builder
-	// */
-	// static VerticalLayoutBuilder vl() {
-	// return new DefaultVerticalLayoutBuilder();
-	// }
+
 	//
 	// /**
 	// * Gets a builder to create {@link Panel}s.

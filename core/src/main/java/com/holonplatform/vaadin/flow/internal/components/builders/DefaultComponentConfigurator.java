@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator.BaseComponentConfigurator;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -28,7 +29,7 @@ import com.vaadin.flow.dom.DomEventListener;
  *
  * @since 5.2.0
  */
-public class DefaultComponentConfigurator implements ComponentConfigurator<DefaultComponentConfigurator> {
+public class DefaultComponentConfigurator implements BaseComponentConfigurator {
 
 	private final Component component;
 
@@ -103,6 +104,16 @@ public class DefaultComponentConfigurator implements ComponentConfigurator<Defau
 	@Override
 	public DefaultComponentConfigurator withEventListener(String eventType, DomEventListener listener, String filter) {
 		component.getElement().addEventListener(eventType, listener).setFilter(filter);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+	 */
+	@Override
+	public BaseComponentConfigurator withThemeName(String themName) {
+		component.getElement().getThemeList().add(themName);
 		return this;
 	}
 

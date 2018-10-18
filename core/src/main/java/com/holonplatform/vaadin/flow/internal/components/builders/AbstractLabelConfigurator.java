@@ -25,6 +25,9 @@ import com.vaadin.flow.component.HtmlContainer;
 
 /**
  * Base {@link LabelConfigurator} implementation.
+ * 
+ * @param <L> Concrete label type
+ * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
