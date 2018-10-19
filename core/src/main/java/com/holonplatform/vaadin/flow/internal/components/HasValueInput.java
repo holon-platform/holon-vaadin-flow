@@ -23,6 +23,11 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -56,7 +61,7 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 * @param field Wrapped field and component (not null)
 	 */
 	public <H extends Component & HasValue<F, T>> HasValueInput(H field) {
-		this(field, field, null, null);
+		this(field, field);
 	}
 
 	/**
@@ -77,7 +82,7 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 * @param component Field component
 	 */
 	public HasValueInput(HasValue<F, T> field, Component component) {
-		this(field, component, null, null);
+		this(field, component, tryToObtainAnIsRequiredGetter(component), tryToObtainAnIsRequiredSetter(component));
 	}
 
 	/**
@@ -97,6 +102,44 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 		this.isRequiredSetter = isRequiredSetter;
 	}
 
+	private static Supplier<Boolean> tryToObtainAnIsRequiredGetter(final Component component) {
+		if (component instanceof TextField) {
+			return () -> ((TextField) component).isRequired();
+		}
+		if (component instanceof TextArea) {
+			return () -> ((TextArea) component).isRequired();
+		}
+		if (component instanceof PasswordField) {
+			return () -> ((PasswordField) component).isRequired();
+		}
+		if (component instanceof ComboBox) {
+			return () -> ((ComboBox<?>) component).isRequired();
+		}
+		if (component instanceof DatePicker) {
+			return () -> ((DatePicker) component).isRequired();
+		}
+		return null;
+	}
+
+	private static Consumer<Boolean> tryToObtainAnIsRequiredSetter(final Component component) {
+		if (component instanceof TextField) {
+			return (required) -> ((TextField) component).setRequired(required);
+		}
+		if (component instanceof TextArea) {
+			return (required) -> ((TextArea) component).setRequired(required);
+		}
+		if (component instanceof PasswordField) {
+			return (required) -> ((PasswordField) component).setRequired(required);
+		}
+		if (component instanceof ComboBox) {
+			return (required) -> ((ComboBox<?>) component).setRequired(required);
+		}
+		if (component instanceof DatePicker) {
+			return (required) -> ((DatePicker) component).setRequired(required);
+		}
+		return null;
+	}
+
 	/**
 	 * Get the {@link HasValue} field.
 	 * @return the {@link HasValue} field
@@ -107,11 +150,32 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getEmptyValue()
+	 */
+	@Override
+	public T getEmptyValue() {
+		return getField().getEmptyValue();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.Input#setValue(java.lang.Object)
 	 */
 	@Override
 	public void setValue(T value) {
-		getField().setValue(value);
+		getField().setValue(processValueToSet(value));
+	}
+
+	/**
+	 * Process the value before set it in the field.
+	 * @param value Value to process
+	 * @return Processed value
+	 */
+	protected T processValueToSet(T value) {
+		if (value == null && getEmptyValue() != null) {
+			return getEmptyValue();
+		}
+		return value;
 	}
 
 	/*
