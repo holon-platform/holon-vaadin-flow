@@ -20,8 +20,6 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.data.value.HasValueChangeMode;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -40,7 +38,7 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 * Wrapped field
 	 */
 	private final HasValue<F, T> field;
-	
+
 	/**
 	 * Field component
 	 */
@@ -177,41 +175,6 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	@Override
 	public Registration addValueChangeListener(final Input.ValueChangeListener<T> listener) {
 		return ValueChangeListenerUtils.adapt(field, this, listener);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#isValueChangeModeSupported()
-	 */
-	@Override
-	public boolean isValueChangeModeSupported() {
-		return field instanceof HasValueChangeMode;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#setValueChangeMode(com.vaadin.shared.ui
-	 * .ValueChangeMode)
-	 */
-	@Override
-	public void setValueChangeMode(ValueChangeMode valueChangeMode) {
-		ObjectUtils.argumentNotNull(valueChangeMode, "ValueChangeMode must be not null");
-		if (isValueChangeModeSupported()) {
-			((HasValueChangeMode) field).setValueChangeMode(valueChangeMode);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder.MaySupportValueChangeMode#getValueChangeMode()
-	 */
-	@Override
-	public ValueChangeMode getValueChangeMode() {
-		if (isValueChangeModeSupported()) {
-			return ((HasValueChangeMode) field).getValueChangeMode();
-		}
-		return ValueChangeMode.ON_BLUR;
 	}
 
 }

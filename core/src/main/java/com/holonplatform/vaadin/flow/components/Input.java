@@ -19,13 +19,11 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
-import com.holonplatform.vaadin.flow.components.ValueHolder.MaySupportValueChangeMode;
-import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
+import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
  * Input component representation, i.e. a UI component that has a user-editable value.
@@ -35,16 +33,12 @@ import com.vaadin.flow.data.value.ValueChangeMode;
  * <p>
  * The actual UI {@link Component} which represents the input component can be obtained through {@link #getComponent()}.
  * </p>
- * <p>
- * Extends {@link MaySupportValueChangeMode} to allow value change mode and timeout configuration for input components
- * which support it.
- * </p>
  * 
  * @param <V> Value type
  * 
  * @since 5.2.0
  */
-public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportValueChangeMode {
+public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.
@@ -74,23 +68,6 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	 * Sets the focus for this input component, if supported by concrete component implementation.
 	 */
 	void focus();
-
-	// By default, behave as value change mode is not supported
-
-	@Override
-	default boolean isValueChangeModeSupported() {
-		return false;
-	}
-
-	@Override
-	default void setValueChangeMode(ValueChangeMode valueChangeMode) {
-		// not supported by default
-	}
-
-	@Override
-	default ValueChangeMode getValueChangeMode() {
-		return ValueChangeMode.ON_BLUR;
-	}
 
 	// Adapters
 

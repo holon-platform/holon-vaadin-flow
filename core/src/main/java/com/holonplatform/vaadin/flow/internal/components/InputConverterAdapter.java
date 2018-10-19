@@ -21,7 +21,6 @@ import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -162,33 +161,6 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public void clear() {
 		input.clear();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.Input#isValueChangeModeSupported()
-	 */
-	@Override
-	public boolean isValueChangeModeSupported() {
-		return input.isValueChangeModeSupported();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.Input#setValueChangeMode(com.vaadin.shared.ui.ValueChangeMode)
-	 */
-	@Override
-	public void setValueChangeMode(ValueChangeMode valueChangeMode) {
-		input.setValueChangeMode(valueChangeMode);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.Input#getValueChangeMode()
-	 */
-	@Override
-	public ValueChangeMode getValueChangeMode() {
-		return input.getValueChangeMode();
 	}
 
 	/**

@@ -21,6 +21,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.VaadinValidatorWrapper;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
 
 /**
  * {@link ValidatableInput} builder.
@@ -117,5 +118,15 @@ public interface ValidatableInputBuilder<T, C extends ValidatableInput<T>> {
 	 * @return the {@link ValidatableInput} instance
 	 */
 	C build();
+
+	/**
+	 * Get a builder to create and setup a {@link ValidatableInput} from given {@link Input}.
+	 * @param <T> Value type
+	 * @param input The Input instance (not null)
+	 * @return A new {@link ValidatableInput} builder
+	 */
+	static <T> ValidatableInputBuilder<T, ValidatableInput<T>> create(Input<T> input) {
+		return new DefaultValidatableInputBuilder<>(input);
+	}
 
 }

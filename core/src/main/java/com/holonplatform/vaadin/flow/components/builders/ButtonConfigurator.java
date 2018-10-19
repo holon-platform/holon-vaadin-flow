@@ -28,10 +28,10 @@ import com.vaadin.flow.component.button.Button;
  * 
  * @since 5.2.0
  */
-public interface ButtonConfigurator<C extends ButtonConfigurator<C>>
-		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasIconConfigurator<C>,
-		HasTextConfigurator<C>, HasEnabledConfigurator<C>, HasTitleConfigurator<C>,
-		ClickNotifierConfigurator<Button, C>, FocusableConfigurator<Button, C>, DeferrableLocalizationConfigurator<C> {
+public interface ButtonConfigurator<C extends ButtonConfigurator<C>> extends ComponentConfigurator<C>,
+		HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasIconConfigurator<C>, HasTextConfigurator<C>,
+		HasEnabledConfigurator<C>, HasTitleConfigurator<C>, ClickNotifierConfigurator<Button, C>,
+		FocusableConfigurator<Button, C>, HasAutofocusConfigurator<C>, DeferrableLocalizationConfigurator<C> {
 
 	// TODO APICHG removed
 	// B iconAlternateText(String iconAltText);
@@ -42,13 +42,6 @@ public interface ButtonConfigurator<C extends ButtonConfigurator<C>>
 	 * @return this
 	 */
 	C iconAfterText(boolean iconAfterText);
-
-	/**
-	 * Set the button to be input focused when the page loads.
-	 * @param autofocus Whether the button to be focused when the page loads
-	 * @return this
-	 */
-	C autofocus(boolean autofocus);
 
 	/**
 	 * Set the button to be input focused when the page loads.

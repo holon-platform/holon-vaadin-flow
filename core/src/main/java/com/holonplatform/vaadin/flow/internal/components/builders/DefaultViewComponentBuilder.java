@@ -43,7 +43,7 @@ public class DefaultViewComponentBuilder<T>
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
-	protected final DefaultHasLabelConfigurator labelConfigurator;
+	protected final DefaultHasLabelConfigurator<ViewComponent<T>> labelConfigurator;
 	protected final DefaultHasTitleConfigurator<DefaultViewComponent<T>> titleConfigurator;
 
 	/**
@@ -74,7 +74,8 @@ public class DefaultViewComponentBuilder<T>
 		this.sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
 		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
 		this.enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
-		this.labelConfigurator = new DefaultHasLabelConfigurator(getComponent(), this);
+		this.labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(),
+				label -> getComponent().setLabel(label), this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
 			getComponent().getElement().setAttribute("title", (title != null) ? title : "");
 		}, this);

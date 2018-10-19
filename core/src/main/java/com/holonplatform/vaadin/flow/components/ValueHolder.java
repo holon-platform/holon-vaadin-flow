@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -29,6 +28,7 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.0.0
  */
+// TODO APICHG: Removed MaySupportValueChangeMode - use HasValueChangeModeConfigurator
 public interface ValueHolder<V> extends Serializable {
 
 	/**
@@ -149,40 +149,6 @@ public interface ValueHolder<V> extends Serializable {
 		 * @return the new value
 		 */
 		V getValue();
-
-	}
-
-	/**
-	 * Declares that the {@link ValueChangeMode} handling may be supported and provides methods to configure it.
-	 */
-	// TODO APICHG: Removed value change timeout
-	public interface MaySupportValueChangeMode {
-
-		/**
-		 * Gets whether the {@link ValueChangeMode} is supported for this component.
-		 * @return <code>true</code> if the {@link ValueChangeMode} is supported, <code>false</code> otherwise
-		 */
-		boolean isValueChangeModeSupported();
-
-		/**
-		 * Sets the mode how value change events are triggered.
-		 * <p>
-		 * If {@link ValueChangeMode} is not supported, this method has no effect.
-		 * </p>
-		 * @param valueChangeMode the value change mode to set (not null)
-		 * @see #isValueChangeModeSupported()
-		 */
-		void setValueChangeMode(ValueChangeMode valueChangeMode);
-
-		/**
-		 * Get the mode how value change events are triggered.
-		 * <p>
-		 * If {@link ValueChangeMode} is not supported, {@link ValueChangeMode#BLUR} is returned.
-		 * </p>
-		 * @return the value change mode
-		 * @see #isValueChangeModeSupported()
-		 */
-		ValueChangeMode getValueChangeMode();
 
 	}
 

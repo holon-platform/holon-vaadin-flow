@@ -21,17 +21,17 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization;
-import com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.HasElement;
 
 /**
- * Default {@link HasLabelConfigurator} implementation.
+ * Default {@link HasPlaceholderConfigurator} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultHasLabelConfigurator<C extends HasElement> extends AbstractLocalizationSupportConfigurator<C>
-		implements HasLabelConfigurator<DefaultHasLabelConfigurator<C>> {
+public class DefaultHasPlaceholderConfigurator<C extends HasElement> extends AbstractLocalizationSupportConfigurator<C>
+		implements HasPlaceholderConfigurator<DefaultHasPlaceholderConfigurator<C>> {
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
@@ -40,34 +40,35 @@ public class DefaultHasLabelConfigurator<C extends HasElement> extends AbstractL
 	/**
 	 * Constructor.
 	 * @param component The component to configure (not null)
-	 * @param setLabelOperation Actual operation to set the label (not null)
+	 * @param setPlaceholderOperation Actual operation to set the placeholder (not null)
 	 */
-	public DefaultHasLabelConfigurator(C component, Consumer<String> setLabelOperation) {
-		this(component, setLabelOperation, null);
+	public DefaultHasPlaceholderConfigurator(C component, Consumer<String> setPlaceholderOperation) {
+		this(component, setPlaceholderOperation, null);
 	}
 
 	/**
 	 * Constructor.
 	 * @param component The component to configure (not null)
-	 * @param setLabelOperation Actual operation to set the label (not null)
+	 * @param setPlaceholderOperation Actual operation to set the placeholder (not null)
 	 * @param deferrableLocalization Optional {@link HasDeferrableLocalization} reference
 	 */
-	public DefaultHasLabelConfigurator(C component, Consumer<String> setLabelOperation,
+	public DefaultHasPlaceholderConfigurator(C component, Consumer<String> setPlaceholderOperation,
 			HasDeferrableLocalization deferrableLocalization) {
-		super(text -> setLabelOperation.accept(text), deferrableLocalization);
+		super(text -> setPlaceholderOperation.accept(text), deferrableLocalization);
 		ObjectUtils.argumentNotNull(component, "The component to configure must be not null");
 		this.component = component;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.holonplatform.core.
+	 * i18n.Localizable)
 	 */
 	@Override
-	public DefaultHasLabelConfigurator<C> label(Localizable label) {
-		if (localize(component, label)) {
-			LOGGER.debug(() -> "Component [" + component + "] label localization was deferred");
+	public DefaultHasPlaceholderConfigurator<C> placeholder(Localizable placeholder) {
+		if (localize(component, placeholder)) {
+			LOGGER.debug(() -> "Component [" + component + "] placeholder localization was deferred");
 		}
 		return this;
 	}
