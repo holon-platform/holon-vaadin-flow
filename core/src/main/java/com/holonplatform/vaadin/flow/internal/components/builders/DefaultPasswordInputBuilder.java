@@ -23,7 +23,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -44,16 +44,16 @@ import com.vaadin.flow.component.KeyPressEvent;
 import com.vaadin.flow.component.KeyUpEvent;
 import com.vaadin.flow.component.textfield.Autocapitalize;
 import com.vaadin.flow.component.textfield.Autocomplete;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
- * Default {@link StringInputBuilder} implementation using a {@link TextField} as concrete component.
+ * Default {@link PasswordInputBuilder} implementation using a {@link PasswordField} as concrete component.
  *
  * @since 5.2.0
  */
-public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfigurator<TextField, StringInputBuilder>
-		implements StringInputBuilder {
+public class DefaultPasswordInputBuilder extends
+		AbstractLocalizableComponentConfigurator<PasswordField, PasswordInputBuilder> implements PasswordInputBuilder {
 
 	private final List<ValueChangeListener<String>> valueChangeListeners = new LinkedList<>();
 
@@ -72,12 +72,12 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	protected final DefaultInputNotifierConfigurator inputNotifierConfigurator;
 	protected final DefaultKeyNotifierConfigurator keyNotifierConfigurator;
 	protected final DefaultHasValueChangeModeConfigurator valueChangeModeConfigurator;
-	protected final DefaultHasLabelConfigurator<TextField> labelConfigurator;
-	protected final DefaultHasTitleConfigurator<TextField> titleConfigurator;
-	protected final DefaultHasPlaceholderConfigurator<TextField> placeholderConfigurator;
+	protected final DefaultHasLabelConfigurator<PasswordField> labelConfigurator;
+	protected final DefaultHasTitleConfigurator<PasswordField> titleConfigurator;
+	protected final DefaultHasPlaceholderConfigurator<PasswordField> placeholderConfigurator;
 
-	public DefaultStringInputBuilder() {
-		super(new TextField());
+	public DefaultPasswordInputBuilder() {
+		super(new PasswordField());
 
 		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
 		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
@@ -108,7 +108,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 */
 	@Override
 	public Input<String> build() {
-		final TextField component = getComponent();
+		final PasswordField component = getComponent();
 		final HasValueStringInput<?> input = new HasValueStringInput<>(component, () -> component.isRequired(),
 				required -> component.setRequired(required));
 		input.setEmptyValuesAsNull(emptyValuesAsNull);
@@ -140,7 +140,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#emptyValuesAsNull(boolean)
 	 */
 	@Override
-	public StringInputBuilder emptyValuesAsNull(boolean emptyValuesAsNull) {
+	public PasswordInputBuilder emptyValuesAsNull(boolean emptyValuesAsNull) {
 		this.emptyValuesAsNull = emptyValuesAsNull;
 		return getConfigurator();
 	}
@@ -150,7 +150,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#blankValuesAsNull(boolean)
 	 */
 	@Override
-	public StringInputBuilder blankValuesAsNull(boolean blankValuesAsNull) {
+	public PasswordInputBuilder blankValuesAsNull(boolean blankValuesAsNull) {
 		this.blankValuesAsNull = blankValuesAsNull;
 		return getConfigurator();
 	}
@@ -160,7 +160,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public StringInputBuilder readOnly(boolean readOnly) {
+	public PasswordInputBuilder readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -170,7 +170,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
-	public StringInputBuilder withValue(String value) {
+	public PasswordInputBuilder withValue(String value) {
 		getComponent().setValue(value);
 		return getConfigurator();
 	}
@@ -182,7 +182,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public StringInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
+	public PasswordInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return getConfigurator();
 	}
@@ -192,7 +192,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#requiredIndicatorVisible(boolean)
 	 */
 	@Override
-	public StringInputBuilder requiredIndicatorVisible(boolean requiredIndicatorVisible) {
+	public PasswordInputBuilder requiredIndicatorVisible(boolean requiredIndicatorVisible) {
 		getComponent().setRequiredIndicatorVisible(requiredIndicatorVisible);
 		return getConfigurator();
 	}
@@ -202,7 +202,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#maxLength(int)
 	 */
 	@Override
-	public StringInputBuilder maxLength(int maxLength) {
+	public PasswordInputBuilder maxLength(int maxLength) {
 		getComponent().setMaxLength(maxLength);
 		return getConfigurator();
 	}
@@ -212,7 +212,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#minLength(int)
 	 */
 	@Override
-	public StringInputBuilder minLength(int minLength) {
+	public PasswordInputBuilder minLength(int minLength) {
 		getComponent().setMinLength(minLength);
 		return getConfigurator();
 	}
@@ -222,7 +222,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#pattern(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder pattern(String pattern) {
+	public PasswordInputBuilder pattern(String pattern) {
 		getComponent().setPattern(pattern);
 		return getConfigurator();
 	}
@@ -232,7 +232,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#preventInvalidInput(boolean)
 	 */
 	@Override
-	public StringInputBuilder preventInvalidInput(boolean preventInvalidInput) {
+	public PasswordInputBuilder preventInvalidInput(boolean preventInvalidInput) {
 		getComponent().setPreventInvalidInput(preventInvalidInput);
 		return getConfigurator();
 	}
@@ -242,7 +242,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public StringInputBuilder enabled(boolean enabled) {
+	public PasswordInputBuilder enabled(boolean enabled) {
 		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
@@ -253,7 +253,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.textfield.Autocomplete)
 	 */
 	@Override
-	public StringInputBuilder autocomplete(Autocomplete autocomplete) {
+	public PasswordInputBuilder autocomplete(Autocomplete autocomplete) {
 		autocompleteConfigurator.autocomplete(autocomplete);
 		return getConfigurator();
 	}
@@ -265,7 +265,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.textfield.Autocapitalize)
 	 */
 	@Override
-	public StringInputBuilder autocapitalize(Autocapitalize autocapitalize) {
+	public PasswordInputBuilder autocapitalize(Autocapitalize autocapitalize) {
 		autocapitalizeConfigurator.autocapitalize(autocapitalize);
 		return getConfigurator();
 	}
@@ -275,7 +275,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutocorrectConfigurator#autocorrect(boolean)
 	 */
 	@Override
-	public StringInputBuilder autocorrect(boolean autocorrect) {
+	public PasswordInputBuilder autocorrect(boolean autocorrect) {
 		autocorrectConfigurator.autocorrect(autocorrect);
 		return getConfigurator();
 	}
@@ -287,7 +287,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withInputListener(ComponentEventListener<InputEvent> listener) {
+	public PasswordInputBuilder withInputListener(ComponentEventListener<InputEvent> listener) {
 		inputNotifierConfigurator.withInputListener(listener);
 		return getConfigurator();
 	}
@@ -299,7 +299,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
+	public PasswordInputBuilder withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
 		keyNotifierConfigurator.withKeyDownListener(listener);
 		return getConfigurator();
 	}
@@ -311,7 +311,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
+	public PasswordInputBuilder withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
 		keyNotifierConfigurator.withKeyPressListener(listener);
 		return getConfigurator();
 	}
@@ -322,7 +322,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
+	public PasswordInputBuilder withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
 		keyNotifierConfigurator.withKeyUpListener(listener);
 		return getConfigurator();
 	}
@@ -334,7 +334,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringInputBuilder withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
+	public PasswordInputBuilder withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyDownListener(key, listener, modifiers);
 		return getConfigurator();
@@ -347,7 +347,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringInputBuilder withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
+	public PasswordInputBuilder withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyPressListener(key, listener, modifiers);
 		return getConfigurator();
@@ -359,7 +359,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringInputBuilder withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
+	public PasswordInputBuilder withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyUpListener(key, listener, modifiers);
 		return getConfigurator();
@@ -372,7 +372,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * data.value.ValueChangeMode)
 	 */
 	@Override
-	public StringInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
+	public PasswordInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
 		valueChangeModeConfigurator.valueChangeMode(valueChangeMode);
 		return getConfigurator();
 	}
@@ -382,7 +382,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder width(String width) {
+	public PasswordInputBuilder width(String width) {
 		sizeConfigurator.width(width);
 		return getConfigurator();
 	}
@@ -392,7 +392,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder height(String height) {
+	public PasswordInputBuilder height(String height) {
 		sizeConfigurator.height(height);
 		return getConfigurator();
 	}
@@ -402,7 +402,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
-	public StringInputBuilder styleNames(String... styleNames) {
+	public PasswordInputBuilder styleNames(String... styleNames) {
 		styleConfigurator.styleNames(styleNames);
 		return getConfigurator();
 	}
@@ -412,7 +412,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder styleName(String styleName) {
+	public PasswordInputBuilder styleName(String styleName) {
 		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
@@ -422,7 +422,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder removeStyleName(String styleName) {
+	public PasswordInputBuilder removeStyleName(String styleName) {
 		styleConfigurator.removeStyleName(styleName);
 		return getConfigurator();
 	}
@@ -432,7 +432,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 	 */
 	@Override
-	public StringInputBuilder replaceStyleName(String styleName) {
+	public PasswordInputBuilder replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
 		return getConfigurator();
 	}
@@ -442,7 +442,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
-	public StringInputBuilder autofocus(boolean autofocus) {
+	public PasswordInputBuilder autofocus(boolean autofocus) {
 		getComponent().setAutofocus(autofocus);
 		return getConfigurator();
 	}
@@ -452,7 +452,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
-	public StringInputBuilder tabIndex(int tabIndex) {
+	public PasswordInputBuilder tabIndex(int tabIndex) {
 		getComponent().setTabIndex(tabIndex);
 		return getConfigurator();
 	}
@@ -464,11 +464,11 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public StringInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
-		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<TextField>>() {
+	public PasswordInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<PasswordField>>() {
 
 			@Override
-			public void onComponentEvent(FocusEvent<TextField> event) {
+			public void onComponentEvent(FocusEvent<PasswordField> event) {
 				listener.onComponentEvent(new FocusEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -483,11 +483,11 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public StringInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
-		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<TextField>>() {
+	public PasswordInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<PasswordField>>() {
 
 			@Override
-			public void onComponentEvent(BlurEvent<TextField> event) {
+			public void onComponentEvent(BlurEvent<PasswordField> event) {
 				listener.onComponentEvent(new BlurEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -502,7 +502,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.Component)
 	 */
 	@Override
-	public StringInputBuilder prefixComponent(Component component) {
+	public PasswordInputBuilder prefixComponent(Component component) {
 		prefixAndSuffixConfigurator.prefixComponent(component);
 		return getConfigurator();
 	}
@@ -514,7 +514,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * component.Component)
 	 */
 	@Override
-	public StringInputBuilder suffixComponent(Component component) {
+	public PasswordInputBuilder suffixComponent(Component component) {
 		prefixAndSuffixConfigurator.suffixComponent(component);
 		return getConfigurator();
 	}
@@ -526,7 +526,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
+	public PasswordInputBuilder withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
 		compositionNotifierConfigurator.withCompositionStartListener(listener);
 		return getConfigurator();
 	}
@@ -538,7 +538,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withCompositionUpdateListener(ComponentEventListener<CompositionUpdateEvent> listener) {
+	public PasswordInputBuilder withCompositionUpdateListener(ComponentEventListener<CompositionUpdateEvent> listener) {
 		compositionNotifierConfigurator.withCompositionUpdateListener(listener);
 		return getConfigurator();
 	}
@@ -550,7 +550,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringInputBuilder withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
+	public PasswordInputBuilder withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
 		compositionNotifierConfigurator.withCompositionEndListener(listener);
 		return getConfigurator();
 	}
@@ -562,7 +562,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * i18n.Localizable)
 	 */
 	@Override
-	public StringInputBuilder placeholder(Localizable placeholder) {
+	public PasswordInputBuilder placeholder(Localizable placeholder) {
 		placeholderConfigurator.placeholder(placeholder);
 		return getConfigurator();
 	}
@@ -573,7 +573,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * Localizable)
 	 */
 	@Override
-	public StringInputBuilder label(Localizable label) {
+	public PasswordInputBuilder label(Localizable label) {
 		labelConfigurator.label(label);
 		return getConfigurator();
 	}
@@ -584,8 +584,18 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * Localizable)
 	 */
 	@Override
-	public StringInputBuilder title(Localizable title) {
+	public PasswordInputBuilder title(Localizable title) {
 		titleConfigurator.title(title);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder#revealButtonVisible(boolean)
+	 */
+	@Override
+	public PasswordInputBuilder revealButtonVisible(boolean revealButtonVisible) {
+		getComponent().setRevealButtonVisible(revealButtonVisible);
 		return getConfigurator();
 	}
 
@@ -594,7 +604,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected StringInputBuilder getConfigurator() {
+	protected PasswordInputBuilder getConfigurator() {
 		return this;
 	}
 

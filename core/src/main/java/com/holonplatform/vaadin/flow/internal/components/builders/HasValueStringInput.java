@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
@@ -38,6 +41,16 @@ public class HasValueStringInput<F extends HasValue.ValueChangeEvent<String>> ex
 
 	public HasValueStringInput(HasValue<F, String> field, Component component) {
 		super(field, component);
+	}
+
+	public <H extends Component & HasValue<F, String>> HasValueStringInput(H field, Supplier<Boolean> isRequiredGetter,
+			Consumer<Boolean> isRequiredSetter) {
+		super(field, isRequiredGetter, isRequiredSetter);
+	}
+
+	public HasValueStringInput(HasValue<F, String> field, Component component, Supplier<Boolean> isRequiredGetter,
+			Consumer<Boolean> isRequiredSetter) {
+		super(field, component, isRequiredGetter, isRequiredSetter);
 	}
 
 	/*

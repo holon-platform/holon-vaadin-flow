@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.Component;
@@ -44,13 +47,28 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 */
 	private final Component component;
 
+	private final Supplier<Boolean> isRequiredGetter;
+	private final Consumer<Boolean> isRequiredSetter;
+
 	/**
 	 * Constructor
 	 * @param <H> Wrapped field type
 	 * @param field Wrapped field and component (not null)
 	 */
 	public <H extends Component & HasValue<F, T>> HasValueInput(H field) {
-		this(field, field);
+		this(field, field, null, null);
+	}
+
+	/**
+	 * Constructor
+	 * @param <H> Wrapped field type
+	 * @param field Wrapped field and component (not null)
+	 * @param isRequiredGetter Optional <code>isRequired</code> logic getter
+	 * @param isRequiredSetter Optional <code>isRequired</code> logic setter
+	 */
+	public <H extends Component & HasValue<F, T>> HasValueInput(H field, Supplier<Boolean> isRequiredGetter,
+			Consumer<Boolean> isRequiredSetter) {
+		this(field, field, isRequiredGetter, isRequiredSetter);
 	}
 
 	/**
@@ -59,10 +77,24 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 * @param component Field component
 	 */
 	public HasValueInput(HasValue<F, T> field, Component component) {
+		this(field, component, null, null);
+	}
+
+	/**
+	 * Constructor
+	 * @param field Wrapped field (not null)
+	 * @param component Field component
+	 * @param isRequiredGetter Optional <code>isRequired</code> logic getter
+	 * @param isRequiredSetter Optional <code>isRequired</code> logic setter
+	 */
+	public HasValueInput(HasValue<F, T> field, Component component, Supplier<Boolean> isRequiredGetter,
+			Consumer<Boolean> isRequiredSetter) {
 		super();
 		ObjectUtils.argumentNotNull(field, "Field must be not null");
 		this.field = field;
 		this.component = component;
+		this.isRequiredGetter = isRequiredGetter;
+		this.isRequiredSetter = isRequiredSetter;
 	}
 
 	/**
@@ -133,6 +165,9 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 */
 	@Override
 	public boolean isRequired() {
+		if (isRequiredGetter != null) {
+			return isRequiredGetter.get();
+		}
 		return getField().isRequiredIndicatorVisible();
 	}
 
@@ -142,7 +177,11 @@ public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements
 	 */
 	@Override
 	public void setRequired(boolean required) {
-		getField().setRequiredIndicatorVisible(required);
+		if (isRequiredSetter != null) {
+			isRequiredSetter.accept(required);
+		} else {
+			getField().setRequiredIndicatorVisible(required);
+		}
 	}
 
 	/*

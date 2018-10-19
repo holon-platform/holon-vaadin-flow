@@ -43,22 +43,6 @@ public interface TextInputConfigurator<C extends TextInputConfigurator<C>> exten
 	C minLength(int minLength);
 
 	/**
-	 * A regular expression that the value is checked against. The pattern must match the entire value, not just some
-	 * subset.
-	 * @param pattern the value to set
-	 * @return this
-	 */
-	C pattern(String pattern);
-
-	/**
-	 * When set to true, user is prevented from typing a value that conflicts with the pattern configured through
-	 * {@link #pattern(String)}.
-	 * @param preventInvalidInput the value to set
-	 * @return this
-	 */
-	C preventInvalidInput(boolean preventInvalidInput);
-
-	/**
 	 * Enable or disable treating empty String values as <code>null</code> values.
 	 * <p>
 	 * By default this behaviour is enabled.
