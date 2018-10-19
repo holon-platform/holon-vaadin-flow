@@ -170,6 +170,7 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 	 * A convenience interface to render a {@link Property} as a {@link Input} using a {@link HasValue} component.
 	 * @param <T> Property type
 	 */
+	@FunctionalInterface
 	public interface InputFieldPropertyRenderer<T, E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>>
 			extends InputPropertyRenderer<T> {
 

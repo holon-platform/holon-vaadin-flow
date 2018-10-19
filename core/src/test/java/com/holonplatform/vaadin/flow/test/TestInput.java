@@ -27,11 +27,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.property.BooleanProperty;
+import com.holonplatform.core.property.NumericProperty;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Input.InputFieldPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.converter.StringToBooleanConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.internal.CurrentInstance;
 
@@ -67,10 +76,10 @@ public class TestInput {
 		i.clear();
 		assertTrue(i.isEmpty());
 		assertEquals("", i.getValue());
-		
+
 		i.setValue("test");
 		assertEquals("test", i.getValue());
-		
+
 		i.setValue(null);
 		assertTrue(i.isEmpty());
 		assertEquals("", i.getValue());
@@ -120,6 +129,7 @@ public class TestInput {
 
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void testConverters() {
 
@@ -132,10 +142,90 @@ public class TestInput {
 		i1.setValue(7);
 		assertFalse(i1.isEmpty());
 		assertEquals(Integer.valueOf(7), i1.getValue());
-		
+
 		i1.clear();
 		assertTrue(i1.isEmpty());
 		assertNull(i1.getValue());
+
+		final NumericProperty<Long> prp = NumericProperty.longType("test");
+
+		Input<Long> i2 = Input.from(new TextField(), prp, new PropertyValueConverter<Long, String>() {
+
+			@Override
+			public Long fromModel(String value, Property<Long> property) throws PropertyConversionException {
+				return (value == null || value.length() == 0) ? null : Long.parseLong(value);
+			}
+
+			@Override
+			public String toModel(Long value, Property<Long> property) throws PropertyConversionException {
+				return (value == null) ? null : String.valueOf(value);
+			}
+
+			@Override
+			public Class<Long> getPropertyType() {
+				return Long.class;
+			}
+
+			@Override
+			public Class<String> getModelType() {
+				return String.class;
+			}
+		});
+
+		assertTrue(i2.isEmpty());
+		assertNull(i2.getValue());
+
+		i2.setValue(7L);
+		assertFalse(i2.isEmpty());
+		assertEquals(Long.valueOf(7), i2.getValue());
+
+		i2.clear();
+		assertTrue(i2.isEmpty());
+		assertNull(i2.getValue());
+
+		final Input<String> si = Input.from(new TextField());
+
+		Input<Boolean> i3 = Input.from(si, new StringToBooleanConverter("Conversion failed"));
+		assertTrue(i3.isEmpty());
+		assertNull(i3.getValue());
+
+		i3.setValue(Boolean.TRUE);
+		assertFalse(i3.isEmpty());
+		assertEquals(Boolean.TRUE, i3.getValue());
+
+		i3.setValue(null);
+		assertTrue(i3.isEmpty());
+		assertNull(i3.getValue());
+
+		final BooleanProperty prp2 = BooleanProperty.create("test");
+
+		Input<Boolean> i4 = Input.from(i1, prp2, PropertyValueConverter.numericBoolean(Integer.class));
+		assertTrue(i4.isEmpty());
+		assertEquals(Boolean.FALSE, i4.getValue());
+
+		i4.setValue(Boolean.TRUE);
+		assertFalse(i4.isEmpty());
+		assertEquals(Boolean.TRUE, i4.getValue());
+
+		i4.setValue(null);
+		assertEquals(Boolean.FALSE, i4.getValue());
+
+	}
+
+	@Test
+	public void testInputRenderer() {
+
+		final StringProperty prp = StringProperty.create("test");
+
+		InputPropertyRenderer<String> r1 = property -> Input.from(new TextField());
+		assertNotNull(r1);
+
+		Input<String> i = r1.render(prp);
+		assertNotNull(i);
+
+		InputFieldPropertyRenderer<String, ComponentValueChangeEvent<TextField, String>, TextField> r2 = property -> new TextField();
+		i = r2.render(prp);
+		assertNotNull(i);
 
 	}
 
