@@ -25,20 +25,22 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * A wrapper to wrap a {@link HasValue} component into a {@link Input} component.
+ * Adapter to use a {@link HasValue} {@link Component} as an {@link Input}.
  * 
- * @param <V> Value type
+ * @param <F> Concrete {@link HasValue} field type
+ * @param <T> Value type
  * 
  * @since 5.2.0
  */
-public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implements Input<V> {
+public class HasValueInput<F extends HasValue.ValueChangeEvent<T>, T> implements Input<T> {
 
 	private static final long serialVersionUID = -2456516308895591627L;
 
 	/**
 	 * Wrapped field
 	 */
-	private final HasValue<E, V> field;
+	private final HasValue<F, T> field;
+	
 	/**
 	 * Field component
 	 */
@@ -49,7 +51,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 * @param <H> Wrapped field type
 	 * @param field Wrapped field and component (not null)
 	 */
-	public <H extends Component & HasValue<E, V>> InputFieldWrapper(H field) {
+	public <H extends Component & HasValue<F, T>> HasValueInput(H field) {
 		this(field, field);
 	}
 
@@ -58,7 +60,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 * @param field Wrapped field (not null)
 	 * @param component Field component
 	 */
-	public InputFieldWrapper(HasValue<E, V> field, Component component) {
+	public HasValueInput(HasValue<F, T> field, Component component) {
 		super();
 		ObjectUtils.argumentNotNull(field, "Field must be not null");
 		this.field = field;
@@ -66,10 +68,10 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	}
 
 	/**
-	 * Get the wrapped {@link HasValue}.
-	 * @return the wrapped field
+	 * Get the {@link HasValue} field.
+	 * @return the {@link HasValue} field
 	 */
-	public HasValue<E, V> getField() {
+	public HasValue<F, T> getField() {
 		return field;
 	}
 
@@ -78,8 +80,8 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 * @see com.holonplatform.vaadin.components.Input#setValue(java.lang.Object)
 	 */
 	@Override
-	public void setValue(V value) {
-		field.setValue(value);
+	public void setValue(T value) {
+		getField().setValue(value);
 	}
 
 	/*
@@ -87,8 +89,8 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 * @see com.holonplatform.vaadin.components.Input#getValue()
 	 */
 	@Override
-	public V getValue() {
-		return field.getValue();
+	public T getValue() {
+		return getField().getValue();
 	}
 
 	/*
@@ -97,7 +99,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public boolean isEmpty() {
-		return field.isEmpty();
+		return getField().isEmpty();
 	}
 
 	/*
@@ -106,7 +108,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public void clear() {
-		field.clear();
+		getField().clear();
 	}
 
 	/*
@@ -115,7 +117,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public void setReadOnly(boolean readOnly) {
-		field.setReadOnly(readOnly);
+		getField().setReadOnly(readOnly);
 	}
 
 	/*
@@ -124,7 +126,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public boolean isReadOnly() {
-		return field.isReadOnly();
+		return getField().isReadOnly();
 	}
 
 	/*
@@ -133,7 +135,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public boolean isRequired() {
-		return field.isRequiredIndicatorVisible();
+		return getField().isRequiredIndicatorVisible();
 	}
 
 	/*
@@ -142,7 +144,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public void setRequired(boolean required) {
-		field.setRequiredIndicatorVisible(required);
+		getField().setRequiredIndicatorVisible(required);
 	}
 
 	/*
@@ -151,10 +153,10 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 */
 	@Override
 	public void focus() {
-		if (field instanceof Focusable) {
-			((Focusable<?>) field).focus();
-		} else if (component instanceof Focusable) {
-			((Focusable<?>) component).focus();
+		if (getField() instanceof Focusable) {
+			((Focusable<?>) getField()).focus();
+		} else if (getComponent() instanceof Focusable) {
+			((Focusable<?>) getComponent()).focus();
 		}
 	}
 
@@ -173,7 +175,7 @@ public class InputFieldWrapper<E extends HasValue.ValueChangeEvent<V>, V> implem
 	 * ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(final Input.ValueChangeListener<V> listener) {
+	public Registration addValueChangeListener(final Input.ValueChangeListener<T> listener) {
 		return ValueChangeListenerUtils.adapt(field, this, listener);
 	}
 

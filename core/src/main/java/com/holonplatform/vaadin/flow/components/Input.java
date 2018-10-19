@@ -21,7 +21,7 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.ValueHolder.MaySupportValueChangeMode;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
-import com.holonplatform.vaadin.flow.internal.components.InputFieldWrapper;
+import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
@@ -102,7 +102,7 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MaySupportV
 	 * @return A new {@link Input} component which wraps the given <code>field</code>
 	 */
 	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> Input<T> from(F field) {
-		return new InputFieldWrapper<>(field);
+		return new HasValueInput<>(field);
 	}
 
 	// Converters
