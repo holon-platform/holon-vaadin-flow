@@ -27,36 +27,8 @@ import com.vaadin.flow.component.HasElement;
  * @since 5.2.0
  */
 // TODO APICHG: ComposableComponent renamed to Composable
+// TODO APICHG: Removed ComponentsWidthMode
 public interface Composable {
-
-	/**
-	 * Enumeration of composed Components width setup mode.
-	 */
-	public enum ComponentsWidthMode {
-
-	/**
-	 * The width of each component will not be altered
-	 */
-	NONE,
-
-	/**
-	 * The width of each component will adjusted according to parent layout width: if the parent layout is 100% wide,
-	 * the components width will be setted to 100%
-	 */
-	AUTO,
-
-	/**
-	 * The width of each component will always be setted to 100%
-	 */
-	FULL;
-
-	}
-
-	/**
-	 * Get the composed components width setup mode.
-	 * @return the components width mode
-	 */
-	ComponentsWidthMode getComponentsWidthMode();
 
 	/**
 	 * Compose the components using the previously configured {@link Composer}.
@@ -118,13 +90,6 @@ public interface Composable {
 		 * @return this
 		 */
 		B composeOnAttach(boolean composeOnAttach);
-
-		/**
-		 * Set the composed Components width setup mode.
-		 * @param componentsWidthMode composed Components width setup mode (not null)
-		 * @return this
-		 */
-		B componentsWidthMode(ComponentsWidthMode componentsWidthMode);
 
 	}
 

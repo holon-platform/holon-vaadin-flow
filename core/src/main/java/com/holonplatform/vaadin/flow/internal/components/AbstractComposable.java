@@ -19,12 +19,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.HasSize;
 
 /**
  * Base {@link Composable} form component.
@@ -34,10 +31,7 @@ import com.vaadin.flow.component.HasSize;
  * 
  * @since 5.2.0
  */
-public abstract class AbstractComposable<C extends Component, S extends PropertyComponentSource> extends Composite<C>
-		implements Composable {
-
-	private static final long serialVersionUID = 6196476129131362753L;
+public abstract class AbstractComposable<C extends Component, S extends PropertyComponentSource> implements Composable {
 
 	/**
 	 * Form content initializer
@@ -55,9 +49,9 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	private boolean composeOnAttach = true;
 
 	/**
-	 * Components width mode
+	 * Whether content component was initialized
 	 */
-	private ComponentsWidthMode componentsWidthMode = ComponentsWidthMode.AUTO;
+	private boolean contentInitialized = false;
 
 	/**
 	 * Composition state
@@ -92,12 +86,11 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	 */
 	protected abstract S getComponentSource();
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.flow.component.Composite#initContent()
+	/**
+	 * Get the form content component.
+	 * @return the form content component
 	 */
-	@Override
-	protected C initContent() {
+	protected C getContent() {
 		return content;
 	}
 
@@ -159,24 +152,6 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ComposableComponent#getComponentsWidthMode()
-	 */
-	@Override
-	public ComponentsWidthMode getComponentsWidthMode() {
-		return componentsWidthMode;
-	}
-
-	/**
-	 * Set the composed Components width setup mode
-	 * @param componentsWidthMode the ComponentsWidthMode to set (not null)
-	 */
-	public void setComponentsWidthMode(ComponentsWidthMode componentsWidthMode) {
-		ObjectUtils.argumentNotNull(componentsWidthMode, "ComponentsWidthMode must be not null");
-		this.componentsWidthMode = componentsWidthMode;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ComposableComponent#compose()
 	 */
 	@Override
@@ -191,34 +166,17 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 		}
 
 		// init form content
-		getInitializer().ifPresent(i -> i.accept(content));
-
-		// setup components
-		final String contentWidth = (content instanceof HasSize) ? ((HasSize) content).getWidth() : null;
-		final boolean fullWidth = (getComponentsWidthMode() == ComponentsWidthMode.FULL)
-				|| ((getComponentsWidthMode() == ComponentsWidthMode.AUTO) && "100%".equals(contentWidth));
-
-		getComponentSource().streamOfComponents().forEach(binding -> {
-			setupPropertyComponent(binding.getProperty(), binding.getComponent(), fullWidth);
+		getInitializer().ifPresent(i -> {
+			if (!contentInitialized) {
+				i.accept(content);
+				contentInitialized = true;
+			}
 		});
 
 		// compose
 		getComposer().compose(content, getComponentSource());
 
 		this.composed = true;
-	}
-
-	/**
-	 * Setup the {@link Component} associated with given {@link Property}.
-	 * @param property Property
-	 * @param component Component
-	 * @param fullWidth whether to set the Component width to 100% width according to {@link #getComponentsWidthMode()},
-	 *        if the component provides {@link HasSize} support
-	 */
-	protected void setupPropertyComponent(Property<?> property, Component component, boolean fullWidth) {
-		if (fullWidth && component instanceof HasSize) {
-			((HasSize) component).setWidth("100%");
-		}
 	}
 
 }

@@ -19,19 +19,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
-import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
-import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator.BaseComponentConfigurator;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -46,8 +41,6 @@ import com.vaadin.flow.component.Component;
 public abstract class AbstractComposablePropertyForm<C extends Component, PC extends HasComponent & HasLabel, S extends PropertyComponentSource>
 		extends AbstractComposable<C, S> {
 
-	private static final long serialVersionUID = 7681948564727269874L;
-
 	/**
 	 * Custom property captions
 	 */
@@ -57,12 +50,6 @@ public abstract class AbstractComposablePropertyForm<C extends Component, PC ext
 	 * Hidden property captions
 	 */
 	private final Collection<Property<?>> hiddenPropertyCaptions = new HashSet<>(8);
-
-	/**
-	 * Component configurators
-	 */
-	private final Map<Property<?>, Consumer<BaseComponentConfigurator>> propertyComponentConfigurators = new HashMap<>(
-			8);
 
 	/**
 	 * Constructor.
@@ -91,42 +78,6 @@ public abstract class AbstractComposablePropertyForm<C extends Component, PC ext
 		if (property != null) {
 			hiddenPropertyCaptions.add(property);
 		}
-	}
-
-	/**
-	 * Set the {@link ComponentConfigurator} consumer associated to given {@link Property}.
-	 * @param property Property (not null)
-	 * @param configurator Component configurator (not null)
-	 */
-	public void setPropertyComponentConfigurator(Property<?> property,
-			Consumer<BaseComponentConfigurator> configurator) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		ObjectUtils.argumentNotNull(configurator, "ComponentConfigurator Consumer must be not null");
-		propertyComponentConfigurators.put(property, configurator);
-	}
-
-	/**
-	 * Get the {@link ComponentConfigurator} consumer associated to given {@link Property}, if available.
-	 * @param property Property
-	 * @return Optional component configurator
-	 */
-	protected Optional<Consumer<BaseComponentConfigurator>> getPropertyComponentConfigurator(Property<?> property) {
-		return Optional.ofNullable(propertyComponentConfigurators.get(property));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractComposable#setupPropertyComponent(com.holonplatform.
-	 * core.property.Property, com.vaadin.flow.component.Component, boolean)
-	 */
-	@Override
-	protected void setupPropertyComponent(Property<?> property, Component component, boolean fullWidth) {
-		super.setupPropertyComponent(property, component, fullWidth);
-		// check configurator
-		getPropertyComponentConfigurator(property).ifPresent(consumer -> {
-			consumer.accept(BaseComponentConfigurator.create(component));
-		});
 	}
 
 	/**

@@ -100,7 +100,7 @@ public class DefaultPropertyViewForm<C extends Component> extends
 	 */
 	@Override
 	public Component getComponent() {
-		return this;
+		return getContent();
 	}
 
 	/*
@@ -317,12 +317,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 		}
 
 		@Override
-		public PropertyViewFormBuilder<C> componentsWidthMode(ComponentsWidthMode componentsWidthMode) {
-			instance.setComponentsWidthMode(componentsWidthMode);
-			return this;
-		}
-
-		@Override
 		public PropertyViewFormBuilder<C> propertyCaption(Property<?> property, Localizable caption) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(caption, "Caption must be not null");
@@ -350,13 +344,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 		public PropertyViewFormBuilder<C> hidePropertyCaption(Property<?> property) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			instance.hidePropertyCaption(property);
-			return this;
-		}
-
-		@Override
-		public PropertyViewFormBuilder<C> componentConfigurator(Property<?> property,
-				Consumer<BaseComponentConfigurator> configurator) {
-			instance.setPropertyComponentConfigurator(property, configurator);
 			return this;
 		}
 

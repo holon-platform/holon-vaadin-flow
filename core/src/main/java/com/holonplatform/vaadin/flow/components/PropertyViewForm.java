@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.util.function.Consumer;
-
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -125,17 +123,6 @@ public interface PropertyViewForm extends Composable, ValueComponent<PropertyBox
 		 * @return this
 		 */
 		PropertyViewFormBuilder<C> hidePropertyCaption(Property<?> property);
-
-		/**
-		 * Provide a custom configurator {@link Consumer} to configure the {@link Component} associated with given
-		 * <code>property</code> before render it in UI.
-		 * @param property Property for which to set component configurator (not null)
-		 * @param configurator Consumer to invoke the {@link ComponentConfigurator} method and configure the component
-		 *        associated to the property (not null)
-		 * @return this
-		 */
-		PropertyViewFormBuilder<C> componentConfigurator(Property<?> property,
-				Consumer<BaseComponentConfigurator> configurator);
 
 	}
 
