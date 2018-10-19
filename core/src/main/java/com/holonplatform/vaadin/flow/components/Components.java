@@ -32,6 +32,9 @@ import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.HorizontalLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.VerticalLayoutConfigurator;
@@ -427,465 +430,408 @@ public interface Components {
 	// return Dialog.question();
 	// }
 	//
-	// // Inputs
-	//
-	// /**
-	// * {@link Input}, {@link PropertyInputGroup} and {@link PropertyInputForm} builders provider.
-	// */
-	// static interface input {
-	//
-	// /**
-	// * Gets a builder to create {@link String} type {@link Input}s.
-	// * @return Input builder
-	// */
-	// static StringInputBuilder string() {
-	// return string(false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link String} type {@link Input}s.
-	// * @param area <code>true</code> to create an input component rendered as a <em>text area</em>,
-	// * <code>false</code> for a standard text input
-	// * @return Input builder
-	// */
-	// static StringInputBuilder string(boolean area) {
-	// return area ? new StringArea.Builder() : new StringField.Builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link String} type {@link Input}s which not display user input on screen, used to
-	// * enter secret text information like passwords.
-	// * @return Input builder
-	// */
-	// static SecretInputBuilder secretString() {
-	// return new SecretField.Builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Number} type {@link Input}s.
-	// * @param <T> Number type
-	// * @param numberClass Concrete number class
-	// * @return Input builder
-	// */
-	// static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
-	// return new NumberField.Builder<>(numberClass);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Boolean} type {@link Input}s.
-	// * @return Input builder
-	// */
-	// static BooleanInputBuilder boolean_() {
-	// return new BooleanField.Builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Date} type {@link Input}s.
-	// * @param resolution field Resolution
-	// * @param inline <code>true</code> to render the input component using an inline calendar
-	// * @return Input builder
-	// */
-	// static DateInputBuilder date(Resolution resolution, boolean inline) {
-	// ObjectUtils.argumentNotNull(resolution, "Resolution must be not null");
-	// return resolution.isTime() ? new DateTimeField.Builder(resolution, inline)
-	// : new DateField.Builder(resolution, inline);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Date} type {@link Input}s.
-	// * @param resolution field Resolution
-	// * @return Input builder
-	// */
-	// static DateInputBuilder date(Resolution resolution) {
-	// return date(resolution, false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Date} type {@link Input}s.
-	// * @param inline <code>true</code> to render the input component using an inline calendar
-	// * @return Input builder
-	// */
-	// static DateInputBuilder date(boolean inline) {
-	// return date(Resolution.DAY, inline);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link Date} type {@link Input}s.
-	// * @return Input builder
-	// */
-	// static DateInputBuilder date() {
-	// return date(Resolution.DAY, false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link LocalDate} type {@link Input}s.
-	// * @param inline <code>true</code> to render the input component using an inline calendar
-	// * @return Input builder
-	// */
-	// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate(boolean inline) {
-	// return new LocalDateField.Builder(inline);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link LocalDate} type {@link Input}s.
-	// * @return Input builder
-	// */
-	// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate() {
-	// return localDate(false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
-	// * @param inline <code>true</code> to render the input component using an inline calendar
-	// * @return Input builder
-	// */
-	// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime(boolean inline) {
-	// return new LocalDateTimeField.Builder(inline);
-	// }
-	//
-	// /**
-	// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
-	// * @return Input builder
-	// */
-	// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime() {
-	// return localDateTime(false);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @param renderingMode Rendering mode
-	// * @return Input builder
-	// */
-	// static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type,
-	// RenderingMode renderingMode) {
-	// return SingleSelect.builder(type, renderingMode);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#SELECT}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @return Input builder
-	// */
-	// static <T> SelectModeSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
-	// return SingleSelect.select(type);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#NATIVE_SELECT}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @return Input builder
-	// */
-	// static <T> NativeModeSingleSelectInputBuilder<T> singleNativeSelect(Class<? extends T> type) {
-	// return SingleSelect.nativeSelect(type);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#OPTIONS}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @return Input builder
-	// */
-	// static <T> OptionsModeSingleSelectInputBuilder<T> singleOptionSelect(Class<? extends T> type) {
-	// return SingleSelect.options(type);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @param renderingMode Rendering mode
-	// * @return {@link SingleSelect} builder
-	// */
-	// static <T> GenericSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty,
-	// RenderingMode renderingMode) {
-	// return SingleSelect.property(selectProperty, renderingMode);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties using {@link RenderingMode#SELECT}.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @return {@link SingleSelect} builder
-	// */
-	// static <T> SelectModeSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
-	// return SingleSelect.select(selectProperty);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @return {@link SingleSelect} builder
-	// */
-	// static <T> NativeModeSinglePropertySelectInputBuilder<T> singleNativeSelect(Property<T> selectProperty) {
-	// return SingleSelect.nativeSelect(selectProperty);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @return {@link SingleSelect} builder
-	// */
-	// static <T> OptionsModeSinglePropertySelectInputBuilder<T> singleOptionSelect(Property<T> selectProperty) {
-	// return SingleSelect.options(selectProperty);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a multiple selection {@link Input}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @param renderingMode Rendering mode
-	// * @return Input builder
-	// */
-	// static <T> GenericMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type, RenderingMode renderingMode) {
-	// return MultiSelect.builder(type, renderingMode);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a multiple selection {@link Input} using default {@link RenderingMode#OPTIONS}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @return Input builder
-	// */
-	// static <T> OptionsModeMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
-	// return MultiSelect.options(type);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a multiple selection {@link Input} using {@link RenderingMode#SELECT}.
-	// * @param <T> Selection value type
-	// * @param type Selection value type
-	// * @return Input builder
-	// */
-	// static <T> SelectModeMultiSelectInputBuilder<T> multiSelectList(Class<? extends T> type) {
-	// return MultiSelect.list(type);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @param renderingMode Rendering mode
-	// * @return {@link MultiSelect} builder
-	// */
-	// static <T> GenericMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty,
-	// RenderingMode renderingMode) {
-	// return MultiSelect.property(selectProperty, renderingMode);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties using default {@link RenderingMode#OPTIONS}.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @return {@link MultiSelect} builder
-	// */
-	// static <T> OptionsModeMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
-	// return MultiSelect.options(selectProperty);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-	// * {@link Property} as item properties using default {@link RenderingMode#SELECT}.
-	// * @param <T> Selection value type
-	// * @param selectProperty Property to select (not null)
-	// * @return {@link MultiSelect} builder
-	// */
-	// static <T> SelectModeMultiPropertySelectInputBuilder<T> multiSelectList(Property<T> selectProperty) {
-	// return MultiSelect.list(selectProperty);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source, using
-	// * all enum constants as selection items.
-	// * @param <E> Enum value type
-	// * @param type Enum value type
-	// * @param renderingMode Rendering mode
-	// * @return Input builder
-	// */
-	// static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type,
-	// RenderingMode renderingMode) {
-	// return singleSelect(type, renderingMode).items(type.getEnumConstants());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source, using
-	// * all enum constants as selection items and default {@link RenderingMode#SELECT} rendering mode.
-	// * @param <E> Enum value type
-	// * @param type Enum value type
-	// * @return Input builder
-	// */
-	// static <E extends Enum<E>> SelectModeSingleSelectInputBuilder<E> enumSingle(Class<E> type) {
-	// return singleSelect(type).items(type.getEnumConstants());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
-	// * using all enum constants as selection items.
-	// * @param <E> Enum value type
-	// * @param type Enum value type
-	// * @param renderingMode Rendering mode
-	// * @return Input builder
-	// */
-	// static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type,
-	// RenderingMode renderingMode) {
-	// return multiSelect(type, renderingMode).items(type.getEnumConstants());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
-	// * using all enum constants as selection items and default {@link RenderingMode#OPTIONS} rendering mode.
-	// * @param <E> Enum value type
-	// * @param type Enum value type
-	// * @return Input builder
-	// */
-	// static <E extends Enum<E>> OptionsModeMultiSelectInputBuilder<E> enumMulti(Class<E> type) {
-	// return multiSelect(type).items(type.getEnumConstants());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputGroup}.
-	// * @return {@link PropertyInputGroup} builder
-	// */
-	// static PropertyInputGroupBuilder propertyGroup() {
-	// return PropertyInputGroup.builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputForm}.
-	// * @param <C> Content type
-	// * @param content Form content, where fields will be composed by the form {@link Composer} (not null)
-	// * @return {@link PropertyInputForm} builder
-	// */
-	// static <C extends Component> PropertyInputFormBuilder<C> form(C content) {
-	// return PropertyInputForm.builder(content);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputForm} using a {@link FormLayout} as layout component and a
-	// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-	// * @return {@link PropertyInputForm} builder
-	// */
-	// static PropertyInputFormBuilder<FormLayout> form() {
-	// return PropertyInputForm.builder(formLayout().fullWidth().spacing().build())
-	// .composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and a
-	// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-	// * @return {@link PropertyInputForm} builder
-	// */
-	// static PropertyInputFormBuilder<VerticalLayout> formVertical() {
-	// return PropertyInputForm.builder(vl().fullWidth().build())
-	// .composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputForm} using a {@link HorizontalLayout} as layout component and
-	// * a default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-	// * @return {@link PropertyInputForm} builder
-	// */
-	// static PropertyInputFormBuilder<HorizontalLayout> formHorizontal() {
-	// return PropertyInputForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and a
-	// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-	// * @return {@link PropertyInputForm} builder
-	// */
-	// static PropertyInputFormBuilder<GridLayout> formGrid() {
-	// return PropertyInputForm.builder(gridLayout().fullWidth().build())
-	// .composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// }
-	//
-	// // View components
-	//
-	// /**
-	// * {@link ViewComponent} and {@link PropertyViewGroup} builders provider.
-	// */
-	// static interface view {
-	//
-	// /**
-	// * Gets a builder to create a {@link ViewComponent} instance.
-	// * @param <T> Value type
-	// * @param valueType the value type handled by the {@link ViewComponent}
-	// * @return {@link ViewComponent} builder
-	// */
-	// static <T> ViewComponentBuilder<T> component(Class<? extends T> valueType) {
-	// return ViewComponent.builder(valueType);
-	// }
-	//
-	// /**
-	// * Get a builder to create and setup a {@link PropertyViewGroup}.
-	// * @return {@link PropertyViewGroup} builder
-	// */
-	// static PropertyViewGroupBuilder propertyGroup() {
-	// return new DefaultPropertyViewGroup.DefaultBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyViewForm}.
-	// * @param <C> Content type
-	// * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
-	// * @return {@link PropertyViewForm} builder
-	// */
-	// static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
-	// return PropertyViewForm.builder(content);
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
-	// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-	// * @return {@link PropertyViewForm} builder
-	// */
-	// static PropertyViewFormBuilder<FormLayout> form() {
-	// return PropertyViewForm.builder(formLayout().build())
-	// .composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
-	// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-	// * @return {@link PropertyViewForm} builder
-	// */
-	// static PropertyViewFormBuilder<VerticalLayout> formVertical() {
-	// return PropertyViewForm.builder(vl().build()).composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component and
-	// * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-	// * @return {@link PropertyViewForm} builder
-	// */
-	// static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-	// return PropertyViewForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
-	// * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-	// * @return {@link PropertyViewForm} builder
-	// */
-	// static PropertyViewFormBuilder<GridLayout> formGrid() {
-	// return PropertyViewForm.builder(gridLayout().build())
-	// .composer(ComposableComponent.componentContainerComposer());
-	// }
-	//
-	// }
+	// Inputs
+
+	/**
+	 * {@link Input}, {@link PropertyInputGroup} and {@link PropertyInputForm} builders provider.
+	 */
+	// TODO APICHG: removed string(boolean area) for stringArea()
+	static interface input {
+
+		/**
+		 * Gets a builder to create {@link String} type {@link Input}s.
+		 * @return A {@link StringInputBuilder}
+		 */
+		static StringInputBuilder string() {
+			return StringInputBuilder.create();
+		}
+
+		/**
+		 * Gets a builder to create {@link String} type {@link Input}s rendered as a <em>text area</em>.
+		 * @return A {@link StringAreaBuilder}
+		 */
+		static StringAreaBuilder stringArea() {
+			return StringAreaBuilder.create();
+		}
+
+		/**
+		 * Gets a builder to create {@link String} type {@link Input}s which not display user input on screen, used to
+		 * enter secret text information like passwords.
+		 * <p>
+		 * Alias for {@link #password()}.
+		 * </p>
+		 * @return A {@link PasswordInputBuilder}
+		 */
+		static PasswordInputBuilder secretString() {
+			return password();
+		}
+
+		/**
+		 * Gets a builder to create {@link String} type {@link Input}s which not display user input on screen, used to
+		 * enter secret text information like passwords.
+		 * @return A {@link PasswordInputBuilder}
+		 */
+		static PasswordInputBuilder password() {
+			return PasswordInputBuilder.create();
+		}
+
+		// /**
+		// * Gets a builder to create {@link Number} type {@link Input}s.
+		// * @param <T> Number type
+		// * @param numberClass Concrete number class
+		// * @return Input builder
+		// */
+		// static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
+		// return new NumberField.Builder<>(numberClass);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link Boolean} type {@link Input}s.
+		// * @return Input builder
+		// */
+		// static BooleanInputBuilder boolean_() {
+		// return new BooleanField.Builder();
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link Date} type {@link Input}s.
+		// * @param resolution field Resolution
+		// * @param inline <code>true</code> to render the input component using an inline calendar
+		// * @return Input builder
+		// */
+		// static DateInputBuilder date(Resolution resolution, boolean inline) {
+		// ObjectUtils.argumentNotNull(resolution, "Resolution must be not null");
+		// return resolution.isTime() ? new DateTimeField.Builder(resolution, inline)
+		// : new DateField.Builder(resolution, inline);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link Date} type {@link Input}s.
+		// * @param resolution field Resolution
+		// * @return Input builder
+		// */
+		// static DateInputBuilder date(Resolution resolution) {
+		// return date(resolution, false);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link Date} type {@link Input}s.
+		// * @param inline <code>true</code> to render the input component using an inline calendar
+		// * @return Input builder
+		// */
+		// static DateInputBuilder date(boolean inline) {
+		// return date(Resolution.DAY, inline);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link Date} type {@link Input}s.
+		// * @return Input builder
+		// */
+		// static DateInputBuilder date() {
+		// return date(Resolution.DAY, false);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link LocalDate} type {@link Input}s.
+		// * @param inline <code>true</code> to render the input component using an inline calendar
+		// * @return Input builder
+		// */
+		// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate(boolean inline) {
+		// return new LocalDateField.Builder(inline);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link LocalDate} type {@link Input}s.
+		// * @return Input builder
+		// */
+		// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate() {
+		// return localDate(false);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
+		// * @param inline <code>true</code> to render the input component using an inline calendar
+		// * @return Input builder
+		// */
+		// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime(boolean inline) {
+		// return new LocalDateTimeField.Builder(inline);
+		// }
+		//
+		// /**
+		// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
+		// * @return Input builder
+		// */
+		// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime() {
+		// return localDateTime(false);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @param renderingMode Rendering mode
+		// * @return Input builder
+		// */
+		// static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type,
+		// RenderingMode renderingMode) {
+		// return SingleSelect.builder(type, renderingMode);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#SELECT}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @return Input builder
+		// */
+		// static <T> SelectModeSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
+		// return SingleSelect.select(type);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#NATIVE_SELECT}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @return Input builder
+		// */
+		// static <T> NativeModeSingleSelectInputBuilder<T> singleNativeSelect(Class<? extends T> type) {
+		// return SingleSelect.nativeSelect(type);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#OPTIONS}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @return Input builder
+		// */
+		// static <T> OptionsModeSingleSelectInputBuilder<T> singleOptionSelect(Class<? extends T> type) {
+		// return SingleSelect.options(type);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @param renderingMode Rendering mode
+		// * @return {@link SingleSelect} builder
+		// */
+		// static <T> GenericSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty,
+		// RenderingMode renderingMode) {
+		// return SingleSelect.property(selectProperty, renderingMode);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties using {@link RenderingMode#SELECT}.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @return {@link SingleSelect} builder
+		// */
+		// static <T> SelectModeSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
+		// return SingleSelect.select(selectProperty);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @return {@link SingleSelect} builder
+		// */
+		// static <T> NativeModeSinglePropertySelectInputBuilder<T> singleNativeSelect(Property<T> selectProperty) {
+		// return SingleSelect.nativeSelect(selectProperty);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @return {@link SingleSelect} builder
+		// */
+		// static <T> OptionsModeSinglePropertySelectInputBuilder<T> singleOptionSelect(Property<T> selectProperty) {
+		// return SingleSelect.options(selectProperty);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a multiple selection {@link Input}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @param renderingMode Rendering mode
+		// * @return Input builder
+		// */
+		// static <T> GenericMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type, RenderingMode
+		// renderingMode) {
+		// return MultiSelect.builder(type, renderingMode);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a multiple selection {@link Input} using default {@link RenderingMode#OPTIONS}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @return Input builder
+		// */
+		// static <T> OptionsModeMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
+		// return MultiSelect.options(type);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a multiple selection {@link Input} using {@link RenderingMode#SELECT}.
+		// * @param <T> Selection value type
+		// * @param type Selection value type
+		// * @return Input builder
+		// */
+		// static <T> SelectModeMultiSelectInputBuilder<T> multiSelectList(Class<? extends T> type) {
+		// return MultiSelect.list(type);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @param renderingMode Rendering mode
+		// * @return {@link MultiSelect} builder
+		// */
+		// static <T> GenericMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty,
+		// RenderingMode renderingMode) {
+		// return MultiSelect.property(selectProperty, renderingMode);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties using default {@link RenderingMode#OPTIONS}.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @return {@link MultiSelect} builder
+		// */
+		// static <T> OptionsModeMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
+		// return MultiSelect.options(selectProperty);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
+		// * {@link Property} as item properties using default {@link RenderingMode#SELECT}.
+		// * @param <T> Selection value type
+		// * @param selectProperty Property to select (not null)
+		// * @return {@link MultiSelect} builder
+		// */
+		// static <T> SelectModeMultiPropertySelectInputBuilder<T> multiSelectList(Property<T> selectProperty) {
+		// return MultiSelect.list(selectProperty);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source,
+		// using
+		// * all enum constants as selection items.
+		// * @param <E> Enum value type
+		// * @param type Enum value type
+		// * @param renderingMode Rendering mode
+		// * @return Input builder
+		// */
+		// static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type,
+		// RenderingMode renderingMode) {
+		// return singleSelect(type, renderingMode).items(type.getEnumConstants());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source,
+		// using
+		// * all enum constants as selection items and default {@link RenderingMode#SELECT} rendering mode.
+		// * @param <E> Enum value type
+		// * @param type Enum value type
+		// * @return Input builder
+		// */
+		// static <E extends Enum<E>> SelectModeSingleSelectInputBuilder<E> enumSingle(Class<E> type) {
+		// return singleSelect(type).items(type.getEnumConstants());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
+		// * using all enum constants as selection items.
+		// * @param <E> Enum value type
+		// * @param type Enum value type
+		// * @param renderingMode Rendering mode
+		// * @return Input builder
+		// */
+		// static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type,
+		// RenderingMode renderingMode) {
+		// return multiSelect(type, renderingMode).items(type.getEnumConstants());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
+		// * using all enum constants as selection items and default {@link RenderingMode#OPTIONS} rendering mode.
+		// * @param <E> Enum value type
+		// * @param type Enum value type
+		// * @return Input builder
+		// */
+		// static <E extends Enum<E>> OptionsModeMultiSelectInputBuilder<E> enumMulti(Class<E> type) {
+		// return multiSelect(type).items(type.getEnumConstants());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputGroup}.
+		// * @return {@link PropertyInputGroup} builder
+		// */
+		// static PropertyInputGroupBuilder propertyGroup() {
+		// return PropertyInputGroup.builder();
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputForm}.
+		// * @param <C> Content type
+		// * @param content Form content, where fields will be composed by the form {@link Composer} (not null)
+		// * @return {@link PropertyInputForm} builder
+		// */
+		// static <C extends Component> PropertyInputFormBuilder<C> form(C content) {
+		// return PropertyInputForm.builder(content);
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputForm} using a {@link FormLayout} as layout component and a
+		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		// * @return {@link PropertyInputForm} builder
+		// */
+		// static PropertyInputFormBuilder<FormLayout> form() {
+		// return PropertyInputForm.builder(formLayout().fullWidth().spacing().build())
+		// .composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and
+		// a
+		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		// * @return {@link PropertyInputForm} builder
+		// */
+		// static PropertyInputFormBuilder<VerticalLayout> formVertical() {
+		// return PropertyInputForm.builder(vl().fullWidth().build())
+		// .composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputForm} using a {@link HorizontalLayout} as layout component
+		// and
+		// * a default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		// * @return {@link PropertyInputForm} builder
+		// */
+		// static PropertyInputFormBuilder<HorizontalLayout> formHorizontal() {
+		// return PropertyInputForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
+		// }
+		//
+		// /**
+		// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and
+		// a
+		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
+		// * @return {@link PropertyInputForm} builder
+		// */
+		// static PropertyInputFormBuilder<GridLayout> formGrid() {
+		// return PropertyInputForm.builder(gridLayout().fullWidth().build())
+		// .composer(ComposableComponent.componentContainerComposer());
+		// }
+
+	}
+
 	//
 	// // Item listings
 	//
