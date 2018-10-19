@@ -155,6 +155,7 @@ public interface ValueHolder<V> extends Serializable {
 	/**
 	 * Declares that the {@link ValueChangeMode} handling may be supported and provides methods to configure it.
 	 */
+	// TODO APICHG: Removed value change timeout
 	public interface MaySupportValueChangeMode {
 
 		/**
@@ -182,29 +183,6 @@ public interface ValueHolder<V> extends Serializable {
 		 * @see #isValueChangeModeSupported()
 		 */
 		ValueChangeMode getValueChangeMode();
-
-		/**
-		 * Sets how often value change events are triggered when the {@link ValueChangeMode} is set to either
-		 * {@link ValueChangeMode#LAZY} or {@link ValueChangeMode#TIMEOUT}.
-		 * <p>
-		 * If {@link ValueChangeMode} is not supported, this method has no effect.
-		 * </p>
-		 * @param valueChangeTimeout the timeout in milliseconds, (greater or equal to 0)
-		 * @see #isValueChangeModeSupported()
-		 */
-		void setValueChangeTimeout(int valueChangeTimeout);
-
-		/**
-		 * Returns the currently set timeout, in milliseconds, for how often {@link ValueChangeEvent}s are triggered if
-		 * the current {@link ValueChangeMode} is set to either {@link ValueChangeMode#LAZY} or
-		 * {@link ValueChangeMode#TIMEOUT}.
-		 * <p>
-		 * If {@link ValueChangeMode} is not supported, this method always returns <code>-1</code>.
-		 * </p>
-		 * @return the timeout in milliseconds of how often value change events are triggered.
-		 * @see #isValueChangeModeSupported()
-		 */
-		int getValueChangeTimeout();
 
 	}
 
