@@ -118,6 +118,18 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>> e
 	B weekNumbersVisible(boolean weekNumbersVisible);
 
 	/**
+	 * Sets the visibility of ISO 8601 week numbers in the date selector. ISO 8601 defines that a week always starts
+	 * with a Monday so the week numbers are only shown if this is the case.
+	 * @param showWeekNumbers true if week numbers should be shown, false otherwise.
+	 * @return this
+	 * @deprecated Use {@link #weekNumbersVisible(boolean)}
+	 */
+	@Deprecated
+	default B showISOWeekNumbers(boolean showWeekNumbers) {
+		return weekNumbersVisible(showWeekNumbers);
+	}
+
+	/**
 	 * Set the Date Input calendar localization messages.
 	 * <p>
 	 * Use {@link #localization()} to obtain a suitable builder to configure the calendar localization messages.
@@ -136,18 +148,6 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>> e
 	 * @return A {@link CalendarLocalizationBuilder} to setup the Date Input calendar localization messages
 	 */
 	CalendarLocalizationBuilder<D, B> localization();
-
-	/**
-	 * Sets the visibility of ISO 8601 week numbers in the date selector. ISO 8601 defines that a week always starts
-	 * with a Monday so the week numbers are only shown if this is the case.
-	 * @param showWeekNumbers true if week numbers should be shown, false otherwise.
-	 * @return this
-	 * @deprecated Use {@link #weekNumbersVisible(boolean)}
-	 */
-	@Deprecated
-	default B showISOWeekNumbers(boolean showWeekNumbers) {
-		return weekNumbersVisible(showWeekNumbers);
-	}
 
 	// calendar localization
 
