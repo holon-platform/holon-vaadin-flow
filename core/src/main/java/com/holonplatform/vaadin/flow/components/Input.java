@@ -15,11 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
@@ -201,6 +206,22 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 	 */
 	static PasswordInputBuilder password() {
 		return PasswordInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link LocalDate} type {@link Input}s.
+	 * @return A {@link LocalDateInputBuilder}
+	 */
+	static LocalDateInputBuilder localDate() {
+		return LocalDateInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link Date} type {@link Input}s.
+	 * @return A {@link LocalDateInputBuilder}
+	 */
+	static DateInputBuilder date() {
+		return DateInputBuilder.create();
 	}
 
 	// Renderers

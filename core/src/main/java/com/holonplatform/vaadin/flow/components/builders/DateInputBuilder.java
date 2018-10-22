@@ -15,20 +15,47 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.TimeZone;
 
 import com.holonplatform.vaadin.flow.components.Input;
-import com.vaadin.flow.component.Component;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultDateInputBuilder;
 
 /**
- * Builder to create {@link LocalDate} type {@link Input} components.
- * 
+ * A {@link BaseDateInputBuilder} to create {@link Date} type {@link Input} components.
+ *
  * @since 5.2.0
  */
-public interface DateInputBuilder extends InputBuilder<String, Input<String>, DateInputBuilder>,
-		HasSizeConfigurator<DateInputBuilder>, HasStyleConfigurator<DateInputBuilder>,
-		HasAutofocusConfigurator<DateInputBuilder>, FocusableConfigurator<Component, DateInputBuilder>,
-		HasPlaceholderConfigurator<DateInputBuilder>, HasLabelConfigurator<DateInputBuilder>,
-		HasTitleConfigurator<DateInputBuilder>, DeferrableLocalizationConfigurator<DateInputBuilder> {
+public interface DateInputBuilder extends BaseDateInputBuilder<Date, DateInputBuilder> {
+
+	/**
+	 * Set the time zone id to use.
+	 * <p>
+	 * If not set, the system default time zone is used.
+	 * </p>
+	 * @param zone the time zone id to use
+	 * @return this
+	 */
+	DateInputBuilder timeZone(ZoneId zone);
+
+	/**
+	 * Set the time zone to use
+	 * @param timeZone the time zone to use
+	 * @return this
+	 * @deprecated Use {@link #timeZone(ZoneId)}
+	 */
+	@Deprecated
+	default DateInputBuilder timeZone(TimeZone timeZone) {
+		return timeZone((timeZone != null) ? timeZone.toZoneId() : null);
+	}
+
+	/**
+	 * Create a new {@link DateInputBuilder}.
+	 * @return A new {@link DateInputBuilder}
+	 */
+	static DateInputBuilder create() {
+		return new DefaultDateInputBuilder();
+	}
 
 }

@@ -31,7 +31,7 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 
 	/**
 	 * Sets the label text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>
@@ -61,7 +61,7 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 
 	/**
 	 * Sets the label text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>

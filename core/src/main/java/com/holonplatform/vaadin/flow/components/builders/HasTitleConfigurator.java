@@ -30,7 +30,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 
 	/**
 	 * Sets the title text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * Browsers typically use the title to show a tooltip when hovering an element
 	 * <p>
@@ -62,7 +62,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 
 	/**
 	 * Sets the title text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * Browsers typically use the title to show a tooltip when hovering an element
 	 * <p>

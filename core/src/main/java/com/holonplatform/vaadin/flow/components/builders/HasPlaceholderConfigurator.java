@@ -30,7 +30,7 @@ public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator
 
 	/**
 	 * Sets the placeholder text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * The placeholder is a hint to the user of what can be entered in the control.
 	 * </p>
@@ -50,7 +50,7 @@ public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator
 
 	/**
 	 * Sets the placeholder text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
+	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
 	 * <p>
 	 * The placeholder is a hint to the user of what can be entered in the control.
 	 * </p>

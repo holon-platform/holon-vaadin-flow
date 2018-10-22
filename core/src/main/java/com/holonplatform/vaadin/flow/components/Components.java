@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
@@ -24,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGr
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator.BaseFormLayoutConfigurator;
@@ -31,6 +34,7 @@ import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder
 import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
@@ -443,7 +447,7 @@ public interface Components {
 		 * @return A {@link StringInputBuilder}
 		 */
 		static StringInputBuilder string() {
-			return StringInputBuilder.create();
+			return Input.string();
 		}
 
 		/**
@@ -451,7 +455,7 @@ public interface Components {
 		 * @return A {@link StringAreaInputBuilder}
 		 */
 		static StringAreaInputBuilder stringArea() {
-			return StringAreaInputBuilder.create();
+			return Input.stringArea();
 		}
 
 		/**
@@ -472,7 +476,23 @@ public interface Components {
 		 * @return A {@link PasswordInputBuilder}
 		 */
 		static PasswordInputBuilder password() {
-			return PasswordInputBuilder.create();
+			return Input.password();
+		}
+
+		/**
+		 * Gets a builder to create {@link LocalDate} type {@link Input}s.
+		 * @return A {@link LocalDateInputBuilder}
+		 */
+		static LocalDateInputBuilder localDate() {
+			return Input.localDate();
+		}
+
+		/**
+		 * Gets a builder to create {@link Date} type {@link Input}s.
+		 * @return A {@link LocalDateInputBuilder}
+		 */
+		static DateInputBuilder date() {
+			return Input.date();
 		}
 
 		// /**
