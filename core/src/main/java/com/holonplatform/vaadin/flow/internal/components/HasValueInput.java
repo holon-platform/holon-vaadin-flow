@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -413,6 +414,10 @@ public class HasValueInput<T> implements Input<T> {
 		if (component instanceof DatePicker) {
 			return PropertyHandler.<String>create(() -> ((DatePicker) component).getLabel(),
 					label -> ((DatePicker) component).setLabel(label));
+		}
+		if (component instanceof Checkbox) {
+			return PropertyHandler.<String>create(() -> ((Checkbox) component).getLabel(),
+					label -> ((Checkbox) component).setLabel(label));
 		}
 		return null;
 	}

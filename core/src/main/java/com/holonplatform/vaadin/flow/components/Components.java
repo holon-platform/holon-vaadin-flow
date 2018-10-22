@@ -23,6 +23,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Composable.Composer;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
@@ -495,6 +496,14 @@ public interface Components {
 			return Input.date();
 		}
 
+		/**
+		 * Gets a builder to create {@link Boolean} type {@link Input}s.
+		 * @return A {@link BooleanInputBuilder}
+		 */
+		static BooleanInputBuilder boolean_() {
+			return Input.boolean_();
+		}
+
 		// /**
 		// * Gets a builder to create {@link Number} type {@link Input}s.
 		// * @param <T> Number type
@@ -544,28 +553,12 @@ public interface Components {
 		// }
 		//
 		// /**
-		// * Gets a builder to create {@link Date} type {@link Input}s.
-		// * @return Input builder
-		// */
-		// static DateInputBuilder date() {
-		// return date(Resolution.DAY, false);
-		// }
-		//
-		// /**
 		// * Gets a builder to create {@link LocalDate} type {@link Input}s.
 		// * @param inline <code>true</code> to render the input component using an inline calendar
 		// * @return Input builder
 		// */
 		// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate(boolean inline) {
 		// return new LocalDateField.Builder(inline);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link LocalDate} type {@link Input}s.
-		// * @return Input builder
-		// */
-		// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate() {
-		// return localDate(false);
 		// }
 		//
 		// /**

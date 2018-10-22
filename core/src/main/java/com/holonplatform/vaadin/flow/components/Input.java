@@ -22,6 +22,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
@@ -222,6 +223,14 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 	 */
 	static DateInputBuilder date() {
 		return DateInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link Boolean} type {@link Input}s.
+	 * @return A {@link BooleanInputBuilder}
+	 */
+	static BooleanInputBuilder boolean_() {
+		return BooleanInputBuilder.create();
 	}
 
 	// Renderers
