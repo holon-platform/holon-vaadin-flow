@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
+import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 
@@ -142,24 +143,24 @@ public class TestViewComponent {
 		ViewComponent<String> vc = ViewComponent.builder(String.class).styleName("test").build();
 		assertNotNull(vc);
 
-		assertTrue(vc.getClassNames().contains("test"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test"));
 
 		vc = ViewComponent.builder(String.class).styleName("test1").styleName("test2").build();
-		assertTrue(vc.getClassNames().contains("test1"));
-		assertTrue(vc.getClassNames().contains("test2"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test1"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test2"));
 
 		vc = ViewComponent.builder(String.class).styleNames("test").build();
-		assertTrue(vc.getClassNames().contains("test"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test"));
 
 		vc = ViewComponent.builder(String.class).styleNames("test1", "test2").build();
-		assertTrue(vc.getClassNames().contains("test1"));
-		assertTrue(vc.getClassNames().contains("test2"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test1"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test2"));
 
 		vc = ViewComponent.builder(String.class).styleNames("test1", "test2").removeStyleName("test2")
 				.replaceStyleName("test3").build();
-		assertFalse(vc.getClassNames().contains("test1"));
-		assertFalse(vc.getClassNames().contains("test2"));
-		assertTrue(vc.getClassNames().contains("test3"));
+		assertFalse(ComponentTestUtils.getClassNames(vc).contains("test1"));
+		assertFalse(ComponentTestUtils.getClassNames(vc).contains("test2"));
+		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test3"));
 
 	}
 
@@ -167,56 +168,56 @@ public class TestViewComponent {
 	public void testSize() {
 
 		ViewComponent<String> vc = ViewComponent.builder(String.class).build();
-		assertNull(vc.getWidth());
-		assertNull(vc.getHeight());
+		assertNull(ComponentTestUtils.getWidth(vc));
+		assertNull(ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).width("50em").build();
-		assertEquals("50em", vc.getWidth());
+		assertEquals("50em", ComponentTestUtils.getWidth(vc));
 
 		vc = ViewComponent.builder(String.class).width(50, Unit.EM).build();
-		assertEquals("50em", vc.getWidth());
+		assertEquals("50em", ComponentTestUtils.getWidth(vc));
 
 		vc = ViewComponent.builder(String.class).width(50.7f, Unit.EM).build();
-		assertEquals("50.7em", vc.getWidth());
+		assertEquals("50.7em", ComponentTestUtils.getWidth(vc));
 
 		vc = ViewComponent.builder(String.class).height("50em").build();
-		assertEquals("50em", vc.getHeight());
+		assertEquals("50em", ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).height(50, Unit.EM).build();
-		assertEquals("50em", vc.getHeight());
+		assertEquals("50em", ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).height(50.7f, Unit.EM).build();
-		assertEquals("50.7em", vc.getHeight());
+		assertEquals("50.7em", ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).width("50%").height("100%").build();
-		assertEquals("50%", vc.getWidth());
-		assertEquals("100%", vc.getHeight());
+		assertEquals("50%", ComponentTestUtils.getWidth(vc));
+		assertEquals("100%", ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).width("100px").widthUndefined().build();
-		assertNull(vc.getWidth());
+		assertNull(ComponentTestUtils.getWidth(vc));
 
 		vc = ViewComponent.builder(String.class).height("100px").heightUndefined().build();
-		assertNull(vc.getHeight());
+		assertNull(ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).width("100px").height("100px").sizeUndefined().build();
-		assertNull(vc.getWidth());
-		assertNull(vc.getHeight());
+		assertNull(ComponentTestUtils.getWidth(vc));
+		assertNull(ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).fullWidth().build();
-		assertEquals("100%", vc.getWidth());
-		assertNull(vc.getHeight());
+		assertEquals("100%", ComponentTestUtils.getWidth(vc));
+		assertNull(ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).fullHeight().build();
-		assertEquals("100%", vc.getHeight());
-		assertNull(vc.getWidth());
+		assertEquals("100%", ComponentTestUtils.getHeight(vc));
+		assertNull(ComponentTestUtils.getWidth(vc));
 
 		vc = ViewComponent.builder(String.class).fullWidth().fullHeight().build();
-		assertEquals("100%", vc.getWidth());
-		assertEquals("100%", vc.getHeight());
+		assertEquals("100%", ComponentTestUtils.getWidth(vc));
+		assertEquals("100%", ComponentTestUtils.getHeight(vc));
 
 		vc = ViewComponent.builder(String.class).fullSize().build();
-		assertEquals("100%", vc.getWidth());
-		assertEquals("100%", vc.getHeight());
+		assertEquals("100%", ComponentTestUtils.getWidth(vc));
+		assertEquals("100%", ComponentTestUtils.getHeight(vc));
 
 	}
 
@@ -224,16 +225,16 @@ public class TestViewComponent {
 	public void testEnabled() {
 
 		ViewComponent<String> vc = ViewComponent.builder(String.class).build();
-		assertTrue(vc.isEnabled());
+		assertTrue(ComponentTestUtils.isEnabled(vc));
 
 		vc = ViewComponent.builder(String.class).enabled(true).build();
-		assertTrue(vc.isEnabled());
+		assertTrue(ComponentTestUtils.isEnabled(vc));
 
 		vc = ViewComponent.builder(String.class).enabled(false).build();
-		assertFalse(vc.isEnabled());
+		assertFalse(ComponentTestUtils.isEnabled(vc));
 
 		vc = ViewComponent.builder(String.class).disabled().build();
-		assertFalse(vc.isEnabled());
+		assertFalse(ComponentTestUtils.isEnabled(vc));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -242,46 +243,46 @@ public class TestViewComponent {
 
 		ViewComponent<String> vc = ViewComponent.builder(String.class)
 				.label(Localizable.builder().message("test").build()).build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).label("test").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).label("test", "test.code").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).label("test", "test.code", "arg").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).caption("test").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).caption("test", "test.code").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).caption("test", "test.code", "arg").build();
-		assertEquals("test", vc.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class)
 					.label(Localizable.builder().message("test").messageCode("test.code").build()).build();
-			assertEquals("TestUS", vc2.getLabel());
+			assertEquals("TestUS", ComponentTestUtils.getLabel(vc2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class).label("test", "test.code").build();
-			assertEquals("TestUS", vc2.getLabel());
+			assertEquals("TestUS", ComponentTestUtils.getLabel(vc2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class).deferLocalization()
 					.label("test", "test.code").build();
-			assertEquals("test", vc2.getLabel());
+			assertEquals("test", ComponentTestUtils.getLabel(vc2));
 			ComponentUtil.onComponentAttach(vc2.getComponent(), true);
-			assertEquals("TestUS", vc2.getLabel());
+			assertEquals("TestUS", ComponentTestUtils.getLabel(vc2));
 		});
 
 	}
@@ -291,56 +292,56 @@ public class TestViewComponent {
 
 		ViewComponent<String> vc = ViewComponent.builder(String.class)
 				.title(Localizable.builder().message("test").build()).build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).title("test").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).title("test", "test.code").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).title("test", "test.code", "arg").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).description(Localizable.builder().message("test").build()).build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).description("test").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).description("test", "test.code").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		vc = ViewComponent.builder(String.class).description("test", "test.code", "arg").build();
-		assertEquals("test", vc.getElement().getAttribute("title"));
+		assertEquals("test", ComponentTestUtils.getTitle(vc));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class)
 					.title(Localizable.builder().message("test").messageCode("test.code").build()).build();
-			assertEquals("TestUS", vc2.getElement().getAttribute("title"));
+			assertEquals("TestUS", ComponentTestUtils.getTitle(vc2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class).title("test", "test.code").build();
-			assertEquals("TestUS", vc2.getElement().getAttribute("title"));
+			assertEquals("TestUS", ComponentTestUtils.getTitle(vc2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class).deferLocalization()
 					.title("test", "test.code").build();
-			assertEquals("test", vc2.getElement().getAttribute("title"));
+			assertEquals("test", ComponentTestUtils.getTitle(vc2));
 			ComponentUtil.onComponentAttach(vc2.getComponent(), true);
-			assertEquals("TestUS", vc2.getElement().getAttribute("title"));
+			assertEquals("TestUS", ComponentTestUtils.getTitle(vc2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			ViewComponent<String> vc2 = ViewComponent.builder(String.class).withDeferredLocalization(true)
 					.label("test", "test.code").title("test", "test.code").build();
-			assertEquals("test", vc2.getLabel());
-			assertEquals("test", vc2.getElement().getAttribute("title"));
+			assertEquals("test", ComponentTestUtils.getLabel(vc2));
+			assertEquals("test", ComponentTestUtils.getTitle(vc2));
 			ComponentUtil.onComponentAttach(vc2.getComponent(), true);
-			assertEquals("TestUS", vc2.getLabel());
-			assertEquals("TestUS", vc2.getElement().getAttribute("title"));
+			assertEquals("TestUS", ComponentTestUtils.getLabel(vc2));
+			assertEquals("TestUS", ComponentTestUtils.getTitle(vc2));
 		});
 
 	}
@@ -348,7 +349,7 @@ public class TestViewComponent {
 	@Test
 	public void testPropertyConfig() {
 		ViewComponent<Integer> vc = ViewComponent.create(NumericProperty.integerType("test").message("Test"));
-		assertEquals("Test", vc.getLabel());
+		assertEquals("Test", ComponentTestUtils.getLabel(vc));
 
 	}
 
@@ -469,7 +470,7 @@ public class TestViewComponent {
 		ViewComponent<?> v2 = p2.render(ViewComponent.class);
 		assertNotNull(v2);
 
-		assertEquals("caption", v2.getLabel());
+		assertEquals("caption", ComponentTestUtils.getLabel(v2));
 
 	}
 

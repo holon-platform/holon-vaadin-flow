@@ -13,12 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.internal.components.builders;
+package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 
@@ -27,7 +23,7 @@ import com.vaadin.flow.component.HasValue;
  *
  * @since 5.2.0
  */
-public class HasValueStringInput<F extends HasValue.ValueChangeEvent<String>> extends HasValueInput<F, String> {
+public class HasValueStringInput extends HasValueInput<String> {
 
 	private static final long serialVersionUID = -1095204513726707911L;
 
@@ -35,22 +31,26 @@ public class HasValueStringInput<F extends HasValue.ValueChangeEvent<String>> ex
 
 	private boolean blankValuesAsNull;
 
-	public <H extends Component & HasValue<F, String>> HasValueStringInput(H field) {
+	/**
+	 * Constructor using a {@link HasValue} and {@link Component} field instance.
+	 * @param <E> ValueChangeEvent type
+	 * @param <H> Actual HasValue component type
+	 * @param field Wrapped {@link HasValue} field and component (not null)
+	 */
+	public <E extends HasValue.ValueChangeEvent<String>, H extends Component & HasValue<E, String>> HasValueStringInput(
+			H field) {
 		super(field);
 	}
 
-	public HasValueStringInput(HasValue<F, String> field, Component component) {
+	/**
+	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
+	 * @param <E> ValueChangeEvent type
+	 * @param field {@link HasValue} field (not null)
+	 * @param component Field {@link Component} (not null)
+	 */
+	public <E extends HasValue.ValueChangeEvent<String>> HasValueStringInput(HasValue<E, String> field,
+			Component component) {
 		super(field, component);
-	}
-
-	public <H extends Component & HasValue<F, String>> HasValueStringInput(H field, Supplier<Boolean> isRequiredGetter,
-			Consumer<Boolean> isRequiredSetter) {
-		super(field, isRequiredGetter, isRequiredSetter);
-	}
-
-	public HasValueStringInput(HasValue<F, String> field, Component component, Supplier<Boolean> isRequiredGetter,
-			Consumer<Boolean> isRequiredSetter) {
-		super(field, component, isRequiredGetter, isRequiredSetter);
 	}
 
 	/*

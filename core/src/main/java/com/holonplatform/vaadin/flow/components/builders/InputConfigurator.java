@@ -60,14 +60,46 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	C withValueChangeListener(ValueChangeListener<T> listener);
 
 	/**
-	 * Sets the required indicator visible or not.
-	 * <p>
-	 * If set visible, it is visually indicated in the user interface.
-	 * <p>
-	 * @param requiredIndicatorVisible <code>true</code> to make the required indicator visible, <code>false</code> if
-	 *        not
+	 * Sets the <em>required indicator</em> visible or not.
+	 * @param requiredIndicatorVisible Whether to make the required indicator visible
+	 * @return this
+	 * @deprecated Use {@link #required(boolean)}
 	 */
-	C requiredIndicatorVisible(boolean requiredIndicatorVisible);
+	@Deprecated
+	default C requiredIndicatorVisible(boolean requiredIndicatorVisible) {
+		return required(requiredIndicatorVisible);
+	}
+
+	/**
+	 * Set the input as <em>required</em> or not. When the input is required the user must fill in a value.
+	 * <p>
+	 * Depending on the actual input component implementation, setting the input as required may involve:
+	 * <ul>
+	 * <li>Showing a <em>required indicator</em> symbol, if supported. Normally a label must be configured to show the
+	 * required indicator symbol.</li>
+	 * <li>Setting a <code>required</code> attribute in the <code>input</code> element at client side, if
+	 * supported.</li>
+	 * </ul>
+	 * @param required Whether the input is required
+	 * @return this
+	 */
+	C required(boolean required);
+
+	/**
+	 * Set the input as <em>required</em>, i.e. the user must fill in a value.
+	 * <p>
+	 * Depending on the actual input component implementation, setting the input as required may involve:
+	 * <ul>
+	 * <li>Showing a <em>required indicator</em> symbol, if supported. Normally a label must be configured to show the
+	 * required indicator symbol.</li>
+	 * <li>Setting a <code>required</code> attribute in the <code>input</code> element at client side, if
+	 * supported.</li>
+	 * </ul>
+	 * @return this
+	 */
+	default C required() {
+		return required(true);
+	}
 
 	/**
 	 * Base {@link InputConfigurator}.

@@ -17,14 +17,20 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.presentation.StringValuePresenter;
+import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
@@ -38,7 +44,7 @@ import com.vaadin.flow.shared.Registration;
  * @since 5.2.0
  */
 public class DefaultViewComponent<T> extends Composite<Div>
-		implements ViewComponent<T>, HasText, ClickNotifier<Component> {
+		implements ViewComponent<T>, HasSize, HasStyle, HasEnabled, HasText, ClickNotifier<Component> {
 
 	private static final long serialVersionUID = 7748055782623326295L;
 
@@ -81,6 +87,14 @@ public class DefaultViewComponent<T> extends Composite<Div>
 		getContent().add(label, text);
 	}
 
+	/**
+	 * Get the component {@link Label} element.
+	 * @return the label element
+	 */
+	protected Label getLabel() {
+		return label;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#getComponent()
@@ -114,22 +128,46 @@ public class DefaultViewComponent<T> extends Composite<Div>
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.HasLabel#getLabel()
+	/**
+	 * Set the component label text.
+	 * @param label The label text to set
 	 */
-	@Override
-	public String getLabel() {
-		return this.label.getText();
+	public void setLabelText(String label) {
+		getLabel().setText(label);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.HasLabel#setLabel(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveLabel#hasLabel()
 	 */
 	@Override
-	public void setLabel(String label) {
-		this.label.setText(label);
+	public Optional<HasLabel> hasLabel() {
+		return Optional.of(HasLabel.create(() -> getLabel().getText(), label -> getLabel().setText(label)));
+	}
+
+	/**
+	 * Set the component title text.
+	 * @param title The title text to set
+	 */
+	public void setTitle(String title) {
+		getElement().setAttribute("title", (title != null) ? title : "");
+	}
+
+	/**
+	 * Get the component title text.
+	 * @return the component title
+	 */
+	public String getTitle() {
+		return getElement().getAttribute("title");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveTitle#hasTitle()
+	 */
+	@Override
+	public Optional<HasTitle> hasTitle() {
+		return Optional.of(HasTitle.create(() -> getTitle(), title -> setTitle(title)));
 	}
 
 	/**

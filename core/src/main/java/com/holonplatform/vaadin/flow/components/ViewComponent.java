@@ -19,10 +19,6 @@ import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
-import com.vaadin.flow.component.HasEnabled;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.dom.Element;
 
 /**
  * A {@link ValueHolder} component to display a value in UI.
@@ -31,16 +27,7 @@ import com.vaadin.flow.dom.Element;
  *
  * @since 5.2.0
  */
-public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, HasLabel, HasSize, HasStyle, HasEnabled {
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.flow.component.HasElement#getElement()
-	 */
-	@Override
-	default Element getElement() {
-		return getComponent().getElement();
-	}
+public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle {
 
 	/**
 	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given value type.

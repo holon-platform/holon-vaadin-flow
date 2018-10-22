@@ -38,6 +38,7 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
@@ -117,15 +118,15 @@ public class TestPropertyViewForm {
 
 		form = PropertyViewForm.formLayout().properties(SET).withPostProcessor((property, component) -> {
 			if (ID.equals(property)) {
-				component.addClassName("post-processed");
+				component.hasStyle().ifPresent(hs -> hs.addClassName("post-processed"));
 			}
 		}).build();
 		assertNotNull(form);
 
 		assertTrue(form.getViewComponent(ID).isPresent());
 		assertTrue(form.getViewComponent(NAME).isPresent());
-		assertTrue(form.getViewComponent(ID).get().getClassNames().contains("post-processed"));
-		assertFalse(form.getViewComponent(NAME).get().getClassNames().contains("post-processed"));
+		assertTrue(ComponentTestUtils.getClassNames(form.getViewComponent(ID).get()).contains("post-processed"));
+		assertFalse(ComponentTestUtils.getClassNames(form.getViewComponent(NAME).get()).contains("post-processed"));
 
 		assertThrows(NoSuitableRendererAvailableException.class,
 				() -> PropertyViewForm.formLayout().properties(SET).bind(ID, p -> null).build());
@@ -301,34 +302,34 @@ public class TestPropertyViewForm {
 		assertTrue(form.getViewComponent(NAME).isPresent());
 		assertTrue(form.getViewComponent(VIRTUAL).isPresent());
 
-		assertEquals("Id", form.getViewComponent(ID).get().getLabel());
-		assertEquals("Name", form.getViewComponent(NAME).get().getLabel());
+		assertEquals("Id", ComponentTestUtils.getLabel(form.getViewComponent(ID).get()));
+		assertEquals("Name", ComponentTestUtils.getLabel(form.getViewComponent(NAME).get()));
 
 		form = PropertyViewForm.formLayout().properties(SET).propertyCaption(NAME, "TheName").hidePropertyCaption(ID)
 				.build();
 
-		assertEquals("", Optional.ofNullable(form.getViewComponent(ID).get().getLabel()).orElse(""));
-		assertEquals("TheName", form.getViewComponent(NAME).get().getLabel());
+		assertEquals("", Optional.ofNullable(ComponentTestUtils.getLabel(form.getViewComponent(ID).get())).orElse(""));
+		assertEquals("TheName", ComponentTestUtils.getLabel(form.getViewComponent(NAME).get()));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET).build();
-			assertEquals("Id", form2.getViewComponent(ID).get().getLabel());
-			assertEquals("TestUS", form2.getViewComponent(NAME).get().getLabel());
+			assertEquals("Id", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
+			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(NAME).get()));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET).propertyCaption(NAME, "MyName")
 					.propertyCaption(ID, "test", "test.code").build();
-			assertEquals("TestUS", form2.getViewComponent(ID).get().getLabel());
-			assertEquals("MyName", form2.getViewComponent(NAME).get().getLabel());
+			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
+			assertEquals("MyName", ComponentTestUtils.getLabel(form2.getViewComponent(NAME).get()));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET)
 					.propertyCaption(ID, Localizable.builder().message("test").messageCode("test.code").build())
 					.build();
-			assertEquals("TestUS", form2.getViewComponent(ID).get().getLabel());
-			assertEquals("TestUS", form2.getViewComponent(NAME).get().getLabel());
+			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
+			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(NAME).get()));
 		});
 
 	}
@@ -369,7 +370,7 @@ public class TestPropertyViewForm {
 
 		ComponentUtil.onComponentDetach(form.getComponent());
 		assertTrue(detached.get());
-		
+
 	}
 
 }

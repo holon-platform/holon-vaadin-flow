@@ -24,12 +24,13 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface StringAreaBuilder extends InputBuilder<String, Input<String>, StringAreaBuilder>,
-		TextInputConfigurator<StringAreaBuilder>, HasSizeConfigurator<StringAreaBuilder>,
-		HasStyleConfigurator<StringAreaBuilder>, HasAutofocusConfigurator<StringAreaBuilder>,
-		FocusableConfigurator<Component, StringAreaBuilder>, HasPrefixAndSuffixConfigurator<StringAreaBuilder>,
-		CompositionNotifierConfigurator<StringAreaBuilder>, HasPlaceholderConfigurator<StringAreaBuilder>,
-		HasLabelConfigurator<StringAreaBuilder>, HasTitleConfigurator<StringAreaBuilder> {
+public interface StringAreaBuilder
+		extends InputBuilder<String, Input<String>, StringAreaBuilder>, TextInputConfigurator<StringAreaBuilder>,
+		HasSizeConfigurator<StringAreaBuilder>, HasStyleConfigurator<StringAreaBuilder>,
+		HasAutofocusConfigurator<StringAreaBuilder>, FocusableConfigurator<Component, StringAreaBuilder>,
+		HasPrefixAndSuffixConfigurator<StringAreaBuilder>, CompositionNotifierConfigurator<StringAreaBuilder>,
+		HasPlaceholderConfigurator<StringAreaBuilder>, HasLabelConfigurator<StringAreaBuilder>,
+		HasTitleConfigurator<StringAreaBuilder>, DeferrableLocalizationConfigurator<StringAreaBuilder> {
 
 	/**
 	 * Get a new {@link StringAreaBuilder} to create a {@link String} type {@link Input}.

@@ -15,21 +15,37 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.util.Optional;
+
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.dom.Element;
 
 /**
  * Represents and object which can be represented by a UI {@link Component}, which can be obtained using the
  * {@link #getComponent()} method.
  *
- * @since 5.0.5
+ * @since 5.2.0
  */
-public interface HasComponent {
+public interface HasComponent extends HasElement {
 
 	/**
 	 * Get the UI {@link Component} which represents this object.
 	 * @return the UI component (not null)
 	 */
 	Component getComponent();
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.vaadin.flow.component.HasElement#getElement()
+	 */
+	@Override
+	default Element getElement() {
+		return getComponent().getElement();
+	}
 
 	/**
 	 * Sets the component visibility value.
@@ -52,6 +68,33 @@ public interface HasComponent {
 	 */
 	default boolean isVisible() {
 		return getComponent().isVisible();
+	}
+
+	/**
+	 * Checks whether the {@link Component} may be enabled or disabled, using the {@link HasEnabled} interface.
+	 * @return If the component may be enabled or disabled, return the {@link HasEnabled} reference. An empty Optional
+	 *         otherwise.
+	 */
+	default Optional<HasEnabled> hasEnabled() {
+		return (getComponent() instanceof HasEnabled) ? Optional.of((HasEnabled) getComponent()) : Optional.empty();
+	}
+
+	/**
+	 * Checks whether the {@link Component} supports css style classes, using the {@link HasStyle} interface.
+	 * @return If the component supports css style classes, return the {@link HasStyle} reference. An empty Optional
+	 *         otherwise.
+	 */
+	default Optional<HasStyle> hasStyle() {
+		return (getComponent() instanceof HasStyle) ? Optional.of((HasStyle) getComponent()) : Optional.empty();
+	}
+
+	/**
+	 * Checks whether the {@link Component} supports size setting, using the {@link HasSize} interface.
+	 * @return If the component supports size setting, return the {@link HasSize} reference. An empty Optional
+	 *         otherwise.
+	 */
+	default Optional<HasSize> hasSize() {
+		return (getComponent() instanceof HasSize) ? Optional.of((HasSize) getComponent()) : Optional.empty();
 	}
 
 }

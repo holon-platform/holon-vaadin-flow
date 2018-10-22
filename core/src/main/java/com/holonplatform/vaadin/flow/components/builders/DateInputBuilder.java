@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Axioma srl.
+ * Copyright 2016-2018 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,31 +15,20 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.time.LocalDate;
+
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.vaadin.flow.component.Component;
 
 /**
- * Builder to create {@link Input} instances.
- * 
- * @param <T> Value type
- * @param <C> Input type
- * @param <B> Concrete builder type
+ * Builder to create {@link LocalDate} type {@link Input} components.
  * 
  * @since 5.2.0
  */
-public interface InputBuilder<T, C extends Input<T>, B extends InputBuilder<T, C, B>>
-		extends InputConfigurator<T, B> {
-
-	/**
-	 * Build and returns the {@link Input} instance.
-	 * @return the {@link Input} instance
-	 */
-	C build();
-
-	/**
-	 * Build a {@link ValidatableInput} component.
-	 * @return A {@link ValidatableInput} builder
-	 */
-	ValidatableInputBuilder<T, ValidatableInput<T>> validatable();
+public interface DateInputBuilder extends InputBuilder<String, Input<String>, DateInputBuilder>,
+		HasSizeConfigurator<DateInputBuilder>, HasStyleConfigurator<DateInputBuilder>,
+		HasAutofocusConfigurator<DateInputBuilder>, FocusableConfigurator<Component, DateInputBuilder>,
+		HasPlaceholderConfigurator<DateInputBuilder>, HasLabelConfigurator<DateInputBuilder>,
+		HasTitleConfigurator<DateInputBuilder>, DeferrableLocalizationConfigurator<DateInputBuilder> {
 
 }

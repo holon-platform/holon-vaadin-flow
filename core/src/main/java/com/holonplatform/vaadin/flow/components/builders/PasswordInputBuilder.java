@@ -24,13 +24,13 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface PasswordInputBuilder
-		extends InputBuilder<String, Input<String>, PasswordInputBuilder>, TextInputConfigurator<PasswordInputBuilder>,
-		HasSizeConfigurator<PasswordInputBuilder>, HasStyleConfigurator<PasswordInputBuilder>,
-		HasAutofocusConfigurator<PasswordInputBuilder>, FocusableConfigurator<Component, PasswordInputBuilder>,
-		HasPrefixAndSuffixConfigurator<PasswordInputBuilder>, CompositionNotifierConfigurator<PasswordInputBuilder>,
-		HasPlaceholderConfigurator<PasswordInputBuilder>, HasLabelConfigurator<PasswordInputBuilder>,
-		HasTitleConfigurator<PasswordInputBuilder>, HasPatternConfigurator<PasswordInputBuilder> {
+public interface PasswordInputBuilder extends InputBuilder<String, Input<String>, PasswordInputBuilder>,
+		TextInputConfigurator<PasswordInputBuilder>, HasSizeConfigurator<PasswordInputBuilder>,
+		HasStyleConfigurator<PasswordInputBuilder>, HasAutofocusConfigurator<PasswordInputBuilder>,
+		FocusableConfigurator<Component, PasswordInputBuilder>, HasPrefixAndSuffixConfigurator<PasswordInputBuilder>,
+		CompositionNotifierConfigurator<PasswordInputBuilder>, HasPlaceholderConfigurator<PasswordInputBuilder>,
+		HasLabelConfigurator<PasswordInputBuilder>, HasTitleConfigurator<PasswordInputBuilder>,
+		HasPatternConfigurator<PasswordInputBuilder>, DeferrableLocalizationConfigurator<PasswordInputBuilder> {
 
 	/**
 	 * Set to <code>false</code> to hide the eye icon which toggles the password visibility.

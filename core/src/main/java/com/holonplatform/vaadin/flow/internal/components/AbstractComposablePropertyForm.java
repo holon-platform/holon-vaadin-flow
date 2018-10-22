@@ -25,7 +25,7 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.HasComponent;
-import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.MayHaveLabel;
 import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
 import com.vaadin.flow.component.Component;
 
@@ -38,7 +38,7 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public abstract class AbstractComposablePropertyForm<C extends Component, PC extends HasComponent & HasLabel, S extends PropertyComponentSource>
+public abstract class AbstractComposablePropertyForm<C extends Component, PC extends HasComponent & MayHaveLabel, S extends PropertyComponentSource>
 		extends AbstractComposable<C, S> {
 
 	/**
@@ -86,21 +86,25 @@ public abstract class AbstractComposablePropertyForm<C extends Component, PC ext
 	 * @param component Component to configure
 	 */
 	protected void configurePropertyComponent(Property<?> property, PC component) {
-		if (hiddenPropertyCaptions.contains(property)) {
-			component.setLabel(null);
-		} else {
-			if (propertyCaptions.containsKey(property)) {
-				component.setLabel(LocalizationContext.translate(propertyCaptions.get(property), true));
-			} else {
-				if (component.getLabel() == null) {
-					// default behaviour
-					if (property.getMessage() != null) {
-						component.setLabel(LocalizationContext.translate(property, true));
+		if (component != null) {
+			component.hasLabel().ifPresent(hasLabel -> {
+				if (hiddenPropertyCaptions.contains(property)) {
+					hasLabel.setLabel(null);
+				} else {
+					if (propertyCaptions.containsKey(property)) {
+						hasLabel.setLabel(LocalizationContext.translate(propertyCaptions.get(property), true));
 					} else {
-						component.setLabel(property.getName());
+						if (hasLabel.getLabel() == null) {
+							// default behaviour
+							if (property.getMessage() != null) {
+								hasLabel.setLabel(LocalizationContext.translate(property, true));
+							} else {
+								hasLabel.setLabel(property.getName());
+							}
+						}
 					}
 				}
-			}
+			});
 		}
 	}
 

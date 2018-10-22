@@ -35,10 +35,12 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputFieldPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
+import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.converter.StringToBooleanConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
@@ -55,9 +57,55 @@ public class TestInput {
 	@Test
 	public void testBuilders() {
 
-		final TextArea ta = new TextArea();
+		final TextField field = new TextField();
 
-		Input<String> i = Input.from(ta);
+		HasValueInputBuilder<String> builder = Input.builder(field);
+		assertNotNull(builder);
+
+		builder = Input.builder(field, field);
+		assertNotNull(builder);
+
+		Input<String> i = Input.builder(field)
+				.requiredPropertyHandler(
+						PropertyHandler.create(() -> field.isRequired(), required -> field.setRequired(required)))
+				.build();
+		assertNotNull(i);
+
+		assertFalse(i.isRequired());
+		i.setRequired(true);
+		assertTrue(i.isRequired());
+		assertTrue(field.isRequired());
+		i.setRequired(false);
+		assertFalse(i.isRequired());
+		assertFalse(field.isRequired());
+
+		i = Input.builder(field)
+				.labelPropertyHandler(PropertyHandler.create(() -> field.getLabel(), label -> field.setLabel(label)))
+				.build();
+		assertNotNull(i);
+
+		assertTrue(i.hasLabel().isPresent());
+		i.hasLabel().ifPresent(t -> t.setLabel("test"));
+		assertEquals("test", field.getLabel());
+		assertEquals("test", ComponentTestUtils.getLabel(i));
+
+		i = Input.builder(field)
+				.titlePropertyHandler(PropertyHandler.create(() -> field.getTitle(), title -> field.setTitle(title)))
+				.build();
+		assertNotNull(i);
+
+		assertTrue(i.hasTitle().isPresent());
+		i.hasTitle().ifPresent(t -> t.setTitle("test"));
+		assertEquals("test", field.getTitle());
+		assertEquals("test", ComponentTestUtils.getTitle(i));
+	}
+
+	@Test
+	public void testAdapters() {
+
+		final TextField field = new TextField();
+
+		Input<String> i = Input.from(field);
 		assertNotNull(i);
 
 		assertFalse(i.isReadOnly());
@@ -71,7 +119,7 @@ public class TestInput {
 		assertEquals("test", i.getValue());
 		assertEquals("test", i.getValueIfPresent().orElse(null));
 
-		assertEquals(ta.getValue(), i.getValue());
+		assertEquals(field.getValue(), i.getValue());
 
 		i.clear();
 		assertTrue(i.isEmpty());
@@ -226,6 +274,52 @@ public class TestInput {
 		InputFieldPropertyRenderer<String, ComponentValueChangeEvent<TextField, String>, TextField> r2 = property -> new TextField();
 		i = r2.render(prp);
 		assertNotNull(i);
+
+	}
+
+	@Test
+	public void testHasEnabled() {
+
+		final TextField field = new TextField();
+
+		final Input<String> input = Input.from(field);
+		assertTrue(input.hasEnabled().isPresent());
+
+		assertTrue(input.hasEnabled().map(e -> e.isEnabled()).orElse(false));
+
+		input.hasEnabled().ifPresent(e -> e.setEnabled(false));
+		assertFalse(field.isEnabled());
+
+		input.hasEnabled().ifPresent(e -> e.setEnabled(true));
+		assertTrue(field.isEnabled());
+
+	}
+
+	@Test
+	public void testHasStyle() {
+
+		final TextField field = new TextField();
+
+		final Input<String> input = Input.from(field);
+		assertTrue(input.hasStyle().isPresent());
+
+		input.hasStyle().ifPresent(s -> s.addClassName("test-input"));
+		assertTrue(input.hasStyle().map(s -> s.getClassNames().contains("test-input")).orElse(false));
+		assertTrue(field.getClassNames().contains("test-input"));
+
+	}
+
+	@Test
+	public void testSize() {
+
+		final TextField field = new TextField();
+
+		final Input<String> input = Input.from(field);
+		assertTrue(input.hasSize().isPresent());
+
+		input.hasSize().ifPresent(s -> s.setWidth("77px"));
+		assertEquals("77px", input.hasSize().map(s -> s.getWidth()).orElse(null));
+		assertEquals("77px", field.getWidth());
 
 	}
 

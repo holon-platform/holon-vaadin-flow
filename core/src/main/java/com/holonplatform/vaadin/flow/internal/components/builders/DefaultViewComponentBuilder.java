@@ -75,7 +75,7 @@ public class DefaultViewComponentBuilder<T>
 		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
 		this.enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		this.labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(),
-				label -> getComponent().setLabel(label), this);
+				label -> getComponent().setLabelText(label), this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
 			getComponent().getElement().setAttribute("title", (title != null) ? title : "");
 		}, this);

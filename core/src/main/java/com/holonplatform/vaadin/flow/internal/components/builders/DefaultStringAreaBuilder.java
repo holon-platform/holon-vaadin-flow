@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.HasValueStringInput;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -34,8 +35,6 @@ import com.vaadin.flow.component.CompositionStartEvent;
 import com.vaadin.flow.component.CompositionUpdateEvent;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
-import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.InputEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyDownEvent;
@@ -109,8 +108,9 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	@Override
 	public Input<String> build() {
 		final TextArea component = getComponent();
-		final HasValueStringInput<?> input = new HasValueStringInput<>(component, () -> component.isRequired(),
-				required -> component.setRequired(required));
+		final HasValueStringInput input = new HasValueStringInput(component);
+		input.setRequiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required));
+		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
 		input.setEmptyValuesAsNull(emptyValuesAsNull);
 		input.setBlankValuesAsNull(blankValuesAsNull);
 		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
@@ -124,15 +124,6 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	@Override
 	public ValidatableInputBuilder<String, ValidatableInput<String>> validatable() {
 		return ValidatableInputBuilder.create(build());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#asField()
-	 */
-	@Override
-	public HasValue<? extends ValueChangeEvent<String>, String> asField() {
-		return getComponent();
 	}
 
 	/*
@@ -189,11 +180,11 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#requiredIndicatorVisible(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public StringAreaBuilder requiredIndicatorVisible(boolean requiredIndicatorVisible) {
-		getComponent().setRequiredIndicatorVisible(requiredIndicatorVisible);
+	public StringAreaBuilder required(boolean required) {
+		getComponent().setRequired(required);
 		return getConfigurator();
 	}
 

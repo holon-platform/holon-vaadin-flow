@@ -21,7 +21,10 @@ import java.util.Optional;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
 
-public class LocalizationTestUtils {
+public final class LocalizationTestUtils {
+
+	private LocalizationTestUtils() {
+	}
 
 	public static LocalizationContext getTestLocalizationContext() {
 		return LocalizationContext.builder().withInitialLocale(Locale.US).messageProvider((locale, code) -> {

@@ -19,6 +19,10 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.vaadin.flow.component.Component;
@@ -38,7 +42,7 @@ import com.vaadin.flow.data.converter.Converter;
  * 
  * @since 5.2.0
  */
-public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
+public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.
@@ -81,8 +85,6 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> Input<T> from(F field) {
 		return new HasValueInput<>(field);
 	}
-
-	// Converters
 
 	/**
 	 * Create a new {@link Input} from another {@link Input} with a different value type, using given {@link Converter}
@@ -142,6 +144,63 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V> {
 	static <E extends HasValue.ValueChangeEvent<V>, F extends Component & HasValue<E, V>, T, V> Input<T> from(F field,
 			Property<T> property, PropertyValueConverter<T, V> converter) {
 		return from(from(field), property, converter);
+	}
+
+	// Builders
+
+	/**
+	 * Get a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} {@link Component}
+	 * field instance.
+	 * @param <T> Value type
+	 * @param <E> ValueChangeEvent type
+	 * @param <H> Actual field type
+	 * @param field {@link HasValue} {@link Component} field (not null)
+	 * @return A new {@link HasValueInputBuilder}
+	 */
+	static <T, E extends HasValue.ValueChangeEvent<T>, H extends Component & HasValue<E, T>> HasValueInputBuilder<T> builder(
+			H field) {
+		return HasValueInputBuilder.create(field);
+	}
+
+	/**
+	 * et a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} and {@link Component}
+	 * field instances.
+	 * @param <T> Value type
+	 * @param <E> ValueChangeEvent type
+	 * @param field {@link HasValue} field (not null)
+	 * @param component Field {@link Component} (not null)
+	 * @return A new {@link HasValueInputBuilder}
+	 */
+	static <T, E extends HasValue.ValueChangeEvent<T>> HasValueInputBuilder<T> builder(HasValue<E, T> field,
+			Component component) {
+		return HasValueInputBuilder.create(field, component);
+	}
+
+	// Builders by type
+
+	/**
+	 * Gets a builder to a create {@link String} type {@link Input}.
+	 * @return A new {@link StringInputBuilder}
+	 */
+	static StringInputBuilder string() {
+		return StringInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create a multi-row {@link String} type {@link Input}.
+	 * @return A new {@link StringAreaBuilder}
+	 */
+	static StringAreaBuilder stringArea() {
+		return StringAreaBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link String} type {@link Input}s which do not display user input on screen, used to
+	 * enter secret text information, such as user passwords.
+	 * @return A new {@link PasswordInputBuilder}
+	 */
+	static PasswordInputBuilder password() {
+		return PasswordInputBuilder.create();
 	}
 
 	// Renderers

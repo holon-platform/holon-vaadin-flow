@@ -84,7 +84,7 @@ public class TestPropertyViewGroup {
 
 		group = PropertyViewGroup.builder().properties(ID, NAME).withPostProcessor((property, component) -> {
 			if (ID.equals(property)) {
-				component.setEnabled(false);
+				component.hasEnabled().ifPresent(e -> e.setEnabled(false));
 			}
 		}).build();
 
@@ -92,8 +92,8 @@ public class TestPropertyViewGroup {
 		assertTrue(group.hasProperty(NAME));
 		assertTrue(group.getViewComponent(ID).isPresent());
 		assertTrue(group.getViewComponent(ID).isPresent());
-		assertFalse(group.getViewComponent(ID).get().isEnabled());
-		assertTrue(group.getViewComponent(NAME).get().isEnabled());
+		assertFalse(group.getViewComponent(ID).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
+		assertTrue(group.getViewComponent(NAME).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
 
 	}
 

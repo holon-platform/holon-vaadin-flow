@@ -18,34 +18,34 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.holonplatform.vaadin.flow.internal.components.CallbackHasLabel;
+import com.holonplatform.vaadin.flow.internal.components.CallbackHasTitle;
 
 /**
- * Represents a component which supports a label.
+ * Represents a component which supports a <em>title</em>, i.e. a description of the UI element.
  *
  * @since 5.2.0
  */
-public interface HasLabel {
+public interface HasTitle {
 
 	/**
-	 * Get the component label.
-	 * @return The label text (may be null)
+	 * Get the component title.
+	 * @return The title text (may be null)
 	 */
-	String getLabel();
+	String getTitle();
 
 	/**
-	 * Set the component label.
-	 * @param label The label text to set
+	 * Set the component title.
+	 * @param title The title text to set
 	 */
-	void setLabel(String label);
+	void setTitle(String title);
 
 	/**
-	 * Create a new {@link HasLabel} using given callback functions to get and set the label text.
-	 * @param getter label text getter (not null)
-	 * @param setter label text setter (not null)
+	 * Create a new {@link HasTitle} using given callback functions to get and set the title text.
+	 * @param getter title text getter (not null)
+	 * @param setter title text setter (not null)
 	 */
-	static HasLabel create(Supplier<String> getter, Consumer<String> setter) {
-		return new CallbackHasLabel(getter, setter);
+	static HasTitle create(Supplier<String> getter, Consumer<String> setter) {
+		return new CallbackHasTitle(getter, setter);
 	}
 
 }

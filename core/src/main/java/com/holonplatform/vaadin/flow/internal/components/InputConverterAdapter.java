@@ -15,7 +15,11 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Optional;
+
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.component.Component;
@@ -125,6 +129,24 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public void setRequired(boolean required) {
 		input.setRequired(required);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveLabel#hasLabel()
+	 */
+	@Override
+	public Optional<HasLabel> hasLabel() {
+		return input.hasLabel();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveTitle#hasTitle()
+	 */
+	@Override
+	public Optional<HasTitle> hasTitle() {
+		return input.hasTitle();
 	}
 
 	/*
