@@ -175,6 +175,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	@Override
 	public StringAreaBuilder withValueChangeListener(ValueChangeListener<String> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

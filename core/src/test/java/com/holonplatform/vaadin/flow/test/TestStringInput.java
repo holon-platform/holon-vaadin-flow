@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -317,6 +318,56 @@ public class TestStringInput {
 	}
 
 	@Test
+	public void testReadOnly() {
+
+		Input<String> input = Input.string().build();
+		assertFalse(input.isReadOnly());
+
+		input = Input.string().readOnly(true).build();
+		assertTrue(input.isReadOnly());
+
+		input = Input.string().readOnly(false).build();
+		assertFalse(input.isReadOnly());
+
+		input = Input.string().readOnly().build();
+		assertTrue(input.isReadOnly());
+
+	}
+
+	@Test
+	public void testRequired() {
+
+		Input<String> input = Input.string().build();
+		assertFalse(input.isRequired());
+
+		input = Input.string().required(true).build();
+		assertTrue(input.isRequired());
+
+		input = Input.string().required(false).build();
+		assertFalse(input.isRequired());
+
+		input = Input.string().required().build();
+		assertTrue(input.isRequired());
+
+	}
+
+	@Test
+	public void testValueBuilder() {
+
+		Input<String> input = Input.string().withValue("test").build();
+		assertEquals("test", input.getValue());
+
+		final AtomicInteger fired = new AtomicInteger(0);
+
+		input = Input.string().withValueChangeListener(e -> fired.incrementAndGet()).build();
+		assertEquals(0, fired.get());
+
+		input.setValue("test");
+		assertEquals(1, fired.get());
+
+	}
+
+	@Test
 	public void testFocus() {
 
 		Input<String> input = Input.string().tabIndex(77).build();
@@ -329,6 +380,41 @@ public class TestStringInput {
 
 		input = Input.string().autofocus(true).build();
 		assertTrue(((TextField) input.getComponent()).isAutofocus());
+
+	}
+
+	@Test
+	public void testPlaceholder() {
+
+		Input<String> input = Input.string().placeholder(Localizable.builder().message("test").build()).build();
+		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
+
+		input = Input.string().placeholder("test").build();
+		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
+
+		input = Input.string().placeholder("test", "test.code").build();
+		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
+
+		input = Input.string().placeholder("test", "test.code", "arg").build();
+		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Input<String> input2 = Input.string()
+					.placeholder(Localizable.builder().message("test").messageCode("test.code").build()).build();
+			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Input<String> input2 = Input.string().placeholder("test", "test.code").build();
+			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
+		});
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			Input<String> input2 = Input.string().deferLocalization().placeholder("test", "test.code").build();
+			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			ComponentUtil.onComponentAttach(input2.getComponent(), true);
+			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
+		});
 
 	}
 

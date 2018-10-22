@@ -176,6 +176,7 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 	@Override
 	public StringInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

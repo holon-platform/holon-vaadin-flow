@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
@@ -65,6 +66,20 @@ public interface HasValueInputBuilder<T> extends InputBuilder<T, Input<T>, HasVa
 	 * @return this
 	 */
 	HasValueInputBuilder<T> titlePropertyHandler(PropertyHandler<String> titlePropertyHandler);
+
+	/**
+	 * Provide the {@link PropertyHandler} to use to get and set the <em>placeholder</em> property value.
+	 * <p>
+	 * This handler will be used to provide the {@link HasPlaceholder} implementation returned by the
+	 * {@link Input#hasPlaceholder()} method.
+	 * </p>
+	 * @param placeholderPropertyHandler The {@link PropertyHandler} to use to get and set the <em>placeholder</em>
+	 *        property value
+	 * @return this
+	 */
+	HasValueInputBuilder<T> placeholderPropertyHandler(PropertyHandler<String> placeholderPropertyHandler);
+
+	// statics
 
 	/**
 	 * Create a new {@link HasValueInputBuilder} using given {@link HasValue} {@link Component} field instance.

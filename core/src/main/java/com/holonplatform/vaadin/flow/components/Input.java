@@ -42,7 +42,7 @@ import com.vaadin.flow.data.converter.Converter;
  * 
  * @since 5.2.0
  */
-public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle {
+public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle, MayHavePlaceholder {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.

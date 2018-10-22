@@ -98,6 +98,16 @@ public class TestInput {
 		i.hasTitle().ifPresent(t -> t.setTitle("test"));
 		assertEquals("test", field.getTitle());
 		assertEquals("test", ComponentTestUtils.getTitle(i));
+
+		i = Input.builder(field).placeholderPropertyHandler(
+				PropertyHandler.create(() -> field.getPlaceholder(), placeholder -> field.setPlaceholder(placeholder)))
+				.build();
+		assertNotNull(i);
+
+		assertTrue(i.hasPlaceholder().isPresent());
+		i.hasPlaceholder().ifPresent(t -> t.setPlaceholder("test"));
+		assertEquals("test", field.getPlaceholder());
+		assertEquals("test", ComponentTestUtils.getPlaceholder(i));
 	}
 
 	@Test

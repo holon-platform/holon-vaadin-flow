@@ -24,6 +24,7 @@ import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.beans.Validators;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -132,6 +133,15 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	@Override
 	public Optional<HasTitle> hasTitle() {
 		return input.hasTitle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHavePlaceholder#hasPlaceholder()
+	 */
+	@Override
+	public Optional<HasPlaceholder> hasPlaceholder() {
+		return input.hasPlaceholder();
 	}
 
 	/*

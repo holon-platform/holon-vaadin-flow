@@ -176,6 +176,7 @@ public class DefaultPasswordInputBuilder extends
 	@Override
 	public PasswordInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

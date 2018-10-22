@@ -20,6 +20,7 @@ import java.util.Set;
 
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.MayHaveLabel;
+import com.holonplatform.vaadin.flow.components.MayHavePlaceholder;
 import com.holonplatform.vaadin.flow.components.MayHaveTitle;
 
 public final class ComponentTestUtils {
@@ -47,9 +48,13 @@ public final class ComponentTestUtils {
 	public static String getLabel(MayHaveLabel component) {
 		return component.hasLabel().map(c -> c.getLabel()).orElse(null);
 	}
-	
+
 	public static String getTitle(MayHaveTitle component) {
 		return component.hasTitle().map(c -> c.getTitle()).orElse(null);
+	}
+
+	public static String getPlaceholder(MayHavePlaceholder component) {
+		return component.hasPlaceholder().map(c -> c.getPlaceholder()).orElse(null);
 	}
 
 }

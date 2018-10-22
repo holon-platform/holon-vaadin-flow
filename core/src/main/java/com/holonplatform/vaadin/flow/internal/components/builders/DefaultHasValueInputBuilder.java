@@ -173,4 +173,15 @@ public class DefaultHasValueInputBuilder<T> extends AbstractComponentConfigurato
 		return getConfigurator();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder#placeholderPropertyHandler(com.
+	 * holonplatform.vaadin.flow.components.support.PropertyHandler)
+	 */
+	@Override
+	public HasValueInputBuilder<T> placeholderPropertyHandler(PropertyHandler<String> placeholderPropertyHandler) {
+		getInstance().setPlaceholderPropertyHandler(placeholderPropertyHandler);
+		return getConfigurator();
+	}
+
 }

@@ -19,24 +19,24 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.components.HasTitle;
+import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 
 /**
- * {@link HasTitle} implementation using callback functions to get and set the title text.
+ * {@link HasPlaceholder} implementation using callback functions to get and set the placeholder text.
  *
  * @since 5.2.0
  */
-public class CallbackHasTitle implements HasTitle {
+public class CallbackHasPlaceholder implements HasPlaceholder {
 
 	private final Supplier<String> getter;
 	private final Consumer<String> setter;
 
 	/**
 	 * Constructor.
-	 * @param getter label text supplier (not null)
-	 * @param setter label text consumer (not null)
+	 * @param getter placeholder text supplier (not null)
+	 * @param setter placeholder text consumer (not null)
 	 */
-	public CallbackHasTitle(Supplier<String> getter, Consumer<String> setter) {
+	public CallbackHasPlaceholder(Supplier<String> getter, Consumer<String> setter) {
 		super();
 		ObjectUtils.argumentNotNull(getter, "The label text supplier must be not null");
 		ObjectUtils.argumentNotNull(setter, "The label text consumer must be not null");
@@ -46,20 +46,20 @@ public class CallbackHasTitle implements HasTitle {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.HasTitle#getTitle()
+	 * @see com.holonplatform.vaadin.flow.components.HasPlaceholder#getPlaceholder()
 	 */
 	@Override
-	public String getTitle() {
+	public String getPlaceholder() {
 		return getter.get();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.HasTitle#setTitle(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.HasPlaceholder#setPlaceholder(java.lang.String)
 	 */
 	@Override
-	public void setTitle(String title) {
-		this.setter.accept(title);
+	public void setPlaceholder(String placeholder) {
+		this.setter.accept(placeholder);
 	}
 
 }

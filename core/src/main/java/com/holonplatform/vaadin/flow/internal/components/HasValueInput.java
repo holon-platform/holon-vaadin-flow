@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
@@ -61,6 +62,7 @@ public class HasValueInput<T> implements Input<T> {
 	private PropertyHandler<Boolean> requiredPropertyHandler;
 	private PropertyHandler<String> labelPropertyHandler;
 	private PropertyHandler<String> titlePropertyHandler;
+	private PropertyHandler<String> placeholderPropertyHandler;
 
 	/**
 	 * Constructor using a {@link HasValue} and {@link Component} field instance.
@@ -87,6 +89,7 @@ public class HasValueInput<T> implements Input<T> {
 		this.requiredPropertyHandler = tryToObtainRequiredPropertyHandler(component);
 		this.labelPropertyHandler = tryToObtainLabelPropertyHandler(component);
 		this.titlePropertyHandler = tryToObtainTitlePropertyHandler(component);
+		this.placeholderPropertyHandler = tryToObtainPlaceholderPropertyHandler(component);
 	}
 
 	/**
@@ -162,6 +165,31 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	public void setTitlePropertyHandler(PropertyHandler<String> titlePropertyHandler) {
 		this.titlePropertyHandler = titlePropertyHandler;
+	}
+
+	/**
+	 * Get the <code>placeholder</code> property handler, if available.
+	 * @return Optional required property handler
+	 */
+	public Optional<PropertyHandler<String>> getPlaceholderPropertyHandler() {
+		return Optional.ofNullable(placeholderPropertyHandler);
+	}
+
+	/**
+	 * Set the <code>placeholder</code> property handler using given callback functions.
+	 * @param getter The {@link Supplier} to use to get the <code>placeholder</code> property value (not null)
+	 * @param setter The {@link Consumer} to use to set the <code>placeholder</code> property value (not null)
+	 */
+	public void setPlaceholderPropertyHandler(Supplier<String> getter, Consumer<String> setter) {
+		setPlaceholderPropertyHandler(PropertyHandler.create(getter, setter));
+	}
+
+	/**
+	 * Set the <code>placeholder</code> property handler.
+	 * @param placeholderPropertyHandler the property handler to set
+	 */
+	public void setPlaceholderPropertyHandler(PropertyHandler<String> placeholderPropertyHandler) {
+		this.placeholderPropertyHandler = placeholderPropertyHandler;
 	}
 
 	/**
@@ -290,6 +318,15 @@ public class HasValueInput<T> implements Input<T> {
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHavePlaceholder#hasPlaceholder()
+	 */
+	@Override
+	public Optional<HasPlaceholder> hasPlaceholder() {
+		return getPlaceholderPropertyHandler().map(h -> HasPlaceholder.create(h, h));
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.Input#focus()
 	 */
 	@Override
@@ -376,6 +413,36 @@ public class HasValueInput<T> implements Input<T> {
 		if (component instanceof DatePicker) {
 			return PropertyHandler.<String>create(() -> ((DatePicker) component).getLabel(),
 					label -> ((DatePicker) component).setLabel(label));
+		}
+		return null;
+	}
+
+	/**
+	 * Try to obtain a default <code>placeholder</code> {@link PropertyHandler} using given component.
+	 * @param component The component
+	 * @return A default <code>placeholder</code> {@link PropertyHandler} for given component, or <code>null</code> if
+	 *         not available
+	 */
+	private static PropertyHandler<String> tryToObtainPlaceholderPropertyHandler(final Component component) {
+		if (component instanceof TextField) {
+			return PropertyHandler.<String>create(() -> ((TextField) component).getPlaceholder(),
+					placeholder -> ((TextField) component).setPlaceholder(placeholder));
+		}
+		if (component instanceof TextArea) {
+			return PropertyHandler.<String>create(() -> ((TextArea) component).getPlaceholder(),
+					placeholder -> ((TextArea) component).setPlaceholder(placeholder));
+		}
+		if (component instanceof PasswordField) {
+			return PropertyHandler.<String>create(() -> ((PasswordField) component).getPlaceholder(),
+					placeholder -> ((PasswordField) component).setPlaceholder(placeholder));
+		}
+		if (component instanceof ComboBox) {
+			return PropertyHandler.<String>create(() -> ((ComboBox<?>) component).getPlaceholder(),
+					placeholder -> ((ComboBox<?>) component).setPlaceholder(placeholder));
+		}
+		if (component instanceof DatePicker) {
+			return PropertyHandler.<String>create(() -> ((DatePicker) component).getPlaceholder(),
+					placeholder -> ((DatePicker) component).setPlaceholder(placeholder));
 		}
 		return null;
 	}
