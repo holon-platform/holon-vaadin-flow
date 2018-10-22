@@ -36,7 +36,18 @@ import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.textfield.Autocapitalize;
+import com.vaadin.flow.component.textfield.Autocomplete;
+import com.vaadin.flow.component.textfield.HasAutocapitalize;
+import com.vaadin.flow.component.textfield.HasAutocomplete;
+import com.vaadin.flow.component.textfield.HasAutocorrect;
+import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.HasValueChangeMode;
+import com.vaadin.flow.data.value.ValueChangeMode;
 
 public class TestStringInput {
 
@@ -214,7 +225,7 @@ public class TestStringInput {
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testText() {
+	public void testLabel() {
 
 		Input<String> input = Input.string().label(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
@@ -261,7 +272,7 @@ public class TestStringInput {
 	}
 
 	@Test
-	public void testDescription() {
+	public void testTitle() {
 
 		Input<String> input = Input.string().title(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
@@ -416,6 +427,118 @@ public class TestStringInput {
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
 
+	}
+
+	@Test
+	public void testPattern() {
+
+		Input<String> input = Input.string().pattern("[0-9]*").build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
+
+		input = Input.string().pattern("[0-9]*").preventInvalidInput(true).build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
+		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
+
+		input = Input.string().pattern("[0-9]*").preventInvalidInput().build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
+
+	}
+
+	@Test
+	public void testPrefixAndSuffix() {
+
+		final Icon prefix = VaadinIcon.PICTURE.create();
+		final Button suffix = new Button("suffix");
+
+		Input<String> input = Input.string().prefixComponent(prefix).suffixComponent(suffix).build();
+		assertTrue(input.getComponent() instanceof HasPrefixAndSuffix);
+		assertEquals(prefix, ((HasPrefixAndSuffix) input.getComponent()).getPrefixComponent());
+		assertEquals(suffix, ((HasPrefixAndSuffix) input.getComponent()).getSuffixComponent());
+
+	}
+
+	@Test
+	public void testTextInput() {
+
+		Input<String> input = Input.string().valueChangeMode(ValueChangeMode.ON_BLUR).build();
+		assertTrue(input.getComponent() instanceof HasValueChangeMode);
+		assertEquals(ValueChangeMode.ON_BLUR, ((HasValueChangeMode) input.getComponent()).getValueChangeMode());
+
+		input = Input.string().autocomplete(Autocomplete.USERNAME).build();
+		assertTrue(input.getComponent() instanceof HasAutocomplete);
+		assertEquals(Autocomplete.USERNAME, ((HasAutocomplete) input.getComponent()).getAutocomplete());
+
+		input = Input.string().autocapitalize(Autocapitalize.WORDS).build();
+		assertTrue(input.getComponent() instanceof HasAutocapitalize);
+		assertEquals(Autocapitalize.WORDS, ((HasAutocapitalize) input.getComponent()).getAutocapitalize());
+
+		input = Input.string().autocorrect(true).build();
+		assertTrue(input.getComponent() instanceof HasAutocorrect);
+		assertTrue(((HasAutocorrect) input.getComponent()).isAutocorrect());
+
+		input = Input.string().minLength(7).build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertEquals(7, ((TextField) input.getComponent()).getMinLength());
+
+		input = Input.string().maxLength(77).build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertEquals(77, ((TextField) input.getComponent()).getMaxLength());
+
+	}
+	
+	@Test
+	public void testTextInputValues() {
+		
+		Input<String> input = Input.string().emptyValuesAsNull(false).blankValuesAsNull(false).build();
+		assertEquals("", input.getValue());
+		input.setValue(null);
+		assertEquals("", input.getValue());
+		
+		input = Input.string().emptyValuesAsNull(true).blankValuesAsNull(false).build();
+		assertNull(input.getValue());
+		input.setValue(null);
+		assertNull(input.getValue());
+		input.setValue("");
+		assertNull(input.getValue());
+		input.setValue(" ");
+		assertNotNull(input.getValue());
+		
+		input = Input.string().blankValuesAsNull(true).build();
+		assertNull(input.getValue());
+		input.setValue(null);
+		assertNull(input.getValue());
+		input.setValue("");
+		assertNull(input.getValue());
+		input.setValue(" ");
+		assertNull(input.getValue());
+		
+	}
+	
+	@Test
+	public void testHasValue() {
+		
+		Input<String> input = Input.string().build();
+		assertNull(input.getValue());
+		assertFalse(input.getValueIfPresent().isPresent());
+		assertTrue(input.isEmpty());
+		
+		input.setValue(null);
+		assertNull(input.getValue());
+		assertFalse(input.getValueIfPresent().isPresent());
+		
+		input.setValue("test");
+		assertEquals("test", input.getValue());
+		assertTrue(input.getValueIfPresent().isPresent());
+		assertEquals("test", input.getValueIfPresent().orElse(null));
+		
+		input.clear();
+		assertNull(input.getValue());
+		assertFalse(input.getValueIfPresent().isPresent());
+		assertTrue(input.isEmpty());
+		
 	}
 
 }

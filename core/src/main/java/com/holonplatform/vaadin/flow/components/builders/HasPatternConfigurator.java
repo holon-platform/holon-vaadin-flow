@@ -40,4 +40,13 @@ public interface HasPatternConfigurator<C extends HasPatternConfigurator<C>> {
 	 */
 	C preventInvalidInput(boolean preventInvalidInput);
 
+	/**
+	 * Set that the user is prevented from typing a value that conflicts with the pattern configured through
+	 * {@link #pattern(String)}.
+	 * @return this
+	 */
+	default C preventInvalidInput() {
+		return preventInvalidInput(true);
+	}
+
 }
