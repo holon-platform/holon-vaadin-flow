@@ -21,7 +21,7 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
@@ -188,10 +188,10 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 
 	/**
 	 * Gets a builder to create a multi-row {@link String} type {@link Input}.
-	 * @return A new {@link StringAreaBuilder}
+	 * @return A new {@link StringAreaInputBuilder}
 	 */
-	static StringAreaBuilder stringArea() {
-		return StringAreaBuilder.create();
+	static StringAreaInputBuilder stringArea() {
+		return StringAreaInputBuilder.create();
 	}
 
 	/**

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
@@ -43,26 +43,31 @@ import com.vaadin.flow.component.textfield.HasAutocapitalize;
 import com.vaadin.flow.component.textfield.HasAutocomplete;
 import com.vaadin.flow.component.textfield.HasAutocorrect;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-public class TestStringInput {
+public class TestPasswordInput {
 
 	@Test
 	public void testBuilders() {
 
-		StringInputBuilder builder = StringInputBuilder.create();
+		PasswordInputBuilder builder = PasswordInputBuilder.create();
 		assertNotNull(builder);
 		Input<String> input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.string();
+		builder = Input.password();
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.string();
+		builder = Components.input.password();
+		assertNotNull(builder);
+		input = builder.build();
+		assertNotNull(input);
+
+		builder = Components.input.secretString();
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -72,27 +77,27 @@ public class TestStringInput {
 	@Test
 	public void testComponent() {
 
-		Input<String> input = Input.string().id("testid").build();
+		Input<String> input = Input.password().id("testid").build();
 		assertNotNull(input.getComponent());
 
 		assertTrue(input.getComponent().getId().isPresent());
 		assertEquals("testid", input.getComponent().getId().get());
 
-		input = Input.string().build();
+		input = Input.password().build();
 		assertTrue(input.isVisible());
 
-		input = Input.string().visible(true).build();
+		input = Input.password().visible(true).build();
 		assertTrue(input.isVisible());
 
-		input = Input.string().visible(false).build();
+		input = Input.password().visible(false).build();
 		assertFalse(input.isVisible());
 
-		input = Input.string().hidden().build();
+		input = Input.password().hidden().build();
 		assertFalse(input.isVisible());
 
 		final AtomicBoolean attached = new AtomicBoolean(false);
 
-		input = Input.string().withAttachListener(e -> {
+		input = Input.password().withAttachListener(e -> {
 			attached.set(true);
 		}).build();
 
@@ -101,7 +106,7 @@ public class TestStringInput {
 
 		final AtomicBoolean detached = new AtomicBoolean(false);
 
-		input = Input.string().withDetachListener(e -> {
+		input = Input.password().withDetachListener(e -> {
 			detached.set(true);
 		}).build();
 
@@ -112,11 +117,11 @@ public class TestStringInput {
 	@Test
 	public void testStyles() {
 
-		Input<String> input = Input.string().styleName("test").build();
+		Input<String> input = Input.password().styleName("test").build();
 		assertNotNull(input);
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test"));
 
-		input = Input.string().styleNames("test1", "test2").build();
+		input = Input.password().styleNames("test1", "test2").build();
 		assertNotNull(input);
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test1"));
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test2"));
@@ -126,45 +131,45 @@ public class TestStringInput {
 	@Test
 	public void testSize() {
 
-		Input<String> input = Input.string().width("50em").build();
+		Input<String> input = Input.password().width("50em").build();
 		assertEquals("50em", ComponentTestUtils.getWidth(input));
 
-		input = Input.string().width(50, Unit.EM).build();
+		input = Input.password().width(50, Unit.EM).build();
 		assertEquals("50em", ComponentTestUtils.getWidth(input));
 
-		input = Input.string().width(50.7f, Unit.EM).build();
+		input = Input.password().width(50.7f, Unit.EM).build();
 		assertEquals("50.7em", ComponentTestUtils.getWidth(input));
 
-		input = Input.string().height("50em").build();
+		input = Input.password().height("50em").build();
 		assertEquals("50em", ComponentTestUtils.getHeight(input));
 
-		input = Input.string().height(50, Unit.EM).build();
+		input = Input.password().height(50, Unit.EM).build();
 		assertEquals("50em", ComponentTestUtils.getHeight(input));
 
-		input = Input.string().height(50.7f, Unit.EM).build();
+		input = Input.password().height(50.7f, Unit.EM).build();
 		assertEquals("50.7em", ComponentTestUtils.getHeight(input));
 
-		input = Input.string().width("50%").height("100%").build();
+		input = Input.password().width("50%").height("100%").build();
 		assertEquals("50%", ComponentTestUtils.getWidth(input));
 		assertEquals("100%", ComponentTestUtils.getHeight(input));
 
-		input = Input.string().widthUndefined().build();
+		input = Input.password().widthUndefined().build();
 		assertNull(ComponentTestUtils.getWidth(input));
 
-		input = Input.string().heightUndefined().build();
+		input = Input.password().heightUndefined().build();
 		assertNull(ComponentTestUtils.getHeight(input));
 
-		input = Input.string().sizeUndefined().build();
+		input = Input.password().sizeUndefined().build();
 		assertNull(ComponentTestUtils.getWidth(input));
 		assertNull(ComponentTestUtils.getHeight(input));
 
-		input = Input.string().fullWidth().build();
+		input = Input.password().fullWidth().build();
 		assertEquals("100%", ComponentTestUtils.getWidth(input));
 
-		input = Input.string().fullHeight().build();
+		input = Input.password().fullHeight().build();
 		assertEquals("100%", ComponentTestUtils.getHeight(input));
 
-		input = Input.string().fullSize().build();
+		input = Input.password().fullSize().build();
 		assertEquals("100%", ComponentTestUtils.getWidth(input));
 		assertEquals("100%", ComponentTestUtils.getHeight(input));
 
@@ -173,16 +178,16 @@ public class TestStringInput {
 	@Test
 	public void testEnabled() {
 
-		Input<String> input = Input.string().build();
+		Input<String> input = Input.password().build();
 		assertTrue(ComponentTestUtils.isEnabled(input));
 
-		input = Input.string().enabled(true).build();
+		input = Input.password().enabled(true).build();
 		assertTrue(ComponentTestUtils.isEnabled(input));
 
-		input = Input.string().enabled(false).build();
+		input = Input.password().enabled(false).build();
 		assertFalse(ComponentTestUtils.isEnabled(input));
 
-		input = Input.string().disabled().build();
+		input = Input.password().disabled().build();
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
@@ -190,43 +195,43 @@ public class TestStringInput {
 	@Test
 	public void testLabel() {
 
-		Input<String> input = Input.string().label(Localizable.builder().message("test").build()).build();
+		Input<String> input = Input.password().label(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().label("test").build();
+		input = Input.password().label("test").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().label("test", "test.code").build();
+		input = Input.password().label("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().label("test", "test.code", "arg").build();
+		input = Input.password().label("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().caption(Localizable.builder().message("test").build()).build();
+		input = Input.password().caption(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().caption("test").build();
+		input = Input.password().caption("test").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().caption("test", "test.code").build();
+		input = Input.password().caption("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.string().caption("test", "test.code", "arg").build();
+		input = Input.password().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string()
+			Input<String> input2 = Input.password()
 					.label(Localizable.builder().message("test").messageCode("test.code").build()).build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().label("test", "test.code").build();
+			Input<String> input2 = Input.password().label("test", "test.code").build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().deferLocalization().label("test", "test.code").build();
+			Input<String> input2 = Input.password().deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
@@ -237,50 +242,50 @@ public class TestStringInput {
 	@Test
 	public void testTitle() {
 
-		Input<String> input = Input.string().title(Localizable.builder().message("test").build()).build();
+		Input<String> input = Input.password().title(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().title("test").build();
+		input = Input.password().title("test").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().title("test", "test.code").build();
+		input = Input.password().title("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().title("test", "test.code", "arg").build();
+		input = Input.password().title("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().description(Localizable.builder().message("test").build()).build();
+		input = Input.password().description(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().description("test").build();
+		input = Input.password().description("test").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().description("test", "test.code").build();
+		input = Input.password().description("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
-		input = Input.string().description("test", "test.code", "arg").build();
+		input = Input.password().description("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getTitle(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string()
+			Input<String> input2 = Input.password()
 					.title(Localizable.builder().message("test").messageCode("test.code").build()).build();
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().title("test", "test.code").build();
+			Input<String> input2 = Input.password().title("test", "test.code").build();
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().deferLocalization().title("test", "test.code").build();
+			Input<String> input2 = Input.password().deferLocalization().title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().withDeferredLocalization(true).label("test", "test.code")
+			Input<String> input2 = Input.password().withDeferredLocalization(true).label("test", "test.code")
 					.title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
@@ -294,16 +299,16 @@ public class TestStringInput {
 	@Test
 	public void testReadOnly() {
 
-		Input<String> input = Input.string().build();
+		Input<String> input = Input.password().build();
 		assertFalse(input.isReadOnly());
 
-		input = Input.string().readOnly(true).build();
+		input = Input.password().readOnly(true).build();
 		assertTrue(input.isReadOnly());
 
-		input = Input.string().readOnly(false).build();
+		input = Input.password().readOnly(false).build();
 		assertFalse(input.isReadOnly());
 
-		input = Input.string().readOnly().build();
+		input = Input.password().readOnly().build();
 		assertTrue(input.isReadOnly());
 
 	}
@@ -311,16 +316,16 @@ public class TestStringInput {
 	@Test
 	public void testRequired() {
 
-		Input<String> input = Input.string().build();
+		Input<String> input = Input.password().build();
 		assertFalse(input.isRequired());
 
-		input = Input.string().required(true).build();
+		input = Input.password().required(true).build();
 		assertTrue(input.isRequired());
 
-		input = Input.string().required(false).build();
+		input = Input.password().required(false).build();
 		assertFalse(input.isRequired());
 
-		input = Input.string().required().build();
+		input = Input.password().required().build();
 		assertTrue(input.isRequired());
 
 	}
@@ -328,12 +333,12 @@ public class TestStringInput {
 	@Test
 	public void testValueBuilder() {
 
-		Input<String> input = Input.string().withValue("test").build();
+		Input<String> input = Input.password().withValue("test").build();
 		assertEquals("test", input.getValue());
 
 		final AtomicInteger fired = new AtomicInteger(0);
 
-		input = Input.string().withValueChangeListener(e -> fired.incrementAndGet()).build();
+		input = Input.password().withValueChangeListener(e -> fired.incrementAndGet()).build();
 		assertEquals(0, fired.get());
 
 		input.setValue("test");
@@ -344,47 +349,47 @@ public class TestStringInput {
 	@Test
 	public void testFocus() {
 
-		Input<String> input = Input.string().tabIndex(77).build();
-		assertTrue(input.getComponent() instanceof TextField);
+		Input<String> input = Input.password().tabIndex(77).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
 
-		assertEquals(77, ((TextField) input.getComponent()).getTabIndex());
+		assertEquals(77, ((PasswordField) input.getComponent()).getTabIndex());
 
-		input = Input.string().autofocus(false).build();
-		assertFalse(((TextField) input.getComponent()).isAutofocus());
+		input = Input.password().autofocus(false).build();
+		assertFalse(((PasswordField) input.getComponent()).isAutofocus());
 
-		input = Input.string().autofocus(true).build();
-		assertTrue(((TextField) input.getComponent()).isAutofocus());
+		input = Input.password().autofocus(true).build();
+		assertTrue(((PasswordField) input.getComponent()).isAutofocus());
 
 	}
 
 	@Test
 	public void testPlaceholder() {
 
-		Input<String> input = Input.string().placeholder(Localizable.builder().message("test").build()).build();
+		Input<String> input = Input.password().placeholder(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
 
-		input = Input.string().placeholder("test").build();
+		input = Input.password().placeholder("test").build();
 		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
 
-		input = Input.string().placeholder("test", "test.code").build();
+		input = Input.password().placeholder("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
 
-		input = Input.string().placeholder("test", "test.code", "arg").build();
+		input = Input.password().placeholder("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getPlaceholder(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string()
+			Input<String> input2 = Input.password()
 					.placeholder(Localizable.builder().message("test").messageCode("test.code").build()).build();
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().placeholder("test", "test.code").build();
+			Input<String> input2 = Input.password().placeholder("test", "test.code").build();
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.string().deferLocalization().placeholder("test", "test.code").build();
+			Input<String> input2 = Input.password().deferLocalization().placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
@@ -395,18 +400,18 @@ public class TestStringInput {
 	@Test
 	public void testPattern() {
 
-		Input<String> input = Input.string().pattern("[0-9]*").build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
+		Input<String> input = Input.password().pattern("[0-9]*").build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertEquals("[0-9]*", ((PasswordField) input.getComponent()).getPattern());
 
-		input = Input.string().pattern("[0-9]*").preventInvalidInput(true).build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
-		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
+		input = Input.password().pattern("[0-9]*").preventInvalidInput(true).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertEquals("[0-9]*", ((PasswordField) input.getComponent()).getPattern());
+		assertTrue(((PasswordField) input.getComponent()).isPreventInvalidInput());
 
-		input = Input.string().pattern("[0-9]*").preventInvalidInput().build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
+		input = Input.password().pattern("[0-9]*").preventInvalidInput().build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertTrue(((PasswordField) input.getComponent()).isPreventInvalidInput());
 
 	}
 
@@ -416,7 +421,7 @@ public class TestStringInput {
 		final Icon prefix = VaadinIcon.PICTURE.create();
 		final Button suffix = new Button("suffix");
 
-		Input<String> input = Input.string().prefixComponent(prefix).suffixComponent(suffix).build();
+		Input<String> input = Input.password().prefixComponent(prefix).suffixComponent(suffix).build();
 		assertTrue(input.getComponent() instanceof HasPrefixAndSuffix);
 		assertEquals(prefix, ((HasPrefixAndSuffix) input.getComponent()).getPrefixComponent());
 		assertEquals(suffix, ((HasPrefixAndSuffix) input.getComponent()).getSuffixComponent());
@@ -426,41 +431,41 @@ public class TestStringInput {
 	@Test
 	public void testTextInput() {
 
-		Input<String> input = Input.string().valueChangeMode(ValueChangeMode.ON_BLUR).build();
+		Input<String> input = Input.password().valueChangeMode(ValueChangeMode.ON_BLUR).build();
 		assertTrue(input.getComponent() instanceof HasValueChangeMode);
 		assertEquals(ValueChangeMode.ON_BLUR, ((HasValueChangeMode) input.getComponent()).getValueChangeMode());
 
-		input = Input.string().autocomplete(Autocomplete.USERNAME).build();
+		input = Input.password().autocomplete(Autocomplete.USERNAME).build();
 		assertTrue(input.getComponent() instanceof HasAutocomplete);
 		assertEquals(Autocomplete.USERNAME, ((HasAutocomplete) input.getComponent()).getAutocomplete());
 
-		input = Input.string().autocapitalize(Autocapitalize.WORDS).build();
+		input = Input.password().autocapitalize(Autocapitalize.WORDS).build();
 		assertTrue(input.getComponent() instanceof HasAutocapitalize);
 		assertEquals(Autocapitalize.WORDS, ((HasAutocapitalize) input.getComponent()).getAutocapitalize());
 
-		input = Input.string().autocorrect(true).build();
+		input = Input.password().autocorrect(true).build();
 		assertTrue(input.getComponent() instanceof HasAutocorrect);
 		assertTrue(((HasAutocorrect) input.getComponent()).isAutocorrect());
 
-		input = Input.string().minLength(7).build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertEquals(7, ((TextField) input.getComponent()).getMinLength());
+		input = Input.password().minLength(7).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertEquals(7, ((PasswordField) input.getComponent()).getMinLength());
 
-		input = Input.string().maxLength(77).build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertEquals(77, ((TextField) input.getComponent()).getMaxLength());
+		input = Input.password().maxLength(77).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertEquals(77, ((PasswordField) input.getComponent()).getMaxLength());
 
 	}
-	
+
 	@Test
 	public void testTextInputValues() {
-		
-		Input<String> input = Input.string().emptyValuesAsNull(false).blankValuesAsNull(false).build();
+
+		Input<String> input = Input.password().emptyValuesAsNull(false).blankValuesAsNull(false).build();
 		assertEquals("", input.getValue());
 		input.setValue(null);
 		assertEquals("", input.getValue());
-		
-		input = Input.string().emptyValuesAsNull(true).blankValuesAsNull(false).build();
+
+		input = Input.password().emptyValuesAsNull(true).blankValuesAsNull(false).build();
 		assertNull(input.getValue());
 		input.setValue(null);
 		assertNull(input.getValue());
@@ -468,8 +473,8 @@ public class TestStringInput {
 		assertNull(input.getValue());
 		input.setValue(" ");
 		assertNotNull(input.getValue());
-		
-		input = Input.string().blankValuesAsNull(true).build();
+
+		input = Input.password().blankValuesAsNull(true).build();
 		assertNull(input.getValue());
 		input.setValue(null);
 		assertNull(input.getValue());
@@ -477,33 +482,46 @@ public class TestStringInput {
 		assertNull(input.getValue());
 		input.setValue(" ");
 		assertNull(input.getValue());
-		
+
 	}
-	
+
 	@Test
 	public void testHasValue() {
-		
-		Input<String> input = Input.string().build();
+
+		Input<String> input = Input.password().build();
 		assertEquals("", input.getEmptyValue());
-		
+
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		
+
 		input.setValue(null);
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
-		
+
 		input.setValue("test");
 		assertEquals("test", input.getValue());
 		assertTrue(input.getValueIfPresent().isPresent());
 		assertEquals("test", input.getValueIfPresent().orElse(null));
-		
+
 		input.clear();
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		
+
+	}
+
+	@Test
+	public void testRevealButton() {
+
+		Input<String> input = Input.password().revealButtonVisible(true).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertTrue(((PasswordField) input.getComponent()).isRevealButtonVisible());
+
+		input = Input.password().revealButtonVisible(false).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertFalse(((PasswordField) input.getComponent()).isRevealButtonVisible());
+
 	}
 
 }

@@ -23,7 +23,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.HasValueStringInput;
 import com.vaadin.flow.component.BlurNotifier;
@@ -47,12 +47,12 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
- * Default {@link StringAreaBuilder} implementation using a {@link TextArea} as concrete component.
+ * Default {@link StringAreaInputBuilder} implementation using a {@link TextArea} as concrete component.
  *
  * @since 5.2.0
  */
-public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfigurator<TextArea, StringAreaBuilder>
-		implements StringAreaBuilder {
+public class DefaultStringAreaInputBuilder extends
+		AbstractLocalizableComponentConfigurator<TextArea, StringAreaInputBuilder> implements StringAreaInputBuilder {
 
 	private final List<ValueChangeListener<String>> valueChangeListeners = new LinkedList<>();
 
@@ -72,10 +72,9 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	protected final DefaultKeyNotifierConfigurator keyNotifierConfigurator;
 	protected final DefaultHasValueChangeModeConfigurator valueChangeModeConfigurator;
 	protected final DefaultHasLabelConfigurator<TextArea> labelConfigurator;
-	protected final DefaultHasTitleConfigurator<TextArea> titleConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<TextArea> placeholderConfigurator;
 
-	public DefaultStringAreaBuilder() {
+	public DefaultStringAreaInputBuilder() {
 		super(new TextArea());
 
 		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
@@ -92,9 +91,6 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
-		}, this);
-		titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
-			getComponent().getElement().setAttribute("title", (title != null) ? title : "");
 		}, this);
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
@@ -131,7 +127,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#emptyValuesAsNull(boolean)
 	 */
 	@Override
-	public StringAreaBuilder emptyValuesAsNull(boolean emptyValuesAsNull) {
+	public StringAreaInputBuilder emptyValuesAsNull(boolean emptyValuesAsNull) {
 		this.emptyValuesAsNull = emptyValuesAsNull;
 		return getConfigurator();
 	}
@@ -141,7 +137,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#blankValuesAsNull(boolean)
 	 */
 	@Override
-	public StringAreaBuilder blankValuesAsNull(boolean blankValuesAsNull) {
+	public StringAreaInputBuilder blankValuesAsNull(boolean blankValuesAsNull) {
 		this.blankValuesAsNull = blankValuesAsNull;
 		return getConfigurator();
 	}
@@ -151,7 +147,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public StringAreaBuilder readOnly(boolean readOnly) {
+	public StringAreaInputBuilder readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -161,7 +157,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
-	public StringAreaBuilder withValue(String value) {
+	public StringAreaInputBuilder withValue(String value) {
 		getComponent().setValue(value);
 		return getConfigurator();
 	}
@@ -173,7 +169,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public StringAreaBuilder withValueChangeListener(ValueChangeListener<String> listener) {
+	public StringAreaInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -184,7 +180,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public StringAreaBuilder required(boolean required) {
+	public StringAreaInputBuilder required(boolean required) {
 		getComponent().setRequired(required);
 		return getConfigurator();
 	}
@@ -194,7 +190,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#maxLength(int)
 	 */
 	@Override
-	public StringAreaBuilder maxLength(int maxLength) {
+	public StringAreaInputBuilder maxLength(int maxLength) {
 		getComponent().setMaxLength(maxLength);
 		return getConfigurator();
 	}
@@ -204,7 +200,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#minLength(int)
 	 */
 	@Override
-	public StringAreaBuilder minLength(int minLength) {
+	public StringAreaInputBuilder minLength(int minLength) {
 		getComponent().setMinLength(minLength);
 		return getConfigurator();
 	}
@@ -214,7 +210,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public StringAreaBuilder enabled(boolean enabled) {
+	public StringAreaInputBuilder enabled(boolean enabled) {
 		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
@@ -225,7 +221,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.textfield.Autocomplete)
 	 */
 	@Override
-	public StringAreaBuilder autocomplete(Autocomplete autocomplete) {
+	public StringAreaInputBuilder autocomplete(Autocomplete autocomplete) {
 		autocompleteConfigurator.autocomplete(autocomplete);
 		return getConfigurator();
 	}
@@ -237,7 +233,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.textfield.Autocapitalize)
 	 */
 	@Override
-	public StringAreaBuilder autocapitalize(Autocapitalize autocapitalize) {
+	public StringAreaInputBuilder autocapitalize(Autocapitalize autocapitalize) {
 		autocapitalizeConfigurator.autocapitalize(autocapitalize);
 		return getConfigurator();
 	}
@@ -247,7 +243,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutocorrectConfigurator#autocorrect(boolean)
 	 */
 	@Override
-	public StringAreaBuilder autocorrect(boolean autocorrect) {
+	public StringAreaInputBuilder autocorrect(boolean autocorrect) {
 		autocorrectConfigurator.autocorrect(autocorrect);
 		return getConfigurator();
 	}
@@ -259,7 +255,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withInputListener(ComponentEventListener<InputEvent> listener) {
+	public StringAreaInputBuilder withInputListener(ComponentEventListener<InputEvent> listener) {
 		inputNotifierConfigurator.withInputListener(listener);
 		return getConfigurator();
 	}
@@ -271,7 +267,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
+	public StringAreaInputBuilder withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
 		keyNotifierConfigurator.withKeyDownListener(listener);
 		return getConfigurator();
 	}
@@ -283,7 +279,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
+	public StringAreaInputBuilder withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
 		keyNotifierConfigurator.withKeyPressListener(listener);
 		return getConfigurator();
 	}
@@ -294,7 +290,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
+	public StringAreaInputBuilder withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
 		keyNotifierConfigurator.withKeyUpListener(listener);
 		return getConfigurator();
 	}
@@ -306,7 +302,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringAreaBuilder withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
+	public StringAreaInputBuilder withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyDownListener(key, listener, modifiers);
 		return getConfigurator();
@@ -319,7 +315,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringAreaBuilder withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
+	public StringAreaInputBuilder withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyPressListener(key, listener, modifiers);
 		return getConfigurator();
@@ -331,7 +327,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public StringAreaBuilder withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
+	public StringAreaInputBuilder withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyUpListener(key, listener, modifiers);
 		return getConfigurator();
@@ -344,7 +340,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * data.value.ValueChangeMode)
 	 */
 	@Override
-	public StringAreaBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
+	public StringAreaInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
 		valueChangeModeConfigurator.valueChangeMode(valueChangeMode);
 		return getConfigurator();
 	}
@@ -354,7 +350,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
-	public StringAreaBuilder width(String width) {
+	public StringAreaInputBuilder width(String width) {
 		sizeConfigurator.width(width);
 		return getConfigurator();
 	}
@@ -364,7 +360,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
-	public StringAreaBuilder height(String height) {
+	public StringAreaInputBuilder height(String height) {
 		sizeConfigurator.height(height);
 		return getConfigurator();
 	}
@@ -374,7 +370,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
-	public StringAreaBuilder styleNames(String... styleNames) {
+	public StringAreaInputBuilder styleNames(String... styleNames) {
 		styleConfigurator.styleNames(styleNames);
 		return getConfigurator();
 	}
@@ -384,7 +380,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 	 */
 	@Override
-	public StringAreaBuilder styleName(String styleName) {
+	public StringAreaInputBuilder styleName(String styleName) {
 		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
@@ -394,7 +390,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 	 */
 	@Override
-	public StringAreaBuilder removeStyleName(String styleName) {
+	public StringAreaInputBuilder removeStyleName(String styleName) {
 		styleConfigurator.removeStyleName(styleName);
 		return getConfigurator();
 	}
@@ -404,7 +400,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 	 */
 	@Override
-	public StringAreaBuilder replaceStyleName(String styleName) {
+	public StringAreaInputBuilder replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
 		return getConfigurator();
 	}
@@ -414,7 +410,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
-	public StringAreaBuilder autofocus(boolean autofocus) {
+	public StringAreaInputBuilder autofocus(boolean autofocus) {
 		getComponent().setAutofocus(autofocus);
 		return getConfigurator();
 	}
@@ -424,7 +420,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
-	public StringAreaBuilder tabIndex(int tabIndex) {
+	public StringAreaInputBuilder tabIndex(int tabIndex) {
 		getComponent().setTabIndex(tabIndex);
 		return getConfigurator();
 	}
@@ -436,7 +432,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public StringAreaBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+	public StringAreaInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
 		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<TextArea>>() {
 
 			@Override
@@ -455,7 +451,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public StringAreaBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+	public StringAreaInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
 		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<TextArea>>() {
 
 			@Override
@@ -474,7 +470,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.Component)
 	 */
 	@Override
-	public StringAreaBuilder prefixComponent(Component component) {
+	public StringAreaInputBuilder prefixComponent(Component component) {
 		prefixAndSuffixConfigurator.prefixComponent(component);
 		return getConfigurator();
 	}
@@ -486,7 +482,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * component.Component)
 	 */
 	@Override
-	public StringAreaBuilder suffixComponent(Component component) {
+	public StringAreaInputBuilder suffixComponent(Component component) {
 		prefixAndSuffixConfigurator.suffixComponent(component);
 		return getConfigurator();
 	}
@@ -498,7 +494,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
+	public StringAreaInputBuilder withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
 		compositionNotifierConfigurator.withCompositionStartListener(listener);
 		return getConfigurator();
 	}
@@ -510,7 +506,8 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withCompositionUpdateListener(ComponentEventListener<CompositionUpdateEvent> listener) {
+	public StringAreaInputBuilder withCompositionUpdateListener(
+			ComponentEventListener<CompositionUpdateEvent> listener) {
 		compositionNotifierConfigurator.withCompositionUpdateListener(listener);
 		return getConfigurator();
 	}
@@ -522,7 +519,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public StringAreaBuilder withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
+	public StringAreaInputBuilder withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
 		compositionNotifierConfigurator.withCompositionEndListener(listener);
 		return getConfigurator();
 	}
@@ -534,7 +531,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * i18n.Localizable)
 	 */
 	@Override
-	public StringAreaBuilder placeholder(Localizable placeholder) {
+	public StringAreaInputBuilder placeholder(Localizable placeholder) {
 		placeholderConfigurator.placeholder(placeholder);
 		return getConfigurator();
 	}
@@ -545,19 +542,8 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * Localizable)
 	 */
 	@Override
-	public StringAreaBuilder label(Localizable label) {
+	public StringAreaInputBuilder label(Localizable label) {
 		labelConfigurator.label(label);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
-	 * Localizable)
-	 */
-	@Override
-	public StringAreaBuilder title(Localizable title) {
-		titleConfigurator.title(title);
 		return getConfigurator();
 	}
 
@@ -566,7 +552,7 @@ public class DefaultStringAreaBuilder extends AbstractLocalizableComponentConfig
 	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected StringAreaBuilder getConfigurator() {
+	protected StringAreaInputBuilder getConfigurator() {
 		return this;
 	}
 

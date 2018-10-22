@@ -33,7 +33,7 @@ import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.StringAreaBuilder;
+import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.HorizontalLayoutConfigurator;
@@ -448,10 +448,10 @@ public interface Components {
 
 		/**
 		 * Gets a builder to create {@link String} type {@link Input}s rendered as a <em>text area</em>.
-		 * @return A {@link StringAreaBuilder}
+		 * @return A {@link StringAreaInputBuilder}
 		 */
-		static StringAreaBuilder stringArea() {
-			return StringAreaBuilder.create();
+		static StringAreaInputBuilder stringArea() {
+			return StringAreaInputBuilder.create();
 		}
 
 		/**
