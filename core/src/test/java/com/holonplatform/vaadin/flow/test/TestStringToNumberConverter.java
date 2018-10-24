@@ -150,6 +150,22 @@ public class TestStringToNumberConverter {
 	}
 
 	@Test
+	public void testMinMaxDecimals() {
+
+		StringToNumberConverter<Double> converter1 = StringToNumberConverter.builder(Double.class).minDecimals(2)
+				.build();
+
+		String text = converter1.convertToPresentation(123.5d, new ValueContext(Locale.US));
+		assertNotNull(text);
+		assertEquals("123.50", text);
+
+		text = converter1.convertToPresentation(123d, new ValueContext(Locale.US));
+		assertNotNull(text);
+		assertEquals("123.00", text);
+
+	}
+
+	@Test
 	public void testIntegerConverter() {
 
 		final Integer itg = 12345;
@@ -317,6 +333,16 @@ public class TestStringToNumberConverter {
 		assertFalse(pattern.matcher("12,34.5").matches());
 		assertTrue(pattern.matcher("-12345.67").matches());
 		assertTrue(pattern.matcher("-12,345.67").matches());
+
+		// max decimals
+		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(false).negatives(false)
+				.maxDecimals(2).build().getValidationPattern();
+		assertNotNull(validationPattern);
+		pattern = Pattern.compile(validationPattern);
+		assertTrue(pattern.matcher("12345").matches());
+		assertTrue(pattern.matcher("12345.7").matches());
+		assertTrue(pattern.matcher("12345.77").matches());
+		assertFalse(pattern.matcher("12345.777").matches());
 
 	}
 

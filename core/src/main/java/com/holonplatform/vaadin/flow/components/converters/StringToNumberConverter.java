@@ -65,6 +65,30 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	void setAllowNegatives(boolean allowNegatives);
 
 	/**
+	 * Get the minimum decimal digits to display.
+	 * @return the minimum decimal digits, <code>-1</code> if not configured
+	 */
+	int getMinDecimals();
+
+	/**
+	 * Set the minimum decimal digits to display.
+	 * @param minDecimals the minimum decimal digits to display, <code>-1</code> for no limit
+	 */
+	void setMinDecimals(int minDecimals);
+
+	/**
+	 * Get the maximum decimal digits allowed.
+	 * @return the maximum decimal digits, <code>-1</code> if no limit
+	 */
+	int getMaxDecimals();
+
+	/**
+	 * Set the maximum decimal digits allowed.
+	 * @param maxDecimals the maximum decimal digits, <code>-1</code> for no limit
+	 */
+	void setMaxDecimals(int maxDecimals);
+
+	/**
 	 * Get the grouping separator character, if available
 	 * @return the grouping separator character, or empty if grouping is disabled
 	 */
@@ -204,8 +228,23 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 		 * Default is <code>true</code>.
 		 * </p>
 		 * @param allowNegatives whether to allow negative numbers
+		 * @return this
 		 */
 		Builder<T> negatives(boolean negatives);
+
+		/**
+		 * Set the maximum decimal digits allowed.
+		 * @param maxDecimals the maximum decimal digits, <code>-1</code> for no limit
+		 * @return this
+		 */
+		Builder<T> maxDecimals(int maxDecimals);
+
+		/**
+		 * Set the minimum decimal digits to display.
+		 * @param minDecimals the minimum decimal digits to display, <code>-1</code> for no limit
+		 * @return this
+		 */
+		Builder<T> minDecimals(int minDecimals);
 
 		/**
 		 * Build and obtain the {@link StringToNumberConverter}.

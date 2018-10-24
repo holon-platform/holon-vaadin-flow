@@ -57,7 +57,7 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	private static final String PATTERN_INTEGER = "[0-9]*";
 	private static final String PATTERN_NEGATIVE_PREFIX = "-?";
 	private static final String PATTERN_DECIMAL_PREFIX = "[0-9]+";
-	private static final String PATTERN_DECIMAL_SUFFIX = "?[0-9]+";
+	private static final String PATTERN_DECIMAL_SUFFIX = "?[0-9]";
 	private static final String PATTERN_GROUPS_PREFIX = "^[0-9]{1,3}(";
 	private static final String PATTERN_NEGATIVE_GROUPS_PREFIX = "^-?[0-9]{1,3}(";
 	private static final String PATTERN_GROUPS_SUFFIX = "?[0-9]{3})*";
@@ -91,6 +91,16 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * Whether to allow negative numbers
 	 */
 	private boolean allowNegatives = true;
+
+	/**
+	 * Minimum decimals
+	 */
+	private int minDecimals = -1;
+
+	/**
+	 * Maximum decimals
+	 */
+	private int maxDecimals = -1;
 
 	/**
 	 * Default constructor. The {@link NumberFormat} to use will be obtained from the current {@link Locale}.
@@ -211,6 +221,42 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		this.allowNegatives = allowNegatives;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#getMinDecimals()
+	 */
+	@Override
+	public int getMinDecimals() {
+		return minDecimals;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#setMinDecimals(int)
+	 */
+	@Override
+	public void setMinDecimals(int minDecimals) {
+		this.minDecimals = minDecimals;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#getMaxDecimals()
+	 */
+	@Override
+	public int getMaxDecimals() {
+		return maxDecimals;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#setMaxDecimals(int)
+	 */
+	@Override
+	public void setMaxDecimals(int maxDecimals) {
+		this.maxDecimals = maxDecimals;
+	}
+
 	/**
 	 * Get the {@link Locale} to use for number formatting.
 	 * <p>
@@ -280,6 +326,14 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		if (!isUseGrouping()) {
 			numberFormat.setGroupingUsed(false);
 		}
+		// min decimals
+		if (getMinDecimals() > -1) {
+			numberFormat.setMinimumFractionDigits(getMinDecimals());
+		}
+		// max decimals
+		if (getMaxDecimals() > -1) {
+			numberFormat.setMaximumFractionDigits(getMaxDecimals());
+		}
 		return numberFormat;
 	}
 
@@ -337,13 +391,18 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		if (TypeUtils.isDecimalNumber(getNumberType())) {
 			// decimals
 			final Character decimals = getDecimalSymbol().orElse('.');
+			// check max decimals
+			final String decimalSuffix = (getMaxDecimals() > -1)
+					? (PATTERN_DECIMAL_SUFFIX + "{0," + getMaxDecimals() + "}")
+					: (PATTERN_DECIMAL_SUFFIX + "+");
 			if (isUseGrouping() && grouping != null) {
-				final String decimalPattern = escape(decimals) + PATTERN_DECIMAL_SUFFIX;
+				final String decimalPattern = escape(decimals) + decimalSuffix;
+
 				return isAllowNegatives()
 						? PATTERN_NEGATIVE_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern
 						: PATTERN_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern;
 			} else {
-				final String decimalPattern = PATTERN_DECIMAL_PREFIX + escape(decimals) + PATTERN_DECIMAL_SUFFIX;
+				final String decimalPattern = PATTERN_DECIMAL_PREFIX + escape(decimals) + decimalSuffix;
 				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + decimalPattern : decimalPattern;
 			}
 		} else {
@@ -472,6 +531,26 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		@Override
 		public Builder<T> negatives(boolean negatives) {
 			this.instance.setAllowNegatives(negatives);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#minDecimals(int)
+		 */
+		@Override
+		public Builder<T> minDecimals(int minDecimals) {
+			this.instance.setMinDecimals(minDecimals);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#maxDecimals(int)
+		 */
+		@Override
+		public Builder<T> maxDecimals(int maxDecimals) {
+			this.instance.setMaxDecimals(maxDecimals);
 			return this;
 		}
 
