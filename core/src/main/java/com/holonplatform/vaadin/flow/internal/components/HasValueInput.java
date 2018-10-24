@@ -58,6 +58,11 @@ public class HasValueInput<T> implements Input<T> {
 	private final Component component;
 
 	/**
+	 * Empty value
+	 */
+	private Supplier<T> emptyValueSupplier;
+
+	/**
 	 * Property handlers
 	 */
 	private PropertyHandler<Boolean> requiredPropertyHandler;
@@ -91,6 +96,22 @@ public class HasValueInput<T> implements Input<T> {
 		this.labelPropertyHandler = tryToObtainLabelPropertyHandler(component);
 		this.titlePropertyHandler = tryToObtainTitlePropertyHandler(component);
 		this.placeholderPropertyHandler = tryToObtainPlaceholderPropertyHandler(component);
+	}
+
+	/**
+	 * Get the empty value supplier, if available.
+	 * @return Optional empty value supplier
+	 */
+	public Optional<Supplier<T>> getEmptyValueSupplier() {
+		return Optional.ofNullable(emptyValueSupplier);
+	}
+
+	/**
+	 * Set the empty value supplier.
+	 * @param emptyValueSupplier the empty value supplier to set
+	 */
+	public void setEmptyValueSupplier(Supplier<T> emptyValueSupplier) {
+		this.emptyValueSupplier = emptyValueSupplier;
 	}
 
 	/**
@@ -207,7 +228,7 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public T getEmptyValue() {
-		return getField().getEmptyValue();
+		return getEmptyValueSupplier().map(s -> s.get()).orElseGet(() -> getField().getEmptyValue());
 	}
 
 	/*

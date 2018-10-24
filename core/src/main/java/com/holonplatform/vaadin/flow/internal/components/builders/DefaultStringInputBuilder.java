@@ -112,6 +112,8 @@ public class DefaultStringInputBuilder extends AbstractLocalizableComponentConfi
 		input.setRequiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required));
 		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
 		input.setTitlePropertyHandler(() -> component.getTitle(), title -> component.setTitle(title));
+		input.setPlaceholderPropertyHandler(() -> component.getPlaceholder(),
+				placeholder -> component.setPlaceholder(placeholder));
 		input.setEmptyValuesAsNull(emptyValuesAsNull);
 		input.setBlankValuesAsNull(blankValuesAsNull);
 		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));

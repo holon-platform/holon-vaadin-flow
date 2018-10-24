@@ -15,17 +15,19 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueStringInput;
+import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -43,47 +45,54 @@ import com.vaadin.flow.component.KeyPressEvent;
 import com.vaadin.flow.component.KeyUpEvent;
 import com.vaadin.flow.component.textfield.Autocapitalize;
 import com.vaadin.flow.component.textfield.Autocomplete;
-import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
- * Default {@link PasswordInputBuilder} implementation using a {@link PasswordField} as concrete component.
+ * Default {@link NumberInputBuilder} implementation using a {@link TextField} as concrete component.
+ *
+ * @param <T> Number type
  *
  * @since 5.2.0
  */
-public class DefaultPasswordInputBuilder extends
-		AbstractLocalizableComponentConfigurator<PasswordField, PasswordInputBuilder> implements PasswordInputBuilder {
+public class DefaultNumberInputBuilder<T extends Number> extends
+		AbstractLocalizableComponentConfigurator<TextField, NumberInputBuilder<T>> implements NumberInputBuilder<T> {
 
-	private final List<ValueChangeListener<String>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
 
-	private boolean emptyValuesAsNull = true;
+	private final Class<T> numberType;
 
-	private boolean blankValuesAsNull = false;
+	private T initialValue;
+
+	private StringToNumberConverter<T> converter;
 
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasAutocompleteConfigurator autocompleteConfigurator;
-	protected final DefaultHasAutocapitalizeConfigurator autocapitalizeConfigurator;
-	protected final DefaultHasAutocorrectConfigurator autocorrectConfigurator;
 	protected final DefaultHasPrefixAndSuffixConfigurator prefixAndSuffixConfigurator;
 	protected final DefaultCompositionNotifierConfigurator compositionNotifierConfigurator;
 	protected final DefaultInputNotifierConfigurator inputNotifierConfigurator;
 	protected final DefaultKeyNotifierConfigurator keyNotifierConfigurator;
 	protected final DefaultHasValueChangeModeConfigurator valueChangeModeConfigurator;
-	protected final DefaultHasLabelConfigurator<PasswordField> labelConfigurator;
-	protected final DefaultHasTitleConfigurator<PasswordField> titleConfigurator;
-	protected final DefaultHasPlaceholderConfigurator<PasswordField> placeholderConfigurator;
+	protected final DefaultHasLabelConfigurator<TextField> labelConfigurator;
+	protected final DefaultHasTitleConfigurator<TextField> titleConfigurator;
+	protected final DefaultHasPlaceholderConfigurator<TextField> placeholderConfigurator;
 
-	public DefaultPasswordInputBuilder() {
-		super(new PasswordField());
+	public DefaultNumberInputBuilder(Class<T> numberType) {
+		super(new TextField());
+		ObjectUtils.argumentNotNull(numberType, "Number type must be not null");
+		this.numberType = numberType;
+		this.converter = StringToNumberConverter.create(numberType);
+
+		getComponent().setAutocapitalize(Autocapitalize.NONE);
+		getComponent().setAutocorrect(false);
+		getComponent().setAutocomplete(Autocomplete.OFF);
 
 		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
 		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
 		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		autocompleteConfigurator = new DefaultHasAutocompleteConfigurator(getComponent());
-		autocapitalizeConfigurator = new DefaultHasAutocapitalizeConfigurator(getComponent());
-		autocorrectConfigurator = new DefaultHasAutocorrectConfigurator(getComponent());
 		prefixAndSuffixConfigurator = new DefaultHasPrefixAndSuffixConfigurator(getComponent());
 		compositionNotifierConfigurator = new DefaultCompositionNotifierConfigurator(getComponent());
 		inputNotifierConfigurator = new DefaultInputNotifierConfigurator(getComponent());
@@ -101,23 +110,134 @@ public class DefaultPasswordInputBuilder extends
 		}, this);
 	}
 
+	/**
+	 * Get the {@link StringToNumberConverter} instance.
+	 * @return the converter
+	 */
+	protected StringToNumberConverter<T> getConverter() {
+		if (converter == null) {
+			converter = StringToNumberConverter.create(numberType);
+		}
+		return converter;
+	}
+
+	protected void replaceConverter(StringToNumberConverter<T> converter) {
+		final StringToNumberConverter<T> oldConverter = this.converter;
+		this.converter = converter;
+		if (oldConverter != null) {
+			this.converter.setUseGrouping(oldConverter.isUseGrouping());
+			this.converter.setAllowNegatives(oldConverter.isAllowNegatives());
+			this.converter.setMinDecimals(oldConverter.getMinDecimals());
+			this.converter.setMaxDecimals(oldConverter.getMaxDecimals());
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
+	 */
+	@Override
+	protected NumberInputBuilder<T> getConfigurator() {
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 	 */
 	@Override
-	public Input<String> build() {
-		final PasswordField component = getComponent();
-		final HasValueStringInput input = new HasValueStringInput(component);
-		input.setRequiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required));
-		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
-		input.setTitlePropertyHandler(() -> component.getTitle(), title -> component.setTitle(title));
-		input.setPlaceholderPropertyHandler(() -> component.getPlaceholder(),
-				placeholder -> component.setPlaceholder(placeholder));
-		input.setEmptyValuesAsNull(emptyValuesAsNull);
-		input.setBlankValuesAsNull(blankValuesAsNull);
-		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
-		return input;
+	public Input<T> build() {
+		final TextField component = getComponent();
+
+		// pattern
+		component.setPattern(getConverter().getValidationPattern());
+		component.setPreventInvalidInput(true);
+
+		final Input<String> input = Input.builder(component)
+				.requiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required))
+				.labelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label))
+				.titlePropertyHandler(() -> component.getTitle(), title -> component.setTitle(title))
+				.placeholderPropertyHandler(() -> component.getPlaceholder(),
+						placeholder -> component.setPlaceholder(placeholder))
+				.build();
+
+		// conversion
+		final Input<T> numberInput = Input.from(input, getConverter());
+		if (initialValue != null) {
+			numberInput.setValue(initialValue);
+		}
+		valueChangeListeners.forEach(listener -> numberInput.addValueChangeListener(listener));
+		return numberInput;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#locale(java.util.Locale)
+	 */
+	@Override
+	public NumberInputBuilder<T> locale(Locale locale) {
+		replaceConverter(StringToNumberConverter.create(numberType, locale));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#numberFormat(java.text.NumberFormat)
+	 */
+	@Override
+	public NumberInputBuilder<T> numberFormat(NumberFormat numberFormat) {
+		replaceConverter(StringToNumberConverter.create(numberType, numberFormat));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#numberFormatPattern(java.lang.String)
+	 */
+	@Override
+	public NumberInputBuilder<T> numberFormatPattern(String numberFormatPattern) {
+		replaceConverter(StringToNumberConverter.create(numberType, numberFormatPattern));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#allowNegative(boolean)
+	 */
+	@Override
+	public NumberInputBuilder<T> allowNegative(boolean allowNegative) {
+		getConverter().setAllowNegatives(allowNegative);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#useGrouping(boolean)
+	 */
+	@Override
+	public NumberInputBuilder<T> useGrouping(boolean useGrouping) {
+		getConverter().setUseGrouping(useGrouping);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#minDecimals(int)
+	 */
+	@Override
+	public NumberInputBuilder<T> minDecimals(int minDecimals) {
+		getConverter().setMinDecimals(minDecimals);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#maxDecimals(int)
+	 */
+	@Override
+	public NumberInputBuilder<T> maxDecimals(int maxDecimals) {
+		getConverter().setMaxDecimals(maxDecimals);
+		return getConfigurator();
 	}
 
 	/*
@@ -125,28 +245,8 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
-	public ValidatableInputBuilder<String, ValidatableInput<String>> validatable() {
+	public ValidatableInputBuilder<T, ValidatableInput<T>> validatable() {
 		return ValidatableInputBuilder.create(build());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#emptyValuesAsNull(boolean)
-	 */
-	@Override
-	public PasswordInputBuilder emptyValuesAsNull(boolean emptyValuesAsNull) {
-		this.emptyValuesAsNull = emptyValuesAsNull;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#blankValuesAsNull(boolean)
-	 */
-	@Override
-	public PasswordInputBuilder blankValuesAsNull(boolean blankValuesAsNull) {
-		this.blankValuesAsNull = blankValuesAsNull;
-		return getConfigurator();
 	}
 
 	/*
@@ -154,7 +254,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public PasswordInputBuilder readOnly(boolean readOnly) {
+	public NumberInputBuilder<T> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -164,8 +264,8 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
-	public PasswordInputBuilder withValue(String value) {
-		getComponent().setValue(value);
+	public NumberInputBuilder<T> withValue(T value) {
+		this.initialValue = value;
 		return getConfigurator();
 	}
 
@@ -176,7 +276,7 @@ public class DefaultPasswordInputBuilder extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public PasswordInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
+	public NumberInputBuilder<T> withValueChangeListener(ValueChangeListener<T> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -187,28 +287,8 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public PasswordInputBuilder required(boolean required) {
+	public NumberInputBuilder<T> required(boolean required) {
 		getComponent().setRequired(required);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#maxLength(int)
-	 */
-	@Override
-	public PasswordInputBuilder maxLength(int maxLength) {
-		getComponent().setMaxLength(maxLength);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#minLength(int)
-	 */
-	@Override
-	public PasswordInputBuilder minLength(int minLength) {
-		getComponent().setMinLength(minLength);
 		return getConfigurator();
 	}
 
@@ -217,7 +297,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#pattern(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder pattern(String pattern) {
+	public NumberInputBuilder<T> pattern(String pattern) {
 		getComponent().setPattern(pattern);
 		return getConfigurator();
 	}
@@ -227,18 +307,8 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#preventInvalidInput(boolean)
 	 */
 	@Override
-	public PasswordInputBuilder preventInvalidInput(boolean preventInvalidInput) {
+	public NumberInputBuilder<T> preventInvalidInput(boolean preventInvalidInput) {
 		getComponent().setPreventInvalidInput(preventInvalidInput);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public PasswordInputBuilder enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 
@@ -248,30 +318,18 @@ public class DefaultPasswordInputBuilder extends
 	 * component.textfield.Autocomplete)
 	 */
 	@Override
-	public PasswordInputBuilder autocomplete(Autocomplete autocomplete) {
+	public NumberInputBuilder<T> autocomplete(Autocomplete autocomplete) {
 		autocompleteConfigurator.autocomplete(autocomplete);
 		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasAutocapitalizeConfigurator#autocapitalize(com.vaadin.flow.
-	 * component.textfield.Autocapitalize)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public PasswordInputBuilder autocapitalize(Autocapitalize autocapitalize) {
-		autocapitalizeConfigurator.autocapitalize(autocapitalize);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutocorrectConfigurator#autocorrect(boolean)
-	 */
-	@Override
-	public PasswordInputBuilder autocorrect(boolean autocorrect) {
-		autocorrectConfigurator.autocorrect(autocorrect);
+	public NumberInputBuilder<T> enabled(boolean enabled) {
+		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 
@@ -282,7 +340,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withInputListener(ComponentEventListener<InputEvent> listener) {
+	public NumberInputBuilder<T> withInputListener(ComponentEventListener<InputEvent> listener) {
 		inputNotifierConfigurator.withInputListener(listener);
 		return getConfigurator();
 	}
@@ -294,7 +352,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
+	public NumberInputBuilder<T> withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
 		keyNotifierConfigurator.withKeyDownListener(listener);
 		return getConfigurator();
 	}
@@ -306,7 +364,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
+	public NumberInputBuilder<T> withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
 		keyNotifierConfigurator.withKeyPressListener(listener);
 		return getConfigurator();
 	}
@@ -317,7 +375,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
+	public NumberInputBuilder<T> withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
 		keyNotifierConfigurator.withKeyUpListener(listener);
 		return getConfigurator();
 	}
@@ -329,7 +387,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public PasswordInputBuilder withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
+	public NumberInputBuilder<T> withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyDownListener(key, listener, modifiers);
 		return getConfigurator();
@@ -342,7 +400,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public PasswordInputBuilder withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
+	public NumberInputBuilder<T> withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyPressListener(key, listener, modifiers);
 		return getConfigurator();
@@ -354,7 +412,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
-	public PasswordInputBuilder withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
+	public NumberInputBuilder<T> withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener,
 			KeyModifier... modifiers) {
 		keyNotifierConfigurator.withKeyUpListener(key, listener, modifiers);
 		return getConfigurator();
@@ -367,7 +425,7 @@ public class DefaultPasswordInputBuilder extends
 	 * data.value.ValueChangeMode)
 	 */
 	@Override
-	public PasswordInputBuilder valueChangeMode(ValueChangeMode valueChangeMode) {
+	public NumberInputBuilder<T> valueChangeMode(ValueChangeMode valueChangeMode) {
 		valueChangeModeConfigurator.valueChangeMode(valueChangeMode);
 		return getConfigurator();
 	}
@@ -377,7 +435,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder width(String width) {
+	public NumberInputBuilder<T> width(String width) {
 		sizeConfigurator.width(width);
 		return getConfigurator();
 	}
@@ -387,7 +445,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder height(String height) {
+	public NumberInputBuilder<T> height(String height) {
 		sizeConfigurator.height(height);
 		return getConfigurator();
 	}
@@ -397,7 +455,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
-	public PasswordInputBuilder styleNames(String... styleNames) {
+	public NumberInputBuilder<T> styleNames(String... styleNames) {
 		styleConfigurator.styleNames(styleNames);
 		return getConfigurator();
 	}
@@ -407,7 +465,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder styleName(String styleName) {
+	public NumberInputBuilder<T> styleName(String styleName) {
 		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
@@ -417,7 +475,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder removeStyleName(String styleName) {
+	public NumberInputBuilder<T> removeStyleName(String styleName) {
 		styleConfigurator.removeStyleName(styleName);
 		return getConfigurator();
 	}
@@ -427,7 +485,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 	 */
 	@Override
-	public PasswordInputBuilder replaceStyleName(String styleName) {
+	public NumberInputBuilder<T> replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
 		return getConfigurator();
 	}
@@ -437,7 +495,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
-	public PasswordInputBuilder autofocus(boolean autofocus) {
+	public NumberInputBuilder<T> autofocus(boolean autofocus) {
 		getComponent().setAutofocus(autofocus);
 		return getConfigurator();
 	}
@@ -447,7 +505,7 @@ public class DefaultPasswordInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
-	public PasswordInputBuilder tabIndex(int tabIndex) {
+	public NumberInputBuilder<T> tabIndex(int tabIndex) {
 		getComponent().setTabIndex(tabIndex);
 		return getConfigurator();
 	}
@@ -459,11 +517,11 @@ public class DefaultPasswordInputBuilder extends
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public PasswordInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
-		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<PasswordField>>() {
+	public NumberInputBuilder<T> withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<TextField>>() {
 
 			@Override
-			public void onComponentEvent(FocusEvent<PasswordField> event) {
+			public void onComponentEvent(FocusEvent<TextField> event) {
 				listener.onComponentEvent(new FocusEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -478,11 +536,11 @@ public class DefaultPasswordInputBuilder extends
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public PasswordInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
-		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<PasswordField>>() {
+	public NumberInputBuilder<T> withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<TextField>>() {
 
 			@Override
-			public void onComponentEvent(BlurEvent<PasswordField> event) {
+			public void onComponentEvent(BlurEvent<TextField> event) {
 				listener.onComponentEvent(new BlurEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -497,7 +555,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.Component)
 	 */
 	@Override
-	public PasswordInputBuilder prefixComponent(Component component) {
+	public NumberInputBuilder<T> prefixComponent(Component component) {
 		prefixAndSuffixConfigurator.prefixComponent(component);
 		return getConfigurator();
 	}
@@ -509,7 +567,7 @@ public class DefaultPasswordInputBuilder extends
 	 * component.Component)
 	 */
 	@Override
-	public PasswordInputBuilder suffixComponent(Component component) {
+	public NumberInputBuilder<T> suffixComponent(Component component) {
 		prefixAndSuffixConfigurator.suffixComponent(component);
 		return getConfigurator();
 	}
@@ -521,7 +579,7 @@ public class DefaultPasswordInputBuilder extends
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
+	public NumberInputBuilder<T> withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
 		compositionNotifierConfigurator.withCompositionStartListener(listener);
 		return getConfigurator();
 	}
@@ -533,7 +591,8 @@ public class DefaultPasswordInputBuilder extends
 	 * com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withCompositionUpdateListener(ComponentEventListener<CompositionUpdateEvent> listener) {
+	public NumberInputBuilder<T> withCompositionUpdateListener(
+			ComponentEventListener<CompositionUpdateEvent> listener) {
 		compositionNotifierConfigurator.withCompositionUpdateListener(listener);
 		return getConfigurator();
 	}
@@ -545,7 +604,7 @@ public class DefaultPasswordInputBuilder extends
 	 * vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
-	public PasswordInputBuilder withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
+	public NumberInputBuilder<T> withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
 		compositionNotifierConfigurator.withCompositionEndListener(listener);
 		return getConfigurator();
 	}
@@ -557,7 +616,7 @@ public class DefaultPasswordInputBuilder extends
 	 * i18n.Localizable)
 	 */
 	@Override
-	public PasswordInputBuilder placeholder(Localizable placeholder) {
+	public NumberInputBuilder<T> placeholder(Localizable placeholder) {
 		placeholderConfigurator.placeholder(placeholder);
 		return getConfigurator();
 	}
@@ -568,7 +627,7 @@ public class DefaultPasswordInputBuilder extends
 	 * Localizable)
 	 */
 	@Override
-	public PasswordInputBuilder label(Localizable label) {
+	public NumberInputBuilder<T> label(Localizable label) {
 		labelConfigurator.label(label);
 		return getConfigurator();
 	}
@@ -579,28 +638,9 @@ public class DefaultPasswordInputBuilder extends
 	 * Localizable)
 	 */
 	@Override
-	public PasswordInputBuilder title(Localizable title) {
+	public NumberInputBuilder<T> title(Localizable title) {
 		titleConfigurator.title(title);
 		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder#revealButtonVisible(boolean)
-	 */
-	@Override
-	public PasswordInputBuilder revealButtonVisible(boolean revealButtonVisible) {
-		getComponent().setRevealButtonVisible(revealButtonVisible);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
-	 */
-	@Override
-	protected PasswordInputBuilder getConfigurator() {
-		return this;
 	}
 
 }

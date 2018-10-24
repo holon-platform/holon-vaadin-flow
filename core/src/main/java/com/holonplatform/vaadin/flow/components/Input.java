@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
@@ -233,6 +234,16 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 		return BooleanInputBuilder.create();
 	}
 
+	/**
+	 * Gets a builder to create a numeric type {@link Input}.
+	 * @param <T> Number type
+	 * @param numberType Number class (not null)
+	 * @return A new {@link NumberInputBuilder}
+	 */
+	static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
+		return NumberInputBuilder.create(numberClass);
+	}
+
 	// Renderers
 
 	/**
@@ -278,6 +289,23 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 		@Override
 		default Input<T> render(Property<T> property) {
 			return Input.from(renderField(property));
+		}
+
+	}
+
+	/**
+	 * Exception used to notify Input values conversion errors.
+	 */
+	public static class InputValueConversionException extends RuntimeException {
+
+		private static final long serialVersionUID = 905052787299053218L;
+
+		public InputValueConversionException(String message) {
+			super(message);
+		}
+
+		public InputValueConversionException(String message, Throwable cause) {
+			super(message, cause);
 		}
 
 	}

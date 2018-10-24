@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Collection;
+import java.util.function.Supplier;
+
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -140,6 +143,18 @@ public class DefaultHasValueInputBuilder<T> extends AbstractComponentConfigurato
 	/*
 	 * (non-Javadoc)
 	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder#emptyValueSupplier(java.util.function.
+	 * Supplier)
+	 */
+	@Override
+	public HasValueInputBuilder<T> emptyValueSupplier(Supplier<T> emptyValueSupplier) {
+		getInstance().setEmptyValueSupplier(emptyValueSupplier);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder#requiredPropertyHandler(com.holonplatform.
 	 * vaadin.flow.components.support.PropertyHandler)
 	 */
@@ -181,6 +196,19 @@ public class DefaultHasValueInputBuilder<T> extends AbstractComponentConfigurato
 	@Override
 	public HasValueInputBuilder<T> placeholderPropertyHandler(PropertyHandler<String> placeholderPropertyHandler) {
 		getInstance().setPlaceholderPropertyHandler(placeholderPropertyHandler);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder#withValueChangeListeners(java.util.
+	 * Collection)
+	 */
+	@Override
+	public HasValueInputBuilder<T> withValueChangeListeners(Collection<ValueChangeListener<T>> listeners) {
+		if (listeners != null) {
+			listeners.forEach(listener -> getInstance().addValueChangeListener(listener));
+		}
 		return getConfigurator();
 	}
 

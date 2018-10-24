@@ -37,6 +37,7 @@ import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
+import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
@@ -504,23 +505,16 @@ public interface Components {
 			return Input.boolean_();
 		}
 
-		// /**
-		// * Gets a builder to create {@link Number} type {@link Input}s.
-		// * @param <T> Number type
-		// * @param numberClass Concrete number class
-		// * @return Input builder
-		// */
-		// static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
-		// return new NumberField.Builder<>(numberClass);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link Boolean} type {@link Input}s.
-		// * @return Input builder
-		// */
-		// static BooleanInputBuilder boolean_() {
-		// return new BooleanField.Builder();
-		// }
+		/**
+		 * Gets a builder to create a numeric type {@link Input}.
+		 * @param <T> Number type
+		 * @param numberType Number class (not null)
+		 * @return A new {@link NumberInputBuilder}
+		 */
+		static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
+			return Input.number(numberClass);
+		}
+
 		//
 		// /**
 		// * Gets a builder to create {@link Date} type {@link Input}s.

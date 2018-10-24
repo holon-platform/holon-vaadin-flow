@@ -333,8 +333,30 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		// max decimals
 		if (getMaxDecimals() > -1) {
 			numberFormat.setMaximumFractionDigits(getMaxDecimals());
+		} else {
+			final int defaultMaximumFractionDigits = getDefaultMaximumFractionDigits();
+			if (defaultMaximumFractionDigits > -1) {
+				numberFormat.setMaximumFractionDigits(defaultMaximumFractionDigits);
+			}
 		}
 		return numberFormat;
+	}
+
+	/**
+	 * Get the default maximum fraction digits according to number type.
+	 * @return Default maximum fraction digits, or <code>-1</code> if none
+	 */
+	private int getDefaultMaximumFractionDigits() {
+		if (TypeUtils.isFloat(getNumberType())) {
+			return 7;
+		}
+		if (TypeUtils.isDouble(getNumberType())) {
+			return 16;
+		}
+		if (TypeUtils.isBigDecimal(getNumberType())) {
+			return Integer.MAX_VALUE;
+		}
+		return -1;
 	}
 
 	/**
@@ -443,14 +465,14 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 		if (value != null && !value.trim().equals("")) {
 			try {
 				final T number = ConversionUtils
-						.convertNumberToTargetClass(getNumberFormat(context).parse(value.trim()), numberType);
+						.convertNumberToTargetClass(getNumberFormat(context).parse(value.trim()), getNumberType());
 				if (number != null && !isAllowNegatives() && Math.signum(number.doubleValue()) < 0) {
 					return Result.error("Negative numbers not allowed [" + value + "]");
 				}
 				return Result.ok(number);
 			} catch (@SuppressWarnings("unused") Exception e) {
 				return Result.error("Could not convert String value [" + value + "] to numeric type ["
-						+ numberType.getName() + "]");
+						+ getNumberType().getName() + "]");
 			}
 		}
 		// null value if String value was null or blank

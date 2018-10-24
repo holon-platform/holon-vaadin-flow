@@ -201,7 +201,8 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 * @return Converted value
 	 */
 	private V convertToModel(T value) {
-		return converter.convertToModel(value, _valueContext()).getOrThrow(error -> new RuntimeException(error));
+		return converter.convertToModel(value, _valueContext())
+				.getOrThrow(error -> new InputValueConversionException(error));
 	}
 
 	/**
