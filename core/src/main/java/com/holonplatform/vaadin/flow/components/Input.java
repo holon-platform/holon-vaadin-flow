@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
@@ -33,6 +34,7 @@ import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -45,11 +47,11 @@ import com.vaadin.flow.data.converter.Converter;
  * The actual UI {@link Component} which represents the input component can be obtained through {@link #getComponent()}.
  * </p>
  * 
- * @param <V> Value type
+ * @param <T> Value type
  * 
  * @since 5.2.0
  */
-public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle, MayHavePlaceholder {
+public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabel, MayHaveTitle, MayHavePlaceholder {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.
@@ -79,6 +81,16 @@ public interface Input<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabe
 	 * Sets the focus for this input component, if supported by concrete component implementation.
 	 */
 	void focus();
+
+	/**
+	 * Checks whether the {@link Component} supports input validation, using the {@link HasValidation} interface.
+	 * @return If the component supports input validation, return the {@link HasValidation} reference. An empty Optional
+	 *         otherwise.
+	 */
+	default Optional<HasValidation> hasValidation() {
+		return (getComponent() instanceof HasValidation) ? Optional.of((HasValidation) getComponent())
+				: Optional.empty();
+	}
 
 	// Adapters
 

@@ -23,9 +23,11 @@ import com.vaadin.flow.component.notification.Notification;
 /**
  * A {@link ValidationStatusHandler} which uses an error {@link Notification} to notify validation errors.
  *
+ * @param <T> Value type
+ *
  * @since 5.2.0
  */
-public class NotificationValidationStatusHandler implements ValidationStatusHandler {
+public class NotificationValidationStatusHandler<T> implements ValidationStatusHandler<T> {
 
 	private final Notification notification;
 	private final boolean showAllErrors;
@@ -48,7 +50,7 @@ public class NotificationValidationStatusHandler implements ValidationStatusHand
 	 * components.ValidationStatusHandler.ValidationStatusEvent)
 	 */
 	@Override
-	public void validationStatusChange(ValidationStatusEvent<?> statusChangeEvent) {
+	public void validationStatusChange(ValidationStatusEvent<T> statusChangeEvent) {
 		if (statusChangeEvent.isInvalid()) {
 
 			String error = showAllErrors

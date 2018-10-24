@@ -18,9 +18,10 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.Optional;
 
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.ValidatableInputWrapper;
+import com.holonplatform.vaadin.flow.internal.components.ValidatableInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
@@ -29,18 +30,28 @@ import com.vaadin.flow.shared.Registration;
 /**
  * An {@link Input} component with validation support using {@link Validator}s.
  * 
- * @param <V> Value type
+ * @param <T> Value type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
-public interface ValidatableInput<V> extends Input<V>, Validatable {
+public interface ValidatableInput<T> extends Input<T>, Validatable {
+
+	/**
+	 * Get the input value only if it is valid.
+	 * <p>
+	 * If validation fails, a {@link ValidationException} is thrown.
+	 * </p>
+	 * @return The input value
+	 * @throws ValidationException If validation fails
+	 */
+	T getValueIfValid();
 
 	/**
 	 * Adds a {@link Validator} to validate the input value.
 	 * @param validator The validator to add (not null)
 	 * @return The validator registration reference
 	 */
-	Registration addValidator(Validator<V> validator);
+	Registration addValidator(Validator<T> validator);
 
 	/**
 	 * Sets whether to validate the value, using registered {@link Validator}s, every time the {@link Input} value
@@ -53,9 +64,6 @@ public interface ValidatableInput<V> extends Input<V>, Validatable {
 	/**
 	 * Gets whether to validate the value, using registered {@link Validator}s, every time the {@link Input} value
 	 * changes.
-	 * <p>
-	 * Default is <code>true</code>.
-	 * </p>
 	 * @return <code>true</code> if the value validation must be performed every time the {@link Input} value changes
 	 */
 	boolean isValidateOnValueChange();
@@ -64,13 +72,13 @@ public interface ValidatableInput<V> extends Input<V>, Validatable {
 	 * Set the {@link ValidationStatusHandler} to use to track validation status changes.
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
 	 */
-	void setValidationStatusHandler(ValidationStatusHandler validationStatusHandler);
+	void setValidationStatusHandler(ValidationStatusHandler<T> validationStatusHandler);
 
 	/**
 	 * Get the {@link ValidationStatusHandler} to use to track validation status changes, if available.
 	 * @return the optional {@link ValidationStatusHandler}
 	 */
-	Optional<ValidationStatusHandler> getValidationStatusHandler();
+	Optional<ValidationStatusHandler<T>> getValidationStatusHandler();
 
 	/**
 	 * Create a {@link ValidatableInput} from given {@link Input} instance.
@@ -80,7 +88,7 @@ public interface ValidatableInput<V> extends Input<V>, Validatable {
 	 */
 	static <T> ValidatableInput<T> from(Input<T> input) {
 		ObjectUtils.argumentNotNull(input, "Input must be not null");
-		return (input instanceof ValidatableInput) ? (ValidatableInput<T>) input : new ValidatableInputWrapper<>(input);
+		return (input instanceof ValidatableInput) ? (ValidatableInput<T>) input : new ValidatableInputAdapter<>(input);
 	}
 
 	/**
@@ -90,7 +98,8 @@ public interface ValidatableInput<V> extends Input<V>, Validatable {
 	 * @param field The field instance (not null)
 	 * @return A new {@link ValidatableInput} component which wraps the given <code>field</code>
 	 */
-	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> ValidatableInput<T> from(F field) {
+	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> ValidatableInput<T> from(
+			F field) {
 		return from(Input.from(field));
 	}
 

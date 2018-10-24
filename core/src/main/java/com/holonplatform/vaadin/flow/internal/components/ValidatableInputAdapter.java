@@ -31,38 +31,42 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * A {@link ValidatableInput} implementation wrapping a concrete {@link Input} instance.
+ * Adapter to convert an {@link Input} instance into a {@link ValidatableInput} one.
  * 
- * @param <V> Value type
+ * @param <T> Value type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
-public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
+public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 
 	private static final long serialVersionUID = -2291397152828158839L;
 
 	/**
 	 * Wrapped input
 	 */
-	private final Input<V> input;
+	private final Input<T> input;
 
 	/**
 	 * Validators
 	 */
-	private final List<Validator<V>> validators = new LinkedList<>();
+	private final List<Validator<T>> validators = new LinkedList<>();
 
 	/**
 	 * Validation status handler
 	 */
-	private ValidationStatusHandler validationStatusHandler = ValidationStatusHandler.getDefault();
+	private ValidationStatusHandler<T> validationStatusHandler = ValidationStatusHandler.getDefault();
 
 	/**
 	 * Whether to validate the input when value changes
 	 */
-	private boolean validateOnValueChange = true;
+	private boolean validateOnValueChange;
 
 	/**
 	 * The validation listener registration reference
@@ -73,12 +77,10 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * Constructor
 	 * @param input Wrapped input
 	 */
-	public ValidatableInputWrapper(Input<V> input) {
+	public ValidatableInputAdapter(Input<T> input) {
 		super();
 		ObjectUtils.argumentNotNull(input, "Input must be not null");
 		this.input = input;
-		// setup validation on value change by default
-		setValidateOnValueChange(true);
 	}
 
 	/*
@@ -146,6 +148,60 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		input.setVisible(visible);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return input.isVisible();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
+	 */
+	@Override
+	public Optional<HasEnabled> hasEnabled() {
+		return input.hasEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
+	 */
+	@Override
+	public Optional<HasStyle> hasStyle() {
+		return input.hasStyle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
+	 */
+	@Override
+	public Optional<HasSize> hasSize() {
+		return input.hasSize();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasValidation()
+	 */
+	@Override
+	public Optional<HasValidation> hasValidation() {
+		return input.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.Input#focus()
 	 */
 	@Override
@@ -155,10 +211,19 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getEmptyValue()
+	 */
+	@Override
+	public T getEmptyValue() {
+		return input.getEmptyValue();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ValueHolder#setValue(java.lang.Object)
 	 */
 	@Override
-	public void setValue(V value) {
+	public void setValue(T value) {
 		input.setValue(value);
 	}
 
@@ -167,8 +232,18 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * @see com.holonplatform.vaadin.components.ValueHolder#getValue()
 	 */
 	@Override
-	public V getValue() {
+	public T getValue() {
 		return input.getValue();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValidatableInput#getValueIfValid()
+	 */
+	@Override
+	public T getValueIfValid() {
+		validate();
+		return getValue();
 	}
 
 	/*
@@ -189,7 +264,7 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueChangeListener<V> listener) {
+	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
 		return input.addValueChangeListener(listener);
 	}
 
@@ -202,20 +277,19 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 		return input.getComponent();
 	}
 
-	/**
-	 * Get all registered {@link Validator}s.
-	 * @return the registered validators, an empty {@link List} if none
-	 */
-	protected List<Validator<V>> getValidators() {
-		return validators;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.Validatable#validate()
 	 */
 	@Override
 	public void validate() throws ValidationException {
+		// check HasValidation
+		Optional<ValidationException> ve = hasValidation().filter(v -> v.isInvalid()).map(v -> new ValidationException(
+				(v.getErrorMessage() != null) ? v.getErrorMessage() : "Invalid input value"));
+		if (ve.isPresent()) {
+			throw ve.get();
+		}
+		// validate using validators
 		validate(getValue());
 	}
 
@@ -224,7 +298,7 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * @see com.holonplatform.vaadin.components.ValidatableInput#addValidator(com.holonplatform.core.Validator)
 	 */
 	@Override
-	public Registration addValidator(Validator<V> validator) {
+	public Registration addValidator(Validator<T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		validators.add(validator);
 		return () -> validators.remove(validator);
@@ -269,7 +343,7 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(ValidationStatusHandler validationStatusHandler) {
+	public void setValidationStatusHandler(ValidationStatusHandler<T> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 
@@ -278,8 +352,16 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * @see com.holonplatform.vaadin.components.ValidatableInput#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<T>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
+	}
+
+	/**
+	 * Get all registered {@link Validator}s.
+	 * @return the registered validators, an empty {@link List} if none
+	 */
+	protected List<Validator<T>> getValidators() {
+		return validators;
 	}
 
 	/**
@@ -287,10 +369,10 @@ public class ValidatableInputWrapper<V> implements ValidatableInput<V> {
 	 * @param value Value to validate
 	 * @throws ValidationException If the value is not valid
 	 */
-	protected void validate(V value) throws ValidationException {
+	protected void validate(T value) throws ValidationException {
 
 		LinkedList<ValidationException> failures = new LinkedList<>();
-		for (Validator<V> validator : getValidators()) {
+		for (Validator<T> validator : getValidators()) {
 			try {
 				validator.validate(value);
 			} catch (ValidationException ve) {

@@ -31,7 +31,7 @@ import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
  * 
  * @param <T> Value type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilder<T, ValidatableInput<T>> {
 
@@ -78,7 +78,7 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 */
 	@Override
 	public ValidatableInputBuilder<T, ValidatableInput<T>> validationStatusHandler(
-			ValidationStatusHandler validationStatusHandler) {
+			ValidationStatusHandler<T> validationStatusHandler) {
 		ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
 		instance.setValidationStatusHandler(validationStatusHandler);
 		return this;

@@ -23,11 +23,12 @@ import com.vaadin.flow.component.HasText;
 /**
  * A {@link ValidationStatusHandler} which uses a {@link HasText} component to notify validation errors.
  *
+ * @param <T> Value type
  * @param <L> Component type
  *
  * @since 5.2.0
  */
-public class LabelValidationStatusHandler<L extends Component & HasText> implements ValidationStatusHandler {
+public class LabelValidationStatusHandler<T, L extends Component & HasText> implements ValidationStatusHandler<T> {
 
 	private final L label;
 	private final boolean hideWhenValid;
@@ -42,6 +43,10 @@ public class LabelValidationStatusHandler<L extends Component & HasText> impleme
 		ObjectUtils.argumentNotNull(label, "Status label must be not null");
 		this.label = label;
 		this.hideWhenValid = hideWhenValid;
+
+		if (hideWhenValid) {
+			label.setVisible(false);
+		}
 	}
 
 	/*
@@ -50,7 +55,7 @@ public class LabelValidationStatusHandler<L extends Component & HasText> impleme
 	 * components.ValidationStatusHandler.ValidationStatusEvent)
 	 */
 	@Override
-	public void validationStatusChange(ValidationStatusEvent<?> statusChangeEvent) {
+	public void validationStatusChange(ValidationStatusEvent<T> statusChangeEvent) {
 		label.setText(statusChangeEvent.getErrorMessage());
 		if (hideWhenValid) {
 			// Only show the label when validation has failed

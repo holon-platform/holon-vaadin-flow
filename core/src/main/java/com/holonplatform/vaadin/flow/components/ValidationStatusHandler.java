@@ -34,18 +34,20 @@ import com.vaadin.flow.component.notification.Notification;
 /**
  * Handler for validation status change events, typically bound to a {@link ValueComponent} source object.
  * 
- * @since 5.0.0
+ * @param <T> Value type
+ * 
+ * @since 5.2.0
  */
 // TODO APICHG: Label validation status handler replaced with HasText
 @FunctionalInterface
-public interface ValidationStatusHandler {
+public interface ValidationStatusHandler<T> {
 
 	/**
 	 * Invoked when the validation status has changed.
 	 * @param statusChangeEvent the changed status event, providing validation status, error message and the optional
 	 *        source component
 	 */
-	void validationStatusChange(ValidationStatusEvent<?> statusChangeEvent);
+	void validationStatusChange(ValidationStatusEvent<T> statusChangeEvent);
 
 	/**
 	 * Create and return the default {@link ValidationStatusHandler}.
@@ -58,10 +60,11 @@ public interface ValidationStatusHandler {
 	 * If the component against whom the validation is performed does not implement {@link HasValidation}, a warning is
 	 * logged.
 	 * </p>
+	 * @param <T> Value type
 	 * @return A new default {@link ValidationStatusHandler} instance
 	 */
-	static ValidationStatusHandler getDefault() {
-		return new DefaultValidationStatusHandler();
+	static <T> ValidationStatusHandler<T> getDefault() {
+		return new DefaultValidationStatusHandler<>();
 	}
 
 	/**
@@ -70,20 +73,22 @@ public interface ValidationStatusHandler {
 	 * By default, the status label is set to visible only when the validation status is invalid, i.e. a validation
 	 * error to display is available.
 	 * </p>
+	 * @param <T> Value type
 	 * @param statusLabel The {@link HasText} component to use to notify validation errors (not null)
 	 * @return A new validation status handler instance
 	 */
-	static <L extends Component & HasText> ValidationStatusHandler label(L statusLabel) {
+	static <T, L extends Component & HasText> ValidationStatusHandler<T> label(L statusLabel) {
 		return label(statusLabel, true);
 	}
 
 	/**
 	 * Create a {@link ValidationStatusHandler} which uses a {@link HasText} component to notify validation errors.
+	 * @param <T> Value type
 	 * @param statusLabel The {@link HasText} component to use to notify validation errors (not null)
 	 * @param hideWhenValid whether to hide the component when the validation status is not invalid
 	 * @return A new validation status handler instance
 	 */
-	static <L extends Component & HasText> ValidationStatusHandler label(L statusLabel, boolean hideWhenValid) {
+	static <T, L extends Component & HasText> ValidationStatusHandler<T> label(L statusLabel, boolean hideWhenValid) {
 		return new LabelValidationStatusHandler<>(statusLabel, hideWhenValid);
 	}
 
@@ -93,21 +98,23 @@ public interface ValidationStatusHandler {
 	 * <p>
 	 * This methods creates a notification validation status handler which displays only the first validation error.
 	 * </p>
+	 * @param <T> Value type
 	 * @return A new notification validation status handler instance
 	 */
-	static ValidationStatusHandler notification() {
-		return new NotificationValidationStatusHandler(null, false);
+	static <T> ValidationStatusHandler<T> notification() {
+		return new NotificationValidationStatusHandler<>(null, false);
 	}
 
 	/**
 	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} of type
 	 * {@link Notification#TYPE_ERROR_MESSAGE} to notify validation errors.
+	 * @param <T> Value type
 	 * @param showAllErrors <code>true</code> to display all validation errors, <code>false</code> to show only the
 	 *        first
 	 * @return A new notification validation status handler instance
 	 */
-	static ValidationStatusHandler notification(boolean showAllErrors) {
-		return new NotificationValidationStatusHandler(null, showAllErrors);
+	static <T> ValidationStatusHandler<T> notification(boolean showAllErrors) {
+		return new NotificationValidationStatusHandler<>(null, showAllErrors);
 	}
 
 	/**
@@ -115,11 +122,12 @@ public interface ValidationStatusHandler {
 	 * <p>
 	 * This methods creates a notification validation status handler which displays only the first validation error.
 	 * </p>
+	 * @param <T> Value type
 	 * @param notification The notification instance to use, <code>null</code> for default
 	 * @return A new notification validation status handler instance
 	 */
-	static ValidationStatusHandler notification(Notification notification) {
-		return new NotificationValidationStatusHandler(notification, false);
+	static <T> ValidationStatusHandler<T> notification(Notification notification) {
+		return new NotificationValidationStatusHandler<>(notification, false);
 	}
 
 	/**
@@ -127,10 +135,11 @@ public interface ValidationStatusHandler {
 	 * @param notification The notification instance to use, <code>null</code> for default
 	 * @param showAllErrors <code>true</code> to display all validation errors, <code>false</code> to show only the
 	 *        first
+	 * @param <T> Value type
 	 * @return A new notification validation status handler instance
 	 */
-	static ValidationStatusHandler notification(Notification notification, boolean showAllErrors) {
-		return new NotificationValidationStatusHandler(notification, showAllErrors);
+	static <T> ValidationStatusHandler<T> notification(Notification notification, boolean showAllErrors) {
+		return new NotificationValidationStatusHandler<>(notification, showAllErrors);
 	}
 
 	/**

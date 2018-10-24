@@ -26,9 +26,11 @@ import com.vaadin.flow.component.HasValidation;
  * Default {@link ValidationStatusHandler} implementation using {@link HasValidation#setErrorMessage(String)} to notify
  * the validation status when supported by the component.
  * 
+ * @param <T> Value type
+ * 
  * @since 5.2.0
  */
-public class DefaultValidationStatusHandler implements ValidationStatusHandler {
+public class DefaultValidationStatusHandler<T> implements ValidationStatusHandler<T> {
 
 	private final static Logger LOGGER = VaadinLogger.create();
 
@@ -38,7 +40,7 @@ public class DefaultValidationStatusHandler implements ValidationStatusHandler {
 	 * components.ValidationStatusHandler.ValidationStatusEvent)
 	 */
 	@Override
-	public void validationStatusChange(final ValidationStatusEvent<?> statusChangeEvent) {
+	public void validationStatusChange(final ValidationStatusEvent<T> statusChangeEvent) {
 		statusChangeEvent.getSource().ifPresent(c -> {
 			setComponentError(c, statusChangeEvent.isInvalid() ? statusChangeEvent.getErrorMessage() : null);
 		});
