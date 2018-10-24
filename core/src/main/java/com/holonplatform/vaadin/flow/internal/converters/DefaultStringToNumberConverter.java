@@ -18,9 +18,10 @@ package com.holonplatform.vaadin.flow.internal.converters;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
@@ -77,6 +78,11 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	private final NumberFormat numberFormat;
 
 	/**
+	 * Number format pattern
+	 */
+	private final String numberFormatPattern;
+
+	/**
 	 * Whether to use grouping
 	 */
 	private boolean useGrouping = true;
@@ -91,7 +97,7 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * @param numberType Number type
 	 */
 	public DefaultStringToNumberConverter(Class<? extends T> numberType) {
-		this(numberType, null, null);
+		this(numberType, null, null, null);
 	}
 
 	/**
@@ -100,7 +106,7 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * @param locale The {@link Locale} to use
 	 */
 	public DefaultStringToNumberConverter(Class<? extends T> numberType, Locale locale) {
-		this(numberType, null, locale);
+		this(numberType, null, locale, null);
 	}
 
 	/**
@@ -109,7 +115,16 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * @param numberFormat The {@link NumberFormat} to use
 	 */
 	public DefaultStringToNumberConverter(Class<? extends T> numberType, NumberFormat numberFormat) {
-		this(numberType, numberFormat, null);
+		this(numberType, numberFormat, null, null);
+	}
+
+	/**
+	 * Constructor with fixed number format pattern.
+	 * @param numberType Number type
+	 * @param numberFormatPattern The number format pattern to use
+	 */
+	public DefaultStringToNumberConverter(Class<? extends T> numberType, String numberFormatPattern) {
+		this(numberType, null, null, numberFormatPattern);
 	}
 
 	/**
@@ -118,12 +133,14 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * @param numberFormat Optional {@link NumberFormat} to use
 	 * @param locale Optional {@link Locale} to use
 	 */
-	public DefaultStringToNumberConverter(Class<? extends T> numberType, NumberFormat numberFormat, Locale locale) {
+	private DefaultStringToNumberConverter(Class<? extends T> numberType, NumberFormat numberFormat, Locale locale,
+			String numberFormatPattern) {
 		super();
 		ObjectUtils.argumentNotNull(numberType, "Number type must be not null");
 		this.numberType = numberType;
 		this.numberFormat = numberFormat;
 		this.locale = locale;
+		this.numberFormatPattern = numberFormatPattern;
 	}
 
 	/**
@@ -140,6 +157,14 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 */
 	protected Optional<NumberFormat> getNumberFormat() {
 		return Optional.ofNullable(numberFormat);
+	}
+
+	/**
+	 * Get the fixed number format pattern to use for value conversions.
+	 * @return Optional fixed number format pattern
+	 */
+	protected Optional<String> getNumberFormatPattern() {
+		return Optional.ofNullable(numberFormatPattern);
 	}
 
 	/**
@@ -239,7 +264,11 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * @return The {@link NumberFormat} to use for value conversions
 	 */
 	protected NumberFormat getNumberFormat(ValueContext context) {
-		// check fixed
+		// check fixed pattern
+		if (getNumberFormatPattern().isPresent()) {
+			return new DecimalFormat(getNumberFormatPattern().get(), new DecimalFormatSymbols(getLocale(context)));
+		}
+		// check fixed NumberFormat
 		if (getNumberFormat().isPresent()) {
 			return getNumberFormat().get();
 		}
@@ -266,6 +295,11 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 			return symbols;
 		}
 		// by Locale
+		symbols = getLocale().map(locale -> DecimalFormatSymbols.getInstance(locale));
+		if (symbols.isPresent()) {
+			return symbols;
+		}
+		// use current Locale
 		return getCurrentLocale().map(locale -> DecimalFormatSymbols.getInstance(locale));
 	}
 
@@ -299,21 +333,46 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 */
 	@Override
 	public String getValidationPattern() {
-		final String grouping = getGroupingSymbol().map(s -> String.valueOf(s)).orElse(null);
+		final Character grouping = getGroupingSymbol().orElse(null);
 		if (TypeUtils.isDecimalNumber(getNumberType())) {
 			// decimals
-			// TODO
+			final Character decimals = getDecimalSymbol().orElse('.');
+			if (isUseGrouping() && grouping != null) {
+				final String decimalPattern = escape(decimals) + PATTERN_DECIMAL_SUFFIX;
+				return isAllowNegatives()
+						? PATTERN_NEGATIVE_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern
+						: PATTERN_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern;
+			} else {
+				final String decimalPattern = PATTERN_DECIMAL_PREFIX + escape(decimals) + PATTERN_DECIMAL_SUFFIX;
+				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + decimalPattern : decimalPattern;
+			}
 		} else {
 			// integers
 			if (isUseGrouping() && grouping != null) {
-				return isAllowNegatives()
-						? PATTERN_NEGATIVE_GROUPS_PREFIX + Pattern.quote(grouping) + PATTERN_GROUPS_SUFFIX
-						: PATTERN_GROUPS_PREFIX + Pattern.quote(grouping) + PATTERN_GROUPS_SUFFIX;
+				return isAllowNegatives() ? PATTERN_NEGATIVE_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX
+						: PATTERN_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX;
 			} else {
 				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + PATTERN_INTEGER : PATTERN_INTEGER;
 			}
 		}
-		return null;
+	}
+
+	private static final List<Character> REGEX_RESERVED = Arrays.asList('.', '<', '(', '[', '{', '\\', '^', '-', '=',
+			'$', '!', '|', ']', '}', ')', '?', '*', '+', '>');
+
+	/**
+	 * Escape given character for regex if required.
+	 * @param c Character to escape
+	 * @return Escaped character
+	 */
+	private static String escape(Character c) {
+		if (c == null) {
+			return null;
+		}
+		if (REGEX_RESERVED.contains(c)) {
+			return "\\" + c;
+		}
+		return String.valueOf(c);
 	}
 
 	/*
@@ -324,8 +383,8 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	public Result<T> convertToModel(String value, ValueContext context) {
 		if (value != null && !value.trim().equals("")) {
 			try {
-				T number = ConversionUtils.convertNumberToTargetClass(getNumberFormat(context).parse(value.trim()),
-						numberType);
+				final T number = ConversionUtils
+						.convertNumberToTargetClass(getNumberFormat(context).parse(value.trim()), numberType);
 				if (number != null && !isAllowNegatives() && Math.signum(number.doubleValue()) < 0) {
 					return Result.error("Negative numbers not allowed [" + value + "]");
 				}
@@ -346,6 +405,85 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	@Override
 	public String convertToPresentation(T value, ValueContext context) {
 		return (value != null) ? getNumberFormat(context).format(value) : null;
+	}
+
+	/**
+	 * Default {@link Builder} implementation.
+	 *
+	 * @param <T> Number type
+	 */
+	public static class DefaultBuilder<T extends Number> implements Builder<T> {
+
+		private final DefaultStringToNumberConverter<T> instance;
+
+		/**
+		 * Default constructor. The {@link NumberFormat} to use will be obtained from the current {@link Locale}.
+		 * @param numberType Number type
+		 */
+		public DefaultBuilder(Class<? extends T> numberType) {
+			super();
+			this.instance = new DefaultStringToNumberConverter<>(numberType);
+		}
+
+		/**
+		 * Constructor with fixed {@link Locale}.
+		 * @param numberType Number type
+		 * @param locale The {@link Locale} to use
+		 */
+		public DefaultBuilder(Class<? extends T> numberType, Locale locale) {
+			super();
+			this.instance = new DefaultStringToNumberConverter<>(numberType, locale);
+		}
+
+		/**
+		 * Constructor with fixed {@link NumberFormat}.
+		 * @param numberType Number type
+		 * @param numberFormat The {@link NumberFormat} to use
+		 */
+		public DefaultBuilder(Class<? extends T> numberType, NumberFormat numberFormat) {
+			super();
+			this.instance = new DefaultStringToNumberConverter<>(numberType, numberFormat);
+		}
+
+		/**
+		 * Constructor with fixed number format pattern.
+		 * @param numberType Number type
+		 * @param numberFormatPattern The number format pattern to use
+		 */
+		public DefaultBuilder(Class<? extends T> numberType, String numberFormatPattern) {
+			super();
+			this.instance = new DefaultStringToNumberConverter<>(numberType, numberFormatPattern);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#grouping(boolean)
+		 */
+		@Override
+		public Builder<T> grouping(boolean grouping) {
+			this.instance.setUseGrouping(grouping);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#negatives(boolean)
+		 */
+		@Override
+		public Builder<T> negatives(boolean negatives) {
+			this.instance.setAllowNegatives(negatives);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#build()
+		 */
+		@Override
+		public StringToNumberConverter<T> build() {
+			return this.instance;
+		}
+
 	}
 
 }

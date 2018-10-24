@@ -82,7 +82,7 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 */
 	String getValidationPattern();
 
-	// builders
+	// direct builders
 
 	/**
 	 * Create a new {@link StringToNumberConverter} for given number type.
@@ -90,8 +90,8 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @param numberType Number type (not null)
 	 * @return A new {@link StringToNumberConverter}
 	 */
-	static <T extends Number> StringToNumberConverter<T> create(Class<? extends T> numberType) {
-		return new DefaultStringToNumberConverter<>(numberType);
+	static <T extends Number> StringToNumberConverter<T> create(Class<T> numberType) {
+		return builder(numberType).build();
 	}
 
 	/**
@@ -101,8 +101,22 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @param locale The {@link Locale} to use
 	 * @return A new {@link StringToNumberConverter}
 	 */
-	static <T extends Number> StringToNumberConverter<T> create(Class<? extends T> numberType, Locale locale) {
-		return new DefaultStringToNumberConverter<>(numberType, locale);
+	static <T extends Number> StringToNumberConverter<T> create(Class<T> numberType, Locale locale) {
+		return builder(numberType, locale).build();
+	}
+
+	/**
+	 * Create a new {@link StringToNumberConverter} for given number type and using given number format pattern.
+	 * <p>
+	 * The pattern style must be consistent with the Java DecimalFormat pattern conventions.
+	 * </p>
+	 * @param <T> Number type
+	 * @param numberType Number type (not null)
+	 * @param numberFormatPattern The number format pattern to use
+	 * @return A new {@link StringToNumberConverter}
+	 */
+	static <T extends Number> StringToNumberConverter<T> create(Class<T> numberType, String numberFormatPattern) {
+		return builder(numberType, numberFormatPattern).build();
 	}
 
 	/**
@@ -112,9 +126,93 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @param numberFormat The {@link NumberFormat} to use
 	 * @return A new {@link StringToNumberConverter}
 	 */
-	static <T extends Number> StringToNumberConverter<T> create(Class<? extends T> numberType,
-			NumberFormat numberFormat) {
-		return new DefaultStringToNumberConverter<>(numberType, numberFormat);
+	static <T extends Number> StringToNumberConverter<T> create(Class<T> numberType, NumberFormat numberFormat) {
+		return builder(numberType, numberFormat).build();
+	}
+
+	// builders
+
+	/**
+	 * Get a {@link Builder} to create and configure a {@link StringToNumberConverter} for given number type.
+	 * @param <T> Number type
+	 * @param numberType Number type (not null)
+	 * @return A new {@link StringToNumberConverter} builder
+	 */
+	static <T extends Number> Builder<T> builder(Class<? extends T> numberType) {
+		return new DefaultStringToNumberConverter.DefaultBuilder<>(numberType);
+	}
+
+	/**
+	 * Get a {@link Builder} to create and configure a {@link StringToNumberConverter} for given number type and given
+	 * {@link Locale}.
+	 * @param <T> Number type
+	 * @param numberType Number type (not null)
+	 * @param locale The {@link Locale} to use
+	 * @return A new {@link StringToNumberConverter} builder
+	 */
+	static <T extends Number> Builder<T> builder(Class<? extends T> numberType, Locale locale) {
+		return new DefaultStringToNumberConverter.DefaultBuilder<>(numberType, locale);
+	}
+
+	/**
+	 * Get a {@link Builder} to create and configure a {@link StringToNumberConverter} for given number type and using
+	 * given number format pattern.
+	 * <p>
+	 * The pattern style must be consistent with the Java DecimalFormat pattern conventions.
+	 * </p>
+	 * @param <T> Number type
+	 * @param numberType Number type (not null)
+	 * @param numberFormatPattern The number format pattern to use
+	 * @return A new {@link StringToNumberConverter} builder
+	 */
+	static <T extends Number> Builder<T> builder(Class<? extends T> numberType, String numberFormatPattern) {
+		return new DefaultStringToNumberConverter.DefaultBuilder<>(numberType, numberFormatPattern);
+	}
+
+	/**
+	 * Get a {@link Builder} to create and configure a {@link StringToNumberConverter} for given number type and using
+	 * given {@link NumberFormat}.
+	 * @param <T> Number type
+	 * @param numberType Number type (not null)
+	 * @param numberFormat The {@link NumberFormat} to use
+	 * @return A new {@link StringToNumberConverter} builder
+	 */
+	static <T extends Number> Builder<T> builder(Class<? extends T> numberType, NumberFormat numberFormat) {
+		return new DefaultStringToNumberConverter.DefaultBuilder<>(numberType, numberFormat);
+	}
+
+	/**
+	 * {@link StringToNumberConverter} builder.
+	 * 
+	 * @param <T> Number type
+	 */
+	public interface Builder<T extends Number> {
+
+		/**
+		 * Set whether to use grouping.
+		 * <p>
+		 * Default is <code>true</code>.
+		 * </p>
+		 * @param useGrouping whether to use grouping
+		 * @return this
+		 */
+		Builder<T> grouping(boolean grouping);
+
+		/**
+		 * Set whether to allow negative numbers.
+		 * <p>
+		 * Default is <code>true</code>.
+		 * </p>
+		 * @param allowNegatives whether to allow negative numbers
+		 */
+		Builder<T> negatives(boolean negatives);
+
+		/**
+		 * Build and obtain the {@link StringToNumberConverter}.
+		 * @return the {@link StringToNumberConverter} instance
+		 */
+		StringToNumberConverter<T> build();
+
 	}
 
 }
