@@ -51,9 +51,9 @@ public class SingleSelectInputAdapter<T> implements SingleSelect<T> {
 	private final Runnable refreshOperation;
 
 	/**
-	 * Default constructor.
-	 * @param field The {@link HasValue} instance (not null)
-	 * @param component The {@link Component} instance (not null)
+	 * Constructor.
+	 * @param input The concrete {@link Input} instance (not null)
+	 * @param refreshOperation The <code>refresh</code> operation (not null)
 	 */
 	public SingleSelectInputAdapter(Input<T> input, Runnable refreshOperation) {
 		super();

@@ -16,22 +16,25 @@
 package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.HasPlaceholder;
+import com.holonplatform.vaadin.flow.components.HasTitle;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -43,81 +46,40 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.2.0
  */
-public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends Component>
-		extends InputAdapter<Set<T>, V, C> implements MultiSelect<T> {
+public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadin.flow.data.selection.MultiSelect<C, T>>
+		implements MultiSelect<T> {
 
 	private static final long serialVersionUID = -238233555416654435L;
 
 	private final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
-	private BiConsumer<V, C> refreshOperation;
-	private BiFunction<V, C, DataProvider<T, ?>> dataProviderSupplier;
+	private final Input<Set<T>> input;
 
-	private com.vaadin.flow.data.selection.MultiSelect<C, T> multiSelect;
+	private final M multiSelect;
 
-	/**
-	 * Default constructor.
-	 * @param field The {@link HasValue} instance (not null)
-	 * @param component The {@link Component} instance (not null)
-	 */
-	public MultiSelectInputAdapter(V field, C component) {
-		super(field, component);
-		// selection change
-		field.addValueChangeListener(e -> fireSelectionListeners(e.getValue(), e.isFromClient()));
-	}
+	private final Consumer<M> refreshOperation;
+
+	private final Consumer<M> selectAllOperation;
 
 	/**
-	 * Constructor using a {@link com.vaadin.flow.data.selection.MultiSelect}.
-	 * @param <M> MultiSelect type
-	 * @param field The {@link com.vaadin.flow.data.selection.MultiSelect} instance (not null)
-	 * @param component The {@link Component} instance (not null)
+	 * Constructor.
+	 * @param input The concrete {@link Input} instance (not null)
+	 * @param multiSelect The MultiSelect instance
+	 * @param refreshOperation The <code>refresh</code> operation (not null)
+	 * @param selectAllOperation The <code>selectAll</code> operation
 	 */
-	@SuppressWarnings("unchecked")
-	public <M extends com.vaadin.flow.data.selection.MultiSelect<C, T>> MultiSelectInputAdapter(M field, C component) {
-		super((V) field, component);
-		this.multiSelect = field;
-		// selection change
-		field.addSelectionListener(e -> fireSelectionListeners(e.getNewSelection(), e.isFromClient()));
-	}
-
-	/**
-	 * Gwt the {@link com.vaadin.flow.data.selection.MultiSelect} field instance, if available.
-	 * @return Optional MultiSelect
-	 */
-	protected Optional<com.vaadin.flow.data.selection.MultiSelect<C, T>> getMultiSelect() {
-		return Optional.ofNullable(multiSelect);
-	}
-
-	/**
-	 * Get the <code>refresh</code> operation, if available.
-	 * @return Optional <code>refresh</code> operation
-	 */
-	public Optional<BiConsumer<V, C>> getRefreshOperation() {
-		return Optional.ofNullable(refreshOperation);
-	}
-
-	/**
-	 * Set the <code>refresh</code> operation.
-	 * @param refreshOperation the operation to set
-	 */
-	public void setRefreshOperation(BiConsumer<V, C> refreshOperation) {
+	public MultiSelectInputAdapter(Input<Set<T>> input, M multiSelect, Consumer<M> refreshOperation,
+			Consumer<M> selectAllOperation) {
+		super();
+		ObjectUtils.argumentNotNull(input, "Input must be not null");
+		ObjectUtils.argumentNotNull(multiSelect, "MultiSelect must be not null");
+		ObjectUtils.argumentNotNull(refreshOperation, "Refresh operation must be not null");
+		this.input = input;
+		this.multiSelect = multiSelect;
 		this.refreshOperation = refreshOperation;
-	}
-
-	/**
-	 * Get the {@link DataProvider} supplier, if available.
-	 * @return Optional {@link DataProvider} supplier
-	 */
-	public Optional<BiFunction<V, C, DataProvider<T, ?>>> getDataProviderSupplier() {
-		return Optional.ofNullable(dataProviderSupplier);
-	}
-
-	/**
-	 * Set the {@link DataProvider} supplier.
-	 * @param dataProviderSupplier the supplier to set
-	 */
-	public void setDataProviderSupplier(BiFunction<V, C, DataProvider<T, ?>> dataProviderSupplier) {
-		this.dataProviderSupplier = dataProviderSupplier;
+		this.selectAllOperation = selectAllOperation;
+		// selection change on value change
+		input.addValueChangeListener(e -> fireSelectionListeners(e.getValue(), e.isUserOriginated()));
 	}
 
 	/*
@@ -126,7 +88,7 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public Set<T> getSelectedItems() {
-		return getMultiSelect().map(s -> s.getSelectedItems()).orElseGet(() -> getValue());
+		return multiSelect.getSelectedItems();
 	}
 
 	/*
@@ -135,11 +97,7 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public void deselectAll() {
-		if (getMultiSelect().isPresent()) {
-			getMultiSelect().get().deselectAll();
-		} else {
-			clear();
-		}
+		multiSelect.deselectAll();
 	}
 
 	/*
@@ -148,11 +106,7 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public void refresh() {
-		if (getRefreshOperation().isPresent()) {
-			getRefreshOperation().get().accept(getField(), getInputComponent());
-		} else {
-			getDataProvider().ifPresent(d -> d.refreshAll());
-		}
+		refreshOperation.accept(multiSelect);
 	}
 
 	/*
@@ -161,11 +115,7 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public void select(Iterable<T> items) {
-		if (getMultiSelect().isPresent()) {
-			getMultiSelect().get().updateSelection(ConversionUtils.iterableAsSet(items), Collections.emptySet());
-		} else {
-			setValue(ConversionUtils.iterableAsSet(items));
-		}
+		multiSelect.updateSelection(ConversionUtils.iterableAsSet(items), Collections.emptySet());
 	}
 
 	/*
@@ -174,17 +124,7 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public void deselect(Iterable<T> items) {
-		if (getMultiSelect().isPresent()) {
-			getMultiSelect().get().updateSelection(Collections.emptySet(), ConversionUtils.iterableAsSet(items));
-		} else {
-			final Set<T> deselect = ConversionUtils.iterableAsSet(items);
-			Set<T> selected = getValue();
-			if (deselect != null && !deselect.isEmpty() && selected != null && !selected.isEmpty()) {
-				Set<T> value = new HashSet<>(selected);
-				value.removeIf(item -> deselect.contains(item));
-				setValue(value);
-			}
-		}
+		multiSelect.updateSelection(Collections.emptySet(), ConversionUtils.iterableAsSet(items));
 	}
 
 	/*
@@ -193,9 +133,9 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 	 */
 	@Override
 	public void selectAll() {
-		getDataProvider().ifPresent(d -> {
-			select(d.fetch(new Query<>()).collect(Collectors.toSet()));
-		});
+		if (selectAllOperation != null) {
+			selectAllOperation.accept(multiSelect);
+		}
 	}
 
 	/*
@@ -222,12 +162,194 @@ public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends
 				.forEach(listener -> listener.onSelectionChange(new DefaultSelectionEvent<>(values, fromClient)));
 	}
 
-	/**
-	 * Get the {@link DataProvider}, if available.
-	 * @return Optional {@link DataProvider}
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#setReadOnly(boolean)
 	 */
-	protected Optional<DataProvider<T, ?>> getDataProvider() {
-		return getDataProviderSupplier().map(s -> s.apply(getField(), getInputComponent()));
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		input.setReadOnly(readOnly);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#isReadOnly()
+	 */
+	@Override
+	public boolean isReadOnly() {
+		return input.isReadOnly();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#isRequired()
+	 */
+	@Override
+	public boolean isRequired() {
+		return input.isRequired();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#setRequired(boolean)
+	 */
+	@Override
+	public void setRequired(boolean required) {
+		input.setRequired(required);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#focus()
+	 */
+	@Override
+	public void focus() {
+		input.focus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#setValue(java.lang.Object)
+	 */
+	@Override
+	public void setValue(Set<T> value) {
+		input.setValue(value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValue()
+	 */
+	@Override
+	public Set<T> getValue() {
+		return input.getValue();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getEmptyValue()
+	 */
+	@Override
+	public Set<T> getEmptyValue() {
+		return input.getEmptyValue();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#isEmpty()
+	 */
+	@Override
+	public boolean isEmpty() {
+		return input.isEmpty();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#clear()
+	 */
+	@Override
+	public void clear() {
+		input.clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
+	 * components.ValueHolder.ValueChangeListener)
+	 */
+	@Override
+	public Registration addValueChangeListener(ValueChangeListener<Set<T>> listener) {
+		return input.addValueChangeListener(listener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#getComponent()
+	 */
+	@Override
+	public Component getComponent() {
+		return input.getComponent();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasValidation()
+	 */
+	@Override
+	public Optional<HasValidation> hasValidation() {
+		return input.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveLabel#hasLabel()
+	 */
+	@Override
+	public Optional<HasLabel> hasLabel() {
+		return input.hasLabel();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHaveTitle#hasTitle()
+	 */
+	@Override
+	public Optional<HasTitle> hasTitle() {
+		return input.hasTitle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.MayHavePlaceholder#hasPlaceholder()
+	 */
+	@Override
+	public Optional<HasPlaceholder> hasPlaceholder() {
+		return input.hasPlaceholder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		input.setVisible(visible);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return input.isVisible();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
+	 */
+	@Override
+	public Optional<HasEnabled> hasEnabled() {
+		return input.hasEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
+	 */
+	@Override
+	public Optional<HasStyle> hasStyle() {
+		return input.hasStyle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
+	 */
+	@Override
+	public Optional<HasSize> hasSize() {
+		return input.hasSize();
 	}
 
 }
