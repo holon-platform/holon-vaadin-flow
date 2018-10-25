@@ -43,7 +43,7 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.2.0
  */
-public class MultiSelectAdapter<T, V extends HasValue<?, Set<T>>, C extends Component>
+public class MultiSelectInputAdapter<T, V extends HasValue<?, Set<T>>, C extends Component>
 		extends InputAdapter<Set<T>, V, C> implements MultiSelect<T> {
 
 	private static final long serialVersionUID = -238233555416654435L;
@@ -60,7 +60,7 @@ public class MultiSelectAdapter<T, V extends HasValue<?, Set<T>>, C extends Comp
 	 * @param field The {@link HasValue} instance (not null)
 	 * @param component The {@link Component} instance (not null)
 	 */
-	public MultiSelectAdapter(V field, C component) {
+	public MultiSelectInputAdapter(V field, C component) {
 		super(field, component);
 		// selection change
 		field.addValueChangeListener(e -> fireSelectionListeners(e.getValue(), e.isFromClient()));
@@ -73,7 +73,7 @@ public class MultiSelectAdapter<T, V extends HasValue<?, Set<T>>, C extends Comp
 	 * @param component The {@link Component} instance (not null)
 	 */
 	@SuppressWarnings("unchecked")
-	public <M extends com.vaadin.flow.data.selection.MultiSelect<C, T>> MultiSelectAdapter(M field, C component) {
+	public <M extends com.vaadin.flow.data.selection.MultiSelect<C, T>> MultiSelectInputAdapter(M field, C component) {
 		super((V) field, component);
 		this.multiSelect = field;
 		// selection change

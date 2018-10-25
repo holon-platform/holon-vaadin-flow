@@ -28,7 +28,8 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface NumberInputBuilder<T extends Number> extends InputBuilder<T, Input<T>, NumberInputBuilder<T>>,
+public interface NumberInputBuilder<T extends Number>
+		extends InputBuilder<T, Input<T>, NumberInputBuilder<T>>, InputValueConfigurator<T, NumberInputBuilder<T>>,
 		HasEnabledConfigurator<NumberInputBuilder<T>>, InputNotifierConfigurator<NumberInputBuilder<T>>,
 		KeyNotifierConfigurator<NumberInputBuilder<T>>, HasValueChangeModeConfigurator<NumberInputBuilder<T>>,
 		HasAutocompleteConfigurator<NumberInputBuilder<T>>, HasSizeConfigurator<NumberInputBuilder<T>>,

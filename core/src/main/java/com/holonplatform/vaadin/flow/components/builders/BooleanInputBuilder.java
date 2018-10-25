@@ -25,8 +25,8 @@ import com.vaadin.flow.component.checkbox.Checkbox;
  * 
  * @since 5.2.0
  */
-public interface BooleanInputBuilder
-		extends InputBuilder<Boolean, Input<Boolean>, BooleanInputBuilder>, HasSizeConfigurator<BooleanInputBuilder>,
+public interface BooleanInputBuilder extends InputBuilder<Boolean, Input<Boolean>, BooleanInputBuilder>,
+		InputValueConfigurator<Boolean, BooleanInputBuilder>, HasSizeConfigurator<BooleanInputBuilder>,
 		HasStyleConfigurator<BooleanInputBuilder>, HasEnabledConfigurator<BooleanInputBuilder>,
 		HasAutofocusConfigurator<BooleanInputBuilder>, FocusableConfigurator<Component, BooleanInputBuilder>,
 		HasLabelConfigurator<BooleanInputBuilder>, DeferrableLocalizationConfigurator<BooleanInputBuilder>,

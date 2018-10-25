@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @param <ITEM> Item type
  * @param <ID> Item id type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 @FunctionalInterface
 public interface ItemIdentifierProvider<ITEM, ID> extends Serializable {

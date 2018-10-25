@@ -185,13 +185,13 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * et a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} and {@link Component}
 	 * field instances.
 	 * @param <T> Value type
-	 * @param <V> {@link HasValue} type
+	 * @param <H> {@link HasValue} type
 	 * @param <C> {@link Component} type
 	 * @param field {@link HasValue} field (not null)
 	 * @param component Field {@link Component} (not null)
 	 * @return A new {@link HasValueInputBuilder}
 	 */
-	static <T, V extends HasValue<?, T>, C extends Component> HasValueInputBuilder<T, V, C> builder(V field,
+	static <T, H extends HasValue<?, T>, C extends Component> HasValueInputBuilder<T, H, C> builder(H field,
 			C component) {
 		return HasValueInputBuilder.create(field, component);
 	}

@@ -49,7 +49,7 @@ import com.vaadin.flow.data.provider.Query;
  * @param <ITEM> Item type
  * @param <PROPERTY> Item property type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  * 
  * @see ItemDataProvider
  */

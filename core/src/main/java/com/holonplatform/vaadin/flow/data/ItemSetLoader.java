@@ -26,7 +26,7 @@ import com.holonplatform.core.query.QueryConfigurationProvider;
  * 
  * @param <ITEM> Item type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 @FunctionalInterface
 public interface ItemSetLoader<ITEM> extends Serializable {

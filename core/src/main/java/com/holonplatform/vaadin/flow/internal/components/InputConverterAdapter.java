@@ -27,6 +27,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.shared.Registration;
@@ -241,6 +242,15 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public Optional<HasSize> hasSize() {
 		return input.hasSize();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasValidation()
+	 */
+	@Override
+	public Optional<HasValidation> hasValidation() {
+		return input.hasValidation();
 	}
 
 	/**

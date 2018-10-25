@@ -25,9 +25,9 @@ import com.vaadin.flow.component.Component;
  * @since 5.2.0
  */
 public interface StringAreaInputBuilder extends InputBuilder<String, Input<String>, StringAreaInputBuilder>,
-		TextInputConfigurator<StringAreaInputBuilder>, HasSizeConfigurator<StringAreaInputBuilder>,
-		HasStyleConfigurator<StringAreaInputBuilder>, HasAutofocusConfigurator<StringAreaInputBuilder>,
-		FocusableConfigurator<Component, StringAreaInputBuilder>,
+		InputValueConfigurator<String, StringAreaInputBuilder>, TextInputConfigurator<StringAreaInputBuilder>,
+		HasSizeConfigurator<StringAreaInputBuilder>, HasStyleConfigurator<StringAreaInputBuilder>,
+		HasAutofocusConfigurator<StringAreaInputBuilder>, FocusableConfigurator<Component, StringAreaInputBuilder>,
 		HasPrefixAndSuffixConfigurator<StringAreaInputBuilder>, CompositionNotifierConfigurator<StringAreaInputBuilder>,
 		HasPlaceholderConfigurator<StringAreaInputBuilder>, HasLabelConfigurator<StringAreaInputBuilder>,
 		DeferrableLocalizationConfigurator<StringAreaInputBuilder> {

@@ -46,13 +46,6 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	}
 
 	/**
-	 * Sets the initial value.
-	 * @param value The value to set
-	 * @return this
-	 */
-	C withValue(T value);
-
-	/**
 	 * Add a {@link ValueChangeListener} to be notified when the input value changes.
 	 * @param listener The {@link ValueChangeListener} to add (not null)
 	 * @return this

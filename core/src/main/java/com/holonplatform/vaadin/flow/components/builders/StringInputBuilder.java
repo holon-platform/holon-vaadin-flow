@@ -25,12 +25,13 @@ import com.vaadin.flow.component.Component;
  * @since 5.2.0
  */
 public interface StringInputBuilder extends InputBuilder<String, Input<String>, StringInputBuilder>,
-		TextInputConfigurator<StringInputBuilder>, HasSizeConfigurator<StringInputBuilder>,
-		HasStyleConfigurator<StringInputBuilder>, HasAutofocusConfigurator<StringInputBuilder>,
-		FocusableConfigurator<Component, StringInputBuilder>, HasPrefixAndSuffixConfigurator<StringInputBuilder>,
-		CompositionNotifierConfigurator<StringInputBuilder>, HasPlaceholderConfigurator<StringInputBuilder>,
-		HasLabelConfigurator<StringInputBuilder>, HasTitleConfigurator<StringInputBuilder>,
-		HasPatternConfigurator<StringInputBuilder>, DeferrableLocalizationConfigurator<StringInputBuilder> {
+		InputValueConfigurator<String, StringInputBuilder>, TextInputConfigurator<StringInputBuilder>,
+		HasSizeConfigurator<StringInputBuilder>, HasStyleConfigurator<StringInputBuilder>,
+		HasAutofocusConfigurator<StringInputBuilder>, FocusableConfigurator<Component, StringInputBuilder>,
+		HasPrefixAndSuffixConfigurator<StringInputBuilder>, CompositionNotifierConfigurator<StringInputBuilder>,
+		HasPlaceholderConfigurator<StringInputBuilder>, HasLabelConfigurator<StringInputBuilder>,
+		HasTitleConfigurator<StringInputBuilder>, HasPatternConfigurator<StringInputBuilder>,
+		DeferrableLocalizationConfigurator<StringInputBuilder> {
 
 	/**
 	 * Get a new {@link StringInputBuilder} to create a {@link String} type {@link Input}.

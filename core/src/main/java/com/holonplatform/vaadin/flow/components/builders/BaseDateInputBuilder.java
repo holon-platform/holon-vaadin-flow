@@ -36,8 +36,9 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>> extends InputBuilder<D, Input<D>, B>,
-		HasSizeConfigurator<B>, HasStyleConfigurator<B>, HasEnabledConfigurator<B>, FocusableConfigurator<Component, B>,
+public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
+		extends InputBuilder<D, Input<D>, B>, InputValueConfigurator<D, B>, HasSizeConfigurator<B>,
+		HasStyleConfigurator<B>, HasEnabledConfigurator<B>, FocusableConfigurator<Component, B>,
 		HasPlaceholderConfigurator<B>, HasLabelConfigurator<B>, DeferrableLocalizationConfigurator<B> {
 
 	/**

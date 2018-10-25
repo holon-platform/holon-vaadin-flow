@@ -18,19 +18,28 @@ package com.holonplatform.vaadin.flow.data;
 /**
  * A converter interface to obtain an item from a different type value.
  * 
- * @param <V> Value type
- * @param <I> Item type
+ * @param <T> Value type
+ * @param <ITEM> Item type
+ * @param <CONTEXT> Conversion context type
  * 
- * @since 5.0.3
+ * @since 5.2.0
  */
-@FunctionalInterface
-public interface ItemConverter<V, I> {
+public interface ItemConverter<T, ITEM, CONTEXT> {
 
 	/**
-	 * Convert given value to required item type.
-	 * @param value The value to convert (may be null)
-	 * @return The item value
+	 * Convert an <code>item</code> instance into the required value type.
+	 * @param context Conversion context
+	 * @param item Item instance
+	 * @return The converted value
 	 */
-	I convert(V value);
+	T getValue(CONTEXT context, ITEM item);
+
+	/**
+	 * Convert a <code>value</code> into an item instance.
+	 * @param context Conversion context
+	 * @param value The value to convert
+	 * @return The item instance
+	 */
+	ITEM getItem(CONTEXT context, T value);
 
 }

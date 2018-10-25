@@ -36,15 +36,15 @@ import com.vaadin.flow.component.HasValue;
  * Default {@link HasValueInputBuilder} implementation.
  *
  * @param <T> Value type
- * @param <V> Concrete {@link HasValue} type
+ * @param <H> Concrete {@link HasValue} type
  * @param <C> Concrete {@link Component} type
  *
  * @since 5.2.0
  */
-public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends Component> extends
-		AbstractComponentConfigurator<C, HasValueInputBuilder<T, V, C>> implements HasValueInputBuilder<T, V, C> {
+public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends Component> extends
+		AbstractComponentConfigurator<C, HasValueInputBuilder<T, H, C>> implements HasValueInputBuilder<T, H, C> {
 
-	private final InputAdapter<T, V, C> instance;
+	private final InputAdapter<T, H, C> instance;
 
 	/**
 	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
@@ -52,7 +52,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * @param field {@link HasValue} field (not null)
 	 * @param component Field {@link Component} (not null)
 	 */
-	public DefaultHasValueInputBuilder(V field, C component) {
+	public DefaultHasValueInputBuilder(H field, C component) {
 		super(component);
 		this.instance = new InputAdapter<>(field, component);
 	}
@@ -61,7 +61,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Get the {@link InputAdapter} instance to build.
 	 * @return the instance
 	 */
-	protected InputAdapter<T, V, C> getInstance() {
+	protected InputAdapter<T, H, C> getInstance() {
 		return instance;
 	}
 
@@ -70,7 +70,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected HasValueInputBuilder<T, V, C> getConfigurator() {
+	protected HasValueInputBuilder<T, H, C> getConfigurator() {
 		return this;
 	}
 
@@ -97,18 +97,8 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> readOnly(boolean readOnly) {
+	public HasValueInputBuilder<T, H, C> readOnly(boolean readOnly) {
 		getInstance().setReadOnly(readOnly);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
-	 */
-	@Override
-	public HasValueInputBuilder<T, V, C> withValue(T value) {
-		getInstance().setValue(value);
 		return getConfigurator();
 	}
 
@@ -119,7 +109,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> withValueChangeListener(ValueChangeListener<T> listener) {
+	public HasValueInputBuilder<T, H, C> withValueChangeListener(ValueChangeListener<T> listener) {
 		getInstance().addValueChangeListener(listener);
 		return getConfigurator();
 	}
@@ -129,7 +119,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> required(boolean required) {
+	public HasValueInputBuilder<T, H, C> required(boolean required) {
 		getInstance().setRequired(required);
 		return getConfigurator();
 	}
@@ -141,7 +131,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Supplier)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> emptyValueSupplier(Function<V, T> emptyValueSupplier) {
+	public HasValueInputBuilder<T, H, C> emptyValueSupplier(Function<H, T> emptyValueSupplier) {
 		getInstance().setEmptyValueSupplier(emptyValueSupplier);
 		return getConfigurator();
 	}
@@ -152,7 +142,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Function)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> isEmptySupplier(Function<V, Boolean> isEmptySupplier) {
+	public HasValueInputBuilder<T, H, C> isEmptySupplier(Function<H, Boolean> isEmptySupplier) {
 		getInstance().setIsEmptySupplier(isEmptySupplier);
 		return getConfigurator();
 	}
@@ -163,7 +153,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder#valueSupplier(java.util.function.Function)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> valueSupplier(Function<V, T> valueSupplier) {
+	public HasValueInputBuilder<T, H, C> valueSupplier(Function<H, T> valueSupplier) {
 		getInstance().setValueSupplier(valueSupplier);
 		return getConfigurator();
 	}
@@ -174,7 +164,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Consumer)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> focusOperation(Consumer<V> focusOperation) {
+	public HasValueInputBuilder<T, H, C> focusOperation(Consumer<H> focusOperation) {
 		getInstance().setFocusOperation(focusOperation);
 		return getConfigurator();
 	}
@@ -185,7 +175,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Function)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> hasSizeSupplier(Function<V, HasSize> hasSizeSupplier) {
+	public HasValueInputBuilder<T, H, C> hasSizeSupplier(Function<H, HasSize> hasSizeSupplier) {
 		getInstance().setHasSizeSupplier(hasSizeSupplier);
 		return getConfigurator();
 	}
@@ -196,7 +186,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Function)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> hasStyleSupplier(Function<V, HasStyle> hasStyleSupplier) {
+	public HasValueInputBuilder<T, H, C> hasStyleSupplier(Function<H, HasStyle> hasStyleSupplier) {
 		getInstance().setHasStyleSupplier(hasStyleSupplier);
 		return getConfigurator();
 	}
@@ -208,7 +198,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Function)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> hasEnabledSupplier(Function<V, HasEnabled> hasEnabledSupplier) {
+	public HasValueInputBuilder<T, H, C> hasEnabledSupplier(Function<H, HasEnabled> hasEnabledSupplier) {
 		getInstance().setHasEnabledSupplier(hasEnabledSupplier);
 		return getConfigurator();
 	}
@@ -220,8 +210,8 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * vaadin.flow.components.support.PropertyHandler)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> requiredPropertyHandler(
-			PropertyHandler<Boolean, T, V, C> requiredPropertyHandler) {
+	public HasValueInputBuilder<T, H, C> requiredPropertyHandler(
+			PropertyHandler<Boolean, T, H, C> requiredPropertyHandler) {
 		getInstance().setRequiredPropertyHandler(requiredPropertyHandler);
 		return getConfigurator();
 	}
@@ -233,7 +223,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * vaadin.flow.components.support.PropertyHandler)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> labelPropertyHandler(PropertyHandler<String, T, V, C> labelPropertyHandler) {
+	public HasValueInputBuilder<T, H, C> labelPropertyHandler(PropertyHandler<String, T, H, C> labelPropertyHandler) {
 		getInstance().setLabelPropertyHandler(labelPropertyHandler);
 		return getConfigurator();
 	}
@@ -245,7 +235,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * vaadin.flow.components.support.PropertyHandler)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> titlePropertyHandler(PropertyHandler<String, T, V, C> titlePropertyHandler) {
+	public HasValueInputBuilder<T, H, C> titlePropertyHandler(PropertyHandler<String, T, H, C> titlePropertyHandler) {
 		getInstance().setTitlePropertyHandler(titlePropertyHandler);
 		return getConfigurator();
 	}
@@ -256,8 +246,8 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * holonplatform.vaadin.flow.components.support.PropertyHandler)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> placeholderPropertyHandler(
-			PropertyHandler<String, T, V, C> placeholderPropertyHandler) {
+	public HasValueInputBuilder<T, H, C> placeholderPropertyHandler(
+			PropertyHandler<String, T, H, C> placeholderPropertyHandler) {
 		getInstance().setPlaceholderPropertyHandler(placeholderPropertyHandler);
 		return getConfigurator();
 	}
@@ -268,7 +258,7 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 * Collection)
 	 */
 	@Override
-	public HasValueInputBuilder<T, V, C> withValueChangeListeners(Collection<ValueChangeListener<T>> listeners) {
+	public HasValueInputBuilder<T, H, C> withValueChangeListeners(Collection<ValueChangeListener<T>> listeners) {
 		if (listeners != null) {
 			listeners.forEach(listener -> getInstance().addValueChangeListener(listener));
 		}

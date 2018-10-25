@@ -33,7 +33,7 @@ import com.holonplatform.vaadin.flow.internal.data.ItemDataProviderWrapper;
  * 
  * @param <ITEM> Item data type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface ItemDataProvider<ITEM> extends ItemSetCounter, ItemSetLoader<ITEM> {
 

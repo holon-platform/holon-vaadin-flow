@@ -24,7 +24,7 @@ import com.holonplatform.core.exceptions.DataAccessException;
  * 
  * @param <ITEM> Item type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 @FunctionalInterface
 public interface ItemRefresher<ITEM> extends Serializable {

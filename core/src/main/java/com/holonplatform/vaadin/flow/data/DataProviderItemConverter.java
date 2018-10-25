@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Axioma srl.
+ * Copyright 2016-2018 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,21 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.data;
 
-import com.holonplatform.core.query.QueryConfigurationProvider;
-import com.vaadin.flow.shared.Registration;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
- * Declares the support for {@link QueryConfigurationProvider} registration.
+ * TODO
  *
- * @since 5.2.0
  */
-public interface QueryConfigurationProviderSupport {
+public interface DataProviderItemConverter<T, ITEM> {
 
-	/**
-	 * Register a new {@link QueryConfigurationProvider}.
-	 * @param queryConfigurationProvider The {@link QueryConfigurationProvider} to add (not null)
-	 * @return Handler which can be used to remove the registered provider
-	 */
-	Registration addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
-
+	T getValue(DataProvider<ITEM, ?> dataProvider, ITEM item);
+	
+	ITEM getITEM(DataProvider<ITEM, ?> dataProvider, T value);
+	
 }

@@ -37,7 +37,7 @@ import com.vaadin.flow.data.provider.DataProvider;
  * Supports {@link QueryConfigurationProvider} registration through {@link QueryConfigurationProviderSupport}.
  * </p>
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface DatastoreDataProvider
 		extends DataProvider<PropertyBox, QueryFilter>, QueryConfigurationProviderSupport {

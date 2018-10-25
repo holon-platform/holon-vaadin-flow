@@ -23,7 +23,7 @@ import com.holonplatform.core.query.QueryConfigurationProvider;
 /**
  * Data interface to obtain the size of an item set.
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 @FunctionalInterface
 public interface ItemSetCounter extends Serializable {
