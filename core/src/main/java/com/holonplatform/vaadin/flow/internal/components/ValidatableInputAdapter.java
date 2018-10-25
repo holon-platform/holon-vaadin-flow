@@ -218,6 +218,14 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 		return input.getEmptyValue();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#isEmpty()
+	 */
+	@Override
+	public boolean isEmpty() {
+		return input.isEmpty();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ValueHolder#setValue(java.lang.Object)

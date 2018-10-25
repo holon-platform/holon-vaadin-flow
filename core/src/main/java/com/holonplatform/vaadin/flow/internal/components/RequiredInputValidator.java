@@ -15,20 +15,17 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.Objects;
-
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 
 /**
- * A {@link Validator} to check if a {@link ValueHolder} is not empty, i.e. the current value is not equal to the empty
- * value representation.
+ * A {@link Validator} to check if a {@link ValueHolder} is not empty.
  * 
  * @param <T> Value type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public class RequiredInputValidator<T> implements Validator<T> {
 
@@ -69,8 +66,8 @@ public class RequiredInputValidator<T> implements Validator<T> {
 	 * @see com.holonplatform.core.Validator#validate(java.lang.Object)
 	 */
 	@Override
-	public void validate(T value) throws com.holonplatform.core.Validator.ValidationException {
-		if (Objects.equals(valueHolder.getEmptyValue(), value)) {
+	public void validate(T value) throws ValidationException {
+		if (valueHolder.isEmpty()) {
 			throw new ValidationException(message);
 		}
 	}

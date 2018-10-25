@@ -199,6 +199,29 @@ public class TestValidatableInput {
 	}
 
 	@Test
+	public void testRequired() {
+
+		final ValidatableInput<String> input = Input.string().validatable().required().build();
+
+		assertFalse(input.isValid());
+		Assertions.assertThrows(ValidationException.class, () -> input.validate());
+
+		input.setValue("x");
+		assertTrue(input.isValid());
+		Assertions.assertDoesNotThrow(() -> input.validate());
+
+		input.clear();
+		assertFalse(input.isValid());
+		Assertions.assertThrows(ValidationException.class, () -> input.validate());
+
+		final ValidatableInput<String> input2 = Input.string().validatable().required("REQUIRED").build();
+		assertFalse(input2.isValid());
+		ValidationException ve = Assertions.assertThrows(ValidationException.class, () -> input2.validate());
+		assertEquals("REQUIRED", ve.getMessage());
+
+	}
+
+	@Test
 	public void testLabelValidationStatusHandler() {
 
 		final Div label = Components.label().build();

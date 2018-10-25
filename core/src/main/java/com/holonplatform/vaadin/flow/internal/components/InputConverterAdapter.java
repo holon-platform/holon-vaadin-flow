@@ -24,6 +24,9 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.shared.Registration;
@@ -193,6 +196,51 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public void clear() {
 		input.clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		input.setVisible(visible);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return input.isVisible();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
+	 */
+	@Override
+	public Optional<HasEnabled> hasEnabled() {
+		return input.hasEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
+	 */
+	@Override
+	public Optional<HasStyle> hasStyle() {
+		return input.hasStyle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
+	 */
+	@Override
+	public Optional<HasSize> hasSize() {
+		return input.hasSize();
 	}
 
 	/**

@@ -98,8 +98,7 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 * @param field The field instance (not null)
 	 * @return A new {@link ValidatableInput} component which wraps the given <code>field</code>
 	 */
-	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> ValidatableInput<T> from(
-			F field) {
+	static <F extends Component & HasValue<?, T>, T> ValidatableInput<T> from(F field) {
 		return from(Input.from(field));
 	}
 

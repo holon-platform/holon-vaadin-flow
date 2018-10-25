@@ -35,8 +35,6 @@ import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
  */
 public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilder<T, ValidatableInput<T>> {
 
-	private final Input<T> input;
-
 	private final ValidatableInput<T> instance;
 
 	private boolean required = false;
@@ -47,7 +45,6 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 
 	public DefaultValidatableInputBuilder(Input<T> input) {
 		super();
-		this.input = input;
 		this.instance = ValidatableInput.from(input);
 	}
 
@@ -135,9 +132,9 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	public ValidatableInput<T> build() {
 		// check required
 		if (required) {
-			input.setRequired(true);
+			instance.setRequired(true);
 			// add required validator
-			instance.addValidator(getRequiredValidator().orElse(new RequiredInputValidator<>(input,
+			instance.addValidator(getRequiredValidator().orElse(new RequiredInputValidator<>(instance,
 					getRequiredMessage().orElse(RequiredInputValidator.DEFAULT_REQUIRED_ERROR))));
 		}
 		return instance;
