@@ -82,7 +82,7 @@ public interface Selectable<T> {
 
 	/**
 	 * Adds a {@link SelectionListener} to listener to selection changes.
-	 * @param selectionListener The listener to add
+	 * @param selectionListener The listener to add (not null)
 	 * @return the listener {@link Registration}
 	 */
 	Registration addSelectionListener(SelectionListener<T> selectionListener);

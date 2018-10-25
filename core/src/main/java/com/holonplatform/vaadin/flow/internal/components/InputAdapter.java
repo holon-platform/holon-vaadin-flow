@@ -47,7 +47,7 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.2.0
  */
-public class HasValueInput<T, V extends HasValue<?, T>, C extends Component> implements Input<T> {
+public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> implements Input<T> {
 
 	private static final long serialVersionUID = -2456516308895591627L;
 
@@ -81,11 +81,11 @@ public class HasValueInput<T, V extends HasValue<?, T>, C extends Component> imp
 	private PropertyHandler<String, T, V, C> placeholderPropertyHandler;
 
 	/**
-	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
-	 * @param field {@link HasValue} field (not null)
-	 * @param component Field {@link Component} (not null)
+	 * Default constructor.
+	 * @param field The {@link HasValue} instance (not null)
+	 * @param component The {@link Component} instance (not null)
 	 */
-	public HasValueInput(V field, C component) {
+	public InputAdapter(V field, C component) {
 		super();
 		ObjectUtils.argumentNotNull(field, "HasValue must be not null");
 		ObjectUtils.argumentNotNull(component, "Component must be not null");

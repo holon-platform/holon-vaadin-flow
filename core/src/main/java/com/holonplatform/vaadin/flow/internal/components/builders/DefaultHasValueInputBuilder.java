@@ -25,7 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
+import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -44,7 +44,7 @@ import com.vaadin.flow.component.HasValue;
 public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends Component> extends
 		AbstractComponentConfigurator<C, HasValueInputBuilder<T, V, C>> implements HasValueInputBuilder<T, V, C> {
 
-	private final HasValueInput<T, V, C> instance;
+	private final InputAdapter<T, V, C> instance;
 
 	/**
 	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
@@ -54,14 +54,14 @@ public class DefaultHasValueInputBuilder<T, V extends HasValue<?, T>, C extends 
 	 */
 	public DefaultHasValueInputBuilder(V field, C component) {
 		super(component);
-		this.instance = new HasValueInput<>(field, component);
+		this.instance = new InputAdapter<>(field, component);
 	}
 
 	/**
-	 * Get the {@link HasValueInput} instance to build.
+	 * Get the {@link InputAdapter} instance to build.
 	 * @return the instance
 	 */
-	protected HasValueInput<T, V, C> getInstance() {
+	protected InputAdapter<T, V, C> getInstance() {
 		return instance;
 	}
 

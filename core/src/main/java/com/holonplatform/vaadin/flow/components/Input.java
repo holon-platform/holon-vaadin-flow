@@ -33,7 +33,7 @@ import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
+import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
 import com.vaadin.flow.component.Component;
@@ -105,7 +105,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link Input} component which wraps the given <code>field</code>
 	 */
 	static <T, F extends Component & HasValue<?, T>> Input<T> from(F field) {
-		return new HasValueInput<>(field, field);
+		return new InputAdapter<>(field, field);
 	}
 
 	/**
