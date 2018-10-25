@@ -15,25 +15,31 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.support;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
+import com.holonplatform.core.operation.TriConsumer;
+import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 
 /**
  * A {@link PropertyHandler} implementation using callback functions to get and set the property value.
  * 
- * @param <T> Property type
+ * @param <P> Property value type
+ * @param <T> Input value type
+ * @param <V> {@link HasValue} type
+ * @param <C> {@link Component} type
  * 
  * @since 5.2.0
  */
-public class CallbackPropertyHandler<T> implements PropertyHandler<T> {
+public class CallbackPropertyHandler<P, T, V extends HasValue<?, T>, C extends Component>
+		implements PropertyHandler<P, T, V, C> {
 
-	private final Supplier<T> getter;
-	private final Consumer<T> setter;
+	private final BiFunction<V, C, P> getter;
+	private final TriConsumer<V, C, P> setter;
 
-	public CallbackPropertyHandler(Supplier<T> getter, Consumer<T> setter) {
+	public CallbackPropertyHandler(BiFunction<V, C, P> getter, TriConsumer<V, C, P> setter) {
 		super();
 		ObjectUtils.argumentNotNull(getter, "The property value getter function must be not null");
 		ObjectUtils.argumentNotNull(setter, "The property value setter function must be not null");
@@ -43,20 +49,20 @@ public class CallbackPropertyHandler<T> implements PropertyHandler<T> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.support.PropertyHandler#getPropertyValue()
+	 * @see java.util.function.BiFunction#apply(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public T getPropertyValue() {
-		return getter.get();
+	public P apply(V t, C u) {
+		return getter.apply(t, u);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.support.PropertyHandler#setPropertyValue(java.lang.Object)
+	 * @see com.holonplatform.core.operation.TriConsumer#accept(java.lang.Object, java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void setPropertyValue(T value) {
-		setter.accept(value);
+	public void accept(V f, C s, P t) {
+		setter.accept(f, s, t);
 	}
 
 }

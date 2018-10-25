@@ -45,8 +45,8 @@ public final class ValueChangeListenerUtils implements Serializable {
 	 * @param listener Value change listener
 	 * @return Listener registration
 	 */
-	public static <E extends HasValue.ValueChangeEvent<V>, V> Registration adapt(HasValue<E, V> field,
-			ValueHolder<V> valueHolder, ValueChangeListener<V> listener) {
+	public static <V> Registration adapt(HasValue<?, V> field, ValueHolder<V> valueHolder,
+			ValueChangeListener<V> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return field.addValueChangeListener(
 				e -> listener.valueChange(new DefaultValueChangeEvent<>(valueHolder, e.getOldValue(), e.getValue(),

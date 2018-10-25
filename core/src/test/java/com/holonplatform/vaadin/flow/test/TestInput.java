@@ -35,8 +35,8 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputFieldPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
-import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.UI;
@@ -59,16 +59,14 @@ public class TestInput {
 
 		final TextField field = new TextField();
 
-		HasValueInputBuilder<String> builder = Input.builder(field);
+		HasValueInputBuilder<String, TextField, TextField> builder = Input.builder(field);
 		assertNotNull(builder);
 
 		builder = Input.builder(field, field);
 		assertNotNull(builder);
 
-		Input<String> i = Input.builder(field)
-				.requiredPropertyHandler(
-						PropertyHandler.create(() -> field.isRequired(), required -> field.setRequired(required)))
-				.build();
+		Input<String> i = Input.builder(field).requiredPropertyHandler(
+				PropertyHandler.create((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))).build();
 		assertNotNull(i);
 
 		assertFalse(i.isRequired());
@@ -80,7 +78,7 @@ public class TestInput {
 		assertFalse(field.isRequired());
 
 		i = Input.builder(field)
-				.labelPropertyHandler(PropertyHandler.create(() -> field.getLabel(), label -> field.setLabel(label)))
+				.labelPropertyHandler(PropertyHandler.create((f, c) -> f.getLabel(), (f, c, v) -> f.setLabel(v)))
 				.build();
 		assertNotNull(i);
 
@@ -90,7 +88,7 @@ public class TestInput {
 		assertEquals("test", ComponentTestUtils.getLabel(i));
 
 		i = Input.builder(field)
-				.titlePropertyHandler(PropertyHandler.create(() -> field.getTitle(), title -> field.setTitle(title)))
+				.titlePropertyHandler(PropertyHandler.create((f, c) -> f.getTitle(), (f, c, v) -> field.setTitle(v)))
 				.build();
 		assertNotNull(i);
 
@@ -100,8 +98,7 @@ public class TestInput {
 		assertEquals("test", ComponentTestUtils.getTitle(i));
 
 		i = Input.builder(field).placeholderPropertyHandler(
-				PropertyHandler.create(() -> field.getPlaceholder(), placeholder -> field.setPlaceholder(placeholder)))
-				.build();
+				PropertyHandler.create((f, c) -> f.getPlaceholder(), (f, c, v) -> f.setPlaceholder(v))).build();
 		assertNotNull(i);
 
 		assertTrue(i.hasPlaceholder().isPresent());

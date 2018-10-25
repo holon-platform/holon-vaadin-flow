@@ -18,8 +18,10 @@ package com.holonplatform.vaadin.flow.components;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.operation.TriConsumer;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
@@ -33,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
+import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
@@ -96,13 +99,13 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 
 	/**
 	 * Create a {@link Input} component type from given {@link HasValue} component.
-	 * @param <T> Value type
 	 * @param <F> {@link HasValue} component type
+	 * @param <T> Value type
 	 * @param field The field instance (not null)
 	 * @return A new {@link Input} component which wraps the given <code>field</code>
 	 */
-	static <E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>, T> Input<T> from(F field) {
-		return new HasValueInput<>(field);
+	static <T, F extends Component & HasValue<?, T>> Input<T> from(F field) {
+		return new HasValueInput<>(field, field);
 	}
 
 	/**
@@ -128,8 +131,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @param converter Value converter (not null)
 	 * @return A new {@link Input} of the converted value type
 	 */
-	static <E extends HasValue.ValueChangeEvent<V>, F extends Component & HasValue<E, V>, T, V> Input<T> from(F field,
-			Converter<V, T> converter) {
+	static <F extends Component & HasValue<?, V>, T, V> Input<T> from(F field, Converter<V, T> converter) {
 		return from(from(field), converter);
 	}
 
@@ -160,8 +162,8 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @param converter Value converter (not null)
 	 * @return A new {@link Input} of the converted value type
 	 */
-	static <E extends HasValue.ValueChangeEvent<V>, F extends Component & HasValue<E, V>, T, V> Input<T> from(F field,
-			Property<T> property, PropertyValueConverter<T, V> converter) {
+	static <F extends Component & HasValue<?, V>, T, V> Input<T> from(F field, Property<T> property,
+			PropertyValueConverter<T, V> converter) {
 		return from(from(field), property, converter);
 	}
 
@@ -171,13 +173,11 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * Get a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} {@link Component}
 	 * field instance.
 	 * @param <T> Value type
-	 * @param <E> ValueChangeEvent type
-	 * @param <H> Actual field type
+	 * @param <H> Field type
 	 * @param field {@link HasValue} {@link Component} field (not null)
 	 * @return A new {@link HasValueInputBuilder}
 	 */
-	static <T, E extends HasValue.ValueChangeEvent<T>, H extends Component & HasValue<E, T>> HasValueInputBuilder<T> builder(
-			H field) {
+	static <T, H extends Component & HasValue<?, T>> HasValueInputBuilder<T, H, H> builder(H field) {
 		return HasValueInputBuilder.create(field);
 	}
 
@@ -185,13 +185,14 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * et a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} and {@link Component}
 	 * field instances.
 	 * @param <T> Value type
-	 * @param <E> ValueChangeEvent type
+	 * @param <V> {@link HasValue} type
+	 * @param <C> {@link Component} type
 	 * @param field {@link HasValue} field (not null)
 	 * @param component Field {@link Component} (not null)
 	 * @return A new {@link HasValueInputBuilder}
 	 */
-	static <T, E extends HasValue.ValueChangeEvent<T>> HasValueInputBuilder<T> builder(HasValue<E, T> field,
-			Component component) {
+	static <T, V extends HasValue<?, T>, C extends Component> HasValueInputBuilder<T, V, C> builder(V field,
+			C component) {
 		return HasValueInputBuilder.create(field, component);
 	}
 
@@ -301,6 +302,37 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 		@Override
 		default Input<T> render(Property<T> property) {
 			return Input.from(renderField(property));
+		}
+
+	}
+
+	/**
+	 * Input field/component property handler.
+	 * 
+	 * @param <P> Property value type
+	 * @param <T> Input value type
+	 * @param <V> {@link HasValue} type
+	 * @param <C> {@link Component} type
+	 * 
+	 * @see HasValueInputBuilder
+	 */
+	public interface PropertyHandler<P, T, V extends HasValue<?, T>, C extends Component>
+			extends BiFunction<V, C, P>, TriConsumer<V, C, P> {
+
+		/**
+		 * Create a new {@link PropertyHandler} using given <code>getter</code> to get the property value and given
+		 * <code>setter</code> to set the property value
+		 * @param <P> Property value type
+		 * @param <T> Input value type
+		 * @param <V> {@link HasValue} type
+		 * @param <C> {@link Component} type
+		 * @param getter A {@link BiFunction} to get the property value (not null)
+		 * @param setter A {@link TriConsumer} to set the property value (not null)
+		 * @return A new {@link PropertyHandler}
+		 */
+		static <P, T, V extends HasValue<?, T>, C extends Component> PropertyHandler<P, T, V, C> create(
+				BiFunction<V, C, P> getter, TriConsumer<V, C, P> setter) {
+			return new CallbackPropertyHandler<>(getter, setter);
 		}
 
 	}

@@ -25,7 +25,6 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.ClickEvent;
@@ -76,11 +75,9 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 	 */
 	@Override
 	public Input<Boolean> build() {
-		final Checkbox component = getComponent();
-		final HasValueInput<Boolean> input = new HasValueInput<>(component);
-		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
-		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
-		return input;
+		return Input.builder(getComponent()).labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
+				.withValueChangeListeners(valueChangeListeners).focusOperation(f -> f.focus())
+				.hasEnabledSupplier(f -> f).build();
 	}
 
 	/*

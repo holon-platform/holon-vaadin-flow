@@ -32,7 +32,6 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueInput;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -94,11 +93,6 @@ public class DefaultLocalDateInputBuilder extends
 	public Input<LocalDate> build() {
 		final DatePicker component = getComponent();
 
-		final HasValueInput<LocalDate> input = new HasValueInput<>(component);
-		input.setRequiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required));
-		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
-		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
-
 		// calendar localization
 		if (localization != null) {
 			if (isDeferredLocalizationEnabled()) {
@@ -113,7 +107,9 @@ public class DefaultLocalDateInputBuilder extends
 			}
 		}
 
-		return input;
+		return Input.builder(component).requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
+				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).focusOperation(f -> f.focus())
+				.hasEnabledSupplier(f -> f).withValueChangeListeners(valueChangeListeners).build();
 	}
 
 	/*

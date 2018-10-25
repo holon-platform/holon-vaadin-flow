@@ -17,16 +17,18 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.support.PropertyHandler;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -40,53 +42,50 @@ import com.vaadin.flow.shared.Registration;
  * Adapter to use a {@link HasValue} {@link Component} as an {@link Input}.
  * 
  * @param <T> Value type
+ * @param <V> Concrete {@link HasValue} type
+ * @param <C> Concrete {@link Component} type
  * 
  * @since 5.2.0
  */
-public class HasValueInput<T> implements Input<T> {
+public class HasValueInput<T, V extends HasValue<?, T>, C extends Component> implements Input<T> {
 
 	private static final long serialVersionUID = -2456516308895591627L;
 
 	/**
 	 * Wrapped field
 	 */
-	private final HasValue<?, T> field;
+	private final V field;
 
 	/**
 	 * Field component
 	 */
-	private final Component component;
+	private final C component;
 
 	/**
-	 * Empty value
+	 * Overridden operations
 	 */
-	private Supplier<T> emptyValueSupplier;
+	private Function<V, T> emptyValueSupplier;
+	private Function<V, Boolean> isEmptySupplier;
+	private Function<V, T> valueSupplier;
+	private Consumer<V> focusOperation;
+	private Function<V, HasSize> hasSizeSupplier;
+	private Function<V, HasStyle> hasStyleSupplier;
+	private Function<V, HasEnabled> hasEnabledSupplier;
 
 	/**
 	 * Property handlers
 	 */
-	private PropertyHandler<Boolean> requiredPropertyHandler;
-	private PropertyHandler<String> labelPropertyHandler;
-	private PropertyHandler<String> titlePropertyHandler;
-	private PropertyHandler<String> placeholderPropertyHandler;
-
-	/**
-	 * Constructor using a {@link HasValue} and {@link Component} field instance.
-	 * @param <E> ValueChangeEvent type
-	 * @param <H> Actual HasValue component type
-	 * @param field The {@link HasValue} field and component (not null)
-	 */
-	public <E extends HasValue.ValueChangeEvent<T>, H extends Component & HasValue<E, T>> HasValueInput(H field) {
-		this(field, field);
-	}
+	private PropertyHandler<Boolean, T, V, C> requiredPropertyHandler;
+	private PropertyHandler<String, T, V, C> labelPropertyHandler;
+	private PropertyHandler<String, T, V, C> titlePropertyHandler;
+	private PropertyHandler<String, T, V, C> placeholderPropertyHandler;
 
 	/**
 	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
-	 * @param <E> ValueChangeEvent type
 	 * @param field {@link HasValue} field (not null)
 	 * @param component Field {@link Component} (not null)
 	 */
-	public <E extends HasValue.ValueChangeEvent<T>> HasValueInput(HasValue<E, T> field, Component component) {
+	public HasValueInput(V field, C component) {
 		super();
 		ObjectUtils.argumentNotNull(field, "HasValue must be not null");
 		ObjectUtils.argumentNotNull(component, "Component must be not null");
@@ -102,7 +101,7 @@ public class HasValueInput<T> implements Input<T> {
 	 * Get the empty value supplier, if available.
 	 * @return Optional empty value supplier
 	 */
-	public Optional<Supplier<T>> getEmptyValueSupplier() {
+	public Optional<Function<V, T>> getEmptyValueSupplier() {
 		return Optional.ofNullable(emptyValueSupplier);
 	}
 
@@ -110,32 +109,119 @@ public class HasValueInput<T> implements Input<T> {
 	 * Set the empty value supplier.
 	 * @param emptyValueSupplier the empty value supplier to set
 	 */
-	public void setEmptyValueSupplier(Supplier<T> emptyValueSupplier) {
+	public void setEmptyValueSupplier(Function<V, T> emptyValueSupplier) {
 		this.emptyValueSupplier = emptyValueSupplier;
+	}
+
+	/**
+	 * Get the <em>is empty</em> value supplier, if available.
+	 * @return Optional <em>is empty</em> value supplier
+	 */
+	public Optional<Function<V, Boolean>> getIsEmptySupplier() {
+		return Optional.ofNullable(isEmptySupplier);
+	}
+
+	/**
+	 * Set the <em>is empty</em> value supplier.
+	 * @param isEmptySupplier the <em>is empty</em> value supplier to set
+	 */
+	public void setIsEmptySupplier(Function<V, Boolean> isEmptySupplier) {
+		this.isEmptySupplier = isEmptySupplier;
+	}
+
+	/**
+	 * Get the Input value supplier, if available.
+	 * @return Optional Input value supplier
+	 */
+	public Optional<Function<V, T>> getValueSupplier() {
+		return Optional.ofNullable(valueSupplier);
+	}
+
+	/**
+	 * Set the Input value supplier.
+	 * @param valueSupplier the Input value supplier to set
+	 */
+	public void setValueSupplier(Function<V, T> valueSupplier) {
+		this.valueSupplier = valueSupplier;
+	}
+
+	/**
+	 * Get the <code>focus</code> operation.
+	 * @return Optional <code>focus</code> operation
+	 */
+	public Optional<Consumer<V>> getFocusOperation() {
+		return Optional.ofNullable(focusOperation);
+	}
+
+	/**
+	 * Set the <code>focus</code> operation.
+	 * @param focusOperation the operation to set
+	 */
+	public void setFocusOperation(Consumer<V> focusOperation) {
+		this.focusOperation = focusOperation;
+	}
+
+	/**
+	 * Get the {@link HasSize} supplier.
+	 * @return Optional {@link HasSize} supplier
+	 */
+	public Optional<Function<V, HasSize>> getHasSizeSupplier() {
+		return Optional.ofNullable(hasSizeSupplier);
+	}
+
+	/**
+	 * Set the {@link HasSize} supplier.
+	 * @param hasSizeSupplier the supplier to set
+	 */
+	public void setHasSizeSupplier(Function<V, HasSize> hasSizeSupplier) {
+		this.hasSizeSupplier = hasSizeSupplier;
+	}
+
+	/**
+	 * Get the {@link HasStyle} supplier.
+	 * @return Optional {@link HasStyle} supplier
+	 */
+	public Optional<Function<V, HasStyle>> getHasStyleSupplier() {
+		return Optional.ofNullable(hasStyleSupplier);
+	}
+
+	/**
+	 * Set the {@link HasStyle} supplier.
+	 * @param hasStyleSupplier the supplier to set
+	 */
+	public void setHasStyleSupplier(Function<V, HasStyle> hasStyleSupplier) {
+		this.hasStyleSupplier = hasStyleSupplier;
+	}
+
+	/**
+	 * Get the {@link HasEnabled} supplier.
+	 * @return Optional {@link HasEnabled} supplier
+	 */
+	public Optional<Function<V, HasEnabled>> getHasEnabledSupplier() {
+		return Optional.ofNullable(hasEnabledSupplier);
+	}
+
+	/**
+	 * Set the {@link HasEnabled} supplier.
+	 * @param hasEnabledSupplier the supplier to set
+	 */
+	public void setHasEnabledSupplier(Function<V, HasEnabled> hasEnabledSupplier) {
+		this.hasEnabledSupplier = hasEnabledSupplier;
 	}
 
 	/**
 	 * Get the <code>required</code> property handler, if available.
 	 * @return Optional required property handler
 	 */
-	public Optional<PropertyHandler<Boolean>> getRequiredPropertyHandler() {
+	public Optional<PropertyHandler<Boolean, T, V, C>> getRequiredPropertyHandler() {
 		return Optional.ofNullable(requiredPropertyHandler);
-	}
-
-	/**
-	 * Set the <code>required</code> property handler using given callback functions.
-	 * @param getter The {@link Supplier} to use to get the <code>required</code> property value (not null)
-	 * @param setter The {@link Consumer} to use to set the <code>required</code> property value (not null)
-	 */
-	public void setRequiredPropertyHandler(Supplier<Boolean> getter, Consumer<Boolean> setter) {
-		setRequiredPropertyHandler(PropertyHandler.create(getter, setter));
 	}
 
 	/**
 	 * Set the <code>required</code> property handler.
 	 * @param requiredPropertyHandler the property handler to set
 	 */
-	public void setRequiredPropertyHandler(PropertyHandler<Boolean> requiredPropertyHandler) {
+	public void setRequiredPropertyHandler(PropertyHandler<Boolean, T, V, C> requiredPropertyHandler) {
 		this.requiredPropertyHandler = requiredPropertyHandler;
 	}
 
@@ -143,24 +229,15 @@ public class HasValueInput<T> implements Input<T> {
 	 * Get the <code>label</code> property handler, if available.
 	 * @return Optional required property handler
 	 */
-	public Optional<PropertyHandler<String>> getLabelPropertyHandler() {
+	public Optional<PropertyHandler<String, T, V, C>> getLabelPropertyHandler() {
 		return Optional.ofNullable(labelPropertyHandler);
-	}
-
-	/**
-	 * Set the <code>label</code> property handler using given callback functions.
-	 * @param getter The {@link Supplier} to use to get the <code>label</code> property value (not null)
-	 * @param setter The {@link Consumer} to use to set the <code>label</code> property value (not null)
-	 */
-	public void setLabelPropertyHandler(Supplier<String> getter, Consumer<String> setter) {
-		setLabelPropertyHandler(PropertyHandler.create(getter, setter));
 	}
 
 	/**
 	 * Set the <code>label</code> property handler.
 	 * @param labelPropertyHandler the property handler to set
 	 */
-	public void setLabelPropertyHandler(PropertyHandler<String> labelPropertyHandler) {
+	public void setLabelPropertyHandler(PropertyHandler<String, T, V, C> labelPropertyHandler) {
 		this.labelPropertyHandler = labelPropertyHandler;
 	}
 
@@ -168,24 +245,15 @@ public class HasValueInput<T> implements Input<T> {
 	 * Get the <code>title</code> property handler, if available.
 	 * @return Optional required property handler
 	 */
-	public Optional<PropertyHandler<String>> getTitlePropertyHandler() {
+	public Optional<PropertyHandler<String, T, V, C>> getTitlePropertyHandler() {
 		return Optional.ofNullable(titlePropertyHandler);
-	}
-
-	/**
-	 * Set the <code>title</code> property handler using given callback functions.
-	 * @param getter The {@link Supplier} to use to get the <code>title</code> property value (not null)
-	 * @param setter The {@link Consumer} to use to set the <code>title</code> property value (not null)
-	 */
-	public void setTitlePropertyHandler(Supplier<String> getter, Consumer<String> setter) {
-		setTitlePropertyHandler(PropertyHandler.create(getter, setter));
 	}
 
 	/**
 	 * Set the <code>title</code> property handler.
 	 * @param titlePropertyHandler the property handler to set
 	 */
-	public void setTitlePropertyHandler(PropertyHandler<String> titlePropertyHandler) {
+	public void setTitlePropertyHandler(PropertyHandler<String, T, V, C> titlePropertyHandler) {
 		this.titlePropertyHandler = titlePropertyHandler;
 	}
 
@@ -193,24 +261,15 @@ public class HasValueInput<T> implements Input<T> {
 	 * Get the <code>placeholder</code> property handler, if available.
 	 * @return Optional required property handler
 	 */
-	public Optional<PropertyHandler<String>> getPlaceholderPropertyHandler() {
+	public Optional<PropertyHandler<String, T, V, C>> getPlaceholderPropertyHandler() {
 		return Optional.ofNullable(placeholderPropertyHandler);
-	}
-
-	/**
-	 * Set the <code>placeholder</code> property handler using given callback functions.
-	 * @param getter The {@link Supplier} to use to get the <code>placeholder</code> property value (not null)
-	 * @param setter The {@link Consumer} to use to set the <code>placeholder</code> property value (not null)
-	 */
-	public void setPlaceholderPropertyHandler(Supplier<String> getter, Consumer<String> setter) {
-		setPlaceholderPropertyHandler(PropertyHandler.create(getter, setter));
 	}
 
 	/**
 	 * Set the <code>placeholder</code> property handler.
 	 * @param placeholderPropertyHandler the property handler to set
 	 */
-	public void setPlaceholderPropertyHandler(PropertyHandler<String> placeholderPropertyHandler) {
+	public void setPlaceholderPropertyHandler(PropertyHandler<String, T, V, C> placeholderPropertyHandler) {
 		this.placeholderPropertyHandler = placeholderPropertyHandler;
 	}
 
@@ -218,8 +277,16 @@ public class HasValueInput<T> implements Input<T> {
 	 * Get the {@link HasValue} field.
 	 * @return the {@link HasValue} field
 	 */
-	public HasValue<?, T> getField() {
+	public V getField() {
 		return field;
+	}
+
+	/**
+	 * Get the Input {@link Component}.
+	 * @return the Input {@link Component}
+	 */
+	public C getInputComponent() {
+		return component;
 	}
 
 	/*
@@ -228,7 +295,10 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public T getEmptyValue() {
-		return getEmptyValueSupplier().map(s -> s.get()).orElseGet(() -> getField().getEmptyValue());
+		if (getEmptyValueSupplier().isPresent()) {
+			return getEmptyValueSupplier().get().apply(getField());
+		}
+		return getField().getEmptyValue();
 	}
 
 	/*
@@ -246,8 +316,8 @@ public class HasValueInput<T> implements Input<T> {
 	 * @return Processed value
 	 */
 	protected T processValueToSet(T value) {
-		if (value == null && getEmptyValue() != null) {
-			return getEmptyValue();
+		if (value == null && getField().getEmptyValue() != null) {
+			return getField().getEmptyValue();
 		}
 		return value;
 	}
@@ -258,6 +328,9 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public T getValue() {
+		if (getValueSupplier().isPresent()) {
+			return getValueSupplier().get().apply(getField());
+		}
 		return getField().getValue();
 	}
 
@@ -267,6 +340,9 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public boolean isEmpty() {
+		if (getIsEmptySupplier().isPresent()) {
+			return getIsEmptySupplier().get().apply(getField());
+		}
 		return getField().isEmpty();
 	}
 
@@ -303,7 +379,7 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public boolean isRequired() {
-		return getRequiredPropertyHandler().map(h -> h.getPropertyValue())
+		return getRequiredPropertyHandler().map(h -> h.apply(getField(), getInputComponent()))
 				.orElseGet(() -> getField().isRequiredIndicatorVisible());
 	}
 
@@ -314,7 +390,7 @@ public class HasValueInput<T> implements Input<T> {
 	@Override
 	public void setRequired(boolean required) {
 		if (getRequiredPropertyHandler().isPresent()) {
-			getRequiredPropertyHandler().get().setPropertyValue(required);
+			getRequiredPropertyHandler().get().accept(getField(), getInputComponent(), required);
 		} else {
 			getField().setRequiredIndicatorVisible(required);
 		}
@@ -326,7 +402,8 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public Optional<HasLabel> hasLabel() {
-		return getLabelPropertyHandler().map(h -> HasLabel.create(h, h));
+		return getLabelPropertyHandler().map(h -> HasLabel.create(() -> h.apply(getField(), getInputComponent()),
+				v -> h.accept(getField(), getInputComponent(), v)));
 	}
 
 	/*
@@ -335,7 +412,8 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public Optional<HasTitle> hasTitle() {
-		return getTitlePropertyHandler().map(h -> HasTitle.create(h, h));
+		return getTitlePropertyHandler().map(h -> HasTitle.create(() -> h.apply(getField(), getInputComponent()),
+				v -> h.accept(getField(), getInputComponent(), v)));
 	}
 
 	/*
@@ -344,7 +422,45 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public Optional<HasPlaceholder> hasPlaceholder() {
-		return getPlaceholderPropertyHandler().map(h -> HasPlaceholder.create(h, h));
+		return getPlaceholderPropertyHandler()
+				.map(h -> HasPlaceholder.create(() -> h.apply(getField(), getInputComponent()),
+						v -> h.accept(getField(), getInputComponent(), v)));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
+	 */
+	@Override
+	public Optional<HasEnabled> hasEnabled() {
+		if (getHasEnabledSupplier().isPresent()) {
+			return getHasEnabledSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
+	 */
+	@Override
+	public Optional<HasStyle> hasStyle() {
+		if (getHasStyleSupplier().isPresent()) {
+			return getHasStyleSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasStyle();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
+	 */
+	@Override
+	public Optional<HasSize> hasSize() {
+		if (getHasSizeSupplier().isPresent()) {
+			return getHasSizeSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasSize();
 	}
 
 	/*
@@ -353,10 +469,14 @@ public class HasValueInput<T> implements Input<T> {
 	 */
 	@Override
 	public void focus() {
-		if (getField() instanceof Focusable) {
-			((Focusable<?>) getField()).focus();
-		} else if (getComponent() instanceof Focusable) {
-			((Focusable<?>) getComponent()).focus();
+		if (getFocusOperation().isPresent()) {
+			getFocusOperation().get().accept(getField());
+		} else {
+			if (getField() instanceof Focusable) {
+				((Focusable<?>) getField()).focus();
+			} else if (getComponent() instanceof Focusable) {
+				((Focusable<?>) getComponent()).focus();
+			}
 		}
 	}
 
@@ -381,112 +501,128 @@ public class HasValueInput<T> implements Input<T> {
 
 	/**
 	 * Try to obtain a default <code>required</code> {@link PropertyHandler} using given component.
+	 * @param <T> Value type
+	 * @param <V> Concrete {@link HasValue} type
+	 * @param <C> Concrete {@link Component} type
 	 * @param component The component
 	 * @return A default <code>required</code> {@link PropertyHandler} for given component, or <code>null</code> if not
 	 *         available
 	 */
-	private static PropertyHandler<Boolean> tryToObtainRequiredPropertyHandler(final Component component) {
+	private static <T, V extends HasValue<?, T>, C extends Component> PropertyHandler<Boolean, T, V, C> tryToObtainRequiredPropertyHandler(
+			final Component component) {
 		if (component instanceof TextField) {
-			return PropertyHandler.<Boolean>create(() -> ((TextField) component).isRequired(),
-					required -> ((TextField) component).setRequired(required));
+			return PropertyHandler.<Boolean, T, V, C>create((fld, cmp) -> ((TextField) cmp).isRequired(),
+					(fld, cmp, value) -> ((TextField) cmp).setRequired(value));
 		}
 		if (component instanceof TextArea) {
-			return PropertyHandler.<Boolean>create(() -> ((TextArea) component).isRequired(),
-					required -> ((TextArea) component).setRequired(required));
+			return PropertyHandler.<Boolean, T, V, C>create((fld, cmp) -> ((TextArea) cmp).isRequired(),
+					(fld, cmp, value) -> ((TextArea) cmp).setRequired(value));
 		}
 		if (component instanceof PasswordField) {
-			return PropertyHandler.<Boolean>create(() -> ((PasswordField) component).isRequired(),
-					required -> ((PasswordField) component).setRequired(required));
+			return PropertyHandler.<Boolean, T, V, C>create((fld, cmp) -> ((PasswordField) cmp).isRequired(),
+					(fld, cmp, value) -> ((PasswordField) cmp).setRequired(value));
 		}
 		if (component instanceof ComboBox) {
-			return PropertyHandler.<Boolean>create(() -> ((ComboBox<?>) component).isRequired(),
-					required -> ((ComboBox<?>) component).setRequired(required));
+			return PropertyHandler.<Boolean, T, V, C>create((fld, cmp) -> ((ComboBox<?>) cmp).isRequired(),
+					(fld, cmp, value) -> ((ComboBox<?>) cmp).setRequired(value));
 		}
 		if (component instanceof DatePicker) {
-			return PropertyHandler.<Boolean>create(() -> ((DatePicker) component).isRequired(),
-					required -> ((DatePicker) component).setRequired(required));
+			return PropertyHandler.<Boolean, T, V, C>create((fld, cmp) -> ((DatePicker) cmp).isRequired(),
+					(fld, cmp, value) -> ((DatePicker) cmp).setRequired(value));
 		}
 		return null;
 	}
 
 	/**
 	 * Try to obtain a default <code>label</code> {@link PropertyHandler} using given component.
+	 * @param <T> Value type
+	 * @param <V> Concrete {@link HasValue} type
+	 * @param <C> Concrete {@link Component} type
 	 * @param component The component
 	 * @return A default <code>label</code> {@link PropertyHandler} for given component, or <code>null</code> if not
 	 *         available
 	 */
-	private static PropertyHandler<String> tryToObtainLabelPropertyHandler(final Component component) {
+	private static <T, V extends HasValue<?, T>, C extends Component> PropertyHandler<String, T, V, C> tryToObtainLabelPropertyHandler(
+			final Component component) {
 		if (component instanceof TextField) {
-			return PropertyHandler.<String>create(() -> ((TextField) component).getLabel(),
-					label -> ((TextField) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((TextField) cmp).getLabel(),
+					(fld, cmp, value) -> ((TextField) cmp).setLabel(value));
 		}
 		if (component instanceof TextArea) {
-			return PropertyHandler.<String>create(() -> ((TextArea) component).getLabel(),
-					label -> ((TextArea) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((TextArea) cmp).getLabel(),
+					(fld, cmp, value) -> ((TextArea) cmp).setLabel(value));
 		}
 		if (component instanceof PasswordField) {
-			return PropertyHandler.<String>create(() -> ((PasswordField) component).getLabel(),
-					label -> ((PasswordField) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((PasswordField) cmp).getLabel(),
+					(fld, cmp, value) -> ((PasswordField) cmp).setLabel(value));
 		}
 		if (component instanceof ComboBox) {
-			return PropertyHandler.<String>create(() -> ((ComboBox<?>) component).getLabel(),
-					label -> ((ComboBox<?>) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((ComboBox<?>) cmp).getLabel(),
+					(fld, cmp, value) -> ((ComboBox<?>) cmp).setLabel(value));
 		}
 		if (component instanceof DatePicker) {
-			return PropertyHandler.<String>create(() -> ((DatePicker) component).getLabel(),
-					label -> ((DatePicker) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((DatePicker) cmp).getLabel(),
+					(fld, cmp, value) -> ((DatePicker) cmp).setLabel(value));
 		}
 		if (component instanceof Checkbox) {
-			return PropertyHandler.<String>create(() -> ((Checkbox) component).getLabel(),
-					label -> ((Checkbox) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((Checkbox) cmp).getLabel(),
+					(fld, cmp, value) -> ((Checkbox) cmp).setLabel(value));
 		}
 		return null;
 	}
 
 	/**
 	 * Try to obtain a default <code>placeholder</code> {@link PropertyHandler} using given component.
+	 * @param <T> Value type
+	 * @param <V> Concrete {@link HasValue} type
+	 * @param <C> Concrete {@link Component} type
 	 * @param component The component
 	 * @return A default <code>placeholder</code> {@link PropertyHandler} for given component, or <code>null</code> if
 	 *         not available
 	 */
-	private static PropertyHandler<String> tryToObtainPlaceholderPropertyHandler(final Component component) {
+	private static <T, V extends HasValue<?, T>, C extends Component> PropertyHandler<String, T, V, C> tryToObtainPlaceholderPropertyHandler(
+			final Component component) {
 		if (component instanceof TextField) {
-			return PropertyHandler.<String>create(() -> ((TextField) component).getPlaceholder(),
-					placeholder -> ((TextField) component).setPlaceholder(placeholder));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((TextField) cmp).getPlaceholder(),
+					(fld, cmp, value) -> ((TextField) cmp).setPlaceholder(value));
 		}
 		if (component instanceof TextArea) {
-			return PropertyHandler.<String>create(() -> ((TextArea) component).getPlaceholder(),
-					placeholder -> ((TextArea) component).setPlaceholder(placeholder));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((TextArea) cmp).getPlaceholder(),
+					(fld, cmp, value) -> ((TextArea) cmp).setPlaceholder(value));
 		}
 		if (component instanceof PasswordField) {
-			return PropertyHandler.<String>create(() -> ((PasswordField) component).getPlaceholder(),
-					placeholder -> ((PasswordField) component).setPlaceholder(placeholder));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((PasswordField) cmp).getPlaceholder(),
+					(fld, cmp, value) -> ((PasswordField) cmp).setPlaceholder(value));
 		}
 		if (component instanceof ComboBox) {
-			return PropertyHandler.<String>create(() -> ((ComboBox<?>) component).getPlaceholder(),
-					placeholder -> ((ComboBox<?>) component).setPlaceholder(placeholder));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((ComboBox<?>) cmp).getPlaceholder(),
+					(fld, cmp, value) -> ((ComboBox<?>) cmp).setPlaceholder(value));
 		}
 		if (component instanceof DatePicker) {
-			return PropertyHandler.<String>create(() -> ((DatePicker) component).getPlaceholder(),
-					placeholder -> ((DatePicker) component).setPlaceholder(placeholder));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((DatePicker) cmp).getPlaceholder(),
+					(fld, cmp, value) -> ((DatePicker) cmp).setPlaceholder(value));
 		}
 		return null;
 	}
 
 	/**
 	 * Try to obtain a default <code>title</code> {@link PropertyHandler} using given component.
+	 * @param <T> Value type
+	 * @param <V> Concrete {@link HasValue} type
+	 * @param <C> Concrete {@link Component} type
 	 * @param component The component
 	 * @return A default <code>title</code> {@link PropertyHandler} for given component, or <code>null</code> if not
 	 *         available
 	 */
-	private static PropertyHandler<String> tryToObtainTitlePropertyHandler(final Component component) {
+	private static <T, V extends HasValue<?, T>, C extends Component> PropertyHandler<String, T, V, C> tryToObtainTitlePropertyHandler(
+			final Component component) {
 		if (component instanceof TextField) {
-			return PropertyHandler.<String>create(() -> ((TextField) component).getTitle(),
-					label -> ((TextField) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((TextField) cmp).getTitle(),
+					(fld, cmp, value) -> ((TextField) cmp).setTitle(value));
 		}
 		if (component instanceof PasswordField) {
-			return PropertyHandler.<String>create(() -> ((PasswordField) component).getTitle(),
-					label -> ((PasswordField) component).setLabel(label));
+			return PropertyHandler.<String, T, V, C>create((fld, cmp) -> ((PasswordField) cmp).getTitle(),
+					(fld, cmp, value) -> ((PasswordField) cmp).setTitle(value));
 		}
 		return null;
 	}

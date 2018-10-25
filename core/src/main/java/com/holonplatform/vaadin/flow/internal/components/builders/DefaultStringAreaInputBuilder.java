@@ -25,7 +25,8 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.HasValueStringInput;
+import com.holonplatform.vaadin.flow.internal.components.support.StringInputIsEmptySupplier;
+import com.holonplatform.vaadin.flow.internal.components.support.StringInputValueSupplier;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -103,14 +104,14 @@ public class DefaultStringAreaInputBuilder extends
 	 */
 	@Override
 	public Input<String> build() {
-		final TextArea component = getComponent();
-		final HasValueStringInput input = new HasValueStringInput(component);
-		input.setRequiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required));
-		input.setLabelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label));
-		input.setEmptyValuesAsNull(emptyValuesAsNull);
-		input.setBlankValuesAsNull(blankValuesAsNull);
-		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
-		return input;
+		return Input.builder(getComponent())
+				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
+				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
+				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
+				.isEmptySupplier(new StringInputIsEmptySupplier<>(emptyValuesAsNull, blankValuesAsNull))
+				.valueSupplier(new StringInputValueSupplier<>(emptyValuesAsNull, blankValuesAsNull))
+				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
+				.withValueChangeListeners(valueChangeListeners).build();
 	}
 
 	/*

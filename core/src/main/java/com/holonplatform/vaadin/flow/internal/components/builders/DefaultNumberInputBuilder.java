@@ -153,13 +153,12 @@ public class DefaultNumberInputBuilder<T extends Number> extends
 		component.setPattern(getConverter().getValidationPattern());
 		component.setPreventInvalidInput(true);
 
-		final Input<String> input = Input.builder(component)
-				.requiredPropertyHandler(() -> component.isRequired(), required -> component.setRequired(required))
-				.labelPropertyHandler(() -> component.getLabel(), label -> component.setLabel(label))
-				.titlePropertyHandler(() -> component.getTitle(), title -> component.setTitle(title))
-				.placeholderPropertyHandler(() -> component.getPlaceholder(),
-						placeholder -> component.setPlaceholder(placeholder))
-				.build();
+		final Input<String> input = Input.builder(component).emptyValueSupplier(field -> null)
+				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
+				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
+				.titlePropertyHandler((f, c) -> c.getTitle(), (f, c, v) -> c.setTitle(v))
+				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
+				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 
 		// conversion
 		final Input<T> numberInput = Input.from(input, getConverter());

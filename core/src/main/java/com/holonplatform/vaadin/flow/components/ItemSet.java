@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * Implemented by components which support an item set as data source.
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface ItemSet {
 

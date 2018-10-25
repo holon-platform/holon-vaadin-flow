@@ -26,7 +26,7 @@ import com.vaadin.flow.shared.Registration;
  *
  * @param <T> Selection item type
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface Selectable<T> {
 
