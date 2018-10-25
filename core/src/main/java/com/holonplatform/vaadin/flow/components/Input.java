@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.operation.TriConsumer;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
@@ -31,8 +32,12 @@ import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
+import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
@@ -40,6 +45,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Input component representation, i.e. a UI component that has a user-editable value.
@@ -255,6 +261,60 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
 		return NumberInputBuilder.create(numberClass);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} type Input.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are consistent. Use
+	 * {@link #singleSelect(ItemConverter)} if not.
+	 * <p>
+	 * @param <T> Value type
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect() {
+		return SelectModeSingleSelectInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} type Input.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
+	 * different type). When the the selection item and the selection value types are consistent, the
+	 * {@link #singleSelect()} method can be used.
+	 * <p>
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+	 *        back (not null)
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(
+			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+		return SelectModeSingleSelectInputBuilder.create(itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property}.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
+		return SelectModeSingleSelectInputBuilder.create(selectionProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property} and converter.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
+	 *        item
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
+			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+		return SelectModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
 	}
 
 	// Renderers

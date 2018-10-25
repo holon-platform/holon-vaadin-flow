@@ -15,6 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.data;
 
+import java.util.function.BiFunction;
+
+import com.holonplatform.vaadin.flow.internal.data.CallbackItemConverter;
+
 /**
  * A converter interface to obtain an item from a different type value.
  * 
@@ -41,5 +45,29 @@ public interface ItemConverter<T, ITEM, CONTEXT> {
 	 * @return The item instance
 	 */
 	ITEM getItem(CONTEXT context, T value);
+
+	/**
+	 * Create a new {@link ItemConverter} using given function to perform conversions.
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param <CONTEXT> Conversion context type
+	 * @param toValue Conversion to value function (not null)
+	 * @param toItem Conversion to item function (not null)
+	 * @return A new {@link ItemConverter}
+	 */
+	static <T, ITEM, CONTEXT> ItemConverter<T, ITEM, CONTEXT> create(BiFunction<CONTEXT, ITEM, T> toValue,
+			BiFunction<CONTEXT, T, ITEM> toItem) {
+		return new CallbackItemConverter<>(toValue, toItem);
+	}
+
+	/**
+	 * Create a new {@link ItemConverter} for consistent item and value types, which do not perform any conversion.
+	 * @param <T> Value and item type
+	 * @param <CONTEXT> Conversion context type
+	 * @return A identity new {@link ItemConverter}
+	 */
+	static <T, CONTEXT> ItemConverter<T, T, CONTEXT> identity() {
+		return create((ctx, item) -> item, (ctx, value) -> value);
+	}
 
 }

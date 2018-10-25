@@ -26,14 +26,16 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.data.ItemDataProvider;
+import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.data.ItemDataProviderAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -42,11 +44,13 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 
 /**
- * Base {@link SelectModeSingleSelectInputBuilder} implementation.
+ * Default {@link ItemSelectModeSingleSelectInputBuilder} implementation.
  *
  * @param <T> Value type
  * @param <ITEM> Item type
@@ -54,9 +58,9 @@ import com.vaadin.flow.data.renderer.Renderer;
  *
  * @since 5.2.0
  */
-public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends AbstractLocalizableComponentConfigurator<ComboBox<ITEM>, B>
-		implements SelectModeSingleSelectInputBuilder<T, ITEM, B> {
+public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
+		AbstractLocalizableComponentConfigurator<ComboBox<ITEM>, ItemSelectModeSingleSelectInputBuilder<T, ITEM>>
+		implements ItemSelectModeSingleSelectInputBuilder<T, ITEM> {
 
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
@@ -78,7 +82,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * Constructor.
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	public AbstractSelectModeSingleSelectInputBuilder(ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+	public DefaultItemSelectModeSingleSelectInputBuilder(ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
 		super(new ComboBox<>());
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
 		this.itemConverter = itemConverter;
@@ -96,14 +100,14 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 		}, this);
 	}
 
-	/**
-	 * Build the {@link SingleSelect} input instance.
-	 * @param component Input component
-	 * @param itemConverter Item converter
-	 * @return The {@link SingleSelect} input instance
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
-	protected abstract SingleSelect<T> buildSelect(ComboBox<ITEM> component,
-			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter);
+	@Override
+	protected ItemSelectModeSingleSelectInputBuilder<T, ITEM> getConfigurator() {
+		return this;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -129,8 +133,18 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 			component.setItems(items);
 		}
 
-		// actual build
-		return buildSelect(component, itemConverter);
+		final Input<ITEM> itemInput = Input.builder(component)
+				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
+				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
+				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
+				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
+
+		final Input<T> input = Input.from(itemInput,
+				Converter.from(item -> Result.ok(itemConverter.getValue(component.getDataProvider(), item)),
+						value -> itemConverter.getItem(component.getDataProvider(), value)));
+		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
+
+		return new SingleSelectInputAdapter<>(input, () -> component.getDataProvider().refreshAll());
 	}
 
 	/*
@@ -140,7 +154,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * data.renderer.Renderer)
 	 */
 	@Override
-	public B renderer(Renderer<ITEM> renderer) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> renderer(Renderer<ITEM> renderer) {
 		getComponent().setRenderer(renderer);
 		return getConfigurator();
 	}
@@ -152,7 +166,8 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
 	 */
 	@Override
-	public B itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+			ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
 		getComponent().setItemLabelGenerator(item -> itemCaptionGenerator.getItemCaption(item));
 		this.customItemCaptionGenerator = true;
@@ -165,7 +180,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * Object, com.holonplatform.core.i18n.Localizable)
 	 */
 	@Override
-	public B itemCaption(ITEM item, Localizable caption) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		if (caption == null) {
 			itemCaptions.remove(item);
@@ -182,7 +197,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * flow.data.ItemDataProvider)
 	 */
 	@Override
-	public B dataSource(ItemDataProvider<ITEM> dataProvider) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(ItemDataProvider<ITEM> dataProvider) {
 		getComponent().setDataProvider(new ItemDataProviderAdapter<>(dataProvider));
 		return getConfigurator();
 	}
@@ -193,7 +208,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * provider.DataProvider)
 	 */
 	@Override
-	public B dataSource(DataProvider<ITEM, ?> dataProvider) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
 		getComponent().setDataProvider(dataProvider);
 		return getConfigurator();
 	}
@@ -203,7 +218,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(java.lang.Iterable)
 	 */
 	@Override
-	public B items(Iterable<ITEM> items) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
 		this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
 		return getConfigurator();
 	}
@@ -213,7 +228,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#addItem(java.lang.Object)
 	 */
 	@Override
-	public B addItem(ITEM item) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		this.items.add(item);
 		return getConfigurator();
@@ -233,7 +248,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public B readOnly(boolean readOnly) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -245,7 +260,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public B withValueChangeListener(ValueChangeListener<T> listener) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> withValueChangeListener(ValueChangeListener<T> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -256,7 +271,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public B required(boolean required) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> required(boolean required) {
 		getComponent().setRequired(required);
 		return getConfigurator();
 	}
@@ -266,7 +281,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
-	public B width(String width) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> width(String width) {
 		sizeConfigurator.width(width);
 		return getConfigurator();
 	}
@@ -276,7 +291,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
-	public B height(String height) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> height(String height) {
 		sizeConfigurator.height(height);
 		return getConfigurator();
 	}
@@ -286,7 +301,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
-	public B styleNames(String... styleNames) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 		styleConfigurator.styleNames(styleNames);
 		return getConfigurator();
 	}
@@ -296,7 +311,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 	 */
 	@Override
-	public B styleName(String styleName) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
 		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
@@ -306,7 +321,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 	 */
 	@Override
-	public B removeStyleName(String styleName) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> removeStyleName(String styleName) {
 		styleConfigurator.removeStyleName(styleName);
 		return getConfigurator();
 	}
@@ -316,7 +331,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 	 */
 	@Override
-	public B replaceStyleName(String styleName) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
 		return getConfigurator();
 	}
@@ -326,7 +341,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
-	public B autofocus(boolean autofocus) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> autofocus(boolean autofocus) {
 		getComponent().setAutofocus(autofocus);
 		return getConfigurator();
 	}
@@ -336,7 +351,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public B enabled(boolean enabled) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
@@ -347,7 +362,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * Localizable)
 	 */
 	@Override
-	public B label(Localizable label) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
 		labelConfigurator.label(label);
 		return getConfigurator();
 	}
@@ -359,7 +374,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * i18n.Localizable)
 	 */
 	@Override
-	public B placeholder(Localizable placeholder) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> placeholder(Localizable placeholder) {
 		placeholderConfigurator.placeholder(placeholder);
 		return getConfigurator();
 	}
@@ -369,7 +384,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#pattern(java.lang.String)
 	 */
 	@Override
-	public B pattern(String pattern) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> pattern(String pattern) {
 		getComponent().setPattern(pattern);
 		return getConfigurator();
 	}
@@ -379,7 +394,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#preventInvalidInput(boolean)
 	 */
 	@Override
-	public B preventInvalidInput(boolean preventInvalidInput) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> preventInvalidInput(boolean preventInvalidInput) {
 		getComponent().setPreventInvalidInput(preventInvalidInput);
 		return getConfigurator();
 	}
@@ -389,7 +404,7 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
-	public B tabIndex(int tabIndex) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> tabIndex(int tabIndex) {
 		getComponent().setTabIndex(tabIndex);
 		return getConfigurator();
 	}
@@ -401,7 +416,8 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public B withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> withFocusListener(
+			ComponentEventListener<FocusEvent<Component>> listener) {
 		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<ComboBox<ITEM>>>() {
 
 			@Override
@@ -420,7 +436,8 @@ public abstract class AbstractSelectModeSingleSelectInputBuilder<T, ITEM, B exte
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public B withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> withBlurListener(
+			ComponentEventListener<BlurEvent<Component>> listener) {
 		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<ComboBox<ITEM>>>() {
 
 			@Override

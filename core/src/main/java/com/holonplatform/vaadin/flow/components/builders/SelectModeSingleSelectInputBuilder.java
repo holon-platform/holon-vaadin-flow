@@ -15,11 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.function.BiFunction;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.data.ItemConverter;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemSelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertySelectModeSingleSelectInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -109,6 +114,55 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, PropertySelectModeSingleSelectInputBuilder<T>>,
 			SelectablePropertyInputConfigurator<T, DataProvider<PropertyBox, ?>, PropertySelectModeSingleSelectInputBuilder<T>> {
 
+	}
+
+	// builders
+
+	/**
+	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param itemConverter The item converter to use (not null)
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(
+			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+		return new DefaultItemSelectModeSingleSelectInputBuilder<>(itemConverter);
+	}
+
+	/**
+	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
+	 * @param <T> Value type
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> create() {
+		return new DefaultItemSelectModeSingleSelectInputBuilder<>(ItemConverter.identity());
+	}
+
+	// property
+
+	/**
+	 * Create a new {@link PropertySelectModeSingleSelectInputBuilder} using given selection {@link Property} and
+	 * converter.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
+		return new DefaultPropertySelectModeSingleSelectInputBuilder<>(selectionProperty);
+	}
+
+	/**
+	 * Create a new {@link PropertySelectModeSingleSelectInputBuilder} using given selection {@link Property}.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
+	 *        item
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
+			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+		return new DefaultPropertySelectModeSingleSelectInputBuilder<>(selectionProperty, itemConverter);
 	}
 
 }
