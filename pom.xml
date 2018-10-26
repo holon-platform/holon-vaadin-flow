@@ -64,8 +64,9 @@
 		<holon.core.version>5.2.0-alpha2-SNAPSHOT</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>11.0.1</vaadin.version>
-		
+		<!--<vaadin.version>11.0.1</vaadin.version>-->
+		<vaadin.version>12.0.0.alpha4</vaadin.version>
+
 		<!-- Servlet API -->
 		<servlet.version>3.1.0</servlet.version>
 
@@ -76,6 +77,12 @@
 		<repository>
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+
+		<!-- TODO: remove -->
+		<repository>
+			<id>vaadin-prereleases</id>
+			<url>https://maven.vaadin.com/vaadin-prereleases/</url>
 		</repository>
 	</repositories>
 
@@ -95,15 +102,9 @@
 	<modules>
 		<module>test</module>
 		<module>core</module>
-		<!--
-		<module>navigator</module>
-		<module>spring</module>
-		<module>spring-boot</module>
-		<module>starter</module>
-		<module>starter-undertow</module>
-		<module>bom</module>
-		<module>documentation</module>
-		-->
+		<!-- <module>navigator</module> <module>spring</module> <module>spring-boot</module> 
+			<module>starter</module> <module>starter-undertow</module> <module>bom</module> 
+			<module>documentation</module> -->
 	</modules>
 
 	<dependencies>

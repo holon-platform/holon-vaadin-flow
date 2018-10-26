@@ -28,7 +28,6 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.data.ItemDataProvider;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -39,6 +38,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.function.SerializableFunction;
 
 /**
  * Default {@link PropertySelectModeSingleSelectInputBuilder} implementation.
@@ -345,23 +345,25 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.holonplatform.vaadin.
-	 * flow.data.ItemDataProvider)
+	 * com.holonplatform.vaadin.flow.components.builders.HasItemsDataSourceConfigurator#dataSource(com.vaadin.flow.data.
+	 * provider.DataProvider)
 	 */
 	@Override
-	public PropertySelectModeSingleSelectInputBuilder<T> dataSource(ItemDataProvider<PropertyBox> dataProvider) {
+	public PropertySelectModeSingleSelectInputBuilder<T> dataSource(DataProvider<PropertyBox, String> dataProvider) {
 		builder.dataSource(dataProvider);
 		return this;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.vaadin.flow.data.
-	 * provider.DataProvider)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasFilterableDataSourceConfigurator#dataSource(com.vaadin.flow.
+	 * data.provider.DataProvider, com.vaadin.flow.function.SerializableFunction)
 	 */
 	@Override
-	public PropertySelectModeSingleSelectInputBuilder<T> dataSource(DataProvider<PropertyBox, ?> dataProvider) {
-		builder.dataSource(dataProvider);
+	public <FILTER> PropertySelectModeSingleSelectInputBuilder<T> dataSource(
+			DataProvider<PropertyBox, FILTER> dataProvider, SerializableFunction<String, FILTER> filterConverter) {
+		builder.dataSource(dataProvider, filterConverter);
 		return this;
 	}
 

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,10 +42,11 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
  * A {@link DataProvider} using an {@link ItemDataProvider} as data source.
  * 
  * @param <ITEM> Item type
+ * @param <F> Filter type
  * 
  * @since 5.0.0
  */
-public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<ITEM, QueryFilter> {
+public class ItemDataProviderAdapter<ITEM, F> extends AbstractBackEndDataProvider<ITEM, F> {
 
 	private static final long serialVersionUID = -5011712229278252796L;
 
@@ -52,6 +54,11 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	 * Actual item data provider
 	 */
 	private final ItemDataProvider<ITEM> dataProvider;
+
+	/**
+	 * Filter converter
+	 */
+	private final Function<F, QueryFilter> filterConverter;
 
 	/**
 	 * Item identifier provider
@@ -65,12 +72,16 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 
 	/**
 	 * Constructor.
-	 * @param dataProvider Actual item data provider (not null)
+	 * @param dataProvider Actual data provider (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
 	 */
-	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider) {
+	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider, Function<F, QueryFilter> filterConverter) {
 		super();
 		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
+		ObjectUtils.argumentNotNull(filterConverter, "Filter converter must be not null");
 		this.dataProvider = dataProvider;
+		this.filterConverter = filterConverter;
 		this.itemIdentifier = null;
 		this.configuration = null;
 	}
@@ -78,25 +89,31 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	/**
 	 * Constructor.
 	 * @param dataProvider Actual item data provider (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
 	 * @param itemIdentifier Item identifier provider
 	 */
-	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider,
+	public ItemDataProviderAdapter(ItemDataProvider<ITEM> dataProvider, Function<F, QueryFilter> filterConverter,
 			ItemIdentifierProvider<ITEM, ?> itemIdentifier) {
 		super();
 		ObjectUtils.argumentNotNull(dataProvider, "ItemDataProvider must be not null");
 		this.dataProvider = dataProvider;
+		this.filterConverter = filterConverter;
 		this.itemIdentifier = itemIdentifier;
 		this.configuration = null;
 	}
 
 	/**
 	 * Constructor using an item data source configuration.
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
 	 * @param configuration Configuration (not null)
 	 */
-	public ItemDataProviderAdapter(Configuration<ITEM, ?> configuration) {
+	public ItemDataProviderAdapter(Configuration<ITEM, ?> configuration, Function<F, QueryFilter> filterConverter) {
 		super();
 		ObjectUtils.argumentNotNull(configuration, "Configuration must be not null");
 		this.configuration = configuration;
+		this.filterConverter = filterConverter;
 		this.dataProvider = null;
 		this.itemIdentifier = null;
 	}
@@ -131,7 +148,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	 * @see com.vaadin.data.provider.AbstractBackEndDataProvider#fetchFromBackEnd(com.vaadin.data.provider.Query)
 	 */
 	@Override
-	protected Stream<ITEM> fetchFromBackEnd(Query<ITEM, QueryFilter> query) {
+	protected Stream<ITEM> fetchFromBackEnd(Query<ITEM, F> query) {
 		return getDataProvider().load(getConfiguration(query), query.getOffset(), query.getLimit());
 	}
 
@@ -140,7 +157,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	 * @see com.vaadin.data.provider.AbstractBackEndDataProvider#sizeInBackEnd(com.vaadin.data.provider.Query)
 	 */
 	@Override
-	protected int sizeInBackEnd(Query<ITEM, QueryFilter> query) {
+	protected int sizeInBackEnd(Query<ITEM, F> query) {
 		return Long.valueOf(getDataProvider().size(getConfiguration(query))).intValue();
 	}
 
@@ -159,9 +176,11 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 	/**
 	 * Get the query configuration form given data provider {@link Query}.
 	 * @param query Data provider query (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
 	 * @return Query configuration
 	 */
-	protected QueryConfigurationProvider getConfiguration(final Query<ITEM, QueryFilter> query) {
+	protected QueryConfigurationProvider getConfiguration(final Query<ITEM, F> query) {
 		ObjectUtils.argumentNotNull(query, "Query must be not null");
 
 		// filters
@@ -169,7 +188,7 @@ public class ItemDataProviderAdapter<ITEM> extends AbstractBackEndDataProvider<I
 		// from data source configuration
 		getConfiguration().flatMap(c -> c.getQueryFilter()).ifPresent(f -> filters.add(f));
 		// from query definition
-		query.getFilter().ifPresent(f -> filters.add(f));
+		query.getFilter().map(f -> filterConverter.apply(f)).ifPresent(f -> filters.add(f));
 
 		// sorts
 		final List<QuerySort> sorts = new LinkedList<>();

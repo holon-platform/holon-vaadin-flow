@@ -34,9 +34,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.data.ItemDataProvider;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
-import com.holonplatform.vaadin.flow.internal.data.ItemDataProviderAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -48,6 +46,7 @@ import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.function.SerializableFunction;
 
 /**
  * Default {@link ItemSelectModeSingleSelectInputBuilder} implementation.
@@ -192,24 +191,25 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.holonplatform.vaadin.
-	 * flow.data.ItemDataProvider)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.vaadin.flow.data.
+	 * provider.DataProvider)
 	 */
 	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(ItemDataProvider<ITEM> dataProvider) {
-		getComponent().setDataProvider(new ItemDataProviderAdapter<>(dataProvider));
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, String> dataProvider) {
+		getComponent().setDataProvider(dataProvider);
 		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.vaadin.flow.data.
-	 * provider.DataProvider)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasFilterableDataSourceConfigurator#dataSource(com.vaadin.flow.
+	 * data.provider.DataProvider, com.vaadin.flow.function.SerializableFunction)
 	 */
 	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
-		getComponent().setDataProvider(dataProvider);
+	public <FILTER> ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, FILTER> dataProvider,
+			SerializableFunction<String, FILTER> filterConverter) {
+		getComponent().setDataProvider(dataProvider, filterConverter);
 		return getConfigurator();
 	}
 

@@ -20,13 +20,18 @@ import java.util.function.Function;
 import com.holonplatform.core.beans.BeanIntrospector;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.flow.internal.data.DatastoreBeanItemDataProvider;
 import com.holonplatform.vaadin.flow.internal.data.DatastoreItemDataProvider;
 import com.holonplatform.vaadin.flow.internal.data.DefaultItemDataProvider;
+import com.holonplatform.vaadin.flow.internal.data.ItemDataProviderAdapter;
 import com.holonplatform.vaadin.flow.internal.data.ItemDataProviderWrapper;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Iterface to load items data from a data source.
@@ -52,11 +57,38 @@ public interface ItemDataProvider<ITEM> extends ItemSetCounter, ItemSetLoader<IT
 	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
 	 * @param datastore Datastore to use (not null)
 	 * @param target Data target (not null)
+	 * @param properties Property set
+	 * @return the {@link ItemDataProvider} instance
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target,
+			Iterable<P> properties) {
+		return create(datastore, target, asPropertySet(properties));
+	}
+
+	/**
+	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
+	 * @param datastore Datastore to use (not null)
+	 * @param target Data target (not null)
 	 * @param propertySet Property set to load
 	 * @return the {@link ItemDataProvider} instance
 	 */
 	static ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
 		return new DatastoreItemDataProvider(datastore, target, propertySet);
+	}
+
+	/**
+	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
+	 * @param datastore Datastore to use (not null)
+	 * @param target Data target (not null)
+	 * @param properties Property set
+	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
+	 * @return the {@link ItemDataProvider} instance
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target,
+			Iterable<P> properties, QueryConfigurationProvider... queryConfigurationProviders) {
+		return create(datastore, target, asPropertySet(properties), queryConfigurationProviders);
 	}
 
 	/**
@@ -132,6 +164,46 @@ public interface ItemDataProvider<ITEM> extends ItemSetCounter, ItemSetLoader<IT
 	 */
 	static <T, ITEM> ItemDataProvider<T> convert(ItemDataProvider<ITEM> provider, Function<ITEM, T> converter) {
 		return new ItemDataProviderWrapper<>(provider, converter);
+	}
+
+	/**
+	 * Get the properties {@link Iterable} as a {@link PropertySet}.
+	 * @param properties Properties (not null)
+	 * @return The {@link PropertySet}
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertySet<?> asPropertySet(Iterable<P> properties) {
+		ObjectUtils.argumentNotNull(properties, "Properties must be not null");
+		return (properties instanceof PropertySet) ? (PropertySet<?>) properties : PropertySet.of(properties);
+	}
+
+	/**
+	 * Adapt given {@link ItemDataProvider} as a {@link DataProvider}.
+	 * @param <ITEM> Item type
+	 * @param <F> {@link DataProvider} filter type
+	 * @param itemDataProvider The {@link ItemDataProvider} (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
+	 * @return A new {@link DataProvider} backed by the provided {@link ItemDataProvider}
+	 */
+	static <ITEM, F> DataProvider<ITEM, F> adapt(ItemDataProvider<ITEM> itemDataProvider,
+			Function<F, QueryFilter> filterConverter) {
+		return new ItemDataProviderAdapter<>(itemDataProvider, filterConverter);
+	}
+
+	/**
+	 * Adapt given {@link ItemDataProvider} as a {@link DataProvider}.
+	 * @param <ITEM> Item type
+	 * @param <F> {@link DataProvider} filter type
+	 * @param itemDataProvider The {@link ItemDataProvider} (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
+	 * @param itemIdentifier Provider for the item ids
+	 * @return A new {@link DataProvider} backed by the provided {@link ItemDataProvider}
+	 */
+	static <ITEM, F> DataProvider<ITEM, F> adapt(ItemDataProvider<ITEM> itemDataProvider,
+			Function<F, QueryFilter> filterConverter, ItemIdentifierProvider<ITEM, ?> itemIdentifier) {
+		return new ItemDataProviderAdapter<>(itemDataProvider, filterConverter, itemIdentifier);
 	}
 
 }

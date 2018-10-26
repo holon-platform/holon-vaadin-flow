@@ -17,6 +17,10 @@ package com.holonplatform.vaadin.flow.data;
 
 import java.io.Serializable;
 
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.flow.internal.data.PropertyItemIdentifier;
+
 /**
  * Provider to obtain the identifier of an item.
  * 
@@ -44,6 +48,17 @@ public interface ItemIdentifierProvider<ITEM, ID> extends Serializable {
 	 */
 	static <T> ItemIdentifierProvider<T, T> identity() {
 		return i -> i;
+	}
+
+	/**
+	 * Create a new {@link ItemIdentifierProvider} for {@link PropertyBox} type items using given
+	 * <code>identifierProperty</code> value as item identifier.
+	 * @param <T> Identifier property type
+	 * @param identifierProperty The identifier property (not null)
+	 * @return A new {@link ItemIdentifierProvider}
+	 */
+	static <T> ItemIdentifierProvider<PropertyBox, T> property(Property<T> identifierProperty) {
+		return new PropertyItemIdentifier<>(identifierProperty);
 	}
 
 }

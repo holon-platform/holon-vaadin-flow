@@ -15,20 +15,25 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.vaadin.flow.components.Selectable;
-import com.holonplatform.vaadin.flow.data.ItemDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
- * Configurator for {@link Selectable} components which supports a DataSource using an {@link ItemDataProvider}.
+ * Configurator for components which supports a set of items and a items data source.
  * 
- * @param <T> Value type
  * @param <ITEM> Item type
- * @param <CONTEXT> Item conversion context type
+ * @param <F> DataProvider filter type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface SelectableDataSourceInputConfigurator<T, ITEM, CONTEXT, C extends SelectableDataSourceInputConfigurator<T, ITEM, CONTEXT, C>>
-		extends SelectableInputConfigurator<T, C>, HasItemsConfigurator<ITEM, C> {
+public interface HasItemsDataSourceConfigurator<ITEM, F, C extends HasItemsDataSourceConfigurator<ITEM, F, C>>
+		extends HasItemsConfigurator<ITEM, C> {
+
+	/**
+	 * Set the items data provider.
+	 * @param dataProvider The data provider to set (not null)
+	 * @return this
+	 */
+	C dataSource(DataProvider<ITEM, F> dataProvider);
 
 }

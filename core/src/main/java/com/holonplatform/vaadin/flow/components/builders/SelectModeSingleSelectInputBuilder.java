@@ -41,7 +41,7 @@ import com.vaadin.flow.data.renderer.Renderer;
 public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
 		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasLabelConfigurator<B>,
 		HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
-		FocusableConfigurator<Component, B> {
+		FocusableConfigurator<Component, B>, HasFilterableDataSourceConfigurator<ITEM, String, B> {
 
 	/**
 	 * Sets the Renderer responsible to render the individual items in the list of possible choices.
@@ -112,7 +112,7 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 */
 	public interface PropertySelectModeSingleSelectInputBuilder<T>
 			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, PropertySelectModeSingleSelectInputBuilder<T>>,
-			SelectablePropertyInputConfigurator<T, DataProvider<PropertyBox, ?>, PropertySelectModeSingleSelectInputBuilder<T>> {
+			HasFilterablePropertyDataSourceConfigurator<String, PropertySelectModeSingleSelectInputBuilder<T>> {
 
 	}
 

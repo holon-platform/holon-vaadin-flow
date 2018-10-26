@@ -15,8 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.vaadin.flow.data.ItemDataProvider;
-import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Configurator for components which supports a DataSource using an {@link ItemDataProvider}.
@@ -27,20 +28,27 @@ import com.vaadin.flow.data.provider.DataProvider;
  * @since 5.2.0
  */
 public interface HasDataSourceConfigurator<ITEM, C extends HasDataSourceConfigurator<ITEM, C>>
-		extends HasItemsConfigurator<ITEM, C> {
+		extends HasItemsDataSourceConfigurator<ITEM, Object, C> {
 
 	/**
-	 * Set the selection items data provider.
-	 * @param dataProvider Items data provider (not null)
+	 * Set the items data provider using an {@link ItemDataProvider}.
+	 * @param dataProvider The items data provider to set (not null)
 	 * @return this
 	 */
-	C dataSource(ItemDataProvider<ITEM> dataProvider);
+	default C dataSource(ItemDataProvider<ITEM> dataProvider) {
+		return dataSource(ItemDataProvider.adapt(dataProvider, f -> null));
+	}
 
 	/**
-	 * Set the selection items data provider.
-	 * @param dataProvider Items data provider (not null)
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source, providing the items bean
+	 * class to use as property set and query projection type.
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param dataTarget The query {@link DataTarget} to use (not null)
+	 * @param itemBeanClass Item bean class (not null)
 	 * @return this
 	 */
-	C dataSource(DataProvider<ITEM, ?> dataProvider);
+	default C dataSource(Datastore datastore, DataTarget<?> dataTarget, Class<ITEM> itemBeanClass) {
+		return dataSource(ItemDataProvider.create(datastore, dataTarget, itemBeanClass));
+	}
 
 }
