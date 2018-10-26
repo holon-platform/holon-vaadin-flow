@@ -48,6 +48,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.SerializableFunction;
 
@@ -158,7 +159,8 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 						value -> itemConverter.getItem(component.getDataProvider(), value)));
 		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
 
-		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input, () -> component.getDataProvider().refreshAll());
+		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
+				() -> component.getDataProvider().refreshAll());
 		selectionListeners.forEach(listener -> select.addSelectionListener(listener));
 		return select;
 	}
@@ -250,6 +252,18 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	public <FILTER> ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, FILTER> dataProvider,
 			SerializableFunction<String, FILTER> filterConverter) {
 		getComponent().setDataProvider(dataProvider, filterConverter);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.flow.
+	 * data.provider.ListDataProvider)
+	 */
+	@Override
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
+		getComponent().setDataProvider(dataProvider);
 		return getConfigurator();
 	}
 

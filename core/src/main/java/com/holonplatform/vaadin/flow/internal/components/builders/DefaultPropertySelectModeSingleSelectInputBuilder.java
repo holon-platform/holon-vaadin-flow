@@ -43,6 +43,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.SerializableFunction;
@@ -415,6 +416,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 	public <FILTER> PropertySelectModeSingleSelectInputBuilder<T> dataSource(
 			DataProvider<PropertyBox, FILTER> dataProvider, SerializableFunction<String, FILTER> filterConverter) {
 		builder.dataSource(dataProvider, filterConverter);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.flow.
+	 * data.provider.ListDataProvider)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> dataSource(ListDataProvider<PropertyBox> dataProvider) {
+		builder.dataSource(dataProvider);
 		return this;
 	}
 

@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,12 +42,15 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
+import com.holonplatform.vaadin.flow.data.ItemDataProvider;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 
@@ -565,7 +570,7 @@ public class TestSelectModeSingleSelectInput {
 
 		input = Input.singleSelect(String.class).addItem("a").addItem("b")
 				.withSelectionListener(e -> sv.value = e.getFirstSelectedItem().orElse(null)).build();
-		
+
 		assertNull(sv.value);
 
 		input.select("b");
@@ -576,8 +581,126 @@ public class TestSelectModeSingleSelectInput {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testEnumSelect() {
+
+		SingleSelect<TestEnum> input = Input.enumSelect(TestEnum.class).build();
+		assertNotNull(input);
+
+		DataProvider<TestEnum, ?> dp = ((ComboBox<TestEnum>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+
+		assertEquals(3, dp.size(new Query<>()));
+
+		Set<TestEnum> items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(3, items.size());
+		assertTrue(items.contains(TestEnum.A));
+		assertTrue(items.contains(TestEnum.B));
+		assertTrue(items.contains(TestEnum.C));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDataProvider() {
+
+		SingleSelect<String> input = Input.singleSelect(String.class)
+				.dataSource(DataProvider.ofCollection(Arrays.asList("a", "b", "c"))).build();
+
+		DataProvider<String, ?> dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+
+		assertEquals(3, dp.size(new Query<>()));
+
+		Set<String> items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(3, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("b"));
+		assertTrue(items.contains("c"));
+
+		input = Input.singleSelect(String.class)
+				.dataSource(DataProvider.ofCollection(Arrays.asList("a", "aa", "b")).filteringByPrefix(v -> v)).build();
+
+		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+
+		assertEquals(3, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(3, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("aa"));
+		assertTrue(items.contains("b"));
+
+		items = ((DataProvider<String, String>) dp).fetch(new Query<>("a")).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("aa"));
+
+		final DataProvider<String, Integer> dp2 = DataProvider
+				.<String, Integer>fromFilteringCallbacks(q -> Arrays.asList("a", "aa", "b").stream().filter(item -> {
+					int filter = q.getFilter().orElse(0);
+					if (filter > 0) {
+						return item.startsWith("a");
+					}
+					return true;
+				}), q -> {
+					int filter = q.getFilter().orElse(0);
+					if (filter > 0) {
+						return 2;
+					}
+					return 3;
+				});
+
+		input = Input.singleSelect(String.class).dataSource(dp2, filter -> {
+			if ("a".equals(filter)) {
+				return 1;
+			}
+			return 0;
+		}).build();
+
+		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertEquals(dp2, dp);
+
+		assertEquals(3, dp2.size(new Query<>()));
+
+		items = dp2.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(3, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("aa"));
+		assertTrue(items.contains("b"));
+
+		items = dp2.fetch(new Query<>(1)).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("aa"));
+		
+		final ItemDataProvider<String> idp = ItemDataProvider.create(q -> 3, (q,o,l) -> Arrays.asList("a", "b", "c").stream());
+		
+		input = Input.singleSelect(String.class).dataSource(idp, f -> null).build();
+
+		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+
+		assertEquals(3, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(3, items.size());
+		assertTrue(items.contains("a"));
+		assertTrue(items.contains("b"));
+		assertTrue(items.contains("c"));
+		
+	}
+
 	private class StringValue {
 		String value;
+	}
+
+	private enum TestEnum {
+
+		A, B, C;
+
 	}
 
 }

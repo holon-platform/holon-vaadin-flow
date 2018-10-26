@@ -33,6 +33,7 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemSel
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertySelectModeSingleSelectInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 
 /**
@@ -111,6 +112,17 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * @return this
 	 */
 	B pageSize(int pageSize);
+
+	/**
+	 * Set the items data provider using a {@link ListDataProvider}.
+	 * <p>
+	 * Filtering will use a case insensitive match to show all items where the filter text is a substring of the label
+	 * displayed for that item, which you can configure with {@link #itemCaptionGenerator(ItemCaptionGenerator)}.
+	 * </p>
+	 * @param dataProvider The data provider to set
+	 * @return this
+	 */
+	B dataSource(ListDataProvider<ITEM> dataProvider);
 
 	// specific builders
 
