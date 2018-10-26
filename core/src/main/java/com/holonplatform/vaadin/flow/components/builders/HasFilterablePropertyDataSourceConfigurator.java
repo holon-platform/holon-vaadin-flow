@@ -88,6 +88,20 @@ public interface HasFilterablePropertyDataSourceConfigurator<F, C extends HasFil
 
 	/**
 	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
+	 *        (not null)
+	 * @param properties Item property set (not null)
+	 * @return this
+	 */
+	default C dataSource(Datastore datastore, DataTarget<?> dataTarget, Function<F, QueryFilter> filterConverter,
+			Property<?>... properties) {
+		return dataSource(datastore, dataTarget, filterConverter, PropertySet.of(properties));
+	}
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
 	 * @param <P> Property type
 	 * @param datastore Datastore to use (not null)
 	 * @param dataTarget Data target to use to load items (not null)
@@ -103,20 +117,6 @@ public interface HasFilterablePropertyDataSourceConfigurator<F, C extends HasFil
 			QueryConfigurationProvider... queryConfigurationProviders) {
 		return dataSource(ItemDataProvider.create(datastore, dataTarget, properties, queryConfigurationProviders),
 				filterConverter);
-	}
-
-	/**
-	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
-	 * @param datastore Datastore to use (not null)
-	 * @param dataTarget Data target to use to load items (not null)
-	 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter} instance
-	 *        (not null)
-	 * @param properties Item property set (not null)
-	 * @return this
-	 */
-	default C dataSource(Datastore datastore, DataTarget<?> dataTarget, Function<F, QueryFilter> filterConverter,
-			Property<?>... properties) {
-		return dataSource(datastore, dataTarget, filterConverter, PropertySet.of(properties));
 	}
 
 }

@@ -17,10 +17,16 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.function.BiFunction;
 
+import com.holonplatform.core.TypedExpression;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -52,24 +58,37 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 	private final ItemSelectModeSingleSelectInputBuilder<T, PropertyBox> builder;
 
+	private final Property<T> selectionProperty;
+
 	/**
 	 * Constructor.
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 */
 	public DefaultPropertySelectModeSingleSelectInputBuilder(final Property<T> selectionProperty) {
-		this(selectionProperty, null);
+		this(selectionProperty, new PropertyItemConverter<>(selectionProperty));
 	}
 
 	/**
 	 * Constructor.
 	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param toItem The funcyion to use to convert a selection value into the corresponding selection item
+	 * @param toItem The function to use to convert a selection value into the corresponding selection item
 	 */
-	public DefaultPropertySelectModeSingleSelectInputBuilder(final Property<T> selectionProperty,
+	public DefaultPropertySelectModeSingleSelectInputBuilder(Property<T> selectionProperty,
 			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
-		this(new PropertyItemConverter<>(selectionProperty, itemConverter));
+		this(selectionProperty, new PropertyItemConverter<>(selectionProperty, itemConverter));
+	}
+
+	/**
+	 * Constructor.
+	 * @param itemConverter Item converter to use (not null)
+	 */
+	protected DefaultPropertySelectModeSingleSelectInputBuilder(Property<T> selectionProperty,
+			ItemConverter<T, PropertyBox, DataProvider<PropertyBox, ?>> itemConverter) {
+		super();
 		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
-		builder.itemCaptionGenerator(item -> {
+		this.selectionProperty = selectionProperty;
+		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(itemConverter);
+		this.builder.itemCaptionGenerator(item -> {
 			if (item != null) {
 				return selectionProperty.present(item.getValue(selectionProperty));
 			}
@@ -77,14 +96,24 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		});
 	}
 
-	/**
-	 * Constructor.
-	 * @param itemConverter Item converter to use (not null)
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.
+	 * PropertySelectModeSingleSelectInputBuilder#dataSource(com.holonplatform.core.datastore.Datastore,
+	 * com.holonplatform.core.datastore.DataTarget, java.lang.Iterable,
+	 * com.holonplatform.core.query.QueryConfigurationProvider[])
 	 */
-	public DefaultPropertySelectModeSingleSelectInputBuilder(
-			ItemConverter<T, PropertyBox, DataProvider<PropertyBox, ?>> itemConverter) {
-		super();
-		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(itemConverter);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public <P extends Property> PropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
+			DataTarget<?> dataTarget, Iterable<P> properties,
+			QueryConfigurationProvider... queryConfigurationProviders) {
+		return dataSource(datastore, dataTarget, value -> {
+			if (TypeUtils.isString(selectionProperty.getType())) {
+				return QueryFilter.startsWith((TypedExpression<String>) selectionProperty, value, true);
+			}
+			return null;
+		}, properties, queryConfigurationProviders);
 	}
 
 	/*
