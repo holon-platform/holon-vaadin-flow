@@ -16,7 +16,9 @@
 package com.holonplatform.vaadin.flow.test;
 
 import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.CODE;
+import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.DESCRIPTION;
 import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.TARGET1;
+import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.TEST1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.datastore.jdbc.JdbcDatastore;
 import com.holonplatform.jdbc.BasicDataSource;
@@ -757,6 +760,106 @@ public class TestSelectModeSingleSelectInput {
 
 		Set<String> sitems = dp3.fetch(new Query<>()).collect(Collectors.toSet());
 		assertEquals(2, sitems.size());
+
+		// properties
+
+		SingleSelect<String> input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1).build();
+		assertNotNull(input4);
+
+		DataProvider<PropertyBox, String> dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4
+				.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		Set<PropertyBox> pitems = dp4.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
+		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
+
+		pitems = dp4.fetch(new Query<>("A")).collect(Collectors.toSet());
+		assertEquals(1, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, CODE, DESCRIPTION).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
+		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1, CODE.eq("A")).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(1, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(1, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1, CODE.isNotNull(), DESCRIPTION.desc())
+				.build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		PropertyBox itm = dp4.fetch(new Query<>()).findFirst().orElse(null);
+		assertNotNull(itm);
+		assertEquals("B", itm.getValue(CODE));
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), TEST1).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
+		assertEquals(1, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
+
+		input4 = Input.singleSelect(CODE)
+				.dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), CODE, DESCRIPTION).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
+		assertEquals(1, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
+
+		input4 = Input.singleSelect(CODE)
+				.dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), TEST1, CODE.eq("A")).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(1, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
+		assertEquals(0, pitems.size());
 
 	}
 
