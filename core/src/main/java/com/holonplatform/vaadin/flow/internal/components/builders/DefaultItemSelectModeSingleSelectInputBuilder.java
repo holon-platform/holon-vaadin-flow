@@ -160,6 +160,16 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#pageSize(int)
+	 */
+	@Override
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> pageSize(int pageSize) {
+		getComponent().setPageSize(pageSize);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
 	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)

@@ -95,6 +95,20 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	}
 
 	/**
+	 * Sets the page size, which is the number of items fetched at a time from the data provider.
+	 * <p>
+	 * The page size is also the largest number of items that can support client-side filtering. If you provide more
+	 * items than the page size, the component has to fall back to server-side filtering.
+	 * <p>
+	 * The default page size is 50.
+	 * @param pageSize the maximum number of items sent per request, must be greater than zero
+	 * @return this
+	 */
+	B pageSize(int pageSize);
+
+	// specific builders
+
+	/**
 	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode.
 	 *
 	 * @param <T> Value type
