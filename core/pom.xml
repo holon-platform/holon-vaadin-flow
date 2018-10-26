@@ -87,6 +87,19 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.holon-platform.jdbc</groupId>
+			<artifactId>holon-datastore-jdbc</artifactId>
+			<version>${holon.jdbc.datastore.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.196</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>

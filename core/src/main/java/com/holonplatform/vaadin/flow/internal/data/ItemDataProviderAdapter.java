@@ -149,7 +149,8 @@ public class ItemDataProviderAdapter<ITEM, F> extends AbstractBackEndDataProvide
 	 */
 	@Override
 	protected Stream<ITEM> fetchFromBackEnd(Query<ITEM, F> query) {
-		return getDataProvider().load(getConfiguration(query), query.getOffset(), query.getLimit());
+		int limit = (query.getLimit() == Integer.MAX_VALUE) ? -1 : query.getLimit();
+		return getDataProvider().load(getConfiguration(query), query.getOffset(), limit);
 	}
 
 	/*

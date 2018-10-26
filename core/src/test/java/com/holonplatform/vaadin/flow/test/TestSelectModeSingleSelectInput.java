@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.test;
 
+import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.CODE;
+import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.TARGET1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,9 +31,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.StringProperty;
+import com.holonplatform.datastore.jdbc.JdbcDatastore;
+import com.holonplatform.jdbc.BasicDataSource;
+import com.holonplatform.jdbc.DatabasePlatform;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
@@ -43,6 +49,7 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.data.ItemDataProvider;
+import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
@@ -675,9 +682,10 @@ public class TestSelectModeSingleSelectInput {
 		assertEquals(2, items.size());
 		assertTrue(items.contains("a"));
 		assertTrue(items.contains("aa"));
-		
-		final ItemDataProvider<String> idp = ItemDataProvider.create(q -> 3, (q,o,l) -> Arrays.asList("a", "b", "c").stream());
-		
+
+		final ItemDataProvider<String> idp = ItemDataProvider.create(q -> 3,
+				(q, o, l) -> Arrays.asList("a", "b", "c").stream());
+
 		input = Input.singleSelect(String.class).dataSource(idp, f -> null).build();
 
 		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
@@ -690,7 +698,66 @@ public class TestSelectModeSingleSelectInput {
 		assertTrue(items.contains("a"));
 		assertTrue(items.contains("b"));
 		assertTrue(items.contains("c"));
-		
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDatastoreDataProvider() {
+
+		final Datastore datastore = JdbcDatastore.builder()
+				.dataSource(
+						BasicDataSource.builder().url("jdbc:h2:mem:test;INIT=RUNSCRIPT FROM 'classpath:test_init.sql'")
+								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
+				.traceEnabled(true).build();
+
+		SingleSelect<BeanTest1> input1 = Input.singleSelect(BeanTest1.class)
+				.dataSource(datastore, TARGET1, BeanTest1.class, f -> null).build();
+		assertNotNull(input1);
+
+		DataProvider<BeanTest1, ?> dp1 = ((ComboBox<BeanTest1>) input1.getComponent()).getDataProvider();
+		assertNotNull(dp1);
+
+		assertEquals(2, dp1.size(new Query<>()));
+
+		Set<BeanTest1> items = dp1.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(new BeanTest1("A")));
+		assertTrue(items.contains(new BeanTest1("B")));
+
+		input1 = Input.singleSelect(BeanTest1.class)
+				.dataSource(datastore, TARGET1, BeanTest1.class, f -> CODE.contains(f, false)).build();
+		assertNotNull(input1);
+
+		dp1 = ((ComboBox<BeanTest1>) input1.getComponent()).getDataProvider();
+		assertNotNull(dp1);
+
+		assertEquals(2, dp1.size(new Query<>()));
+
+		items = dp1.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(new BeanTest1("A")));
+		assertTrue(items.contains(new BeanTest1("B")));
+
+		items = ((DataProvider<BeanTest1, String>) dp1).fetch(new Query<>("A")).collect(Collectors.toSet());
+		assertEquals(1, items.size());
+		assertTrue(items.contains(new BeanTest1("A")));
+
+		SingleSelect<String> input2 = Input
+				.singleSelect(String.class,
+						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
+				.dataSource(datastore, TARGET1, BeanTest1.class, f -> CODE.contains(f, false)).build();
+		assertNotNull(input2);
+
+		DataProvider<String, String> dp3 = (DataProvider<String, String>) ((ComboBox<String>) input2.getComponent())
+				.getDataProvider();
+		assertNotNull(dp3);
+
+		assertEquals(2, dp3.size(new Query<>()));
+
+		Set<String> sitems = dp3.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, sitems.size());
+
 	}
 
 	private class StringValue {
