@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,11 +24,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
+import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -35,6 +36,8 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
+import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
+import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -68,6 +71,9 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	protected final DefaultHasPlaceholderConfigurator<ComboBox<ITEM>> placeholderConfigurator;
 
 	protected final List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
+	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
+
+	private final Class<? extends T> type;
 
 	protected final ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter;
 
@@ -79,11 +85,15 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	/**
 	 * Constructor.
+	 * @param type Selection value type (not null)
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	public DefaultItemSelectModeSingleSelectInputBuilder(ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+	public DefaultItemSelectModeSingleSelectInputBuilder(Class<? extends T> type,
+			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
 		super(new ComboBox<>());
+		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
+		this.type = type;
 		this.itemConverter = itemConverter;
 
 		getComponent().setAllowCustomValue(false);
@@ -97,6 +107,10 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
 		}, this);
+	}
+
+	public Class<? extends T> getType() {
+		return type;
 	}
 
 	/*
@@ -116,15 +130,16 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	public SingleSelect<T> build() {
 		final ComboBox<ITEM> component = getComponent();
 
+		// check DataProvider
+		if (!new ExceptionSwallowingSupplier<>(() -> component.getDataProvider()).get().isPresent()) {
+			// default data provider
+			component.setDataProvider(DataProvider.ofCollection(Collections.emptySet()));
+		}
+
 		// configure captions
 		if (!customItemCaptionGenerator && !itemCaptions.isEmpty()) {
-			component.setItemLabelGenerator(item -> {
-				Localizable caption = itemCaptions.get(item);
-				if (caption != null) {
-					return LocalizationContext.translate(caption, true);
-				}
-				return String.valueOf(item);
-			});
+			component.setItemLabelGenerator(
+					new DeferrableItemLabelGenerator<>(itemCaptions, component, isDeferredLocalizationEnabled()));
 		}
 
 		// items
@@ -143,7 +158,22 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 						value -> itemConverter.getItem(component.getDataProvider(), value)));
 		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
 
-		return new SingleSelectInputAdapter<>(input, () -> component.getDataProvider().refreshAll());
+		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input, () -> component.getDataProvider().refreshAll());
+		selectionListeners.forEach(listener -> select.addSelectionListener(listener));
+		return select;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+	 */
+	@Override
+	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> withSelectionListener(
+			SelectionListener<T> selectionListener) {
+		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
+		selectionListeners.add(selectionListener);
+		return getConfigurator();
 	}
 
 	/*

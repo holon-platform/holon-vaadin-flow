@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Selectable;
+import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 
 /**
  * Configurator for {@link Selectable} input components.
@@ -29,6 +30,11 @@ public interface SelectableInputConfigurator<T, C extends SelectableInputConfigu
 		extends InputConfigurator<T, C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
 		DeferrableLocalizationConfigurator<C> {
 
-	// TODO Item caption, icon, description, enabled generators
+	/**
+	 * Adds a {@link SelectionListener} to listen to selection changes.
+	 * @param selectionListener The listener to add (not null)
+	 * @return this
+	 */
+	C withSelectionListener(SelectionListener<T> selectionListener);
 
 }

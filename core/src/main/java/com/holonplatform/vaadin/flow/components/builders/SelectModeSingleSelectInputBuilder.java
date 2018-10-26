@@ -252,21 +252,23 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
+	 * @param type Selection value type
 	 * @param itemConverter The item converter to use (not null)
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
-	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(
+	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type,
 			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
-		return new DefaultItemSelectModeSingleSelectInputBuilder<>(itemConverter);
+		return new DefaultItemSelectModeSingleSelectInputBuilder<>(type, itemConverter);
 	}
 
 	/**
 	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
+	 * @param type Selection value type
 	 * @param <T> Value type
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
-	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> create() {
-		return new DefaultItemSelectModeSingleSelectInputBuilder<>(ItemConverter.identity());
+	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> create(Class<T> type) {
+		return new DefaultItemSelectModeSingleSelectInputBuilder<>(type, ItemConverter.identity());
 	}
 
 	// property

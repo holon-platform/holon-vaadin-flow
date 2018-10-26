@@ -17,9 +17,11 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.components.Composable.Composer;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
@@ -39,6 +41,8 @@ import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
@@ -46,6 +50,7 @@ import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentCo
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.VerticalLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
+import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
@@ -64,6 +69,7 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Main provider of UI components builders and configurators.
@@ -513,6 +519,76 @@ public interface Components {
 		 */
 		static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
 			return Input.number(numberClass);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * {@link #singleSelect(ItemConverter)} if not.
+		 * <p>
+		 * @param <T> Value type
+		 * @param type Selection value type
+		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 */
+		static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
+			return Input.singleSelect(type);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
+		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * {@link #singleSelect()} method can be used.
+		 * <p>
+		 * @param <T> Value type
+		 * @param <ITEM> Item type
+		 * @param type Selection value type
+		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+		 *        back (not null)
+		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 */
+		static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type,
+				ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			return Input.singleSelect(type, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property}.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+		 */
+		static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
+			return Input.singleSelect(selectionProperty);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property} and
+		 * converter.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @param itemConverter The function to use to convert a selection value into the corresponding
+		 *        {@link PropertyBox} item
+		 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+		 */
+		static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
+				BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			return Input.singleSelect(selectionProperty, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type.
+		 * <p>
+		 * All the enum constants declared for the given enum type will be available as selection items.
+		 * </p>
+		 * @param <E> Enum type
+		 * @param enumType Enum type (not null)
+		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 */
+		static <E extends Enum<E>> ItemSelectModeSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
+			return Input.enumSelect(enumType);
 		}
 
 		//

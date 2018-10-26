@@ -81,7 +81,7 @@ public interface Selectable<T> {
 	void deselectAll();
 
 	/**
-	 * Adds a {@link SelectionListener} to listener to selection changes.
+	 * Adds a {@link SelectionListener} to listen to selection changes.
 	 * @param selectionListener The listener to add (not null)
 	 * @return the listener {@link Registration}
 	 */

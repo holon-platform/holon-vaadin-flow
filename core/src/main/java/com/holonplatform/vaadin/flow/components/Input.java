@@ -270,10 +270,11 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * {@link #singleSelect(ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
+	 * @param type Selection value type
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
-	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect() {
-		return SelectModeSingleSelectInputBuilder.create();
+	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
+		return SelectModeSingleSelectInputBuilder.create(type);
 	}
 
 	/**
@@ -285,13 +286,14 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * <p>
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
+	 * @param type Selection value type
 	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 	 *        back (not null)
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
-	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(
+	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type,
 			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
-		return SelectModeSingleSelectInputBuilder.create(itemConverter);
+		return SelectModeSingleSelectInputBuilder.create(type, itemConverter);
 	}
 
 	/**
@@ -315,6 +317,19 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
 			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
 		return SelectModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type.
+	 * <p>
+	 * All the enum constants declared for the given enum type will be available as selection items.
+	 * </p>
+	 * @param <E> Enum type
+	 * @param enumType Enum type (not null)
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <E extends Enum<E>> ItemSelectModeSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
+		return singleSelect(enumType).items(enumType.getEnumConstants());
 	}
 
 	// Renderers

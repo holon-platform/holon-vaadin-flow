@@ -28,6 +28,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
+import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -87,7 +88,7 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		super();
 		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
 		this.selectionProperty = selectionProperty;
-		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(itemConverter);
+		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(selectionProperty.getType(), itemConverter);
 		this.builder.itemCaptionGenerator(item -> {
 			if (item != null) {
 				return selectionProperty.present(item.getValue(selectionProperty));
@@ -114,6 +115,17 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 			}
 			return null;
 		}, properties, queryConfigurationProviders);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> withSelectionListener(SelectionListener<T> selectionListener) {
+		builder.withSelectionListener(selectionListener);
+		return this;
 	}
 
 	/*
