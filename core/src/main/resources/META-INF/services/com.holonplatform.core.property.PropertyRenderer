@@ -1,1 +1,2 @@
 com.holonplatform.vaadin.flow.internal.DefaultViewComponentPropertyRenderer
+com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer
