@@ -37,7 +37,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 
 /**
- * Base {@link SingleSelect} input builder for the <em>select</em> rendering mode.
+ * {@link SingleSelect} input builder for the <em>select</em> rendering mode.
  *
  * @param <T> Value type
  * @param <ITEM> Item type
@@ -46,8 +46,8 @@ import com.vaadin.flow.data.renderer.Renderer;
  * @since 5.2.0
  */
 public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasLabelConfigurator<B>,
-		HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
+		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasSizeConfigurator<B>,
+		HasLabelConfigurator<B>, HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
 		FocusableConfigurator<Component, B>, HasFilterableDataSourceConfigurator<ITEM, String, B> {
 
 	/**

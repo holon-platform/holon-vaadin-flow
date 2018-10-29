@@ -27,7 +27,7 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
  * @since 5.2.0
  */
 public interface SelectableInputConfigurator<T, C extends SelectableInputConfigurator<T, C>>
-		extends InputConfigurator<T, C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
+		extends InputConfigurator<T, C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
 		DeferrableLocalizationConfigurator<C> {
 
 	/**

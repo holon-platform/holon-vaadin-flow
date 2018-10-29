@@ -40,6 +40,8 @@ import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseL
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
@@ -579,6 +581,68 @@ public interface Components {
 		}
 
 		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input using the <em>options</em> rendering mode, i.e. a
+		 * radio button group.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * {@link #singleSelect(ItemConverter)} if not.
+		 * <p>
+		 * @param <T> Value type
+		 * @param type Selection value type
+		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 */
+		static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> singleOptionSelect(Class<T> type) {
+			return Input.singleOptionSelect(type);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input using the <em>options</em> rendering mode, i.e. a
+		 * radio button group.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
+		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * {@link #singleOptionSelect()} method can be used.
+		 * <p>
+		 * @param <T> Value type
+		 * @param <ITEM> Item type
+		 * @param type Selection value type
+		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+		 *        back (not null)
+		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 */
+		static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
+				ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			return Input.singleOptionSelect(type, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property} and the
+		 * <em>options</em> rendering mode, i.e. a radio button group.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+		 */
+		static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(
+				final Property<T> selectionProperty) {
+			return Input.singleOptionSelect(selectionProperty);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property}, a
+		 * converter and the <em>options</em> rendering mode, i.e. a radio button group.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @param itemConverter The function to use to convert a selection value into the corresponding
+		 *        {@link PropertyBox} item
+		 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+		 */
+		static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(
+				final Property<T> selectionProperty,
+				BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			return Input.singleOptionSelect(selectionProperty, itemConverter);
+		}
+
+		/**
 		 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type.
 		 * <p>
 		 * All the enum constants declared for the given enum type will be available as selection items.
@@ -589,6 +653,20 @@ public interface Components {
 		 */
 		static <E extends Enum<E>> ItemSelectModeSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
 			return Input.enumSelect(enumType);
+		}
+
+		/**
+		 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type with the
+		 * <em>options</em> rendering mode, i.e. using a radio button group.
+		 * <p>
+		 * All the enum constants declared for the given enum type will be available as selection items.
+		 * </p>
+		 * @param <E> Enum type
+		 * @param enumType Enum type (not null)
+		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 */
+		static <E extends Enum<E>> ItemOptionsModeSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
+			return Input.enumOptionSelect(enumType);
 		}
 
 		//

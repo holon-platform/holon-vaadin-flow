@@ -64,7 +64,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 
-public class TestSelectModeSingleSelectInput {
+public class TestSelectInput {
 
 	@Test
 	public void testBuilders() {
