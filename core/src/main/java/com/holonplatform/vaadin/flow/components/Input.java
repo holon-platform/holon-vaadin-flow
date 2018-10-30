@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -28,8 +29,10 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
@@ -241,11 +244,34 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	}
 
 	/**
+	 * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
+	 * @return A {@link LocalDateTimeInputBuilder}
+	 */
+	static LocalDateTimeInputBuilder localDateTime() {
+		return LocalDateTimeInputBuilder.create();
+	}
+
+	/**
 	 * Gets a builder to create {@link Date} type {@link Input}s.
-	 * @return A {@link LocalDateInputBuilder}
+	 * <p>
+	 * This Input use the {@link Date} type only for simple date representations (day, month, year), i.e. without the
+	 * time part.
+	 * </p>
+	 * @return A {@link DateInputBuilder}
 	 */
 	static DateInputBuilder date() {
 		return DateInputBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link Date} type {@link Input}s with time (hours and minutes) support.
+	 * <p>
+	 * Only the hours and minutes time parts are supported.
+	 * </p>
+	 * @return A {@link DateTimeInputBuilder}
+	 */
+	static DateTimeInputBuilder dateTime() {
+		return DateTimeInputBuilder.create();
 	}
 
 	/**

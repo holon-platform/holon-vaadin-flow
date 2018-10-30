@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,40 +30,43 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * Default {@link LocalDateInputBuilder} implementation.
+ * Default {@link LocalDateTimeInputBuilder} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultLocalDateInputBuilder extends
-		AbstractLocalizableComponentConfigurator<DatePicker, LocalDateInputBuilder> implements LocalDateInputBuilder {
+public class DefaultLocalDateTimeInputBuilder
+		extends AbstractLocalizableComponentConfigurator<DateTimeField, LocalDateTimeInputBuilder>
+		implements LocalDateTimeInputBuilder {
 
-	private final List<ValueChangeListener<LocalDate>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<LocalDateTime>> valueChangeListeners = new LinkedList<>();
 
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
-	protected final DefaultHasLabelConfigurator<DatePicker> labelConfigurator;
-	protected final DefaultHasPlaceholderConfigurator<DatePicker> placeholderConfigurator;
+	protected final DefaultHasLabelConfigurator<DateTimeField> labelConfigurator;
+	protected final DefaultHasPlaceholderConfigurator<DateTimeField> placeholderConfigurator;
+	protected final DefaultHasPlaceholderConfigurator<DateTimeField> hoursPlaceholderConfigurator;
+	protected final DefaultHasPlaceholderConfigurator<DateTimeField> minutesPlaceholderConfigurator;
 
 	private Registration contextLocaleOnAttachRegistration;
 
 	private CalendarLocalization localization;
 
-	public DefaultLocalDateInputBuilder() {
-		super(new DatePicker());
+	public DefaultLocalDateTimeInputBuilder() {
+		super(new DateTimeField());
 
 		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
 		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
@@ -74,6 +77,12 @@ public class DefaultLocalDateInputBuilder extends
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
 		}, this);
+		hoursPlaceholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
+			getComponent().setHoursPlaceholder(placeholder);
+		}, this);
+		minutesPlaceholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
+			getComponent().setMinutesPlaceholder(placeholder);
+		}, this);
 	}
 
 	/*
@@ -81,7 +90,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected LocalDateInputBuilder getConfigurator() {
+	protected LocalDateTimeInputBuilder getConfigurator() {
 		return this;
 	}
 
@@ -90,8 +99,8 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 	 */
 	@Override
-	public Input<LocalDate> build() {
-		final DatePicker component = getComponent();
+	public Input<LocalDateTime> build() {
+		final DateTimeField component = getComponent();
 
 		// calendar localization
 		if (localization != null) {
@@ -119,8 +128,61 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
-	public ValidatableInputBuilder<LocalDate, ValidatableInput<LocalDate>> validatable() {
+	public ValidatableInputBuilder<LocalDateTime, ValidatableInput<LocalDateTime>> validatable() {
 		return ValidatableInputBuilder.create(build());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#timeSeparator(java.lang.String)
+	 */
+	@Override
+	public LocalDateTimeInputBuilder timeSeparator(String timeSeparator) {
+		getComponent().setTimeSeparator(timeSeparator);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#timeInputsWidth(java.lang.String)
+	 */
+	@Override
+	public LocalDateTimeInputBuilder timeInputsWidth(String timeInputsWidth) {
+		getComponent().setTimeInputsWidth(timeInputsWidth);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#spacing(boolean)
+	 */
+	@Override
+	public LocalDateTimeInputBuilder spacing(boolean spacing) {
+		getComponent().setSpacing(spacing);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#hoursPlaceholder(java.lang.String)
+	 */
+	@Override
+	public LocalDateTimeInputBuilder hoursPlaceholder(Localizable placeholder) {
+		hoursPlaceholderConfigurator.placeholder(placeholder);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#minutesPlaceholder(java.lang.String)
+	 */
+	@Override
+	public LocalDateTimeInputBuilder minutesPlaceholder(Localizable placeholder) {
+		minutesPlaceholderConfigurator.placeholder(placeholder);
+		return getConfigurator();
 	}
 
 	/*
@@ -128,7 +190,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public LocalDateInputBuilder readOnly(boolean readOnly) {
+	public LocalDateTimeInputBuilder readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -138,7 +200,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
-	public LocalDateInputBuilder withValue(LocalDate value) {
+	public LocalDateTimeInputBuilder withValue(LocalDateTime value) {
 		getComponent().setValue(value);
 		return getConfigurator();
 	}
@@ -150,7 +212,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public LocalDateInputBuilder withValueChangeListener(ValueChangeListener<LocalDate> listener) {
+	public LocalDateTimeInputBuilder withValueChangeListener(ValueChangeListener<LocalDateTime> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -161,7 +223,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public LocalDateInputBuilder required(boolean required) {
+	public LocalDateTimeInputBuilder required(boolean required) {
 		getComponent().setRequired(required);
 		return getConfigurator();
 	}
@@ -171,7 +233,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
-	public LocalDateInputBuilder width(String width) {
+	public LocalDateTimeInputBuilder width(String width) {
 		sizeConfigurator.width(width);
 		return getConfigurator();
 	}
@@ -181,7 +243,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
-	public LocalDateInputBuilder height(String height) {
+	public LocalDateTimeInputBuilder height(String height) {
 		sizeConfigurator.height(height);
 		return getConfigurator();
 	}
@@ -191,7 +253,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
-	public LocalDateInputBuilder styleNames(String... styleNames) {
+	public LocalDateTimeInputBuilder styleNames(String... styleNames) {
 		styleConfigurator.styleNames(styleNames);
 		return getConfigurator();
 	}
@@ -201,7 +263,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 	 */
 	@Override
-	public LocalDateInputBuilder styleName(String styleName) {
+	public LocalDateTimeInputBuilder styleName(String styleName) {
 		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
@@ -211,7 +273,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 	 */
 	@Override
-	public LocalDateInputBuilder removeStyleName(String styleName) {
+	public LocalDateTimeInputBuilder removeStyleName(String styleName) {
 		styleConfigurator.removeStyleName(styleName);
 		return getConfigurator();
 	}
@@ -221,7 +283,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 	 */
 	@Override
-	public LocalDateInputBuilder replaceStyleName(String styleName) {
+	public LocalDateTimeInputBuilder replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
 		return getConfigurator();
 	}
@@ -231,7 +293,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public LocalDateInputBuilder enabled(boolean enabled) {
+	public LocalDateTimeInputBuilder enabled(boolean enabled) {
 		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
@@ -241,7 +303,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
-	public LocalDateInputBuilder tabIndex(int tabIndex) {
+	public LocalDateTimeInputBuilder tabIndex(int tabIndex) {
 		getComponent().setTabIndex(tabIndex);
 		return getConfigurator();
 	}
@@ -253,11 +315,11 @@ public class DefaultLocalDateInputBuilder extends
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public LocalDateInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
-		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<DatePicker>>() {
+	public LocalDateTimeInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<DateTimeField>>() {
 
 			@Override
-			public void onComponentEvent(FocusEvent<DatePicker> event) {
+			public void onComponentEvent(FocusEvent<DateTimeField> event) {
 				listener.onComponentEvent(new FocusEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -272,11 +334,11 @@ public class DefaultLocalDateInputBuilder extends
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	public LocalDateInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
-		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<DatePicker>>() {
+	public LocalDateTimeInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<DateTimeField>>() {
 
 			@Override
-			public void onComponentEvent(BlurEvent<DatePicker> event) {
+			public void onComponentEvent(BlurEvent<DateTimeField> event) {
 				listener.onComponentEvent(new BlurEvent<Component>(event.getSource(), event.isFromClient()));
 			}
 
@@ -291,7 +353,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * i18n.Localizable)
 	 */
 	@Override
-	public LocalDateInputBuilder placeholder(Localizable placeholder) {
+	public LocalDateTimeInputBuilder placeholder(Localizable placeholder) {
 		placeholderConfigurator.placeholder(placeholder);
 		return getConfigurator();
 	}
@@ -302,7 +364,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * Localizable)
 	 */
 	@Override
-	public LocalDateInputBuilder label(Localizable label) {
+	public LocalDateTimeInputBuilder label(Localizable label) {
 		labelConfigurator.label(label);
 		return getConfigurator();
 	}
@@ -312,7 +374,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#locale(java.util.Locale)
 	 */
 	@Override
-	public LocalDateInputBuilder locale(Locale locale) {
+	public LocalDateTimeInputBuilder locale(Locale locale) {
 		getComponent().setLocale(locale);
 		return getConfigurator();
 	}
@@ -322,7 +384,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#useContextLocale(boolean)
 	 */
 	@Override
-	public LocalDateInputBuilder useContextLocale(boolean useContextLocale) {
+	public LocalDateTimeInputBuilder useContextLocale(boolean useContextLocale) {
 		// unregister previous
 		if (contextLocaleOnAttachRegistration != null) {
 			contextLocaleOnAttachRegistration.remove();
@@ -342,8 +404,8 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#min(java.time.LocalDate)
 	 */
 	@Override
-	public LocalDateInputBuilder min(LocalDate min) {
-		getComponent().setMin(min);
+	public LocalDateTimeInputBuilder min(LocalDateTime min) {
+		getComponent().setMin((min != null) ? min.toLocalDate() : null);
 		return getConfigurator();
 	}
 
@@ -352,8 +414,8 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#max(java.time.LocalDate)
 	 */
 	@Override
-	public LocalDateInputBuilder max(LocalDate max) {
-		getComponent().setMax(max);
+	public LocalDateTimeInputBuilder max(LocalDateTime max) {
+		getComponent().setMax((max != null) ? max.toLocalDate() : null);
 		return getConfigurator();
 	}
 
@@ -362,7 +424,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#initialPosition(java.time.LocalDate)
 	 */
 	@Override
-	public LocalDateInputBuilder initialPosition(LocalDate initialPosition) {
+	public LocalDateTimeInputBuilder initialPosition(LocalDateTime initialPosition) {
 		getComponent().setInitialPosition(initialPosition);
 		return getConfigurator();
 	}
@@ -372,7 +434,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#weekNumbersVisible(boolean)
 	 */
 	@Override
-	public LocalDateInputBuilder weekNumbersVisible(boolean weekNumbersVisible) {
+	public LocalDateTimeInputBuilder weekNumbersVisible(boolean weekNumbersVisible) {
 		getComponent().setWeekNumbersVisible(weekNumbersVisible);
 		return getConfigurator();
 	}
@@ -384,7 +446,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * components.builders.DateInputBuilder.CalendarLocalization)
 	 */
 	@Override
-	public LocalDateInputBuilder localization(CalendarLocalization localization) {
+	public LocalDateTimeInputBuilder localization(CalendarLocalization localization) {
 		this.localization = localization;
 		return getConfigurator();
 	}
@@ -394,7 +456,7 @@ public class DefaultLocalDateInputBuilder extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#localization()
 	 */
 	@Override
-	public CalendarLocalizationBuilder<LocalDate, LocalDateInputBuilder> localization() {
+	public CalendarLocalizationBuilder<LocalDateTime, LocalDateTimeInputBuilder> localization() {
 		return new DefaultCalendarLocalizationBuilder<>(this);
 	}
 

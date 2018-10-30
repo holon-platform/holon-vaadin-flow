@@ -34,7 +34,7 @@ public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator
 	 * <p>
 	 * The placeholder is a hint to the user of what can be entered in the control.
 	 * </p>
-	 * @param label Localizable placeholder text (may be null)
+	 * @param placeholder Localizable placeholder text (may be null)
 	 * @return this
 	 * @see LocalizationContext#getCurrent()
 	 */
