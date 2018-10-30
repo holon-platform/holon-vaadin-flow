@@ -15,7 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.util.Optional;
+
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Represents an object which can contain a value and provides its UI {@link Component} representation.
@@ -31,5 +34,16 @@ public interface ValueComponent<V> extends HasComponent {
 	 * @return the current value
 	 */
 	V getValue();
+
+	/**
+	 * Checks whether the {@link Component} supports a value change mode, using the {@link HasValueChangeMode}
+	 * interface.
+	 * @return If the component supports a value change mode, return the {@link HasValueChangeMode} reference. An empty
+	 *         Optional otherwise.
+	 */
+	default Optional<HasValueChangeMode> hasValueChangeMode() {
+		return (getComponent() instanceof HasValueChangeMode) ? Optional.of((HasValueChangeMode) getComponent())
+				: Optional.empty();
+	}
 
 }

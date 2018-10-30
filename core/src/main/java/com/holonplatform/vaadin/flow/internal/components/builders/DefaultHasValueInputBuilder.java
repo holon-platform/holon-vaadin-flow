@@ -30,7 +30,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Default {@link HasValueInputBuilder} implementation.
@@ -200,6 +202,30 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	@Override
 	public HasValueInputBuilder<T, H, C> hasEnabledSupplier(Function<H, HasEnabled> hasEnabledSupplier) {
 		getInstance().setHasEnabledSupplier(hasEnabledSupplier);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputAdapterBuilder#hasValueChangeModeSupplier(java.util.
+	 * function.Function)
+	 */
+	@Override
+	public HasValueInputBuilder<T, H, C> hasValueChangeModeSupplier(
+			Function<H, HasValueChangeMode> hasValueChangeModeSupplier) {
+		getInstance().setHasValueChangeModeSupplier(hasValueChangeModeSupplier);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputAdapterBuilder#hasValidationSupplier(java.util.function.
+	 * Function)
+	 */
+	@Override
+	public HasValueInputBuilder<T, H, C> hasValidationSupplier(Function<H, HasValidation> hasValidationSupplier) {
+		getInstance().setHasValidationSupplier(hasValidationSupplier);
 		return getConfigurator();
 	}
 

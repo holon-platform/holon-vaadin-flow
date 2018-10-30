@@ -30,6 +30,7 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -251,6 +252,15 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public Optional<HasValidation> hasValidation() {
 		return input.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueComponent#hasValueChangeMode()
+	 */
+	@Override
+	public Optional<HasValueChangeMode> hasValueChangeMode() {
+		return input.hasValueChangeMode();
 	}
 
 	/**

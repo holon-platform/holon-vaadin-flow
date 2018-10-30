@@ -32,7 +32,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Base builder to create {@link Input} components from a {@link HasValue} component.
@@ -96,6 +98,20 @@ public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends C
 	 * @return this
 	 */
 	B hasEnabledSupplier(Function<H, HasEnabled> hasEnabledSupplier);
+
+	/**
+	 * Set the {@link HasValueChangeMode} supplier.
+	 * @param hasValueChangeModeSupplier the supplier to set
+	 * @return this
+	 */
+	B hasValueChangeModeSupplier(Function<H, HasValueChangeMode> hasValueChangeModeSupplier);
+
+	/**
+	 * Set the {@link HasValidation} supplier.
+	 * @param hasValidationSupplier the supplier to set
+	 * @return this
+	 */
+	B hasValidationSupplier(Function<H, HasValidation> hasValidationSupplier);
 
 	/**
 	 * Provide the {@link PropertyHandler} to use to get and set the <em>required</em> property value.

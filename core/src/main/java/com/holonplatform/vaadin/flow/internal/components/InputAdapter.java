@@ -29,6 +29,7 @@ import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -36,6 +37,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -71,6 +73,8 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	private Function<V, HasSize> hasSizeSupplier;
 	private Function<V, HasStyle> hasStyleSupplier;
 	private Function<V, HasEnabled> hasEnabledSupplier;
+	private Function<V, HasValueChangeMode> hasValueChangeModeSupplier;
+	private Function<V, HasValidation> hasValidationSupplier;
 
 	/**
 	 * Property handlers
@@ -207,6 +211,38 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	 */
 	public void setHasEnabledSupplier(Function<V, HasEnabled> hasEnabledSupplier) {
 		this.hasEnabledSupplier = hasEnabledSupplier;
+	}
+
+	/**
+	 * Get the {@link HasValueChangeMode} supplier.
+	 * @return Optional {@link HasValueChangeMode} supplier
+	 */
+	public Optional<Function<V, HasValueChangeMode>> getHasValueChangeModeSupplier() {
+		return Optional.ofNullable(hasValueChangeModeSupplier);
+	}
+
+	/**
+	 * Set the {@link HasValueChangeMode} supplier.
+	 * @param hasValueChangeModeSupplier the supplier to set
+	 */
+	public void setHasValueChangeModeSupplier(Function<V, HasValueChangeMode> hasValueChangeModeSupplier) {
+		this.hasValueChangeModeSupplier = hasValueChangeModeSupplier;
+	}
+
+	/**
+	 * Get the {@link HasValidation} supplier.
+	 * @return Optional {@link HasValidation} supplier
+	 */
+	public Optional<Function<V, HasValidation>> getHasValidationSupplier() {
+		return Optional.ofNullable(hasValidationSupplier);
+	}
+
+	/**
+	 * Set the {@link HasValidation} supplier.
+	 * @param hasValidationSupplier the supplier to set
+	 */
+	public void setHasValidationSupplier(Function<V, HasValidation> hasValidationSupplier) {
+		this.hasValidationSupplier = hasValidationSupplier;
 	}
 
 	/**
@@ -437,6 +473,30 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 			return getHasEnabledSupplier().map(s -> s.apply(getField()));
 		}
 		return Input.super.hasEnabled();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueComponent#hasValueChangeMode()
+	 */
+	@Override
+	public Optional<HasValueChangeMode> hasValueChangeMode() {
+		if (getHasValueChangeModeSupplier().isPresent()) {
+			return getHasValueChangeModeSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasValueChangeMode();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasValidation()
+	 */
+	@Override
+	public Optional<HasValidation> hasValidation() {
+		if (getHasValidationSupplier().isPresent()) {
+			return getHasValidationSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasValidation();
 	}
 
 	/*
