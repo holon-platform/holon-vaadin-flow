@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -122,26 +123,6 @@ public class DefaultDateTimeInputBuilder implements DateTimeInputBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeSeparator(java.lang.String)
-	 */
-	@Override
-	public DateTimeInputBuilder timeSeparator(String timeSeparator) {
-		builder.timeSeparator(timeSeparator);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeInputsWidth(java.lang.String)
-	 */
-	@Override
-	public DateTimeInputBuilder timeInputsWidth(String timeInputsWidth) {
-		builder.timeInputsWidth(timeInputsWidth);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#spacing(boolean)
 	 */
 	@Override
@@ -152,25 +133,33 @@ public class DefaultDateTimeInputBuilder implements DateTimeInputBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#hoursPlaceholder(com.holonplatform.
-	 * core.i18n.Localizable)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeSeparator(char)
 	 */
 	@Override
-	public DateTimeInputBuilder hoursPlaceholder(Localizable placeholder) {
-		builder.hoursPlaceholder(placeholder);
+	public DateTimeInputBuilder timeSeparator(char timeSeparator) {
+		builder.timeSeparator(timeSeparator);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeInputWidth(java.lang.String)
+	 */
+	@Override
+	public DateTimeInputBuilder timeInputWidth(String timeInputWidth) {
+		builder.timeInputWidth(timeInputWidth);
 		return this;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#minutesPlaceholder(com.holonplatform.
-	 * core.i18n.Localizable)
+	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timePlaceholder(java.util.function.
+	 * Function)
 	 */
 	@Override
-	public DateTimeInputBuilder minutesPlaceholder(Localizable placeholder) {
-		builder.minutesPlaceholder(placeholder);
+	public DateTimeInputBuilder timePlaceholder(Function<Character, String> timePlaceholder) {
+		builder.timePlaceholder(timePlaceholder);
 		return this;
 	}
 

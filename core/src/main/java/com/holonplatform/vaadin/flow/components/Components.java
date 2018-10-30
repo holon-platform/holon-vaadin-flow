@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -41,6 +42,7 @@ import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
@@ -506,6 +508,14 @@ public interface Components {
 		 */
 		static LocalDateTimeInputBuilder localDateTime() {
 			return Input.localDateTime();
+		}
+
+		/**
+		 * Gets a builder to create {@link LocalTime} type {@link Input}s.
+		 * @return A {@link LocalTimeInputBuilder}
+		 */
+		static LocalTimeInputBuilder localTime() {
+			return LocalTimeInputBuilder.create();
 		}
 
 		/**

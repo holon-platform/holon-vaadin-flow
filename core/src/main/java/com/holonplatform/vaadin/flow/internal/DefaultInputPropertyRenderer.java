@@ -16,6 +16,8 @@
 package com.holonplatform.vaadin.flow.internal;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 import javax.annotation.Priority;
@@ -25,7 +27,9 @@ import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.presentation.StringValuePresenter;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.temporal.TemporalType;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.internal.converters.DateToLocalTimeConverter;
 
 /**
  * Default {@link PropertyRenderer} to create {@link Input} type {@link Property} representations.
@@ -74,6 +78,14 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		if (LocalDate.class.isAssignableFrom(propertyType)) {
 			// LocalDate
 			return renderLocalDate(property);
+		}
+		if (LocalTime.class.isAssignableFrom(propertyType)) {
+			// LocalDate
+			return renderLocalTime(property);
+		}
+		if (LocalDateTime.class.isAssignableFrom(propertyType)) {
+			// LocalDate
+			return renderLocalDateTime(property);
 		}
 		if (TypeUtils.isDate(propertyType)) {
 			// Date
@@ -126,12 +138,39 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	}
 
 	/**
+	 * Render the property as a {@link LocalTime} type {@link Input}.
+	 * @param property Property to render
+	 * @return The {@link Input} instance
+	 */
+	protected Input<LocalTime> renderLocalTime(Property<T> property) {
+		return Input.localTime().label(property).build();
+	}
+
+	/**
+	 * Render the property as a {@link LocalDateTime} type {@link Input}.
+	 * @param property Property to render
+	 * @return The {@link Input} instance
+	 */
+	protected Input<LocalDateTime> renderLocalDateTime(Property<T> property) {
+		return Input.localDateTime().label(property).build();
+	}
+
+	/**
 	 * Render the property as a {@link Date} type {@link Input}.
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
 	protected Input<Date> renderDate(Property<T> property) {
-		return Input.date().label(property).build();
+		final TemporalType type = property.getConfiguration().getTemporalType().orElse(TemporalType.DATE);
+		switch (type) {
+		case TIME:
+			return Input.from(Input.localTime().label(property).build(), new DateToLocalTimeConverter());
+		case DATE_TIME:
+			return Input.dateTime().label(property).build();
+		case DATE:
+		default:
+			return Input.date().label(property).build();
+		}
 	}
 
 	/**

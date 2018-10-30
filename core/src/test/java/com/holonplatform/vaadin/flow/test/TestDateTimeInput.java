@@ -371,76 +371,6 @@ public class TestDateTimeInput {
 	}
 
 	@Test
-	public void testHoursPlaceholder() {
-
-		Input<Date> input = Input.dateTime().hoursPlaceholder(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getHoursPlaceholder());
-
-		input = Input.dateTime().hoursPlaceholder("test").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getHoursPlaceholder());
-
-		input = Input.dateTime().hoursPlaceholder("test", "test.code").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getHoursPlaceholder());
-
-		input = Input.dateTime().hoursPlaceholder("test", "test.code", "arg").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getHoursPlaceholder());
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime()
-					.hoursPlaceholder(Localizable.builder().message("test").messageCode("test.code").build()).build();
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getHoursPlaceholder());
-		});
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime().hoursPlaceholder("test", "test.code").build();
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getHoursPlaceholder());
-		});
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime().deferLocalization().hoursPlaceholder("test", "test.code").build();
-			assertEquals("test", ((DateTimeField) input2.getComponent()).getHoursPlaceholder());
-			ComponentUtil.onComponentAttach(input2.getComponent(), true);
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getHoursPlaceholder());
-		});
-
-	}
-
-	@Test
-	public void testMinutesPlaceholder() {
-
-		Input<Date> input = Input.dateTime().minutesPlaceholder(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getMinutesPlaceholder());
-
-		input = Input.dateTime().minutesPlaceholder("test").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getMinutesPlaceholder());
-
-		input = Input.dateTime().minutesPlaceholder("test", "test.code").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getMinutesPlaceholder());
-
-		input = Input.dateTime().minutesPlaceholder("test", "test.code", "arg").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getMinutesPlaceholder());
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime()
-					.minutesPlaceholder(Localizable.builder().message("test").messageCode("test.code").build()).build();
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getMinutesPlaceholder());
-		});
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime().minutesPlaceholder("test", "test.code").build();
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getMinutesPlaceholder());
-		});
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Date> input2 = Input.dateTime().deferLocalization().minutesPlaceholder("test", "test.code").build();
-			assertEquals("test", ((DateTimeField) input2.getComponent()).getMinutesPlaceholder());
-			ComponentUtil.onComponentAttach(input2.getComponent(), true);
-			assertEquals("TestUS", ((DateTimeField) input2.getComponent()).getMinutesPlaceholder());
-		});
-
-	}
-
-	@Test
 	public void testConfiguration() {
 
 		final Calendar calendar = Calendar.getInstance(TIME_ZONE);
@@ -492,16 +422,16 @@ public class TestDateTimeInput {
 			assertEquals("TestUS", ((DateTimeField) input3.getComponent()).getI18n().getToday());
 		});
 
-		input = Input.dateTime().timeSeparator("-").build();
-		assertEquals("-", ((DateTimeField) input.getComponent()).getTimeSeparator());
+		input = Input.dateTime().timeSeparator('-').build();
+		assertEquals("HH-MM", ((DateTimeField) input.getComponent()).getTimePlaceholder());
 
 		input = Input.dateTime().spacing(true).build();
 		assertTrue(((DateTimeField) input.getComponent()).isSpacing());
 		input = Input.dateTime().spacing(false).build();
 		assertFalse(((DateTimeField) input.getComponent()).isSpacing());
 
-		input = Input.dateTime().timeInputsWidth("50px").build();
-		assertEquals("50px", ((DateTimeField) input.getComponent()).getTimeInputsWidth());
+		input = Input.dateTime().timeInputWidth("50px").build();
+		assertEquals("50px", ((DateTimeField) input.getComponent()).getTimeInputWidth());
 	}
 
 	@Test

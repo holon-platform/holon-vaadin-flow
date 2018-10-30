@@ -18,8 +18,6 @@ package com.holonplatform.vaadin.flow.internal.converters;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -29,7 +27,6 @@ import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
@@ -50,7 +47,8 @@ import com.vaadin.flow.data.converter.Converter;
  * 
  * @since 5.0.0
  */
-public class DefaultStringToNumberConverter<T extends Number> implements StringToNumberConverter<T> {
+public class DefaultStringToNumberConverter<T extends Number> extends AbstractLocaleSupportConverter<String, T>
+		implements StringToNumberConverter<T> {
 
 	private static final long serialVersionUID = 2952012087662607453L;
 
@@ -66,11 +64,6 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 * Number type
 	 */
 	private final Class<? extends T> numberType;
-
-	/**
-	 * Locale
-	 */
-	private final Locale locale;
 
 	/**
 	 * Number format
@@ -145,11 +138,10 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 */
 	private DefaultStringToNumberConverter(Class<? extends T> numberType, NumberFormat numberFormat, Locale locale,
 			String numberFormatPattern) {
-		super();
+		super(locale);
 		ObjectUtils.argumentNotNull(numberType, "Number type must be not null");
 		this.numberType = numberType;
 		this.numberFormat = numberFormat;
-		this.locale = locale;
 		this.numberFormatPattern = numberFormatPattern;
 	}
 
@@ -175,14 +167,6 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	 */
 	protected Optional<String> getNumberFormatPattern() {
 		return Optional.ofNullable(numberFormatPattern);
-	}
-
-	/**
-	 * Get the fixed {@link Locale} to use.
-	 * @return Optional fixed locale
-	 */
-	protected Optional<Locale> getLocale() {
-		return Optional.ofNullable(locale);
 	}
 
 	/*
@@ -255,50 +239,6 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 	@Override
 	public void setMaxDecimals(int maxDecimals) {
 		this.maxDecimals = maxDecimals;
-	}
-
-	/**
-	 * Get the {@link Locale} to use for number formatting.
-	 * <p>
-	 * If a fixed {@link Locale} is configured, it is returned.
-	 * </p>
-	 * <p>
-	 * Otherwise, the {@link Locale} is obtained from the given context, or using {@link #getCurrentLocale()} if not
-	 * available. The default {@link Locale} is returned if a current {@link Locale} cannot be detected.
-	 * </p>
-	 * @param context Value context (not null)
-	 * @return The {@link Locale} to use for number formatting
-	 */
-	protected Locale getLocale(ValueContext context) {
-		if (getLocale().isPresent()) {
-			return getLocale().get();
-		}
-		if (context == null) {
-			return getCurrentLocale().orElseGet(() -> Locale.getDefault());
-		}
-		return context.getLocale().orElseGet(() -> getCurrentLocale().orElseGet(() -> Locale.getDefault()));
-	}
-
-	/**
-	 * Get the current {@link Locale}, if available.
-	 * <p>
-	 * The current {@link Locale} is obtained form the current {@link LocalizationContext}, if available and localized,
-	 * or from the current {@link UI}, if available and with a configured locale.
-	 * </p>
-	 * @return Optional current {@link Locale}
-	 */
-	protected Optional<Locale> getCurrentLocale() {
-		// Check context
-		Optional<Locale> contextLocale = LocalizationContext.getCurrent().filter(l -> l.isLocalized())
-				.flatMap(l -> l.getLocale());
-		if (contextLocale.isPresent()) {
-			return contextLocale;
-		}
-		// Check UI
-		if (UI.getCurrent() != null) {
-			return Optional.ofNullable(UI.getCurrent().getLocale());
-		}
-		return Optional.empty();
 	}
 
 	/**
@@ -418,42 +358,28 @@ public class DefaultStringToNumberConverter<T extends Number> implements StringT
 					? (PATTERN_DECIMAL_SUFFIX + "{0," + getMaxDecimals() + "}")
 					: (PATTERN_DECIMAL_SUFFIX + "+");
 			if (isUseGrouping() && grouping != null) {
-				final String decimalPattern = escape(decimals) + decimalSuffix;
+				final String decimalPattern = TextConverterUtils.escape(decimals) + decimalSuffix;
 
 				return isAllowNegatives()
-						? PATTERN_NEGATIVE_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern
-						: PATTERN_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX + decimalPattern;
+						? PATTERN_NEGATIVE_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
+								+ decimalPattern
+						: PATTERN_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
+								+ decimalPattern;
 			} else {
-				final String decimalPattern = PATTERN_DECIMAL_PREFIX + escape(decimals) + decimalSuffix;
+				final String decimalPattern = PATTERN_DECIMAL_PREFIX + TextConverterUtils.escape(decimals)
+						+ decimalSuffix;
 				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + decimalPattern : decimalPattern;
 			}
 		} else {
 			// integers
 			if (isUseGrouping() && grouping != null) {
-				return isAllowNegatives() ? PATTERN_NEGATIVE_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX
-						: PATTERN_GROUPS_PREFIX + escape(grouping) + PATTERN_GROUPS_SUFFIX;
+				return isAllowNegatives()
+						? PATTERN_NEGATIVE_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
+						: PATTERN_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX;
 			} else {
 				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + PATTERN_INTEGER : PATTERN_INTEGER;
 			}
 		}
-	}
-
-	private static final List<Character> REGEX_RESERVED = Arrays.asList('.', '<', '(', '[', '{', '\\', '^', '-', '=',
-			'$', '!', '|', ']', '}', ')', '?', '*', '+', '>');
-
-	/**
-	 * Escape given character for regex if required.
-	 * @param c Character to escape
-	 * @return Escaped character
-	 */
-	private static String escape(Character c) {
-		if (c == null) {
-			return null;
-		}
-		if (REGEX_RESERVED.contains(c)) {
-			return "\\" + c;
-		}
-		return String.valueOf(c);
 	}
 
 	/*

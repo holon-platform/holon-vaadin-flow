@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -38,12 +39,8 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValueAndElement;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.Autocapitalize;
-import com.vaadin.flow.component.textfield.Autocomplete;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -59,49 +56,78 @@ public class DateTimeField extends Composite<HorizontalLayout>
 
 	public static final String DEFAULT_TIME_SEPARATOR = ":";
 
-	public static final String DEFAULT_TIME_INPUTS_WIDTH = "3.2em";
+	public static final String DEFAULT_TIME_INPUTS_WIDTH = "3.3em";
 
 	private final DatePicker date;
-	private final TextField hours;
-	private final TextField minutes;
+	private Input<LocalTime> time;
 
-	private final Span timeSeparator;
+	private String timeInputWidth;
 
 	private final List<ValueChangeListener<ComponentValueChangeEvent<DateTimeField, LocalDateTime>>> valueChangeListeners = new LinkedList<>();
 
+	/**
+	 * Default constructor.
+	 */
 	public DateTimeField() {
+		this(new DatePicker(), Input.localTime().build());
+	}
+
+	/**
+	 * Constructor.
+	 * @param time The time input (not null)
+	 */
+	public DateTimeField(Input<LocalTime> time) {
+		this(new DatePicker(), time);
+	}
+
+	/**
+	 * Constructor
+	 * @param date The date input (not null)
+	 * @param time The time input (not null)
+	 */
+	public DateTimeField(DatePicker date, Input<LocalTime> time) {
 		super();
-		this.date = new DatePicker();
-		this.hours = new TextField();
-		this.minutes = new TextField();
-
-		this.hours.setMaxLength(2);
-		this.hours.setPattern("[01]?[0-9]|2[0-3]");
-		this.hours.setPreventInvalidInput(true);
-		this.hours.setAutocapitalize(Autocapitalize.NONE);
-		this.hours.setAutocomplete(Autocomplete.OFF);
-		this.hours.setAutocorrect(false);
-
-		this.timeSeparator = new Span(DEFAULT_TIME_SEPARATOR);
-		this.timeSeparator.addClassName("time-separator");
-
-		this.hours.setSuffixComponent(this.timeSeparator);
-
-		this.minutes.setMaxLength(2);
-		this.minutes.setPattern("[0-5]?[0-9]");
-		this.minutes.setPreventInvalidInput(true);
-		this.minutes.setAutocapitalize(Autocapitalize.NONE);
-		this.minutes.setAutocomplete(Autocomplete.OFF);
-		this.minutes.setAutocorrect(false);
-
-		this.hours.setWidth(DEFAULT_TIME_INPUTS_WIDTH);
-		this.minutes.setWidth(DEFAULT_TIME_INPUTS_WIDTH);
-
+		ObjectUtils.argumentNotNull(date, "LocalDate input must be not null");
+		ObjectUtils.argumentNotNull(time, "LocalTime input must be not null");
+		this.date = date;
+		this.time = time;
+		this.timeInputWidth = time.hasSize().map(s -> s.getWidth()).orElse(null);
 		getContent().setSpacing(false);
 		getContent().setAlignItems(Alignment.BASELINE);
-		getContent().add(date);
-		getContent().add(hours);
-		getContent().add(minutes);
+		getContent().add(this.date);
+		getContent().add(this.time.getComponent());
+	}
+
+	/**
+	 * Get the time input.
+	 * @return the time input
+	 */
+	public Input<LocalTime> getTimeInput() {
+		return time;
+	}
+
+	/**
+	 * Replace the current time input with the given one.
+	 * @param time the time input to set (not null)
+	 */
+	public void setTimeInput(Input<LocalTime> time) {
+		ObjectUtils.argumentNotNull(time, "LocalTime input must be not null");
+		Input<LocalTime> previous = this.time;
+		this.time = time;
+		this.time.setRequired(previous.isRequired());
+		this.time.setReadOnly(previous.isReadOnly());
+		if (this.timeInputWidth != null) {
+			this.time.hasSize().ifPresent(s -> s.setWidth(timeInputWidth));
+		}
+		this.valueChangeListeners.forEach(listener -> {
+			this.time.addValueChangeListener(e -> {
+				if (e.isUserOriginated()) {
+					listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
+							getDateValue().map(date -> LocalDateTime.of(date, e.getOldValue())).orElse(null),
+							e.isUserOriginated()));
+				}
+			});
+		});
 	}
 
 	/*
@@ -123,24 +149,6 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	}
 
 	/**
-	 * Get the time separator text, i.e. the text to show between the <code>hours</code> and <code>minutes</code>
-	 * fields.
-	 * @return the time separator text
-	 */
-	public String getTimeSeparator() {
-		return timeSeparator.getText();
-	}
-
-	/**
-	 * Set the time separator text, i.e. the text to show between the <code>hours</code> and <code>minutes</code>
-	 * fields.
-	 * @param timeSeparator the time separator to set, if <code>null</code> no separator will be shown.
-	 */
-	public void setTimeSeparator(String timeSeparator) {
-		this.timeSeparator.setText((timeSeparator != null) ? timeSeparator : "");
-	}
-
-	/**
 	 * Set whether to display a space between the <code>date</code>, <code>hours</code> and <code>minutes</code> fields.
 	 * @param spacing whether to enable spacing
 	 */
@@ -157,20 +165,20 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	}
 
 	/**
-	 * Set the time inputs (i.e. the <code>hours</code> and <code>minutes</code> fields) width.
-	 * @param timeInputsWidth the time inputs width to set
+	 * Set the time input width.
+	 * @param timeInputWidth the time input width to set
 	 */
-	public void setTimeInputsWidth(String timeInputsWidth) {
-		this.hours.setWidth(timeInputsWidth);
-		this.minutes.setWidth(timeInputsWidth);
+	public void setTimeInputWidth(String timeInputWidth) {
+		this.timeInputWidth = timeInputWidth;
+		this.time.hasSize().ifPresent(s -> s.setWidth(timeInputWidth));
 	}
 
 	/**
-	 * Get the time inputs (i.e. the <code>hours</code> and <code>minutes</code> fields) width.
-	 * @return the time inputs width
+	 * Get the time input width.
+	 * @return the time input width
 	 */
-	public String getTimeInputsWidth() {
-		return this.hours.getWidth();
+	public String getTimeInputWidth() {
+		return timeInputWidth;
 	}
 
 	/**
@@ -194,35 +202,19 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	}
 
 	/**
-	 * Set the <code>hours</code> input placeholder, i.e. a hint to the user of what can be entered.
+	 * Set the time input placeholder, i.e. a hint to the user of what can be entered.
 	 * @param placeholder The placeholder to set
 	 */
-	public void setHoursPlaceholder(String placeholder) {
-		this.hours.setPlaceholder(placeholder);
+	public void setTimePlaceholder(String placeholder) {
+		this.time.hasPlaceholder().ifPresent(p -> p.setPlaceholder(placeholder));
 	}
 
 	/**
-	 * Get the <code>hours</code> input placeholder, i.e. a hint to the user of what can be entered.
-	 * @return The <code>hours</code> placeholder
+	 * Get the time input placeholder, i.e. a hint to the user of what can be entered.
+	 * @return The time input placeholder
 	 */
-	public String getHoursPlaceholder() {
-		return this.hours.getPlaceholder();
-	}
-
-	/**
-	 * Set the <code>minutes</code> input placeholder, i.e. a hint to the user of what can be entered.
-	 * @param placeholder The placeholder to set
-	 */
-	public void setMinutesPlaceholder(String placeholder) {
-		this.minutes.setPlaceholder(placeholder);
-	}
-
-	/**
-	 * Get the <code>minutes</code> input placeholder, i.e. a hint to the user of what can be entered.
-	 * @return The <code>minutes</code> placeholder
-	 */
-	public String getMinutesPlaceholder() {
-		return this.minutes.getPlaceholder();
+	public String getTimePlaceholder() {
+		return this.time.hasPlaceholder().map(p -> p.getPlaceholder()).orElse(null);
 	}
 
 	/**
@@ -334,19 +326,11 @@ public class DateTimeField extends Composite<HorizontalLayout>
 
 		final LocalDateTime oldValue = getValue();
 
-		LocalDate date = null;
-		Integer hours = null;
-		Integer minutes = null;
-
-		if (value != null) {
-			date = value.toLocalDate();
-			hours = value.getHour();
-			minutes = value.getMinute();
-		}
+		final LocalDate date = (value != null) ? value.toLocalDate() : null;
+		final LocalTime time = (value != null) ? value.toLocalTime() : null;
 
 		this.date.setValue(date);
-		this.hours.setValue((hours == null) ? this.hours.getEmptyValue() : String.valueOf(hours.intValue()));
-		this.minutes.setValue((minutes == null) ? this.minutes.getEmptyValue() : String.valueOf(minutes.intValue()));
+		this.time.setValue(time);
 
 		fireValueChangeListeners(oldValue);
 	}
@@ -357,7 +341,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 */
 	@Override
 	public LocalDateTime getValue() {
-		return getDateValue().map(date -> LocalDateTime.of(date, getTimeValue())).orElse(null);
+		return getDateValue().map(date -> LocalDateTime.of(date, getTimeValueOrDefault())).orElse(null);
 	}
 
 	/**
@@ -370,60 +354,18 @@ public class DateTimeField extends Composite<HorizontalLayout>
 
 	/**
 	 * Get the time part value as a {@link LocalTime}.
-	 * @return The time value, never <code>null</code>
+	 * @return The time value
 	 */
-	protected LocalTime getTimeValue() {
-		return LocalTime.of(getHoursValue().orElse(0), getMinutesValue().orElse(0));
-	}
-
-	/**
-	 * Get the value of the <code>hours</code> field, if available.
-	 * @return The <code>hours</code> field value, an empty Optional if the field is empty
-	 */
-	protected Optional<Integer> getHoursValue() {
-		return getHoursValue(this.hours.getValue());
-	}
-
-	/**
-	 * Get the value of the <code>minutes</code> field, if available.
-	 * @return The <code>minutes</code> field value, an empty Optional if the field is empty
-	 */
-	protected Optional<Integer> getMinutesValue() {
-		return getMinutesValue(this.minutes.getValue());
+	protected Optional<LocalTime> getTimeValue() {
+		return Optional.ofNullable(this.time.getValue());
 	}
 
 	/**
 	 * Get the time part value as a {@link LocalTime}.
-	 * @param hours Hours value as text
-	 * @param minutes Minutes value as text
 	 * @return The time value, never <code>null</code>
 	 */
-	protected LocalTime getTimeValue(String hours, String minutes) {
-		return LocalTime.of(getHoursValue(hours).orElse(0), getMinutesValue(minutes).orElse(0));
-	}
-
-	/**
-	 * Get the value of the <code>hours</code> field, if available.
-	 * @param textValue The text value
-	 * @return The <code>hours</code> field value, an empty Optional if the field is empty
-	 */
-	protected Optional<Integer> getHoursValue(String textValue) {
-		if (textValue != null && !textValue.trim().equals("")) {
-			return Optional.ofNullable(Integer.valueOf(textValue));
-		}
-		return Optional.empty();
-	}
-
-	/**
-	 * Get the value of the <code>minutes</code> field, if available.
-	 * @param textValue The text value
-	 * @return The <code>minutes</code> field value, an empty Optional if the field is empty
-	 */
-	protected Optional<Integer> getMinutesValue(String textValue) {
-		if (textValue != null && !textValue.trim().equals("")) {
-			return Optional.ofNullable(Integer.valueOf(textValue));
-		}
-		return Optional.empty();
+	protected LocalTime getTimeValueOrDefault() {
+		return getTimeValue().orElse(LocalTime.of(0, 0));
 	}
 
 	/*
@@ -438,35 +380,24 @@ public class DateTimeField extends Composite<HorizontalLayout>
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners
 				.add((ValueChangeListener<ComponentValueChangeEvent<DateTimeField, LocalDateTime>>) listener);
+
 		final Registration dl = this.date.addValueChangeListener(e -> {
 			if (e.isFromClient()) {
 				listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
-						(e.getOldValue() == null) ? null : LocalDateTime.of(e.getOldValue(), getTimeValue()),
+						(e.getOldValue() == null) ? null : LocalDateTime.of(e.getOldValue(), getTimeValueOrDefault()),
 						e.isFromClient()));
 			}
 		});
-		final Registration hl = this.hours.addValueChangeListener(e -> {
-			if (e.isFromClient()) {
+		final Registration tl = this.time.addValueChangeListener(e -> {
+			if (e.isUserOriginated()) {
 				listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
-						getDateValue().map(
-								date -> LocalDateTime.of(date, getTimeValue(e.getOldValue(), this.minutes.getValue())))
-								.orElse(null),
-						e.isFromClient()));
-			}
-		});
-		final Registration ml = this.minutes.addValueChangeListener(e -> {
-			if (e.isFromClient()) {
-				listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
-						getDateValue().map(
-								date -> LocalDateTime.of(date, getTimeValue(this.hours.getValue(), e.getOldValue())))
-								.orElse(null),
-						e.isFromClient()));
+						getDateValue().map(date -> LocalDateTime.of(date, e.getOldValue())).orElse(null),
+						e.isUserOriginated()));
 			}
 		});
 		return () -> {
 			dl.remove();
-			hl.remove();
-			ml.remove();
+			tl.remove();
 		};
 	}
 
@@ -486,8 +417,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		this.date.setErrorMessage(errorMessage);
-		this.hours.setErrorMessage(null);
-		this.minutes.setErrorMessage(null);
+		this.time.hasValidation().ifPresent(v -> v.setErrorMessage(null));
 	}
 
 	/*
@@ -500,18 +430,12 @@ public class DateTimeField extends Composite<HorizontalLayout>
 		if (this.date.getErrorMessage() != null) {
 			sb.append(this.date.getErrorMessage());
 		}
-		if (this.hours.getErrorMessage() != null && !this.hours.getErrorMessage().equals(this.date.getErrorMessage())) {
+		final String timeError = this.time.hasValidation().map(v -> v.getErrorMessage()).orElse(null);
+		if (timeError != null && !timeError.equals(this.date.getErrorMessage())) {
 			if (sb.length() > 0) {
 				sb.append(";");
 			}
-			sb.append(this.hours.getErrorMessage());
-		}
-		if (this.minutes.getErrorMessage() != null
-				&& !this.minutes.getErrorMessage().equals(this.date.getErrorMessage())) {
-			if (sb.length() > 0) {
-				sb.append(";");
-			}
-			sb.append(this.minutes.getErrorMessage());
+			sb.append(timeError);
 		}
 		return (sb.length() == 0) ? null : sb.toString();
 	}
@@ -523,8 +447,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	@Override
 	public void setInvalid(boolean invalid) {
 		this.date.setInvalid(invalid);
-		this.hours.setInvalid(invalid);
-		this.minutes.setInvalid(invalid);
+		this.time.hasValidation().ifPresent(v -> v.setInvalid(invalid));
 	}
 
 	/*
@@ -533,7 +456,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 */
 	@Override
 	public boolean isInvalid() {
-		if (this.date.isInvalid() || this.hours.isInvalid() || this.minutes.isInvalid()) {
+		if (this.date.isInvalid() || this.time.hasValidation().map(v -> v.isInvalid()).orElse(false)) {
 			return true;
 		}
 		return false;
@@ -553,8 +476,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 */
 	public void setRequired(boolean required) {
 		this.date.setRequired(required);
-		this.hours.setRequired(required);
-		this.minutes.setRequired(required);
+		this.time.setRequired(required);
 	}
 
 	/*
@@ -582,8 +504,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		this.date.setReadOnly(readOnly);
-		this.hours.setReadOnly(readOnly);
-		this.minutes.setReadOnly(readOnly);
+		this.time.setReadOnly(readOnly);
 	}
 
 	/*
