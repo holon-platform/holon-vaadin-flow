@@ -105,7 +105,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<String> renderString(Property<T> property) {
-		return Input.string().emptyValuesAsNull(true).label(property).build();
+		return Input.string().emptyValuesAsNull(true).label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<Boolean> renderBoolean(Property<T> property) {
-		return Input.boolean_().label(property).build();
+		return Input.boolean_().label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -125,7 +125,8 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	@SuppressWarnings("unchecked")
 	protected Input<T> renderEnum(Property<T> property) {
 		final Class<Enum> enumType = (Class<Enum>) property.getType();
-		return (Input<T>) Input.singleSelect(enumType).items(enumType.getEnumConstants()).label(property).build();
+		return (Input<T>) Input.singleSelect(enumType).items(enumType.getEnumConstants()).label(property)
+				.readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalDate> renderLocalDate(Property<T> property) {
-		return Input.localDate().label(property).build();
+		return Input.localDate().label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -143,7 +144,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalTime> renderLocalTime(Property<T> property) {
-		return Input.localTime().label(property).build();
+		return Input.localTime().label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -152,7 +153,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalDateTime> renderLocalDateTime(Property<T> property) {
-		return Input.localDateTime().label(property).build();
+		return Input.localDateTime().label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -164,12 +165,13 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		final TemporalType type = property.getConfiguration().getTemporalType().orElse(TemporalType.DATE);
 		switch (type) {
 		case TIME:
-			return Input.from(Input.localTime().label(property).build(), new DateToLocalTimeConverter());
+			return Input.from(Input.localTime().label(property).readOnly(property.isReadOnly()).build(),
+					new DateToLocalTimeConverter());
 		case DATE_TIME:
-			return Input.dateTime().label(property).build();
+			return Input.dateTime().label(property).readOnly(property.isReadOnly()).build();
 		case DATE:
 		default:
-			return Input.date().label(property).build();
+			return Input.date().label(property).readOnly(property.isReadOnly()).build();
 		}
 	}
 
@@ -187,7 +189,8 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		boolean useGrouping = !property.getConfiguration().getParameter(StringValuePresenter.DISABLE_GROUPING)
 				.orElse(Boolean.FALSE);
 
-		return (Input<T>) Input.number(type).label(property).useGrouping(useGrouping).maxDecimals(decimals).build();
+		return (Input<T>) Input.number(type).label(property).readOnly(property.isReadOnly()).useGrouping(useGrouping)
+				.maxDecimals(decimals).build();
 	}
 
 }

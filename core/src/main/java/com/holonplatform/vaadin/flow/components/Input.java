@@ -21,12 +21,15 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.operation.TriConsumer;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
@@ -208,6 +211,28 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	static <T, H extends HasValue<?, T>, C extends Component> HasValueInputBuilder<T, H, C> builder(H field,
 			C component) {
 		return HasValueInputBuilder.create(field, component);
+	}
+
+	// Builders using property
+
+	/**
+	 * Create an {@link Input} component using given {@link Property} to detect the Input value type and the Input
+	 * configuration.
+	 * <p>
+	 * Any available {@link Input} type {@link PropertyRenderer} from the current {@link PropertyRendererRegistry} will
+	 * be used to provide the {@link Input} instance.
+	 * </p>
+	 * @param <T> Property and Input type
+	 * @param property The property to use (not null)
+	 * @return A new {@link Input} component with the same type of given {@link Property}
+	 * @throws NoSuitableRendererAvailableException if a suitable {@link Input} type {@link PropertyRenderer} is not
+	 *         available
+	 * @see PropertyRendererRegistry
+	 */
+	@SuppressWarnings("unchecked")
+	static <T> Input<T> create(Property<T> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return property.render(Input.class);
 	}
 
 	// Builders by type
@@ -463,6 +488,10 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 		@Override
 		default Class<? extends Input<T>> getRenderType() {
 			return (Class<? extends Input<T>>) (Class<?>) Input.class;
+		}
+
+		static <T> InputPropertyRenderer<T> create(Function<Property<T>, Input<T>> function) {
+			return property -> function.apply(property);
 		}
 
 	}
