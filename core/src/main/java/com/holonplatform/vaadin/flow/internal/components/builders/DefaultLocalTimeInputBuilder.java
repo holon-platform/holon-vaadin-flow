@@ -63,6 +63,8 @@ public class DefaultLocalTimeInputBuilder extends
 
 	private Character fixedTimeSeparator;
 	private Locale fixedLocale;
+	
+	private boolean widthUndefined;
 
 	private Function<Character, String> placeholderProvider;
 
@@ -148,7 +150,9 @@ public class DefaultLocalTimeInputBuilder extends
 		final StringToTimeConverter converter = getConverter();
 
 		// default width
-		component.setWidth("6em");
+		if (component.getWidth() == null && !widthUndefined) {
+			component.setWidth("6em");
+		}
 
 		// pattern
 		component.setPattern(converter.getValidationPattern());
@@ -426,6 +430,7 @@ public class DefaultLocalTimeInputBuilder extends
 	@Override
 	public LocalTimeInputBuilder width(String width) {
 		sizeConfigurator.width(width);
+		widthUndefined = (width == null);
 		return getConfigurator();
 	}
 

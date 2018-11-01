@@ -56,7 +56,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @see com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public Input render(Property<T> property) {
+	public Input render(Property<? extends T> property) {
 
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 
@@ -104,7 +104,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<String> renderString(Property<T> property) {
+	protected Input<String> renderString(Property<? extends T> property) {
 		return Input.string().emptyValuesAsNull(true).label(property).readOnly(property.isReadOnly()).build();
 	}
 
@@ -113,7 +113,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<Boolean> renderBoolean(Property<T> property) {
+	protected Input<Boolean> renderBoolean(Property<? extends T> property) {
 		return Input.boolean_().label(property).readOnly(property.isReadOnly()).build();
 	}
 
@@ -123,7 +123,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	@SuppressWarnings("unchecked")
-	protected Input<T> renderEnum(Property<T> property) {
+	protected Input<T> renderEnum(Property<? extends T> property) {
 		final Class<Enum> enumType = (Class<Enum>) property.getType();
 		return (Input<T>) Input.singleSelect(enumType).items(enumType.getEnumConstants()).label(property)
 				.readOnly(property.isReadOnly()).build();
@@ -134,7 +134,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<LocalDate> renderLocalDate(Property<T> property) {
+	protected Input<LocalDate> renderLocalDate(Property<? extends T> property) {
 		return Input.localDate().label(property).readOnly(property.isReadOnly()).build();
 	}
 
@@ -143,7 +143,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<LocalTime> renderLocalTime(Property<T> property) {
+	protected Input<LocalTime> renderLocalTime(Property<? extends T> property) {
 		return Input.localTime().label(property).readOnly(property.isReadOnly()).build();
 	}
 
@@ -152,7 +152,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<LocalDateTime> renderLocalDateTime(Property<T> property) {
+	protected Input<LocalDateTime> renderLocalDateTime(Property<? extends T> property) {
 		return Input.localDateTime().label(property).readOnly(property.isReadOnly()).build();
 	}
 
@@ -161,7 +161,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @param property Property to render
 	 * @return The {@link Input} instance
 	 */
-	protected Input<Date> renderDate(Property<T> property) {
+	protected Input<Date> renderDate(Property<? extends T> property) {
 		final TemporalType type = property.getConfiguration().getTemporalType().orElse(TemporalType.DATE);
 		switch (type) {
 		case TIME:
@@ -181,7 +181,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	@SuppressWarnings("unchecked")
-	protected Input<T> renderNumber(Property<T> property) {
+	protected Input<T> renderNumber(Property<? extends T> property) {
 		// numeric type
 		final Class<? extends Number> type = (Class<? extends Number>) property.getType();
 		// configuration

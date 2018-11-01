@@ -13,25 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components;
+package com.holonplatform.vaadin.flow.internal.components.support;
 
-import java.util.Optional;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
 
 /**
- * Represents a component which may support a placeholder text through the {@link HasPlaceholder} interface.
- *
+ * A {@link ValueComponentPropertyConfiguration} for {@link ViewComponent} types.
+ * 
+ * @param <T> Property type
+ * 
  * @since 5.2.0
  */
-public interface MayHavePlaceholder {
+public interface ViewComponentPropertyConfiguration<T> extends ValueComponentPropertyConfiguration<T, ViewComponent<T>> {
 
-	/**
-	 * Checks whether this component supports a placeholder, which text can be handled using the {@link HasPlaceholder}
-	 * interface.
-	 * @return If this component supports a placeholder, return the {@link HasPlaceholder} interface} reference. An
-	 *         empty Optional is returned otherwise.
-	 */
-	default Optional<HasPlaceholder> hasPlaceholder() {
-		return Optional.empty();
+	static <T> ViewComponentPropertyConfiguration<T> create(Property<T> property) {
+		return new DefaultViewComponentPropertyConfiguration<>(property);
 	}
-
+	
 }

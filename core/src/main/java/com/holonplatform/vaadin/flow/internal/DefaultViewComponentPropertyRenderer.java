@@ -43,7 +43,7 @@ public class DefaultViewComponentPropertyRenderer<T> implements PropertyRenderer
 	 * @see com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public ViewComponent render(final Property<T> property) {
+	public ViewComponent render(final Property<? extends T> property) {
 		return ViewComponent.create(property);
 	}
 

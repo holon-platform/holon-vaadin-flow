@@ -33,6 +33,7 @@ import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
 
 public class TestPropertyViewGroup {
 
@@ -71,8 +72,13 @@ public class TestPropertyViewGroup {
 		assertTrue(group.hasProperty(VIRTUAL));
 
 		final ViewComponent<String> vc = ViewComponent.create(String.class);
+		
+		final ViewComponentPropertyRenderer<String> renderer1 = ViewComponentPropertyRenderer.create(p -> vc);
 
 		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, vc).build();
+		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
+		
+		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, renderer1).build();
 		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
 
 		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, p -> vc).build();
@@ -94,7 +100,12 @@ public class TestPropertyViewGroup {
 		assertTrue(group.getViewComponent(ID).isPresent());
 		assertFalse(group.getViewComponent(ID).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
 		assertTrue(group.getViewComponent(NAME).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
-
+		
+		final ViewComponent<Number> nvc = ViewComponent.create(Number.class);
+		final NumericProperty<Double> np = NumericProperty.doubleType("test");
+		
+		ViewComponentPropertyRenderer<Number> rnd2 = ViewComponentPropertyRenderer.create(p -> nvc);
+		assertEquals(nvc, rnd2.render(np));
 	}
 
 	@Test

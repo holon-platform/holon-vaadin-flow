@@ -27,6 +27,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyBinding;
@@ -37,7 +38,6 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -406,18 +406,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#required(com.holonplatform.core.property.
-		 * Property, com.holonplatform.core.Validator)
-		 */
-		@Override
-		public <T> PropertyInputFormBuilder<C> required(Property<T> property, Validator<T> validator) {
-			inputGroupBuilder.required(property, validator);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#required(com.holonplatform.core.property.
 		 * Property, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
@@ -556,28 +544,6 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#ignoreMissingInputs(boolean)
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> ignoreMissingInputs(boolean ignoreMissingInputs) {
-			inputGroupBuilder.ignoreMissingInputs(ignoreMissingInputs);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#valueChangeMode(com.vaadin.flow.data.
-		 * value.ValueChangeMode)
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> valueChangeMode(ValueChangeMode valueChangeMode) {
-			inputGroupBuilder.valueChangeMode(valueChangeMode);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
 		 * .core.property.Property, com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
@@ -603,21 +569,21 @@ public class DefaultPropertyInputForm<C extends Component>
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#valueChangeMode(com.holonplatform.core.
-		 * property.Property, com.vaadin.flow.data.value.ValueChangeMode)
-		 */
-		@Override
-		public <T> PropertyInputFormBuilder<C> valueChangeMode(Property<T> property, ValueChangeMode valueChangeMode) {
-			inputGroupBuilder.valueChangeMode(property, valueChangeMode);
-			return this;
-		}
-
 		@Override
 		public <T> PropertyInputFormBuilder<C> hidden(Property<T> property) {
 			inputGroupBuilder.hidden(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#usePropertyRendererRegistry(com.
+		 * holonplatform.core.property.PropertyRendererRegistry)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> usePropertyRendererRegistry(
+				PropertyRendererRegistry propertyRendererRegistry) {
+			inputGroupBuilder.usePropertyRendererRegistry(propertyRendererRegistry);
 			return this;
 		}
 

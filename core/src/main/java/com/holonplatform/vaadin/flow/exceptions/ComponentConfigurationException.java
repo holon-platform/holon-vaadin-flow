@@ -13,24 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components;
-
-import java.util.Optional;
+package com.holonplatform.vaadin.flow.exceptions;
 
 /**
- * Represents a component which may support a title through the {@link HasTitle} interface.
- *
+ * Exception to notify components configuration errors.
+ * 
  * @since 5.2.0
  */
-public interface MayHaveTitle {
+public class ComponentConfigurationException extends RuntimeException {
 
-	/**
-	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.
-	 * @return If this component supports a title, return the {@link HasTitle} reference. An empty Optional is returned
-	 *         otherwise.
-	 */
-	default Optional<HasTitle> hasTitle() {
-		return Optional.empty();
+	private static final long serialVersionUID = 49903885276507258L;
+
+	public ComponentConfigurationException(String message) {
+		super(message);
+	}
+
+	public ComponentConfigurationException(Throwable cause) {
+		super(cause);
+	}
+
+	public ComponentConfigurationException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

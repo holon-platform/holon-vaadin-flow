@@ -15,11 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -29,6 +26,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.PropertyBinding;
@@ -36,61 +34,42 @@ import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
+import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfiguration;
+import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfigurationRegistry;
+import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Default {@link PropertyViewGroup} implementation.
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
-public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValueComponentSource {
+public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
+		implements PropertyViewGroup, PropertyValueComponentSource {
 
 	private static final long serialVersionUID = -2110591918893531742L;
 
 	/**
-	 * Current value
+	 * Property configurations
 	 */
-	private PropertyBox value;
+	private final ViewComponentPropertyConfigurationRegistry configuration = ViewComponentPropertyConfigurationRegistry
+			.create();
 
 	/**
-	 * Property set
-	 */
-	@SuppressWarnings("rawtypes")
-	private final List<Property> properties = new LinkedList<>();
-
-	/**
-	 * Bound ViewComponents
-	 */
-	@SuppressWarnings("rawtypes")
-	private final Map<Property, ViewComponent> propertyViews = new HashMap<>();
-
-	/**
-	 * Custom ViewComponentPropertyRenderers
-	 */
-	@SuppressWarnings("rawtypes")
-	private final Map<Property, ViewComponentPropertyRenderer> propertyRenderers = new HashMap<>(8);
-
-	/**
-	 * Hidden properties
-	 */
-	@SuppressWarnings("rawtypes")
-	private final Map<Property, Object> hiddenProperties = new HashMap<>();
-
-	/**
-	 * ViewComponent post-processors
+	 * Post-processors
 	 */
 	private final List<BiConsumer<Property<?>, ViewComponent<?>>> postProcessors = new LinkedList<>();
 
 	/**
-	 * Value change listeners
+	 * Property components
 	 */
-	private final List<ValueChangeListener<PropertyBox>> valueChangeListeners = new LinkedList<>();
+	private final ViewComponentPropertyRegistry components = ViewComponentPropertyRegistry.create();
 
 	/**
-	 * Ignore missing ViewComponents
+	 * Optional {@link PropertyRendererRegistry} to use
 	 */
-	private boolean ignoreMissingViewComponent = false;
+	private PropertyRendererRegistry propertyRendererRegistry;
 
 	/**
 	 * Constructor
@@ -99,66 +78,22 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 		super();
 	}
 
-	/**
-	 * Add a property to the property set
-	 * @param property Property to add
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void addProperty(Property property) {
-		if (property != null) {
-			properties.add(property);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#getProperties()
-	 */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Iterable<Property> getProperties() {
-		return Collections.unmodifiableList(properties);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
-	 */
-	@Override
-	public boolean hasProperty(Property<?> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return properties.contains(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
-	 */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Stream<Property> propertyStream() {
-		return properties.stream();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
 	 */
 	@Override
 	public Stream<Component> getComponents() {
-		return properties.stream().filter(p -> propertyViews.containsKey(p))
-				.map(p -> propertyViews.get(p).getComponent());
+		return components.stream().map(b -> b.getComponent().getComponent());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyComponentSource#streamOfComponents()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public Stream<PropertyBinding<?, Component>> streamOfComponents() {
-		return properties.stream().filter(p -> propertyViews.containsKey(p))
-				.map(p -> PropertyBinding.create(p, propertyViews.get(p).getComponent()));
+		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent().getComponent()));
 	}
 
 	/*
@@ -168,8 +103,7 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterable<ViewComponent> getViewComponents() {
-		return properties.stream().filter(p -> propertyViews.containsKey(p)).map(p -> propertyViews.get(p))
-				.collect(Collectors.toList());
+		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
 	}
 
 	/*
@@ -177,21 +111,18 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getViewComponent(com.holonplatform.core.property.
 	 * Property)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Optional<ViewComponent<T>> getViewComponent(Property<T> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return Optional.ofNullable(propertyViews.get(property));
+		return components.get(property);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#stream()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Stream<PropertyBinding<T, ViewComponent<T>>> stream() {
-		return propertyViews.entrySet().stream().map(e -> PropertyBinding.create(e.getKey(), e.getValue()));
+		return components.stream();
 	}
 
 	/*
@@ -201,8 +132,7 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterable<ValueComponent> getValueComponents() {
-		return properties.stream().filter(p -> propertyViews.containsKey(p)).map(p -> propertyViews.get(p))
-				.collect(Collectors.toList());
+		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
 	}
 
 	/*
@@ -210,110 +140,50 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponent(com.holonplatform.core.
 	 * property.Property)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Optional<ValueComponent<T>> getValueComponent(Property<T> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return Optional.ofNullable(propertyViews.get(property));
+		return components.get(property).map(c -> c);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#streamOfValueComponents()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public Stream<PropertyBinding<?, ValueComponent<?>>> streamOfValueComponents() {
-		return propertyViews.entrySet().stream().map(e -> PropertyBinding.create(e.getKey(), e.getValue()));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#clear()
-	 */
-	@Override
-	public void clear() {
-		setValue(null);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getValue()
-	 */
-	@Override
-	public PropertyBox getValue() {
-		return value;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#isEmpty()
-	 */
-	@Override
-	public boolean isEmpty() {
-		final PropertyBox value = getValue();
-		return (value == null) || (!value.propertyValues().filter(v -> v.hasValue()).findAny().isPresent());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.components.
-	 * ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<PropertyBox> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		valueChangeListeners.add(listener);
-		return () -> removeValueChangeListener(listener);
+		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent()));
 	}
 
 	/**
-	 * Removes a {@link ValueChangeListener}.
-	 * @param listener the listener to remove
+	 * Get the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * @return Optional property renderer registry
 	 */
-	public void removeValueChangeListener(ValueChangeListener<PropertyBox> listener) {
-		if (listener != null) {
-			valueChangeListeners.remove(listener);
-		}
+	public Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
+		return Optional.ofNullable(propertyRendererRegistry);
 	}
 
 	/**
-	 * Emits the value change event
-	 * @param oldValue Old value
-	 * @param value the changed value
+	 * Set the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * @param propertyRendererRegistry the property renderer registry to set
 	 */
-	protected void fireValueChange(PropertyBox oldValue, PropertyBox value) {
-		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value,
-				false);
-		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
+	public void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
+		this.propertyRendererRegistry = propertyRendererRegistry;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#setValue(com.holonplatform.core.property.PropertyBox)
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void setValue(PropertyBox propertyBox) {
 		final PropertyBox oldValue = this.value;
 		this.value = propertyBox;
 		if (propertyBox == null) {
 			// reset all values
-			properties.forEach(p -> propertyViews.get(p).clear());
+			components.stream().map(b -> b.getComponent()).forEach(c -> c.clear());
 		} else {
-			properties.forEach(p -> {
-				final ViewComponent vc = propertyViews.get(p);
-				if (vc != null) {
-					Object value = getPropertyValue(propertyBox, p);
-					if (value != null) {
-						vc.setValue(value);
-					} else {
-						vc.clear();
-					}
-				}
-			});
+			components.stream().forEach(b -> b.getComponent().setValue(getPropertyValue(propertyBox, b.getProperty())));
 		}
-
 		// fire value change
 		fireValueChange(oldValue, propertyBox);
 	}
@@ -339,45 +209,30 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	}
 
 	/**
-	 * Whether to ignore missing property ViewComponents
-	 * @return <code>true</code> if missing property ViewComponents must be ignored
-	 */
-	protected boolean isIgnoreMissingViewComponent() {
-		return ignoreMissingViewComponent;
-	}
-
-	/**
-	 * Set whether to ignore missing property ViewComponents
-	 * @param ignoreMissingViewComponent <code>true</code> to ignore missing property ViewComponents
-	 */
-	protected void setIgnoreMissingViewComponent(boolean ignoreMissingViewComponent) {
-		this.ignoreMissingViewComponent = ignoreMissingViewComponent;
-	}
-
-	/**
 	 * Register a {@link ViewComponent} {@link PostProcessor}.
-	 * @param postProcessor the post-processor to register
+	 * @param postProcessor the post-processor to register (not null)
 	 */
-	protected void addViewComponentPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor) {
-		if (postProcessor != null) {
-			postProcessors.add(postProcessor);
-		}
+	protected void addPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor) {
+		ObjectUtils.argumentNotNull(postProcessor, "Post processor must be not null");
+		postProcessors.add(postProcessor);
 	}
 
 	/**
-	 * Set a property as hidden in UI
+	 * Set property as hidden.
 	 * @param property Property to set as hidden
 	 */
-	@SuppressWarnings("rawtypes")
-	public void setPropertyHidden(Property property) {
-		if (property != null && !hiddenProperties.containsKey(property)) {
-			hiddenProperties.put(property, null);
-		}
+	public void setPropertyHidden(Property<?> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		configuration.get(property).setHidden(true);
 	}
 
-	@SuppressWarnings("rawtypes")
-	protected boolean isPropertyHidden(Property property) {
-		return property != null && hiddenProperties.containsKey(property);
+	/**
+	 * Get whether given property is hidden.
+	 * @param property Property to check
+	 * @return whether given property is hidden
+	 */
+	protected boolean isPropertyHidden(Property<?> property) {
+		return property != null && configuration.get(property).isHidden();
 	}
 
 	/**
@@ -386,64 +241,64 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 	 * @param property Property
 	 * @param renderer Renderer
 	 */
-	protected <T> void setPropertyRenderer(Property<T> property, ViewComponentPropertyRenderer<T> renderer) {
-		if (property != null && renderer != null) {
-			propertyRenderers.put(property, renderer);
-		}
-	}
-
-	/**
-	 * Render given property as a {@link ViewComponent}, using custom {@link ViewComponentPropertyRenderer} or default
-	 * {@link Property#render(Class)} method
-	 * @param <T> Property type
-	 * @param property Property to render
-	 * @return Rendered ViewComponent
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected <T> Optional<ViewComponent> render(Property<T> property) {
-		// check custom renderer
-		if (propertyRenderers.containsKey(property)) {
-			final ViewComponentPropertyRenderer<T> r = propertyRenderers.get(property);
-			return Optional.ofNullable(r.render(property));
-		}
-		// use registry
-		return property.renderIfAvailable(ViewComponent.class);
-	}
-
-	/**
-	 * Configure ViewComponent before binding
-	 * @param property Property
-	 * @param viewComponent ViewComponent to configure
-	 */
-	protected void configureViewComponent(final Property<?> property, final ViewComponent<?> viewComponent) {
-		// Configurators
-		postProcessors.forEach(fc -> fc.accept(property, viewComponent));
+	protected <T> void setPropertyRenderer(Property<T> property, PropertyRenderer<ViewComponent<T>, T> renderer) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		configuration.get(property).setRenderer(renderer);
 	}
 
 	/**
 	 * Build and bind {@link ViewComponent}s to the properties of the property set.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void build() {
-		propertyViews.clear();
-		// render and bind ViewComponents
-		properties.forEach(p -> {
-			// exclude hidden properties
-			if (!isPropertyHidden(p)) {
-				final Optional<ViewComponent> viewComponent = render(p);
-				if (!viewComponent.isPresent() && !isIgnoreMissingViewComponent()) {
-					throw new NoSuitableRendererAvailableException(
-							"No ViewComponent render available to render the property [" + p.toString()
-									+ "] as a ViewComponent");
-				}
-				viewComponent.ifPresent(v -> {
-					// configure
-					configureViewComponent(p, v);
-					// bind
-					propertyViews.put(p, v);
-				});
-			}
-		});
+	@SuppressWarnings("unchecked")
+	protected void build() {
+		components.clear();
+		// render and bind components
+		properties.stream().filter(property -> !isPropertyHidden(property))
+				.forEach(property -> renderAndBind(property));
+	}
+
+	/**
+	 * Render given property as a {@link ViewComponent} and register the binding.
+	 * @param property The property to render and bind
+	 * @return The property component
+	 */
+	protected <T> void renderAndBind(final Property<T> property) {
+		if (property != null) {
+			final ViewComponentPropertyConfiguration<T> propertyConfiguration = configuration.get(property);
+			// render
+			final ViewComponent<T> component = render(propertyConfiguration)
+					.orElseThrow(() -> new NoSuitableRendererAvailableException(
+							"No renderer available to render the property [" + property + "] as a ViewComponent"));
+			// configure
+			postProcessors.forEach(postProcessor -> postProcessor.accept(property, component));
+			// register
+			components.set(property, component);
+		}
+	}
+
+	/**
+	 * Render given property configuration as a {@link ViewComponent}.
+	 * @param propertyConfiguration Property configuration
+	 * @return Optional rendered component
+	 */
+	@SuppressWarnings("unchecked")
+	protected <T> Optional<ViewComponent<T>> render(ViewComponentPropertyConfiguration<T> propertyConfiguration) {
+		// check custom renderer
+		Optional<ViewComponent<T>> component = propertyConfiguration.getRenderer()
+				.map(r -> r.render(propertyConfiguration.getProperty()));
+		if (component.isPresent()) {
+			return component;
+		}
+		// check specific registry
+		if (getPropertyRendererRegistry().isPresent()) {
+			return getPropertyRendererRegistry().get()
+					.getRenderer(ViewComponent.class, propertyConfiguration.getProperty())
+					.map(r -> r.render(propertyConfiguration.getProperty()));
+		} else {
+			// use default
+			return propertyConfiguration.getProperty().renderIfAvailable(ViewComponent.class)
+					.map(c -> (ViewComponent<T>) c);
+		}
 	}
 
 	// Builder
@@ -550,22 +405,22 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#bind(com.holonplatform.core.property.
-		 * Property, com.holonplatform.core.property.PropertyRenderer)
+		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#usePropertyRendererRegistry(com.
+		 * holonplatform.core.property.PropertyRendererRegistry)
 		 */
 		@Override
-		public <T, F extends T> B bind(Property<T> property, PropertyRenderer<ViewComponent<F>, T> renderer) {
-			ObjectUtils.argumentNotNull(renderer, "PropertyRenderer must be not null");
-			return bind(property, p -> renderer.render(p));
+		public B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
+			instance.setPropertyRendererRegistry(propertyRendererRegistry);
+			return builder();
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#bind(com.holonplatform.core.property.
-		 * Property, com.holonplatform.vaadin.components.PropertyViewGroup.ViewComponentPropertyRenderer)
+		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#bind(com.holonplatform.core.property.
+		 * Property, com.holonplatform.core.property.PropertyRenderer)
 		 */
 		@Override
-		public <T> B bind(Property<T> property, ViewComponentPropertyRenderer<T> renderer) {
+		public <T> B bind(Property<T> property, PropertyRenderer<ViewComponent<T>, T> renderer) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(renderer, "PropertyRenderer must be not null");
 			instance.setPropertyRenderer(property, renderer);
@@ -581,17 +436,7 @@ public class DefaultPropertyViewGroup implements PropertyViewGroup, PropertyValu
 		@Override
 		public B withPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor) {
 			ObjectUtils.argumentNotNull(postProcessor, "PostProcessor must be not null");
-			instance.addViewComponentPostProcessor(postProcessor);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#ignoreMissingViewComponents(boolean)
-		 */
-		@Override
-		public B ignoreMissingViewComponents(boolean ignoreMissingViewComponents) {
-			instance.setIgnoreMissingViewComponent(ignoreMissingViewComponents);
+			instance.addPostProcessor(postProcessor);
 			return builder();
 		}
 

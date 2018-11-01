@@ -33,12 +33,10 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.Input.InputFieldPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
-import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.TextField;
@@ -276,10 +274,6 @@ public class TestInput {
 		assertNotNull(r1);
 
 		Input<String> i = r1.render(prp);
-		assertNotNull(i);
-
-		InputFieldPropertyRenderer<String, ComponentValueChangeEvent<TextField, String>, TextField> r2 = property -> new TextField();
-		i = r2.render(prp);
 		assertNotNull(i);
 
 	}

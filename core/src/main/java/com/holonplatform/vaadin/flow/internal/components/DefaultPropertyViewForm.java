@@ -25,6 +25,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.PropertyBinding;
 import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
@@ -265,15 +266,26 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			return this;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#usePropertyRendererRegistry(com.
+		 * holonplatform.core.property.PropertyRendererRegistry)
+		 */
 		@Override
-		public <T, F extends T> PropertyViewFormBuilder<C> bind(Property<T> property,
-				PropertyRenderer<ViewComponent<F>, T> renderer) {
-			viewGroupBuilder.bind(property, renderer);
+		public PropertyViewFormBuilder<C> usePropertyRendererRegistry(
+				PropertyRendererRegistry propertyRendererRegistry) {
+			viewGroupBuilder.usePropertyRendererRegistry(propertyRendererRegistry);
 			return this;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#bind(com.holonplatform.core.property.
+		 * Property, com.holonplatform.core.property.PropertyRenderer)
+		 */
 		@Override
-		public <T> PropertyViewFormBuilder<C> bind(Property<T> property, ViewComponentPropertyRenderer<T> renderer) {
+		public <T> PropertyViewFormBuilder<C> bind(Property<T> property,
+				PropertyRenderer<ViewComponent<T>, T> renderer) {
 			viewGroupBuilder.bind(property, renderer);
 			return this;
 		}
@@ -287,12 +299,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 		@Override
 		public PropertyViewFormBuilder<C> withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
 			viewGroupBuilder.withValueChangeListener(listener);
-			return this;
-		}
-
-		@Override
-		public PropertyViewFormBuilder<C> ignoreMissingViewComponents(boolean ignoreMissingViewComponents) {
-			viewGroupBuilder.ignoreMissingViewComponents(ignoreMissingViewComponents);
 			return this;
 		}
 

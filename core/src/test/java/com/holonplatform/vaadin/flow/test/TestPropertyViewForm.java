@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
@@ -128,13 +129,8 @@ public class TestPropertyViewForm {
 		assertTrue(ComponentTestUtils.getClassNames(form.getViewComponent(ID).get()).contains("post-processed"));
 		assertFalse(ComponentTestUtils.getClassNames(form.getViewComponent(NAME).get()).contains("post-processed"));
 
-		assertThrows(NoSuitableRendererAvailableException.class,
-				() -> PropertyViewForm.formLayout().properties(SET).bind(ID, p -> null).build());
-
-		form = PropertyViewForm.formLayout().properties(SET).bind(ID, p -> null).ignoreMissingViewComponents(true)
-				.build();
-		assertNotNull(form);
-		assertFalse(form.getViewComponent(ID).isPresent());
+		assertThrows(NoSuitableRendererAvailableException.class, () -> PropertyViewForm.formLayout().properties(SET)
+				.usePropertyRendererRegistry(PropertyRendererRegistry.create(false)).build());
 
 	}
 

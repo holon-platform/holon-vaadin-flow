@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.holonplatform.vaadin.flow.components.HasComponent;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MayHaveLabel;
-import com.holonplatform.vaadin.flow.components.MayHavePlaceholder;
-import com.holonplatform.vaadin.flow.components.MayHaveTitle;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
 
 public final class ComponentTestUtils {
 
@@ -49,11 +49,15 @@ public final class ComponentTestUtils {
 		return component.hasLabel().map(c -> c.getLabel()).orElse(null);
 	}
 
-	public static String getTitle(MayHaveTitle component) {
+	public static String getTitle(ViewComponent<?> component) {
 		return component.hasTitle().map(c -> c.getTitle()).orElse(null);
 	}
 
-	public static String getPlaceholder(MayHavePlaceholder component) {
+	public static String getTitle(Input<?> component) {
+		return component.hasTitle().map(c -> c.getTitle()).orElse(null);
+	}
+
+	public static String getPlaceholder(Input<?> component) {
 		return component.hasPlaceholder().map(c -> c.getPlaceholder()).orElse(null);
 	}
 

@@ -17,12 +17,15 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 
 /**
@@ -140,37 +143,48 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 		<T> B hidden(Property<T> property);
 
 		/**
-		 * Set a specific {@link PropertyRenderer} to use to render the {@link ViewComponent} to bind to given
+		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
+		 * <p>
+		 * By default, the {@link PropertyRendererRegistry#get()} method is used to obtain the
+		 * {@link PropertyRendererRegistry} to use.
+		 * </p>
+		 * @param propertyRendererRegistry The {@link PropertyRendererRegistry} to use to render the group components
+		 * @return this
+		 */
+		B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
+
+		/**
+		 * Set the {@link PropertyRenderer} to use to render the {@link ViewComponent} bound to given
 		 * <code>property</code>.
 		 * @param <T> Property type
-		 * @param <F> Rendered ViewComponent type
-		 * @param property Property (not null)
-		 * @param renderer Property renderer (not null)
+		 * @param property The property to render (not null)
+		 * @param renderer The renderer to use to render the property {@link ViewComponent} (not null)
 		 * @return this
 		 */
-		<T, F extends T> B bind(Property<T> property, PropertyRenderer<ViewComponent<F>, T> renderer);
+		<T> B bind(Property<T> property, PropertyRenderer<ViewComponent<T>, T> renderer);
 
 		/**
-		 * Convenience method to set a specific {@link PropertyRenderer} to use to render the {@link ViewComponent} to
-		 * bind to given <code>property</code> using the {@link ViewComponentPropertyRenderer} functional interface.
+		 * Set the function to use to render the {@link ViewComponent} bound to given <code>property</code>.
 		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param renderer Property renderer (not null)
+		 * @param property The property to render (not null)
+		 * @param function The function to use to render the property {@link ViewComponent} (not null)
 		 * @return this
 		 */
-		<T> B bind(Property<T> property, ViewComponentPropertyRenderer<T> renderer);
+		default <T> B bind(Property<T> property, Function<Property<? extends T>, ViewComponent<T>> function) {
+			return bind(property, ViewComponentPropertyRenderer.create(function));
+		}
 
 		/**
-		 * Bind the given <code>property</code> to given <code>viewComponent</code> instance. If the property was
-		 * already bound to a ViewComponent, the old ViewComponent will be replaced by the new ViewComponent.
+		 * Bind the given <code>property</code> to given <code>viewComponent</code> instance.
 		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param viewComponent ViewComponent to bind (not null)
+		 * @param property The property to render (not null)
+		 * @param viewComponent The {@link ViewComponent} to use to render the property (not null)
 		 * @return this
 		 */
-		default <T> B bind(Property<T> property, ViewComponent<? extends T> viewComponent) {
+		default <T> B bind(Property<T> property, ViewComponent<T> viewComponent) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(viewComponent, "ViewComponent must be not null");
-			return bind(property, p -> viewComponent);
+			return bind(property, ViewComponentPropertyRenderer.create(p -> viewComponent));
 		}
 
 		/**
@@ -179,16 +193,7 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 		 * @param postProcessor the post processor to add (not null)
 		 * @return this
 		 */
-		// TODO APICHG: PostProcessor replaced by BiConsumer
 		B withPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor);
-
-		/**
-		 * Set whether to ignore properties without a bound {@link ViewComponent}. Default is <code>false</code>, and an
-		 * exception is thrown if a property of the {@link PropertyViewGroup} cannot be bound to any ViewComponent.
-		 * @param ignoreMissingViewComponents Whether to ignore when the ViewComponent for a property is missing
-		 * @return this
-		 */
-		B ignoreMissingViewComponents(boolean ignoreMissingViewComponents);
 
 		/**
 		 * Add a {@link ValueChangeListener} to the group.
@@ -202,27 +207,6 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 		 * @return PropertyViewGroup instance
 		 */
 		G build();
-
-	}
-
-	// -------
-
-	/**
-	 * A {@link PropertyRenderer} with a fixed {@link ViewComponent} rendering type.
-	 * @param <T> Property type
-	 */
-	@SuppressWarnings("rawtypes")
-	@FunctionalInterface
-	public interface ViewComponentPropertyRenderer<T> extends PropertyRenderer<ViewComponent, T> {
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.core.property.PropertyRenderer#getRenderType()
-		 */
-		@Override
-		default Class<? extends ViewComponent> getRenderType() {
-			return ViewComponent.class;
-		}
 
 	}
 

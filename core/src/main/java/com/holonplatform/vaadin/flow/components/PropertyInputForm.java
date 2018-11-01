@@ -35,15 +35,6 @@ import com.vaadin.flow.component.Component;
  */
 public interface PropertyInputForm extends Composable, ValueComponent<PropertyBox>, PropertyInputGroup {
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyInputGroup#getValue()
-	 */
-	@Override
-	default PropertyBox getValue() {
-		return PropertyInputGroup.super.getValue();
-	}
-
 	/**
 	 * Get a builder to create a {@link PropertyInputForm}.
 	 * @param <C> Form content component type

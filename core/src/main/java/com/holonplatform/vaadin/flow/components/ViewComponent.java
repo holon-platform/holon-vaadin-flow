@@ -15,9 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.util.Optional;
 import java.util.function.Function;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 
 /**
@@ -27,7 +30,16 @@ import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
  *
  * @since 5.2.0
  */
-public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel, MayHaveTitle {
+public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel {
+
+	/**
+	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.
+	 * @return If this component supports a title, return the {@link HasTitle} reference. An empty Optional is returned
+	 *         otherwise.
+	 */
+	default Optional<HasTitle> hasTitle() {
+		return Optional.empty();
+	}
 
 	/**
 	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given value type.
@@ -80,6 +92,37 @@ public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, May
 	 */
 	static <T> ViewComponent<T> create(Property<T> property) {
 		return builder(property).build();
+	}
+
+	/**
+	 * A {@link PropertyRenderer} for the {@link ViewComponent} rendering type.
+	 * 
+	 * @param <T> ViewComponent type
+	 */
+	@FunctionalInterface
+	public interface ViewComponentPropertyRenderer<T> extends PropertyRenderer<ViewComponent<T>, T> {
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.core.property.PropertyRenderer#getRenderType()
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		default Class<? extends ViewComponent<T>> getRenderType() {
+			return (Class<? extends ViewComponent<T>>) (Class<?>) ViewComponent.class;
+		}
+
+		/**
+		 * Create a new {@link ViewComponentPropertyRenderer} using given function.
+		 * @param <T> ViewComponent type
+		 * @param function Function to use to provide the {@link ViewComponent} component (not null)
+		 * @return A new {@link ViewComponentPropertyRenderer}
+		 */
+		static <T> ViewComponentPropertyRenderer<T> create(Function<Property<? extends T>, ViewComponent<T>> function) {
+			ObjectUtils.argumentNotNull(function, "The rendering function must be not null");
+			return property -> function.apply(property);
+		}
+
 	}
 
 }

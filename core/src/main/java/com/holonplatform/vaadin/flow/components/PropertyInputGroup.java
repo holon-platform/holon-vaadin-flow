@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
@@ -35,7 +36,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
  * A class to manage a group of {@link Input}s bound to a {@link Property} set, loading and obtaining property values in
@@ -96,9 +96,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	 * @see #getValueIfValid()
 	 */
 	@Override
-	default PropertyBox getValue() {
-		return getValue(true);
-	}
+	PropertyBox getValue();
 
 	/**
 	 * Get the current property values collected into a {@link PropertyBox}, using the group configured properties as
@@ -140,9 +138,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	 * @see #setValue(PropertyBox, boolean)
 	 */
 	@Override
-	default void setValue(PropertyBox propertyBox) {
-		setValue(propertyBox, false);
-	}
+	void setValue(PropertyBox propertyBox);
 
 	/**
 	 * Set the read-only mode for all the group inputs.
@@ -231,17 +227,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B required(Property<T> property);
-
-		/**
-		 * Set the given property as required, using given {@link Validator} to check the property value. If a property
-		 * is required, the {@link Input} bound to the property will be setted as required, and its validation will fail
-		 * when empty.
-		 * @param <T> Property type
-		 * @param property Property to set as required (not null)
-		 * @param validator The {@link Validator} to use to check the required property value (not null)
-		 * @return this
-		 */
-		<T> B required(Property<T> property, Validator<T> validator);
 
 		/**
 		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
@@ -423,6 +408,17 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		B ignorePropertyValidation();
 
 		/**
+		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
+		 * <p>
+		 * By default, the {@link PropertyRendererRegistry#get()} method is used to obtain the
+		 * {@link PropertyRendererRegistry} to use.
+		 * </p>
+		 * @param propertyRendererRegistry The {@link PropertyRendererRegistry} to use to render the group components
+		 * @return this
+		 */
+		B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
+
+		/**
 		 * Set the specific {@link PropertyRenderer} to use to render the {@link Input} to bind to given
 		 * <code>property</code>.
 		 * @param <T> Property type
@@ -433,17 +429,14 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		<T> B bind(Property<T> property, PropertyRenderer<Input<T>, T> renderer);
 
 		/**
-		 * Convenience method to set a specific {@link PropertyRenderer} to use to render the {@link Input} to bind to
-		 * given <code>property</code> using the {@link InputPropertyRenderer} functional interface.
+		 * Set the function to use to render the {@link Input} bound to given <code>property</code>.
 		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param renderer Property renderer (not null)
+		 * @param property The property to render (not null)
+		 * @param function The function to use to render the property {@link Input} (not null)
 		 * @return this
 		 */
-		default <T> B bind(Property<T> property, InputPropertyRenderer<T> renderer) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(renderer, "Renderer must be not null");
-			return bind(property, (PropertyRenderer<Input<T>, T>) renderer);
+		default <T> B bind(Property<T> property, Function<Property<? extends T>, Input<T>> function) {
+			return bind(property, InputPropertyRenderer.create(function));
 		}
 
 		/**
@@ -460,7 +453,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		default <T> B bind(Property<T> property, Input<T> input) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(input, "Input must be not null");
-			return bind(property, (InputPropertyRenderer<T>) p -> input);
+			return bind(property, InputPropertyRenderer.create(p -> input));
 		}
 
 		/**
@@ -535,14 +528,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		}
 
 		/**
-		 * Set whether to ignore properties without a bound {@link Input}. Default is <code>false</code>, and an
-		 * exception is thrown if a property of the {@link PropertyInputGroup} cannot be bound to any input component.
-		 * @param ignoreMissingInputs Whether to ignore when the {@link Input} for a property is missing
-		 * @return this
-		 */
-		B ignoreMissingInputs(boolean ignoreMissingInputs);
-
-		/**
 		 * Add a {@link PostProcessor} to allow further {@link Input} configuration before the input is actually bound
 		 * to a property.
 		 * @param postProcessor the {@link PostProcessor} to add (not null)
@@ -556,13 +541,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
-
-		/**
-		 * Set the {@link ValueChangeMode} for all the {@link Input} components, if supported by each of them.
-		 * @param valueChangeMode The overall {@link ValueChangeMode} to set (not null)
-		 * @return this
-		 */
-		B valueChangeMode(ValueChangeMode valueChangeMode);
 
 		/**
 		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
@@ -586,20 +564,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B withValueChangeListener(Property<T> property, PropertyInputValueChangeListener<T> listener);
-
-		/**
-		 * Set the {@link ValueChangeMode} for the {@link Input} bound to given <code>property</code>, to control how
-		 * the {@link Input} triggers value change events.
-		 * <p>
-		 * The {@link ValueChangeMode} may not be supported by the {@link Input}, in this case this setting will be
-		 * ignored.
-		 * </p>
-		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param valueChangeMode The {@link ValueChangeMode} to set (not null)
-		 * @return this
-		 */
-		<T> B valueChangeMode(Property<T> property, ValueChangeMode valueChangeMode);
 
 		/**
 		 * Build the {@link PropertyInputGroup}.

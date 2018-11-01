@@ -71,7 +71,7 @@ import com.vaadin.flow.data.provider.DataProvider;
  * 
  * @since 5.2.0
  */
-public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabel, MayHaveTitle, MayHavePlaceholder {
+public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabel {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.
@@ -101,6 +101,25 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * Sets the focus for this input component, if supported by concrete component implementation.
 	 */
 	void focus();
+
+	/**
+	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.
+	 * @return If this component supports a title, return the {@link HasTitle} reference. An empty Optional is returned
+	 *         otherwise.
+	 */
+	default Optional<HasTitle> hasTitle() {
+		return Optional.empty();
+	}
+
+	/**
+	 * Checks whether this component supports a placeholder, which text can be handled using the {@link HasPlaceholder}
+	 * interface.
+	 * @return If this component supports a placeholder, return the {@link HasPlaceholder} interface} reference. An
+	 *         empty Optional is returned otherwise.
+	 */
+	default Optional<HasPlaceholder> hasPlaceholder() {
+		return Optional.empty();
+	}
 
 	/**
 	 * Checks whether the {@link Component} supports input validation, using the {@link HasValidation} interface.
@@ -475,6 +494,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	/**
 	 * A convenience interface with a fixed {@link Input} rendering type to use a {@link Input} {@link PropertyRenderer}
 	 * as a functional interface.
+	 * 
 	 * @param <T> Property type
 	 */
 	@FunctionalInterface
@@ -490,35 +510,14 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 			return (Class<? extends Input<T>>) (Class<?>) Input.class;
 		}
 
-		static <T> InputPropertyRenderer<T> create(Function<Property<T>, Input<T>> function) {
-			return property -> function.apply(property);
-		}
-
-	}
-
-	/**
-	 * A convenience interface to render a {@link Property} as a {@link Input} using a {@link HasValue} component.
-	 * @param <T> Property type
-	 */
-	@FunctionalInterface
-	public interface InputFieldPropertyRenderer<T, E extends HasValue.ValueChangeEvent<T>, F extends Component & HasValue<E, T>>
-			extends InputPropertyRenderer<T> {
-
 		/**
-		 * Render given <code>property</code> as consistent value type {@link HasValue} component to handle the property
-		 * value.
-		 * @param property Property to render
-		 * @return property {@link HasValue} component
+		 * Create a new {@link InputPropertyRenderer} using given function.
+		 * @param <T> Property type
+		 * @param function Function to use to provide the {@link Input} component
+		 * @return A new {@link InputPropertyRenderer}
 		 */
-		F renderField(Property<T> property);
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.core.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
-		 */
-		@Override
-		default Input<T> render(Property<T> property) {
-			return Input.from(renderField(property));
+		static <T> InputPropertyRenderer<T> create(Function<Property<? extends T>, Input<T>> function) {
+			return property -> function.apply(property);
 		}
 
 	}
