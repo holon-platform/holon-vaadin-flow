@@ -63,45 +63,22 @@ public interface ItemDataProvider<ITEM> extends ItemSetCounter, ItemSetLoader<IT
 	@SuppressWarnings("rawtypes")
 	static <P extends Property> ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target,
 			Iterable<P> properties) {
-		return create(datastore, target, asPropertySet(properties));
+		return create(datastore, target, properties, new QueryConfigurationProvider[0]);
 	}
 
 	/**
 	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
 	 * @param datastore Datastore to use (not null)
 	 * @param target Data target (not null)
-	 * @param propertySet Property set to load
-	 * @return the {@link ItemDataProvider} instance
-	 */
-	static ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
-		return new DatastoreItemDataProvider(datastore, target, propertySet);
-	}
-
-	/**
-	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
-	 * @param datastore Datastore to use (not null)
-	 * @param target Data target (not null)
-	 * @param properties Property set
+	 * @param properties Property set (not null)
 	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
 	 * @return the {@link ItemDataProvider} instance
 	 */
 	@SuppressWarnings("rawtypes")
 	static <P extends Property> ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target,
 			Iterable<P> properties, QueryConfigurationProvider... queryConfigurationProviders) {
-		return create(datastore, target, asPropertySet(properties), queryConfigurationProviders);
-	}
-
-	/**
-	 * Construct a {@link ItemDataProvider} using a {@link Datastore}.
-	 * @param datastore Datastore to use (not null)
-	 * @param target Data target (not null)
-	 * @param propertySet Property set to load
-	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
-	 * @return the {@link ItemDataProvider} instance
-	 */
-	static ItemDataProvider<PropertyBox> create(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
-			QueryConfigurationProvider... queryConfigurationProviders) {
-		DatastoreItemDataProvider provider = new DatastoreItemDataProvider(datastore, target, propertySet);
+		DatastoreItemDataProvider provider = new DatastoreItemDataProvider(datastore, target,
+				asPropertySet(properties));
 		if (queryConfigurationProviders != null) {
 			for (QueryConfigurationProvider queryConfigurationProvider : queryConfigurationProviders) {
 				provider.addQueryConfigurationProvider(queryConfigurationProvider);
