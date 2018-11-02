@@ -32,8 +32,7 @@ public interface PropertyValueComponentSource extends PropertyComponentSource, P
 	 * Gets all the {@link ValueComponent}s that have been bound to a property.
 	 * @return An {@link Iterable} on all property bound {@link ValueComponent}s
 	 */
-	@SuppressWarnings("rawtypes")
-	Iterable<ValueComponent> getValueComponents();
+	Iterable<ValueComponent<?>> getValueComponents();
 
 	/**
 	 * Get the {@link ValueComponent} bound to given <code>property</code>, if any.

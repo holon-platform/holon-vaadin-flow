@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -28,6 +26,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.PropertyBinding;
 import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
@@ -45,7 +44,7 @@ import com.vaadin.flow.component.Component;
  *
  * @since 5.2.0
  */
-public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
+public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewComponent<?>>
 		implements PropertyViewGroup, PropertyValueComponentSource {
 
 	private static final long serialVersionUID = -2110591918893531742L;
@@ -57,25 +56,16 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 			.create();
 
 	/**
-	 * Post-processors
-	 */
-	private final List<BiConsumer<Property<?>, ViewComponent<?>>> postProcessors = new LinkedList<>();
-
-	/**
 	 * Property components
 	 */
 	private final ViewComponentPropertyRegistry components = ViewComponentPropertyRegistry.create();
 
 	/**
-	 * Optional {@link PropertyRendererRegistry} to use
+	 * Constructor.
+	 * @param propertySet The property set (not null)
 	 */
-	private PropertyRendererRegistry propertyRendererRegistry;
-
-	/**
-	 * Constructor
-	 */
-	public DefaultPropertyViewGroup() {
-		super();
+	public DefaultPropertyViewGroup(PropertySet<?> propertySet) {
+		super(propertySet);
 	}
 
 	/*
@@ -100,9 +90,8 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getViewComponents()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<ViewComponent> getViewComponents() {
+	public Iterable<ViewComponent<?>> getViewComponents() {
 		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
 	}
 
@@ -129,9 +118,8 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponents()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<ValueComponent> getValueComponents() {
+	public Iterable<ValueComponent<?>> getValueComponents() {
 		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
 	}
 
@@ -154,20 +142,13 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent()));
 	}
 
-	/**
-	 * Get the specific {@link PropertyRendererRegistry} to use to render the components.
-	 * @return Optional property renderer registry
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup#getValue()
 	 */
-	public Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
-		return Optional.ofNullable(propertyRendererRegistry);
-	}
-
-	/**
-	 * Set the specific {@link PropertyRendererRegistry} to use to render the components.
-	 * @param propertyRendererRegistry the property renderer registry to set
-	 */
-	public void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
-		this.propertyRendererRegistry = propertyRendererRegistry;
+	@Override
+	public PropertyBox getValue() {
+		return getCurrentValue();
 	}
 
 	/*
@@ -175,17 +156,17 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#setValue(com.holonplatform.core.property.PropertyBox)
 	 */
 	@Override
-	public void setValue(PropertyBox propertyBox) {
-		final PropertyBox oldValue = this.value;
-		this.value = propertyBox;
-		if (propertyBox == null) {
+	public void setValue(PropertyBox value) {
+		final PropertyBox oldValue = getCurrentValue();
+		setCurrentValue(value);
+		if (value == null) {
 			// reset all values
 			components.stream().map(b -> b.getComponent()).forEach(c -> c.clear());
 		} else {
-			components.stream().forEach(b -> b.getComponent().setValue(getPropertyValue(propertyBox, b.getProperty())));
+			components.stream().forEach(b -> b.getComponent().setValue(getPropertyValue(value, b.getProperty())));
 		}
 		// fire value change
-		fireValueChange(oldValue, propertyBox);
+		fireValueChange(oldValue);
 	}
 
 	/**
@@ -206,15 +187,6 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 			return propertyBox.getValue(property);
 		}
 		return null;
-	}
-
-	/**
-	 * Register a {@link ViewComponent} {@link PostProcessor}.
-	 * @param postProcessor the post-processor to register (not null)
-	 */
-	protected void addPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor) {
-		ObjectUtils.argumentNotNull(postProcessor, "Post processor must be not null");
-		postProcessors.add(postProcessor);
 	}
 
 	/**
@@ -253,7 +225,7 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	protected void build() {
 		components.clear();
 		// render and bind components
-		properties.stream().filter(property -> !isPropertyHidden(property))
+		getPropertySet().stream().filter(property -> !isPropertyHidden(property))
 				.forEach(property -> renderAndBind(property));
 	}
 
@@ -270,7 +242,7 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 					.orElseThrow(() -> new NoSuitableRendererAvailableException(
 							"No renderer available to render the property [" + property + "] as a ViewComponent"));
 			// configure
-			postProcessors.forEach(postProcessor -> postProcessor.accept(property, component));
+			getPostProcessors().forEach(postProcessor -> postProcessor.accept(property, component));
 			// register
 			components.set(property, component);
 		}
@@ -301,9 +273,13 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 		}
 	}
 
-	// Builder
+	// Builders
 
 	static class InternalBuilder extends AbstractBuilder<DefaultPropertyViewGroup, InternalBuilder> {
+
+		public <P extends Property<?>> InternalBuilder(Iterable<P> properties) {
+			super(properties);
+		}
 
 		/*
 		 * (non-Javadoc)
@@ -329,6 +305,10 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	public static class DefaultBuilder extends AbstractBuilder<PropertyViewGroup, PropertyViewGroupBuilder>
 			implements PropertyViewGroupBuilder {
 
+		public <P extends Property<?>> DefaultBuilder(Iterable<P> properties) {
+			super(properties);
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.internal.components.DefaultPropertyViewGroup.AbstractBuilder#builder()
@@ -353,43 +333,20 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup
 	public static abstract class AbstractBuilder<G extends PropertyViewGroup, B extends Builder<G, B>>
 			implements Builder<G, B> {
 
-		protected final DefaultPropertyViewGroup instance = new DefaultPropertyViewGroup();
+		protected final DefaultPropertyViewGroup instance;
+
+		public <P extends Property<?>> AbstractBuilder(Iterable<P> properties) {
+			super();
+			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
+			this.instance = new DefaultPropertyViewGroup(
+					(properties instanceof PropertySet<?>) ? (PropertySet<?>) properties : PropertySet.of(properties));
+		}
 
 		/**
 		 * Actual builder
 		 * @return Builder
 		 */
 		protected abstract B builder();
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#properties(com.holonplatform.core.property
-		 * .Property[])
-		 */
-		@Override
-		public B properties(Property<?>... properties) {
-			if (properties != null) {
-				for (Property<?> property : properties) {
-					instance.addProperty(property);
-				}
-			}
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#properties(java.lang.Iterable)
-		 */
-		@SuppressWarnings("rawtypes")
-		@Override
-		public <P extends Property> B properties(Iterable<P> properties) {
-			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
-			for (P property : properties) {
-				instance.addProperty(property);
-			}
-			return builder();
-		}
 
 		/*
 		 * (non-Javadoc)

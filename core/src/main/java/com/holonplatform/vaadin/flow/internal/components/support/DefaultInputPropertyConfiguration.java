@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.Validator;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
@@ -42,7 +41,6 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	private boolean readOnly;
 	private DefaultValueProvider<T> defaultValueProvider;
 	private List<Validator<T>> validators = new LinkedList<>();
-	private Localizable requiredMessage;
 	private ValidationStatusHandler<T> validationStatusHandler;
 	private List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
 
@@ -125,26 +123,6 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	public void addValidator(Validator<T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		this.validators.add(validator);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getRequiredMessage()
-	 */
-	@Override
-	public Optional<Localizable> getRequiredMessage() {
-		return Optional.ofNullable(requiredMessage);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#setRequiredMessage(java.util
-	 * .Optional)
-	 */
-	@Override
-	public void setRequiredMessage(Localizable requiredMessage) {
-		this.requiredMessage = requiredMessage;
 	}
 
 	/*

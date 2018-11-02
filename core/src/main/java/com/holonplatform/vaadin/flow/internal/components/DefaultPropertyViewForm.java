@@ -135,9 +135,8 @@ public class DefaultPropertyViewForm<C extends Component> extends
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getProperties()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<Property> getProperties() {
+	public Iterable<Property<?>> getProperties() {
 		return getViewGroup().getProperties();
 	}
 
@@ -154,9 +153,8 @@ public class DefaultPropertyViewForm<C extends Component> extends
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Stream<Property> propertyStream() {
+	public Stream<Property<?>> propertyStream() {
 		return getViewGroup().propertyStream();
 	}
 
@@ -183,9 +181,8 @@ public class DefaultPropertyViewForm<C extends Component> extends
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getViewComponents()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<ViewComponent> getViewComponents() {
+	public Iterable<ViewComponent<?>> getViewComponents() {
 		return getViewGroup().getViewComponents();
 	}
 
@@ -221,15 +218,11 @@ public class DefaultPropertyViewForm<C extends Component> extends
 
 		private final DefaultPropertyViewGroup.InternalBuilder viewGroupBuilder;
 
-		/**
-		 * Constructor
-		 * @param content Form composition content
-		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public DefaultBuilder(C content) {
+		public <P extends Property<?>> DefaultBuilder(C content, Iterable<P> properties) {
 			super(content);
 			this.instance = new DefaultPropertyViewForm<>(content);
-			this.viewGroupBuilder = new DefaultPropertyViewGroup.InternalBuilder();
+			this.viewGroupBuilder = new DefaultPropertyViewGroup.InternalBuilder(properties);
 
 			// setup default composer
 			if (instance.getComposer() == null && content instanceof HasComponents) {
@@ -237,26 +230,8 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			}
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
-		 */
 		@Override
 		protected PropertyViewFormBuilder<C> getConfigurator() {
-			return this;
-		}
-
-		@Override
-		public PropertyViewFormBuilder<C> properties(Property<?>... properties) {
-			viewGroupBuilder.properties(properties);
-			return this;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public <P extends Property> PropertyViewFormBuilder<C> properties(Iterable<P> properties) {
-			viewGroupBuilder.properties(properties);
 			return this;
 		}
 
@@ -266,11 +241,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#usePropertyRendererRegistry(com.
-		 * holonplatform.core.property.PropertyRendererRegistry)
-		 */
 		@Override
 		public PropertyViewFormBuilder<C> usePropertyRendererRegistry(
 				PropertyRendererRegistry propertyRendererRegistry) {
@@ -278,11 +248,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#bind(com.holonplatform.core.property.
-		 * Property, com.holonplatform.core.property.PropertyRenderer)
-		 */
 		@Override
 		public <T> PropertyViewFormBuilder<C> bind(Property<T> property,
 				PropertyRenderer<ViewComponent<T>, T> renderer) {
@@ -353,10 +318,6 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#build()
-		 */
 		@Override
 		public PropertyViewForm build() {
 			instance.setViewGroup(viewGroupBuilder.withPostProcessor((property, component) -> {

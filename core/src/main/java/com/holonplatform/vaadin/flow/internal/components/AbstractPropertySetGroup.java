@@ -15,15 +15,20 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.PropertySetBound;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.shared.Registration;
 
@@ -32,45 +37,78 @@ import com.vaadin.flow.shared.Registration;
  *
  * @since 5.2.0
  */
-public abstract class AbstractPropertySetGroup implements PropertySetBound, ValueHolder<PropertyBox> {
+public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
+		implements PropertySetBound, ValueHolder<PropertyBox> {
 
 	private static final long serialVersionUID = 5966779573345769968L;
 
 	/**
 	 * Current value
 	 */
-	protected PropertyBox value;
+	private PropertyBox value;
 
 	/**
 	 * Property set
 	 */
-	@SuppressWarnings("rawtypes")
-	protected final List<Property> properties = new LinkedList<>();
+	private final PropertySet<?> propertySet;
 
 	/**
 	 * Value change listeners
 	 */
-	protected final List<ValueChangeListener<PropertyBox>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<PropertyBox>> valueChangeListeners = new LinkedList<>();
 
 	/**
-	 * Add a property to the property set
-	 * @param property Property to add
+	 * Optional {@link PropertyRendererRegistry} to use
 	 */
-	@SuppressWarnings("rawtypes")
-	protected void addProperty(Property property) {
-		if (property != null) {
-			properties.add(property);
-		}
+	private PropertyRendererRegistry propertyRendererRegistry;
+
+	/**
+	 * Post-processors
+	 */
+	private final List<BiConsumer<Property<?>, C>> postProcessors = new LinkedList<>();
+
+	/**
+	 * Constructor.
+	 * @param propertySet The property set (not null)
+	 */
+	public AbstractPropertySetGroup(PropertySet<?> propertySet) {
+		super();
+		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
+		this.propertySet = propertySet;
+	}
+
+	/**
+	 * Get the property set.
+	 * @return the property set
+	 */
+	protected PropertySet<?> getPropertySet() {
+		return propertySet;
+	}
+
+	/**
+	 * Get the current group value.
+	 * @return the value
+	 */
+	protected PropertyBox getCurrentValue() {
+		return value;
+	}
+
+	/**
+	 * Set the current group value.
+	 * @param value the value to set
+	 */
+	protected void setCurrentValue(PropertyBox value) {
+		this.value = value;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertySetBound#getProperties()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<Property> getProperties() {
-		return Collections.unmodifiableList(properties);
+	public Iterable<Property<?>> getProperties() {
+		List<Property<?>> properties = getPropertySet().stream().map(p -> (Property<?>) p).collect(Collectors.toList());
+		return properties;
 	}
 
 	/*
@@ -80,26 +118,16 @@ public abstract class AbstractPropertySetGroup implements PropertySetBound, Valu
 	@Override
 	public boolean hasProperty(Property<?> property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return properties.contains(property);
+		return getPropertySet().contains(property);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Stream<Property> propertyStream() {
-		return properties.stream();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValue()
-	 */
-	@Override
-	public PropertyBox getValue() {
-		return value;
+	public Stream<Property<?>> propertyStream() {
+		return getPropertySet().stream().map(p -> (Property<?>) p);
 	}
 
 	/*
@@ -121,6 +149,14 @@ public abstract class AbstractPropertySetGroup implements PropertySetBound, Valu
 		setValue(null);
 	}
 
+	/**
+	 * Get the {@link ValueChangeListener}s.
+	 * @return the value change listeners
+	 */
+	protected List<ValueChangeListener<PropertyBox>> getValueChangeListeners() {
+		return valueChangeListeners;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
@@ -134,14 +170,46 @@ public abstract class AbstractPropertySetGroup implements PropertySetBound, Valu
 	}
 
 	/**
-	 * Emits the value change event
+	 * Emits the value change events.
 	 * @param oldValue Old value
-	 * @param value the changed value
 	 */
-	protected void fireValueChange(PropertyBox oldValue, PropertyBox value) {
-		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value,
-				false);
+	protected void fireValueChange(PropertyBox oldValue) {
+		final ValueChangeEvent<PropertyBox> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue,
+				getCurrentValue(), false);
 		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
+	}
+
+	/**
+	 * Get the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * @return Optional property renderer registry
+	 */
+	protected Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
+		return Optional.ofNullable(propertyRendererRegistry);
+	}
+
+	/**
+	 * Set the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * @param propertyRendererRegistry the property renderer registry to set
+	 */
+	protected void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
+		this.propertyRendererRegistry = propertyRendererRegistry;
+	}
+
+	/**
+	 * Register a value component {@link PostProcessor}.
+	 * @param postProcessor the post-processor to register (not null)
+	 */
+	protected void addPostProcessor(BiConsumer<Property<?>, C> postProcessor) {
+		ObjectUtils.argumentNotNull(postProcessor, "Post processor must be not null");
+		postProcessors.add(postProcessor);
+	}
+
+	/**
+	 * Get the value component {@link PostProcessor}s.
+	 * @return the post processors
+	 */
+	protected List<BiConsumer<Property<?>, C>> getPostProcessors() {
+		return postProcessors;
 	}
 
 }

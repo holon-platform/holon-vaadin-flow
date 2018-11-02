@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.Validator;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
@@ -82,18 +81,6 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * @param validator property validator (not null)
 	 */
 	void addValidator(Validator<T> validator);
-
-	/**
-	 * Get the required validation message to use when property {@link #isRequired()}.
-	 * @return the required validation message
-	 */
-	Optional<Localizable> getRequiredMessage();
-
-	/**
-	 * Set the required validation message to use when property {@link #isRequired()}.
-	 * @param requiredMessage the required validation message to set
-	 */
-	void setRequiredMessage(Localizable requiredMessage);
 
 	/**
 	 * Get the {@link ValidationStatusHandler} to use.

@@ -21,14 +21,13 @@ import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.PropertyValueConverter;
-import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
 import com.holonplatform.vaadin.flow.internal.components.VaadinValidatorWrapper;
@@ -115,14 +114,14 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	 * <p>
 	 * Only the properties which belong to the group's property set are taken into account.
 	 * </p>
-	 * @param propertyBox the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all
-	 *        the {@link Input} components are cleared.
+	 * @param value the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all the
+	 *        {@link Input} components are cleared.
 	 * @param validate <code>true</code> to check the validity of the property bound {@link Input}s and of this
 	 *        {@link PropertyInputGroup}, throwing a {@link ValidationException} if the validation is not successful.
 	 * @throws ValidationException If <code>validate</code> is <code>true</code> and an {@link Input} value is not valid
 	 * @throws OverallValidationException If overall validation failed
 	 */
-	void setValue(PropertyBox propertyBox, boolean validate);
+	void setValue(PropertyBox value, boolean validate);
 
 	/**
 	 * Set the current property values using a {@link PropertyBox}, loading the values to the available property bound
@@ -133,12 +132,12 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	 * <p>
 	 * By default, no value validation is performed using this method.
 	 * </p>
-	 * @param propertyBox the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all
-	 *        the {@link Input} components are cleared.
+	 * @param value the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all the
+	 *        {@link Input} components are cleared.
 	 * @see #setValue(PropertyBox, boolean)
 	 */
 	@Override
-	void setValue(PropertyBox propertyBox);
+	void setValue(PropertyBox value);
 
 	/**
 	 * Set the read-only mode for all the group inputs.
@@ -152,12 +151,26 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	 */
 	void setEnabled(boolean enabled);
 
+	// Builders
+
 	/**
-	 * Get a {@link Builder} to create and setup a {@link PropertyInputGroup}.
-	 * @return {@link PropertyInputGroup} builder
+	 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
+	 * @param <P> Property type
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyInputGroupBuilder}
 	 */
-	static PropertyInputGroupBuilder builder() {
-		return new DefaultPropertyInputGroup.DefaultBuilder();
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyInputGroupBuilder builder(Iterable<P> properties) {
+		return new DefaultPropertyInputGroup.DefaultBuilder(properties);
+	}
+
+	/**
+	 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyInputGroupBuilder}
+	 */
+	static PropertyInputGroupBuilder builder(Property<?>... properties) {
+		return builder(PropertySet.of(properties));
 	}
 
 	// -------
@@ -195,24 +208,11 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 	public interface Builder<G extends PropertyInputGroup, B extends Builder<G, B>> {
 
 		/**
-		 * Add given properties to the {@link PropertyInputGroup} property set.
-		 * @param properties Properties to add
-		 * @return this
-		 */
-		B properties(Property<?>... properties);
-
-		/**
-		 * Add given properties to the {@link PropertyInputGroup} property set.
-		 * @param <P> Property type
-		 * @param properties Properties to add (not null)
-		 * @return this
-		 */
-		@SuppressWarnings("rawtypes")
-		<P extends Property> B properties(Iterable<P> properties);
-
-		/**
 		 * Set the given property as read-only. If a property is read-only, the {@link Input} bound to the property will
-		 * be setted as read-only too, and its value will never be written to a {@link PropertyBox} nor validated.
+		 * be setted as read-only too, and its value cannot be changed by the user.
+		 * <p>
+		 * Any validator bound to the given property will be ignored.
+		 * </p>
 		 * @param <T> Property type
 		 * @param property Property to set as read-only (not null)
 		 * @return this
@@ -227,43 +227,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B required(Property<T> property);
-
-		/**
-		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
-		 * be setted as required, and its validation will fail when empty.
-		 * @param <T> Property type
-		 * @param property Property to set as required (not null)
-		 * @param message The message to use to notify the required validation failure
-		 * @return this
-		 */
-		<T> B required(Property<T> property, Localizable message);
-
-		/**
-		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
-		 * be setted as required, and its validation will fail when empty.
-		 * @param <T> Property type
-		 * @param property Property to set as required (not null)
-		 * @param message The default message to use to notify the required validation failure
-		 * @param messageCode The message localization code
-		 * @param arguments Optional message translation arguments
-		 * @return this
-		 */
-		default <T> B required(Property<T> property, String message, String messageCode, Object... arguments) {
-			return required(property, Localizable.builder().message(message).messageCode(messageCode)
-					.messageArguments(arguments).build());
-		}
-
-		/**
-		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
-		 * be setted as required, and its validation will fail when empty.
-		 * @param <T> Property type
-		 * @param property Property to set as required (not null)
-		 * @param message The default message to use to notify the required validation failure
-		 * @return this
-		 */
-		default <T> B required(Property<T> property, String message) {
-			return required(property, Localizable.builder().message(message).build());
-		}
 
 		/**
 		 * Set the given property as hidden. If a property is hidden, the {@link Input} bound to the property will never
@@ -283,13 +246,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider);
-
-		/**
-		 * Exclude read-only properties (for example {@link VirtualProperty}s) from {@link Input} generation and
-		 * binding.
-		 * @return this
-		 */
-		B excludeReadOnlyProperties();
 
 		/**
 		 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.

@@ -30,8 +30,7 @@ public interface PropertySetBound {
 	 * Gets the set of {@link Property}s to which this object is bound.
 	 * @return An {@link Iterable} on the property set (never null)
 	 */
-	@SuppressWarnings("rawtypes")
-	Iterable<Property> getProperties();
+	Iterable<Property<?>> getProperties();
 
 	/**
 	 * Gets whether given <code>property</code> is part of the property set to which this object is bound.
@@ -45,7 +44,6 @@ public interface PropertySetBound {
 	 * Get a {@link Stream} of the properties to which this object is bound.
 	 * @return the property set {@link Stream}
 	 */
-	@SuppressWarnings("rawtypes")
-	Stream<Property> propertyStream();
+	Stream<Property<?>> propertyStream();
 
 }

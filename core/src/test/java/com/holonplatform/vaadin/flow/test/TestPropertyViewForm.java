@@ -59,7 +59,7 @@ public class TestPropertyViewForm {
 
 		final VerticalLayout layout = new VerticalLayout();
 
-		PropertyViewForm form = PropertyViewForm.builder(layout).properties(SET).build();
+		PropertyViewForm form = PropertyViewForm.builder(layout, SET).build();
 		assertNotNull(form);
 
 		assertEquals(layout, form.getComponent());
@@ -69,15 +69,15 @@ public class TestPropertyViewForm {
 
 		assertEquals(layout, layout2.getComponentAt(0));
 
-		form = PropertyViewForm.formLayout().properties(SET).build();
+		form = PropertyViewForm.formLayout(SET).build();
 		assertNotNull(form);
 		assertNotNull(form.getComponent());
 
-		form = PropertyViewForm.verticalLayout().properties(SET).build();
+		form = PropertyViewForm.verticalLayout(SET).build();
 		assertNotNull(form);
 		assertNotNull(form.getComponent());
 
-		form = PropertyViewForm.horizontalLayout().properties(SET).build();
+		form = PropertyViewForm.horizontalLayout(SET).build();
 		assertNotNull(form);
 		assertNotNull(form.getComponent());
 	}
@@ -85,7 +85,7 @@ public class TestPropertyViewForm {
 	@Test
 	public void testComponents() {
 
-		PropertyViewForm form = PropertyViewForm.formLayout().properties(SET).build();
+		PropertyViewForm form = PropertyViewForm.formLayout(SET).build();
 		assertNotNull(form);
 
 		assertTrue(form.hasProperty(ID));
@@ -103,13 +103,13 @@ public class TestPropertyViewForm {
 		final ViewComponent<String> vc1 = ViewComponent.create(NAME);
 		final ViewComponent<Long> vc2 = ViewComponent.create(ID);
 
-		form = PropertyViewForm.formLayout().properties(SET).bind(NAME, vc1).build();
+		form = PropertyViewForm.formLayout(SET).bind(NAME, vc1).build();
 		assertNotNull(form);
 
 		assertTrue(form.getViewComponent(NAME).isPresent());
 		assertEquals(vc1, form.getViewComponent(NAME).get());
 
-		form = PropertyViewForm.formLayout().properties(SET).bind(NAME, vc1).bind(ID, p -> vc2).build();
+		form = PropertyViewForm.formLayout(SET).bind(NAME, vc1).bind(ID, p -> vc2).build();
 		assertNotNull(form);
 
 		assertTrue(form.getViewComponent(NAME).isPresent());
@@ -117,7 +117,7 @@ public class TestPropertyViewForm {
 		assertTrue(form.getViewComponent(ID).isPresent());
 		assertEquals(vc2, form.getViewComponent(ID).get());
 
-		form = PropertyViewForm.formLayout().properties(SET).withPostProcessor((property, component) -> {
+		form = PropertyViewForm.formLayout(SET).withPostProcessor((property, component) -> {
 			if (ID.equals(property)) {
 				component.hasStyle().ifPresent(hs -> hs.addClassName("post-processed"));
 			}
@@ -129,7 +129,7 @@ public class TestPropertyViewForm {
 		assertTrue(ComponentTestUtils.getClassNames(form.getViewComponent(ID).get()).contains("post-processed"));
 		assertFalse(ComponentTestUtils.getClassNames(form.getViewComponent(NAME).get()).contains("post-processed"));
 
-		assertThrows(NoSuitableRendererAvailableException.class, () -> PropertyViewForm.formLayout().properties(SET)
+		assertThrows(NoSuitableRendererAvailableException.class, () -> PropertyViewForm.formLayout(SET)
 				.usePropertyRendererRegistry(PropertyRendererRegistry.create(false)).build());
 
 	}
@@ -137,7 +137,7 @@ public class TestPropertyViewForm {
 	@Test
 	public void testHiddenComponents() {
 
-		PropertyViewForm form = PropertyViewForm.formLayout().properties(SET).hidden(ID).build();
+		PropertyViewForm form = PropertyViewForm.formLayout(SET).hidden(ID).build();
 		assertNotNull(form);
 
 		assertTrue(form.hasProperty(ID));
@@ -154,7 +154,7 @@ public class TestPropertyViewForm {
 	@Test
 	public void testValueHolder() {
 
-		PropertyViewForm form = PropertyViewForm.formLayout().properties(SET).build();
+		PropertyViewForm form = PropertyViewForm.formLayout(SET).build();
 		assertNotNull(form);
 
 		assertTrue(form.isEmpty());
@@ -203,8 +203,7 @@ public class TestPropertyViewForm {
 
 		fired.set(0);
 
-		form = PropertyViewForm.formLayout().properties(SET).withValueChangeListener(e -> fired.incrementAndGet())
-				.build();
+		form = PropertyViewForm.formLayout(SET).withValueChangeListener(e -> fired.incrementAndGet()).build();
 		assertEquals(0, fired.get());
 
 		form.setValue(PropertyBox.builder(SET).set(ID, 7L).set(NAME, "test").build());
@@ -220,7 +219,7 @@ public class TestPropertyViewForm {
 
 		VerticalLayout layout = new VerticalLayout();
 
-		PropertyViewForm form = PropertyViewForm.builder(layout).properties(SET).build();
+		PropertyViewForm form = PropertyViewForm.builder(layout, SET).build();
 		assertNotNull(form);
 		assertEquals(0, layout.getComponentCount());
 
@@ -229,7 +228,7 @@ public class TestPropertyViewForm {
 
 		layout = new VerticalLayout();
 
-		form = PropertyViewForm.builder(layout).properties(SET).build();
+		form = PropertyViewForm.builder(layout, SET).build();
 		assertNotNull(form);
 		assertEquals(0, layout.getComponentCount());
 
@@ -238,7 +237,7 @@ public class TestPropertyViewForm {
 
 		layout = new VerticalLayout();
 
-		form = PropertyViewForm.builder(layout).properties(SET).composeOnAttach(false).build();
+		form = PropertyViewForm.builder(layout, SET).composeOnAttach(false).build();
 		assertNotNull(form);
 		assertEquals(0, layout.getComponentCount());
 
@@ -250,7 +249,7 @@ public class TestPropertyViewForm {
 
 		layout = new VerticalLayout();
 
-		form = PropertyViewForm.builder(layout).properties(SET).composer((content, source) -> {
+		form = PropertyViewForm.builder(layout, SET).composer((content, source) -> {
 			source.getValueComponents().forEach(c -> content.add(c.getComponent()));
 		}).initializer(content -> {
 			content.setAlignItems(Alignment.STRETCH);
@@ -262,7 +261,7 @@ public class TestPropertyViewForm {
 
 		layout = new VerticalLayout();
 
-		form = PropertyViewForm.builder(layout).properties(SET).composer((content, source) -> {
+		form = PropertyViewForm.builder(layout, SET).composer((content, source) -> {
 			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
 			source.getValueComponent(NAME).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
@@ -274,7 +273,7 @@ public class TestPropertyViewForm {
 
 		final ViewComponent<Long> vc1 = ViewComponent.create(ID);
 
-		form = PropertyViewForm.builder(layout).properties(SET).bind(ID, vc1).composer((content, source) -> {
+		form = PropertyViewForm.builder(layout, SET).bind(ID, vc1).composer((content, source) -> {
 			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
 
@@ -291,7 +290,7 @@ public class TestPropertyViewForm {
 	@Test
 	public void testPropertyCaptions() {
 
-		PropertyViewForm form = PropertyViewForm.formLayout().properties(SET).build();
+		PropertyViewForm form = PropertyViewForm.formLayout(SET).build();
 		assertNotNull(form);
 
 		assertTrue(form.getViewComponent(ID).isPresent());
@@ -301,27 +300,26 @@ public class TestPropertyViewForm {
 		assertEquals("Id", ComponentTestUtils.getLabel(form.getViewComponent(ID).get()));
 		assertEquals("Name", ComponentTestUtils.getLabel(form.getViewComponent(NAME).get()));
 
-		form = PropertyViewForm.formLayout().properties(SET).propertyCaption(NAME, "TheName").hidePropertyCaption(ID)
-				.build();
+		form = PropertyViewForm.formLayout(SET).propertyCaption(NAME, "TheName").hidePropertyCaption(ID).build();
 
 		assertEquals("", Optional.ofNullable(ComponentTestUtils.getLabel(form.getViewComponent(ID).get())).orElse(""));
 		assertEquals("TheName", ComponentTestUtils.getLabel(form.getViewComponent(NAME).get()));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET).build();
+			PropertyViewForm form2 = PropertyViewForm.formLayout(SET).build();
 			assertEquals("Id", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
 			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(NAME).get()));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET).propertyCaption(NAME, "MyName")
+			PropertyViewForm form2 = PropertyViewForm.formLayout(SET).propertyCaption(NAME, "MyName")
 					.propertyCaption(ID, "test", "test.code").build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
 			assertEquals("MyName", ComponentTestUtils.getLabel(form2.getViewComponent(NAME).get()));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			PropertyViewForm form2 = PropertyViewForm.formLayout().properties(SET)
+			PropertyViewForm form2 = PropertyViewForm.formLayout(SET)
 					.propertyCaption(ID, Localizable.builder().message("test").messageCode("test.code").build())
 					.build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(form2.getViewComponent(ID).get()));
@@ -333,25 +331,25 @@ public class TestPropertyViewForm {
 	@Test
 	public void testComponent() {
 
-		PropertyViewForm form = PropertyViewForm.formLayout().properties(SET).id("testid").build();
+		PropertyViewForm form = PropertyViewForm.formLayout(SET).id("testid").build();
 		assertTrue(form.getComponent().getId().isPresent());
 		assertEquals("testid", form.getComponent().getId().get());
 
-		form = PropertyViewForm.formLayout().properties(SET).build();
+		form = PropertyViewForm.formLayout(SET).build();
 		assertTrue(form.getComponent().isVisible());
 
-		form = PropertyViewForm.formLayout().properties(SET).visible(true).build();
+		form = PropertyViewForm.formLayout(SET).visible(true).build();
 		assertTrue(form.getComponent().isVisible());
 
-		form = PropertyViewForm.formLayout().properties(SET).visible(false).build();
+		form = PropertyViewForm.formLayout(SET).visible(false).build();
 		assertFalse(form.getComponent().isVisible());
 
-		form = PropertyViewForm.formLayout().properties(SET).hidden().build();
+		form = PropertyViewForm.formLayout(SET).hidden().build();
 		assertFalse(form.getComponent().isVisible());
 
 		final AtomicBoolean attached = new AtomicBoolean(false);
 
-		form = PropertyViewForm.formLayout().properties(SET).withAttachListener(e -> {
+		form = PropertyViewForm.formLayout(SET).withAttachListener(e -> {
 			attached.set(true);
 		}).build();
 
@@ -360,7 +358,7 @@ public class TestPropertyViewForm {
 
 		final AtomicBoolean detached = new AtomicBoolean(false);
 
-		form = PropertyViewForm.formLayout().properties(SET).withDetachListener(e -> {
+		form = PropertyViewForm.formLayout(SET).withDetachListener(e -> {
 			detached.set(true);
 		}).build();
 

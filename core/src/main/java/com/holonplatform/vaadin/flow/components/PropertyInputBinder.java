@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.Property.PropertyNotFoundException;
-import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
@@ -70,30 +70,25 @@ public interface PropertyInputBinder extends PropertySetBound {
 	<T> Stream<PropertyBinding<T, Input<T>>> stream();
 
 	/**
-	 * Refresh the value of all available {@link Input}s, using current values.
-	 */
-	default void refresh() {
-		refresh(false);
-	}
-
-	/**
-	 * Refresh the value of all available {@link Input}s, using current values.
-	 * @param readOnly <code>true</code> to refresh only the {@link Input}s bound to read-only properties,
-	 *        <code>false</code> to refresh all
-	 */
-	void refresh(boolean readOnly);
-
-	/**
-	 * Refresh the value of the {@link Input} bound to given <code>property</code>, if available, using currently
-	 * available values.
+	 * Refresh the value of all available {@link Input}s, using current value.
 	 * <p>
-	 * For read-only properties such as {@link VirtualProperty}s, this has the effect to recalculate the virtual value
-	 * according to the values currently set in all the binder inputs.
+	 * Each input value will be replaced by the value of the {@link Property} to which the input is bound, obtained from
+	 * the current {@link PropertyBox} value.
+	 * </p>
+	 */
+	void refresh();
+
+	/**
+	 * Refresh the value of the {@link Input} bound to given <code>property</code>, using current value.
+	 * <p>
+	 * The input value will be replaced by the value of the {@link Property} to which the input is bound, obtained from
+	 * the current {@link PropertyBox} value.
 	 * </p>
 	 * @param <T> Property type
-	 * @param property The property for which to refresh the bound {@link Input}
+	 * @param property The property for which to refresh the bound {@link Input} (not null)
+	 * @return <code>true</code> if an {@link Input} bound to given property is available, <code>false</code> otherwise
 	 */
-	<T> void refresh(Property<T> property);
+	<T> boolean refresh(Property<T> property);
 
 	// Value change listener
 

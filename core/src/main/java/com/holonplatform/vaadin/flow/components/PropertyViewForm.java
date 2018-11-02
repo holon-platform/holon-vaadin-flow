@@ -17,9 +17,9 @@ package com.holonplatform.vaadin.flow.components;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder;
@@ -32,49 +32,142 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A {@link PropertyViewGroup} component to display the property {@link ViewComponent}s on a layout, using the
- * {@link ComposableComponent} composition strategy.
+ * {@link Composable} composition strategy.
  * <p>
- * A {@link Composer} is used to draw the form UI.
+ * A {@link Composer} can be configured to control how and where each {@link ViewComponent} is displayed in UI.
  * </p>
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface PropertyViewForm extends Composable, ValueComponent<PropertyBox>, PropertyViewGroup {
 
 	/**
-	 * Get a builder to create a {@link PropertyViewForm}.
+	 * Get a builder to create a {@link PropertyViewForm} using given property set.
 	 * @param <C> Form content element type
-	 * @param content Form content, where {@link ViewComponent}s will be composed by the form {@link Composer} (not
-	 *        null)
-	 * @return {@link PropertyViewForm} builder
+	 * @param <P> Property type
+	 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
+	 *        {@link Composer} (not null)
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyViewFormBuilder}
 	 */
-	static <C extends Component> PropertyViewFormBuilder<C> builder(C content) {
-		ObjectUtils.argumentNotNull(content, "Form content must be not null");
-		return new DefaultPropertyViewForm.DefaultBuilder<>(content);
+	@SuppressWarnings("rawtypes")
+	static <C extends Component, P extends Property> PropertyViewFormBuilder<C> builder(C content,
+			Iterable<P> properties) {
+		return new DefaultPropertyViewForm.DefaultBuilder<>(content, properties);
 	}
 
 	/**
-	 * Get a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as content layout.
-	 * @return A {@link PropertyViewForm} builder
+	 * Get a builder to create a {@link PropertyViewForm} using given property set.
+	 * @param <C> Form content element type
+	 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
+	 *        {@link Composer} (not null)
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyViewFormBuilder}
 	 */
-	static PropertyViewFormBuilder<FormLayout> formLayout() {
-		return builder(FormLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
+	static <C extends Component> PropertyViewFormBuilder<C> builder(C content, Property<?>... properties) {
+		return new DefaultPropertyViewForm.DefaultBuilder<>(content, PropertySet.of(properties));
 	}
 
 	/**
-	 * Get a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as content layout.
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as content
+	 * layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param <P> Property type
+	 * @param properties The property set (not null)
 	 * @return A {@link PropertyViewForm} builder
 	 */
-	static PropertyViewFormBuilder<VerticalLayout> verticalLayout() {
-		return builder(VerticalLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyViewFormBuilder<FormLayout> formLayout(Iterable<P> properties) {
+		return builder(FormLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
 	}
 
 	/**
-	 * Get a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as content layout.
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as content
+	 * layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param properties The property set (not null)
 	 * @return A {@link PropertyViewForm} builder
 	 */
-	static PropertyViewFormBuilder<HorizontalLayout> horizontalLayout() {
-		return builder(HorizontalLayoutBuilder.create().build()).composer(Composable.componentContainerComposer());
+	static PropertyViewFormBuilder<FormLayout> formLayout(Property<?>... properties) {
+		return builder(FormLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
+	 * content layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param <P> Property type
+	 * @param properties The property set (not null)
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyViewFormBuilder<VerticalLayout> verticalLayout(Iterable<P> properties) {
+		return builder(VerticalLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
+	 * content layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param properties The property set (not null)
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	static PropertyViewFormBuilder<VerticalLayout> verticalLayout(Property<?>... properties) {
+		return builder(VerticalLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
+	 * content layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param <P> Property type
+	 * @param properties The property set (not null)
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyViewFormBuilder<HorizontalLayout> horizontalLayout(Iterable<P> properties) {
+		return builder(HorizontalLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
+	}
+
+	/**
+	 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
+	 * content layout.
+	 * <p>
+	 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+	 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to provide
+	 * a custom components composer.
+	 * </p>
+	 * @param properties The property set (not null)
+	 * @return A {@link PropertyViewForm} builder
+	 */
+	static PropertyViewFormBuilder<HorizontalLayout> horizontalLayout(Property<?>... properties) {
+		return builder(HorizontalLayoutBuilder.create().build(), properties)
+				.composer(Composable.componentContainerComposer());
 	}
 
 	/**

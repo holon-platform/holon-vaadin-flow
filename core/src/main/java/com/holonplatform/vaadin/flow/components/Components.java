@@ -24,7 +24,10 @@ import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.Composable.Composer;
+import com.holonplatform.vaadin.flow.components.PropertyInputForm.PropertyInputFormBuilder;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
@@ -58,7 +61,6 @@ import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentCo
 import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HtmlContainer;
@@ -90,7 +92,6 @@ import com.vaadin.flow.data.provider.DataProvider;
 public interface Components {
 
 	// Configurators
-	// TODO APICHG: removed GridLayout, CssLayout and AbsoluteLayout configurators
 
 	/**
 	 * Get a {@link LabelConfigurator} to configure given <em>label</em> type component.
@@ -143,7 +144,6 @@ public interface Components {
 	}
 
 	// Builders
-	// TODO APICHG: removed GridLayout, CssLayout and AbsoluteLayout configurators
 
 	/**
 	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div} tag.
@@ -240,7 +240,6 @@ public interface Components {
 	 * Gets a builder to create {@link NativeButton}s.
 	 * @return A new {@link NativeButtonBuilder}
 	 */
-	// TODO APICHG: removed button(boolean nativeMode)
 	static NativeButtonBuilder nativeButton() {
 		return NativeButtonBuilder.create();
 	}
@@ -269,12 +268,51 @@ public interface Components {
 		return FormLayoutBuilder.create();
 	}
 
+	// TODO tabs, dialogs
+
+	// /**
+	// * Gets a builder to create a {@link TabSheet}.
+	// * @return TabSheet builder
+	// */
+	// static TabsBuilder<TabSheet> tabSheet() {
+	// return new TabSheetBuilder();
+	// }
+	//
+	// /**
+	// * Gets a builder to create an {@link Accordion}.
+	// * @return Accordion builder
+	// */
+	// static TabsBuilder<Accordion> accordion() {
+	// return new AccordionBuilder();
+	// }
+	//
+	// /**
+	// * Gets a builder to create and open a {@link Dialog} window. The dialog will present by default a single
+	// * <em>ok</em> button.
+	// * @return DialogBuilder
+	// */
+	// static DialogBuilder dialog() {
+	// return Dialog.builder();
+	// }
+	//
+	// /**
+	// * Gets a builder to create and open a question {@link Dialog} window. The dialog will present by default a
+	// * <em>yes</em> and a <em>no</em> button. Use
+	// * {@link QuestionDialogBuilder#callback(com.holonplatform.vaadin.components.Dialog.QuestionCallback)} to handle
+	// the
+	// * user selected answer.
+	// * @return QuestionDialogBuilder
+	// */
+	// static QuestionDialogBuilder questionDialog() {
+	// return Dialog.question();
+	// }
+	//
+
 	// View components
 
 	/**
 	 * {@link ViewComponent} and {@link PropertyViewGroup} builders provider.
 	 */
-	// TODO APICHG: removed formGrid - GridLayout non available in flow
 	static interface view {
 
 		/**
@@ -331,130 +369,154 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create and setup a {@link PropertyViewGroup}, which provides functionalities to build and
-		 * manage a group of {@link ViewComponent}s bound to a {@link Property} set.
-		 * @return {@link PropertyViewGroup} builder
+		 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyViewGroupBuilder}
 		 */
-		static PropertyViewGroupBuilder propertyGroup() {
-			return new DefaultPropertyViewGroup.DefaultBuilder();
+		static <P extends Property<?>> PropertyViewGroupBuilder propertyGroup(Iterable<P> properties) {
+			return PropertyViewGroup.builder(properties);
 		}
 
 		/**
-		 * Gets a builder to create a {@link PropertyViewForm}.
-		 * @param <C> Content type
-		 * @param content Form content, where view components will be composed by the form {@link Composer} (not null)
-		 * @return {@link PropertyViewForm} builder
+		 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyViewGroupBuilder}
 		 */
-		static <C extends Component> PropertyViewFormBuilder<C> form(C content) {
-			return PropertyViewForm.builder(content);
+		static PropertyViewGroupBuilder propertyGroup(Property<?>... properties) {
+			return PropertyViewGroup.builder(properties);
 		}
 
 		/**
-		 * Gets a builder to create a {@link PropertyViewForm} using a {@link FormLayout} as layout component and a
-		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		 * @return {@link PropertyViewForm} builder
+		 * Get a builder to create a {@link PropertyViewForm} using given property set.
+		 * @param <C> Form content element type
+		 * @param <P> Property type
+		 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
+		 *        {@link Composer} (not null)
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyViewFormBuilder}
 		 */
-		static PropertyViewFormBuilder<FormLayout> form() {
-			return PropertyViewForm.formLayout();
+		@SuppressWarnings("rawtypes")
+		static <C extends Component, P extends Property> PropertyViewFormBuilder<C> form(C content,
+				Iterable<P> properties) {
+			return PropertyViewForm.builder(content, properties);
 		}
 
 		/**
-		 * Gets a builder to create a {@link PropertyViewForm} using a {@link VerticalLayout} as layout component and a
-		 * default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		 * @return {@link PropertyViewForm} builder
+		 * Get a builder to create a {@link PropertyViewForm} using given property set.
+		 * @param <C> Form content element type
+		 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
+		 *        {@link Composer} (not null)
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyViewFormBuilder}
 		 */
-		static PropertyViewFormBuilder<VerticalLayout> formVertical() {
-			return PropertyViewForm.verticalLayout();
+		static <C extends Component> PropertyViewFormBuilder<C> form(C content, Property<?>... properties) {
+			return PropertyViewForm.builder(content, properties);
 		}
 
 		/**
-		 * Gets a builder to create a {@link PropertyViewForm} using a {@link HorizontalLayout} as layout component and
-		 * a default {@link PropertyViewForm#componentContainerComposer()} to compose the view components on layout.
-		 * @return {@link PropertyViewForm} builder
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
 		 */
-		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal() {
-			return PropertyViewForm.horizontalLayout();
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyViewFormBuilder<FormLayout> form(Iterable<P> properties) {
+			return PropertyViewForm.formLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<FormLayout> form(Property<?>... properties) {
+			return PropertyViewForm.formLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyViewFormBuilder<VerticalLayout> formVertical(Iterable<P> properties) {
+			return PropertyViewForm.verticalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<VerticalLayout> formVertical(Property<?>... properties) {
+			return PropertyViewForm.verticalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyViewFormBuilder<HorizontalLayout> formHorizontal(Iterable<P> properties) {
+			return PropertyViewForm.horizontalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyViewForm} builder
+		 */
+		static PropertyViewFormBuilder<HorizontalLayout> formHorizontal(Property<?>... properties) {
+			return PropertyViewForm.horizontalLayout(properties);
 		}
 
 	}
 
-	//
-	// /**
-	// * Get a {@link InputConfigurator} to configure given field.
-	// * @param <T> Field type
-	// * @param field Field to configure (not null)
-	// * @return BaseFieldConfigurator
-	// */
-	// static <T> BaseFieldConfigurator<T> configure(AbstractField<T> field) {
-	// return new DefaultFieldConfigurator<>(field);
-	// }
-	//
-
-	//
-	// // Builders
-	//
-	// /**
-	// * Build a filler component, i.e. a {@link Label} with undefined size and the HTML entity <code>&nbsp;</code> as
-	// * content, which can be used with full expand ratio as a space filler in layouts.
-	// * @return Filler
-	// */
-	// static Component filler() {
-	// return new Filler();
-	// }
-	//
-
-	//
-	// /**
-	// * Gets a builder to create {@link Panel}s.
-	// * @return Panel builder
-	// */
-	// static PanelBuilder panel() {
-	// return new DefaultPanelBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create a {@link TabSheet}.
-	// * @return TabSheet builder
-	// */
-	// static TabsBuilder<TabSheet> tabSheet() {
-	// return new TabSheetBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create an {@link Accordion}.
-	// * @return Accordion builder
-	// */
-	// static TabsBuilder<Accordion> accordion() {
-	// return new AccordionBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create and open a {@link Dialog} window. The dialog will present by default a single
-	// * <em>ok</em> button.
-	// * @return DialogBuilder
-	// */
-	// static DialogBuilder dialog() {
-	// return Dialog.builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create and open a question {@link Dialog} window. The dialog will present by default a
-	// * <em>yes</em> and a <em>no</em> button. Use
-	// * {@link QuestionDialogBuilder#callback(com.holonplatform.vaadin.components.Dialog.QuestionCallback)} to handle
-	// the
-	// * user selected answer.
-	// * @return QuestionDialogBuilder
-	// */
-	// static QuestionDialogBuilder questionDialog() {
-	// return Dialog.question();
-	// }
-	//
 	// Inputs
 
 	/**
 	 * {@link Input}, {@link PropertyInputGroup} and {@link PropertyInputForm} builders provider.
 	 */
-	// TODO APICHG: removed string(boolean area) for stringArea()
 	static interface input {
 
 		/**
@@ -705,391 +767,211 @@ public interface Components {
 			return Input.enumOptionSelect(enumType);
 		}
 
-		//
-		// /**
-		// * Gets a builder to create {@link Date} type {@link Input}s.
-		// * @param resolution field Resolution
-		// * @param inline <code>true</code> to render the input component using an inline calendar
-		// * @return Input builder
-		// */
-		// static DateInputBuilder date(Resolution resolution, boolean inline) {
-		// ObjectUtils.argumentNotNull(resolution, "Resolution must be not null");
-		// return resolution.isTime() ? new DateTimeField.Builder(resolution, inline)
-		// : new DateField.Builder(resolution, inline);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link Date} type {@link Input}s.
-		// * @param resolution field Resolution
-		// * @return Input builder
-		// */
-		// static DateInputBuilder date(Resolution resolution) {
-		// return date(resolution, false);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link Date} type {@link Input}s.
-		// * @param inline <code>true</code> to render the input component using an inline calendar
-		// * @return Input builder
-		// */
-		// static DateInputBuilder date(boolean inline) {
-		// return date(Resolution.DAY, inline);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link LocalDate} type {@link Input}s.
-		// * @param inline <code>true</code> to render the input component using an inline calendar
-		// * @return Input builder
-		// */
-		// static TemporalWithoutTimeFieldBuilder<LocalDate> localDate(boolean inline) {
-		// return new LocalDateField.Builder(inline);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
-		// * @param inline <code>true</code> to render the input component using an inline calendar
-		// * @return Input builder
-		// */
-		// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime(boolean inline) {
-		// return new LocalDateTimeField.Builder(inline);
-		// }
-		//
-		// /**
-		// * Gets a builder to create {@link LocalDateTime} type {@link Input}s.
-		// * @return Input builder
-		// */
-		// static TemporalWithTimeFieldBuilder<LocalDateTime> localDateTime() {
-		// return localDateTime(false);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @param renderingMode Rendering mode
-		// * @return Input builder
-		// */
-		// static <T> GenericSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type,
-		// RenderingMode renderingMode) {
-		// return SingleSelect.builder(type, renderingMode);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#SELECT}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @return Input builder
-		// */
-		// static <T> SelectModeSingleSelectInputBuilder<T> singleSelect(Class<? extends T> type) {
-		// return SingleSelect.select(type);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#NATIVE_SELECT}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @return Input builder
-		// */
-		// static <T> NativeModeSingleSelectInputBuilder<T> singleNativeSelect(Class<? extends T> type) {
-		// return SingleSelect.nativeSelect(type);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input} using {@link RenderingMode#OPTIONS}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @return Input builder
-		// */
-		// static <T> OptionsModeSingleSelectInputBuilder<T> singleOptionSelect(Class<? extends T> type) {
-		// return SingleSelect.options(type);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @param renderingMode Rendering mode
-		// * @return {@link SingleSelect} builder
-		// */
-		// static <T> GenericSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty,
-		// RenderingMode renderingMode) {
-		// return SingleSelect.property(selectProperty, renderingMode);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties using {@link RenderingMode#SELECT}.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @return {@link SingleSelect} builder
-		// */
-		// static <T> SelectModeSinglePropertySelectInputBuilder<T> singleSelect(Property<T> selectProperty) {
-		// return SingleSelect.select(selectProperty);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @return {@link SingleSelect} builder
-		// */
-		// static <T> NativeModeSinglePropertySelectInputBuilder<T> singleNativeSelect(Property<T> selectProperty) {
-		// return SingleSelect.nativeSelect(selectProperty);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @return {@link SingleSelect} builder
-		// */
-		// static <T> OptionsModeSinglePropertySelectInputBuilder<T> singleOptionSelect(Property<T> selectProperty) {
-		// return SingleSelect.options(selectProperty);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a multiple selection {@link Input}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @param renderingMode Rendering mode
-		// * @return Input builder
-		// */
-		// static <T> GenericMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type, RenderingMode
-		// renderingMode) {
-		// return MultiSelect.builder(type, renderingMode);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a multiple selection {@link Input} using default {@link RenderingMode#OPTIONS}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @return Input builder
-		// */
-		// static <T> OptionsModeMultiSelectInputBuilder<T> multiSelect(Class<? extends T> type) {
-		// return MultiSelect.options(type);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a multiple selection {@link Input} using {@link RenderingMode#SELECT}.
-		// * @param <T> Selection value type
-		// * @param type Selection value type
-		// * @return Input builder
-		// */
-		// static <T> SelectModeMultiSelectInputBuilder<T> multiSelectList(Class<? extends T> type) {
-		// return MultiSelect.list(type);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @param renderingMode Rendering mode
-		// * @return {@link MultiSelect} builder
-		// */
-		// static <T> GenericMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty,
-		// RenderingMode renderingMode) {
-		// return MultiSelect.property(selectProperty, renderingMode);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties using default {@link RenderingMode#OPTIONS}.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @return {@link MultiSelect} builder
-		// */
-		// static <T> OptionsModeMultiPropertySelectInputBuilder<T> multiSelect(Property<T> selectProperty) {
-		// return MultiSelect.options(selectProperty);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link MultiSelect} with a {@link PropertyBox} items data source with
-		// * {@link Property} as item properties using default {@link RenderingMode#SELECT}.
-		// * @param <T> Selection value type
-		// * @param selectProperty Property to select (not null)
-		// * @return {@link MultiSelect} builder
-		// */
-		// static <T> SelectModeMultiPropertySelectInputBuilder<T> multiSelectList(Property<T> selectProperty) {
-		// return MultiSelect.list(selectProperty);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source,
-		// using
-		// * all enum constants as selection items.
-		// * @param <E> Enum value type
-		// * @param type Enum value type
-		// * @param renderingMode Rendering mode
-		// * @return Input builder
-		// */
-		// static <E extends Enum<E>> GenericSingleSelectInputBuilder<E> enumSingle(Class<E> type,
-		// RenderingMode renderingMode) {
-		// return singleSelect(type, renderingMode).items(type.getEnumConstants());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a single selection {@link Input} with given {@link Enum} class as data source,
-		// using
-		// * all enum constants as selection items and default {@link RenderingMode#SELECT} rendering mode.
-		// * @param <E> Enum value type
-		// * @param type Enum value type
-		// * @return Input builder
-		// */
-		// static <E extends Enum<E>> SelectModeSingleSelectInputBuilder<E> enumSingle(Class<E> type) {
-		// return singleSelect(type).items(type.getEnumConstants());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
-		// * using all enum constants as selection items.
-		// * @param <E> Enum value type
-		// * @param type Enum value type
-		// * @param renderingMode Rendering mode
-		// * @return Input builder
-		// */
-		// static <E extends Enum<E>> GenericMultiSelectInputBuilder<E> enumMulti(Class<E> type,
-		// RenderingMode renderingMode) {
-		// return multiSelect(type, renderingMode).items(type.getEnumConstants());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a multiple selection {@link Input} with given {@link Enum} class as data source,
-		// * using all enum constants as selection items and default {@link RenderingMode#OPTIONS} rendering mode.
-		// * @param <E> Enum value type
-		// * @param type Enum value type
-		// * @return Input builder
-		// */
-		// static <E extends Enum<E>> OptionsModeMultiSelectInputBuilder<E> enumMulti(Class<E> type) {
-		// return multiSelect(type).items(type.getEnumConstants());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputGroup}.
-		// * @return {@link PropertyInputGroup} builder
-		// */
-		// static PropertyInputGroupBuilder propertyGroup() {
-		// return PropertyInputGroup.builder();
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputForm}.
-		// * @param <C> Content type
-		// * @param content Form content, where fields will be composed by the form {@link Composer} (not null)
-		// * @return {@link PropertyInputForm} builder
-		// */
-		// static <C extends Component> PropertyInputFormBuilder<C> form(C content) {
-		// return PropertyInputForm.builder(content);
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputForm} using a {@link FormLayout} as layout component and a
-		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-		// * @return {@link PropertyInputForm} builder
-		// */
-		// static PropertyInputFormBuilder<FormLayout> form() {
-		// return PropertyInputForm.builder(formLayout().fullWidth().spacing().build())
-		// .composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and
-		// a
-		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-		// * @return {@link PropertyInputForm} builder
-		// */
-		// static PropertyInputFormBuilder<VerticalLayout> formVertical() {
-		// return PropertyInputForm.builder(vl().fullWidth().build())
-		// .composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputForm} using a {@link HorizontalLayout} as layout component
-		// and
-		// * a default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-		// * @return {@link PropertyInputForm} builder
-		// */
-		// static PropertyInputFormBuilder<HorizontalLayout> formHorizontal() {
-		// return PropertyInputForm.builder(hl().build()).composer(ComposableComponent.componentContainerComposer());
-		// }
-		//
-		// /**
-		// * Gets a builder to create a {@link PropertyInputForm} using a {@link VerticalLayout} as layout component and
-		// a
-		// * default {@link PropertyInputForm#componentContainerComposer()} to compose the fields on layout.
-		// * @return {@link PropertyInputForm} builder
-		// */
-		// static PropertyInputFormBuilder<GridLayout> formGrid() {
-		// return PropertyInputForm.builder(gridLayout().fullWidth().build())
-		// .composer(ComposableComponent.componentContainerComposer());
-		// }
+		/**
+		 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyInputGroupBuilder}
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyInputGroupBuilder propertyGroup(Iterable<P> properties) {
+			return PropertyInputGroup.builder(properties);
+		}
+
+		/**
+		 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyInputGroupBuilder}
+		 */
+		static PropertyInputGroupBuilder propertyGroup(Property<?>... properties) {
+			return PropertyInputGroup.builder(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set.
+		 * @param <C> Form content element type
+		 * @param <P> Property type
+		 * @param content The form content, where the {@link Input}s will be composed using the configured
+		 *        {@link Composer} (not null)
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyInputFormBuilder}
+		 */
+		@SuppressWarnings("rawtypes")
+		static <C extends Component, P extends Property> PropertyInputFormBuilder<C> form(C content,
+				Iterable<P> properties) {
+			return PropertyInputForm.builder(content, properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set.
+		 * @param <C> Form content element type
+		 * @param content The form content, where the {@link Input}s will be composed using the configured
+		 *        {@link Composer} (not null)
+		 * @param properties The property set (not null)
+		 * @return A new {@link PropertyInputFormBuilder}
+		 */
+		static <C extends Component> PropertyInputFormBuilder<C> form(C content, Property<?>... properties) {
+			return PropertyInputForm.builder(content, PropertySet.of(properties));
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link FormLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyInputFormBuilder<FormLayout> form(Iterable<P> properties) {
+			return PropertyInputForm.formLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link FormLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<FormLayout> form(Property<?>... properties) {
+			return PropertyInputForm.formLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link VerticalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyInputFormBuilder<VerticalLayout> formVertical(Iterable<P> properties) {
+			return PropertyInputForm.verticalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link VerticalLayout} as
+		 * content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<VerticalLayout> formVertical(Property<?>... properties) {
+			return PropertyInputForm.verticalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link HorizontalLayout}
+		 * as content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param <P> Property type
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyInputFormBuilder<HorizontalLayout> formHorizontal(Iterable<P> properties) {
+			return PropertyInputForm.horizontalLayout(properties);
+		}
+
+		/**
+		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link HorizontalLayout}
+		 * as content layout.
+		 * <p>
+		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
+		 * provide a custom components composer.
+		 * </p>
+		 * @param properties The property set (not null)
+		 * @return A {@link PropertyInputForm} builder
+		 */
+		static PropertyInputFormBuilder<HorizontalLayout> formHorizontal(Property<?>... properties) {
+			return PropertyInputForm.horizontalLayout(properties);
+		}
 
 	}
 
-	//
-	// // Item listings
-	//
-	// /**
-	// * {@link ItemListing} builders provider.
-	// */
-	// static interface listing {
-	//
-	// /**
-	// * Builder to create an {@link ItemListing} instance using a {@link Grid} as backing component.
-	// * @param <T> Item data type
-	// * @param itemType Item bean type
-	// * @return Grid {@link ItemListing} builder
-	// */
-	// static <T> BeanListingBuilder<T> items(Class<T> itemType) {
-	// return BeanListing.builder(itemType);
-	// }
-	//
-	// /**
-	// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-	// * @param <P> Actual property type
-	// * @param properties The property set to use for the listing
-	// * @return Grid {@link PropertyListing} builder
-	// */
-	// @SafeVarargs
-	// static <P extends Property<?>> GridPropertyListingBuilder properties(P... properties) {
-	// return properties(PropertySet.of(properties));
-	// }
-	//
-	// /**
-	// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-	// * @param <P> Actual property type
-	// * @param properties The property set to use for the listing
-	// * @return Grid {@link PropertyListing} builder
-	// */
-	// static <P extends Property<?>> GridPropertyListingBuilder properties(Iterable<P> properties) {
-	// return PropertyListing.builder(properties);
-	// }
-	//
-	// /**
-	// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-	// * @param <P> Actual property type
-	// * @param properties The property set to use for the listing (not null)
-	// * @param additionalProperties Additional properties to declare
-	// * @return Grid {@link PropertyListing} builder
-	// */
-	// @SafeVarargs
-	// @SuppressWarnings("rawtypes")
-	// static <P extends Property> GridPropertyListingBuilder properties(PropertySet<P> properties,
-	// P... additionalProperties) {
-	// ObjectUtils.argumentNotNull(properties, "Properties must be not null");
-	// if (additionalProperties != null && additionalProperties.length > 0) {
-	// PropertySet.Builder<Property<?>> builder = PropertySet.builder().add(properties);
-	// for (P property : additionalProperties) {
-	// builder.add(property);
-	// }
-	// return PropertyListing.builder(builder.build());
-	// }
-	// return PropertyListing.builder(properties);
-	// }
-	//
-	// }
+	// Item listings TODO
+
+	/**
+	 * {@link ItemListing} builders provider.
+	 */
+	static interface listing {
+
+		// /**
+		// * Builder to create an {@link ItemListing} instance using a {@link Grid} as backing component.
+		// * @param <T> Item data type
+		// * @param itemType Item bean type
+		// * @return Grid {@link ItemListing} builder
+		// */
+		// static <T> BeanListingBuilder<T> items(Class<T> itemType) {
+		// return BeanListing.builder(itemType);
+		// }
+		//
+		// /**
+		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
+		// * @param <P> Actual property type
+		// * @param properties The property set to use for the listing
+		// * @return Grid {@link PropertyListing} builder
+		// */
+		// @SafeVarargs
+		// static <P extends Property<?>> GridPropertyListingBuilder properties(P... properties) {
+		// return properties(PropertySet.of(properties));
+		// }
+		//
+		// /**
+		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
+		// * @param <P> Actual property type
+		// * @param properties The property set to use for the listing
+		// * @return Grid {@link PropertyListing} builder
+		// */
+		// static <P extends Property<?>> GridPropertyListingBuilder properties(Iterable<P> properties) {
+		// return PropertyListing.builder(properties);
+		// }
+		//
+		// /**
+		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
+		// * @param <P> Actual property type
+		// * @param properties The property set to use for the listing (not null)
+		// * @param additionalProperties Additional properties to declare
+		// * @return Grid {@link PropertyListing} builder
+		// */
+		// @SafeVarargs
+		// @SuppressWarnings("rawtypes")
+		// static <P extends Property> GridPropertyListingBuilder properties(PropertySet<P> properties,
+		// P... additionalProperties) {
+		// ObjectUtils.argumentNotNull(properties, "Properties must be not null");
+		// if (additionalProperties != null && additionalProperties.length > 0) {
+		// PropertySet.Builder<Property<?>> builder = PropertySet.builder().add(properties);
+		// for (P property : additionalProperties) {
+		// builder.add(property);
+		// }
+		// return PropertyListing.builder(builder.build());
+		// }
+		// return PropertyListing.builder(properties);
+		// }
+
+	}
 
 }

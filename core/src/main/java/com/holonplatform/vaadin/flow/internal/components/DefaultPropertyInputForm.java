@@ -136,11 +136,11 @@ public class DefaultPropertyInputForm<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
 	 */
 	@Override
-	public void refresh(boolean readOnly) {
-		getInputGroup().refresh(readOnly);
+	public void refresh() {
+		getInputGroup().refresh();
 	}
 
 	/*
@@ -149,8 +149,8 @@ public class DefaultPropertyInputForm<C extends Component>
 	 * com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public <T> void refresh(Property<T> property) {
-		getInputGroup().refresh(property);
+	public <T> boolean refresh(Property<T> property) {
+		return getInputGroup().refresh(property);
 	}
 
 	/*
@@ -213,9 +213,8 @@ public class DefaultPropertyInputForm<C extends Component>
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getProperties()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<Property> getProperties() {
+	public Iterable<Property<?>> getProperties() {
 		return getInputGroup().getProperties();
 	}
 
@@ -232,9 +231,8 @@ public class DefaultPropertyInputForm<C extends Component>
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Stream<Property> propertyStream() {
+	public Stream<Property<?>> propertyStream() {
 		return getInputGroup().propertyStream();
 	}
 
@@ -298,15 +296,11 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		private final DefaultPropertyInputGroup.InternalBuilder inputGroupBuilder;
 
-		/**
-		 * Constructor
-		 * @param content Form composition content
-		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public DefaultBuilder(C content) {
+		public <P extends Property<?>> DefaultBuilder(C content, Iterable<P> properties) {
 			super(content);
 			this.instance = new DefaultPropertyInputForm<>(content);
-			this.inputGroupBuilder = new DefaultPropertyInputGroup.InternalBuilder();
+			this.inputGroupBuilder = new DefaultPropertyInputGroup.InternalBuilder(properties);
 
 			// setup default composer
 			if (instance.getComposer() == null && content instanceof HasComponents) {
@@ -321,24 +315,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		 */
 		@Override
 		protected PropertyInputFormBuilder<C> getConfigurator() {
-			return this;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public <P extends Property> PropertyInputFormBuilder<C> properties(Iterable<P> properties) {
-			inputGroupBuilder.properties(properties);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#properties(com.holonplatform.core.
-		 * property.Property[])
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> properties(Property<?>... properties) {
-			inputGroupBuilder.properties(properties);
 			return this;
 		}
 
@@ -404,18 +380,6 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#required(com.holonplatform.core.property.
-		 * Property, com.holonplatform.core.i18n.Localizable)
-		 */
-		@Override
-		public <T> PropertyInputFormBuilder<C> required(Property<T> property, Localizable message) {
-			inputGroupBuilder.required(property, message);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#defaultValue(com.holonplatform.core.
 		 * property.Property, com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider)
 		 */
@@ -423,16 +387,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		public <T> PropertyInputFormBuilder<C> defaultValue(Property<T> property,
 				DefaultValueProvider<T> defaultValueProvider) {
 			inputGroupBuilder.defaultValue(property, defaultValueProvider);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#excludeReadOnlyProperties()
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> excludeReadOnlyProperties() {
-			inputGroupBuilder.excludeReadOnlyProperties();
 			return this;
 		}
 

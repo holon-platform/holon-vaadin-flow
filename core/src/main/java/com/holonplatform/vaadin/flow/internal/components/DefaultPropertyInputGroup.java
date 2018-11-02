@@ -24,13 +24,14 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
-import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyBinding;
@@ -41,7 +42,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
-import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
+import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry;
@@ -52,10 +53,12 @@ import com.vaadin.flow.component.Component;
  *
  * @since 5.2.0
  */
-public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
+public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>>
 		implements PropertyInputGroup, PropertyValueComponentSource {
 
 	private static final long serialVersionUID = -5441417959315472240L;
+
+	protected final static Logger LOGGER = VaadinLogger.create();
 
 	/**
 	 * Property configurations
@@ -63,19 +66,9 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	private final InputPropertyConfigurationRegistry configuration = InputPropertyConfigurationRegistry.create();
 
 	/**
-	 * Post-processors
-	 */
-	private final List<BiConsumer<Property<?>, Input<?>>> postProcessors = new LinkedList<>();
-
-	/**
 	 * Property components
 	 */
 	private final InputPropertyRegistry components = InputPropertyRegistry.create();
-
-	/**
-	 * Optional {@link PropertyRendererRegistry} to use
-	 */
-	private PropertyRendererRegistry propertyRendererRegistry;
 
 	/**
 	 * Validators
@@ -113,15 +106,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	private boolean ignorePropertyValidation = false;
 
 	/**
-	 * Whether to exclude read-only properties from bindings
+	 * Constructor.
+	 * @param propertySet The property set (not null)
 	 */
-	private boolean excludeReadOnlyProperties = false;
-
-	/**
-	 * Constructor
-	 */
-	public DefaultPropertyInputGroup() {
-		super();
+	public DefaultPropertyInputGroup(PropertySet<?> propertySet) {
+		super(propertySet);
 	}
 
 	/*
@@ -174,9 +163,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponents()
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Iterable<ValueComponent> getValueComponents() {
+	public Iterable<ValueComponent<?>> getValueComponents() {
 		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
 	}
 
@@ -200,21 +188,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	}
 
 	/**
-	 * Get the specific {@link PropertyRendererRegistry} to use to render the components.
-	 * @return Optional property renderer registry
+	 * Get the {@link InputPropertyConfiguration} bound to given property.
+	 * @param <T> Property type
+	 * @param property The property for which to obtain the configuration (not null)
+	 * @return The property configuration
 	 */
-	public Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
-		return Optional.ofNullable(propertyRendererRegistry);
-	}
-
-	/**
-	 * Set the specific {@link PropertyRendererRegistry} to use to render the components.
-	 * @param propertyRendererRegistry the property renderer registry to set
-	 */
-	public void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
-		this.propertyRendererRegistry = propertyRendererRegistry;
-	}
-
 	protected <T> InputPropertyConfiguration<T> getPropertyConfiguration(Property<T> property) {
 		return configuration.get(property);
 	}
@@ -255,7 +233,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	 */
 	@Override
 	public PropertyBox getValue(boolean validate) {
-		final PropertyBox value = super.getValue();
+		final PropertyBox value = (getCurrentValue() != null) ? getCurrentValue()
+				: PropertyBox.create(getPropertySet());
 		flush(value, validate);
 		return value;
 	}
@@ -287,6 +266,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 			validateInputs();
 		}
 
+		// flush the Input values
 		components.stream().forEach(b -> {
 			if (!b.getProperty().isReadOnly() && !b.getComponent().isReadOnly()) { // exclude read-only properties
 				propertyBox.setValue(b.getProperty(), b.getComponent().getValue());
@@ -297,42 +277,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 			// Overall validation
 			validate(propertyBox);
 		}
-	}
-
-	/**
-	 * Reset all the {@link Input}s values.
-	 * @param setDefaultValue Whether to set the default value when available
-	 */
-	protected void resetValues(boolean setDefaultValue) {
-		components.stream().forEach(b -> {
-			try {
-				// check default value
-				if (!setDefaultValue(b)) {
-					// clear input
-					b.getComponent().clear();
-				}
-			} catch (@SuppressWarnings("unused") ValidationException ve) {
-				// ignore any validation error
-			}
-			// reset validation status
-			resetValidationStatus(b.getProperty());
-		});
-
-		// reset overall validation status
-		resetValidationStatus(null);
-
-	}
-
-	private <T> boolean setDefaultValue(PropertyBinding<T, Input<T>> binding) {
-		if (!binding.getComponent().isReadOnly()) {
-			Optional<DefaultValueProvider<T>> defaultValueProvider = configuration.get(binding.getProperty())
-					.getDefaultValueProvider();
-			if (defaultValueProvider.isPresent()) {
-				binding.getComponent().setValue(defaultValueProvider.get().getDefaultValue(binding.getProperty()));
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/*
@@ -352,18 +296,24 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	 */
 	@Override
 	public void setValue(final PropertyBox propertyBox, boolean validate) {
-		final PropertyBox oldValue = this.value;
-		this.value = propertyBox;
+		final PropertyBox oldValue = getCurrentValue();
+		setCurrentValue(propertyBox);
 
-		// reset
-		resetValues(propertyBox == null);
+		// reset properties validation status
+		getPropertySet().forEach(property -> resetValidationStatus((Property<?>) property));
+		// reset overall validation status
+		resetValidationStatus(null);
 
-		// load
-		if (propertyBox != null) {
-			components.stream().forEach(b -> {
-				b.getComponent().setValue(getPropertyValue(propertyBox, b.getProperty()));
-			});
-		}
+		// load values
+		components.stream().forEach(b -> {
+			final Object value = getPropertyValue(propertyBox, b.getProperty())
+					.orElseGet(() -> getDefaultValue(b.getProperty()));
+			if (value == null) {
+				b.getComponent().clear();
+			} else {
+				b.getComponent().setValue(value);
+			}
+		});
 
 		// check validation
 		if (validate) {
@@ -371,7 +321,46 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		}
 
 		// fire value change
-		fireValueChange(oldValue, propertyBox);
+		fireValueChange(oldValue);
+	}
+
+	/**
+	 * Get the default value for given property, if available.
+	 * @param <T> Property type
+	 * @param property The property (not null)
+	 * @return The property default value
+	 */
+	protected <T> T getDefaultValue(Property<T> property) {
+		if (!property.isReadOnly()) {
+			return configuration.get(property).getDefaultValueProvider()
+					.map(defaultValueProvider -> defaultValueProvider.getDefaultValue(property)).orElse(null);
+		}
+		return null;
+	}
+
+	/**
+	 * Get the value of given <code>property</code> using given <code>propertyBox</code>.
+	 * @param <T> Property type
+	 * @param propertyBox The PropertyBox value (may be null)
+	 * @param property The property for which to obtain the value
+	 * @return Optional property value, empty if the given PropertyBox was <code>null</code>
+	 */
+	protected <T> Optional<T> getPropertyValue(PropertyBox propertyBox, Property<T> property) {
+		if (propertyBox != null) {
+			// check vitual property
+			if (VirtualProperty.class.isAssignableFrom(property.getClass())) {
+				if (((VirtualProperty<T>) property).getValueProvider() != null) {
+					return Optional.ofNullable(
+							((VirtualProperty<T>) property).getValueProvider().getPropertyValue(propertyBox));
+				}
+				return null;
+			}
+			// get the property value
+			if (propertyBox.containsValue(property)) {
+				return Optional.ofNullable(propertyBox.getValue(property));
+			}
+		}
+		return Optional.empty();
 	}
 
 	/*
@@ -523,47 +512,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		this.ignorePropertyValidation = ignorePropertyValidation;
 	}
 
-	/**
-	 * Get whether to exclude read-only properties from bindings.
-	 * @return <code>true</code> if read-only properties are excluded from bindings
-	 */
-	public boolean isExcludeReadOnlyProperties() {
-		return excludeReadOnlyProperties;
-	}
-
-	/**
-	 * Set whether to exclude read-only properties from bindings.
-	 * @param excludeReadOnlyProperties <code>true</code> to exclude read-only properties from bindings
-	 */
-	public void setExcludeReadOnlyProperties(boolean excludeReadOnlyProperties) {
-		this.excludeReadOnlyProperties = excludeReadOnlyProperties;
-	}
-
-	/**
-	 * Add an {@link Input} {@link PostProcessor}.
-	 * @param postProcessor the post-processor to add
-	 */
-	public void addInputPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor) {
-		ObjectUtils.argumentNotNull(postProcessor, "InputPostProcessor must be not null");
-		postProcessors.add(postProcessor);
-	}
-
-	/**
-	 * Get the registered {@link Input} post processors.
-	 * @return the {@link Input} post processors
-	 */
-	protected List<BiConsumer<Property<?>, Input<?>>> getPostProcessors() {
-		return postProcessors;
-	}
-
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
 	 */
 	@Override
-	public void refresh(boolean readOnly) {
+	public void refresh() {
 		final PropertyBox value = getValue(false);
-		components.stream().filter(b -> !b.getComponent().isReadOnly()).forEach(b -> {
+		components.stream().forEach(b -> {
 			b.getComponent().setValue((value != null) ? value.getValue(b.getProperty()) : null);
 		});
 	}
@@ -573,11 +529,13 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	 * @see com.holonplatform.vaadin.components.PropertyInputBinder#refresh(com.holonplatform.core.property.Property)
 	 */
 	@Override
-	public <T> void refresh(final Property<T> property) {
+	public <T> boolean refresh(final Property<T> property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		final PropertyBox value = getValue(false);
-		getInput(property).filter(input -> !input.isReadOnly())
-				.ifPresent(input -> input.setValue((value != null) ? value.getValue(property) : null));
+		return getInput(property).map(input -> {
+			input.setValue((value != null) ? value.getValue(property) : null);
+			return true;
+		}).orElse(false);
 	}
 
 	/**
@@ -587,34 +545,30 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	public void build() {
 		components.clear();
 		// render and bind components
-		properties.stream().filter(property -> !configuration.get(property).isHidden())
+		getPropertySet().stream().filter(property -> !configuration.get(property).isHidden())
 				.forEach(property -> renderAndBind(property));
 	}
 
 	/**
 	 * Render given property as a {@link Input} and register the binding.
+	 * @param <T> Property type
 	 * @param property The property to render and bind
 	 * @return The property component
 	 */
 	protected <T> void renderAndBind(final Property<T> property) {
-		if (property != null) {
-			// check exclude read-only
-			if (!isExcludeReadOnlyProperties() || !property.isReadOnly()) {
-				// configuration
-				final InputPropertyConfiguration<T> propertyConfiguration = configuration.get(property);
-				// render
-				final Input<T> component = render(propertyConfiguration)
-						// configure input
-						.map(input -> configureInput(propertyConfiguration, input))
-						// exception when Input not available
-						.orElseThrow(() -> new NoSuitableRendererAvailableException(
-								"No renderer available to render the property [" + property + "] as an Input"));
-				// configure
-				postProcessors.forEach(postProcessor -> postProcessor.accept(property, component));
-				// register
-				components.set(property, component);
-			}
-		}
+		// configuration
+		final InputPropertyConfiguration<T> propertyConfiguration = configuration.get(property);
+		// render
+		final Input<T> component = render(propertyConfiguration)
+				// configure input
+				.map(input -> configureInput(propertyConfiguration, input))
+				// exception when Input not available
+				.orElseThrow(() -> new NoSuitableRendererAvailableException(
+						"No renderer available to render the property [" + property + "] as an Input"));
+		// configure
+		getPostProcessors().forEach(postProcessor -> postProcessor.accept(property, component));
+		// register
+		components.set(property, component);
 	}
 
 	/**
@@ -651,12 +605,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		// value change listeners
 		configuration.getValueChangeListeners().forEach(vcl -> input.addValueChangeListener(vcl));
 		// Read-only
-		if (configuration.isReadOnly()) {
+		if (configuration.getProperty().isReadOnly() || configuration.isReadOnly()) {
 			input.setReadOnly(true);
-			// check validators
+			// validators ignored for read-only properties
 			if (!configuration.getValidators().isEmpty()) {
-				throw new ComponentConfigurationException(
-						"Cannot add validators to a read only Input - Property: [" + configuration.getProperty() + "]");
+				LOGGER.warn("Property [" + configuration.getProperty() + "] is read-only, validators will be ignored");
 			}
 		} else {
 			// validation
@@ -841,36 +794,15 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		}
 	}
 
-	/**
-	 * Get the value of given <code>property</code> using given <code>propertyBox</code>.
-	 * @param <T> Property type
-	 * @param propertyBox PropertyBox
-	 * @param property Property
-	 * @return Property value
-	 */
-	protected <T> T getPropertyValue(PropertyBox propertyBox, Property<T> property) {
-		if (VirtualProperty.class.isAssignableFrom(property.getClass())) {
-			if (((VirtualProperty<T>) property).getValueProvider() != null) {
-				return ((VirtualProperty<T>) property).getValueProvider().getPropertyValue(propertyBox);
-			}
-			return null;
-		}
-		if (propertyBox.containsValue(property)) {
-			return propertyBox.getValue(property);
-		}
-		return null;
-	}
-
 	// Builder
 
 	/**
 	 * {@link PropertyInputGroup} builder.
 	 */
-	static class InternalBuilder
-			extends AbstractBuilder<DefaultPropertyInputGroup, DefaultPropertyInputGroup, InternalBuilder> {
+	static class InternalBuilder extends AbstractBuilder<DefaultPropertyInputGroup, InternalBuilder> {
 
-		public InternalBuilder() {
-			super(new DefaultPropertyInputGroup());
+		public <P extends Property<?>> InternalBuilder(Iterable<P> properties) {
+			super(properties);
 		}
 
 		@Override
@@ -889,12 +821,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	/**
 	 * Default {@link PropertyInputGroupBuilder} implementation.
 	 */
-	public static class DefaultBuilder
-			extends AbstractBuilder<DefaultPropertyInputGroup, PropertyInputGroup, PropertyInputGroupBuilder>
+	public static class DefaultBuilder extends AbstractBuilder<PropertyInputGroup, PropertyInputGroupBuilder>
 			implements PropertyInputGroupBuilder {
 
-		public DefaultBuilder() {
-			super(new DefaultPropertyInputGroup());
+		public <P extends Property<?>> DefaultBuilder(Iterable<P> properties) {
+			super(properties);
 		}
 
 		@Override
@@ -915,21 +846,16 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 	 * @param <G> Actual {@link PropertyInputGroup} type
 	 * @param <B> Concrete builder type
 	 */
-	public abstract static class AbstractBuilder<C extends DefaultPropertyInputGroup, G extends PropertyInputGroup, B extends PropertyInputGroup.Builder<G, B>>
+	public abstract static class AbstractBuilder<G extends PropertyInputGroup, B extends PropertyInputGroup.Builder<G, B>>
 			implements PropertyInputGroup.Builder<G, B> {
 
-		/**
-		 * Instance to build
-		 */
-		protected final C instance;
+		protected final DefaultPropertyInputGroup instance;
 
-		/**
-		 * Constructor
-		 * @param instance Instance to build
-		 */
-		public AbstractBuilder(C instance) {
+		public <P extends Property<?>> AbstractBuilder(Iterable<P> properties) {
 			super();
-			this.instance = instance;
+			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
+			this.instance = new DefaultPropertyInputGroup(
+					(properties instanceof PropertySet<?>) ? (PropertySet<?>) properties : PropertySet.of(properties));
 		}
 
 		/**
@@ -937,36 +863,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		 * @return Builder
 		 */
 		protected abstract B builder();
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#properties(com.holonplatform.core.property.
-		 * Property[])
-		 */
-		@Override
-		public B properties(Property<?>... properties) {
-			if (properties != null) {
-				for (Property<?> property : properties) {
-					instance.addProperty(property);
-				}
-			}
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#properties(java.lang.Iterable)
-		 */
-		@SuppressWarnings("rawtypes")
-		@Override
-		public <P extends Property> B properties(Iterable<P> properties) {
-			ObjectUtils.argumentNotNull(properties, "Properties must be not null");
-			for (P property : properties) {
-				instance.addProperty(property);
-			}
-			return builder();
-		}
 
 		/*
 		 * (non-Javadoc)
@@ -989,19 +885,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		public <T> B required(Property<T> property) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			instance.getPropertyConfiguration(property).setRequired(true);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#required(com.holonplatform.core.property.
-		 * Property, com.holonplatform.core.i18n.Localizable)
-		 */
-		@Override
-		public <T> B required(Property<T> property, Localizable message) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			instance.getPropertyConfiguration(property).setRequired(true);
-			instance.getPropertyConfiguration(property).setRequiredMessage(message);
 			return builder();
 		}
 
@@ -1150,16 +1033,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#excludeReadOnlyProperties()
-		 */
-		@Override
-		public B excludeReadOnlyProperties() {
-			instance.setExcludeReadOnlyProperties(true);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withPostProcessor(com.holonplatform.vaadin.
 		 * components.PropertyBinding.PostProcessor)
@@ -1167,7 +1040,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup
 		@Override
 		public B withPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor) {
 			ObjectUtils.argumentNotNull(postProcessor, "PostProcessor must be not null");
-			instance.addInputPostProcessor(postProcessor);
+			instance.addPostProcessor(postProcessor);
 			return builder();
 		}
 

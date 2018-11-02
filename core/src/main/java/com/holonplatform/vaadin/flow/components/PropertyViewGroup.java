@@ -25,6 +25,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 
@@ -39,8 +40,7 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 	 * Gets all the {@link ViewComponent}s that have been bound to a property.
 	 * @return An {@link Iterable} on all bound ViewComponents
 	 */
-	@SuppressWarnings("rawtypes")
-	Iterable<ViewComponent> getViewComponents();
+	Iterable<ViewComponent<?>> getViewComponents();
 
 	/**
 	 * Get the {@link ViewComponent} bound to given <code>property</code>, if any.
@@ -58,53 +58,55 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 	<T> Stream<PropertyBinding<T, ViewComponent<T>>> stream();
 
 	/**
-	 * Clears (reset the value) all the {@link ViewComponent}s.
+	 * Clear the value of all the available {@link ViewComponent}s.
 	 */
 	@Override
 	void clear();
 
 	/**
-	 * Get the current property values collected into a {@link PropertyBox}, using the group configured properties as
-	 * property set.
-	 * @return A {@link PropertyBox} containing the property values (never null)
+	 * Get the current property values.
+	 * @return A {@link PropertyBox} containing the property values (may be null)
 	 */
 	@Override
 	PropertyBox getValue();
 
 	/**
-	 * Set the current property values using a {@link PropertyBox}, loading the values to the available property bound
-	 * {@link ViewComponent}s through the {@link ViewComponent#setValue(Object)} method.
+	 * Set the current {@link PropertyBox} value. For each property, if a {@link ViewComponent} is available, the
+	 * property value will be set as the {@link ViewComponent} value.
 	 * <p>
 	 * Only the properties which belong to the group's property set are taken into account.
 	 * </p>
-	 * @param propertyBox the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all
-	 *        the {@link ViewComponent} components are cleared.
+	 * @param value The value to set. If <code>null</code>, all the {@link ViewComponent} components are cleared.
 	 */
 	@Override
-	void setValue(PropertyBox propertyBox);
+	void setValue(PropertyBox value);
 
 	// ------- Builders
 
 	/**
-	 * Get a {@link Builder} to create and setup a {@link PropertyViewGroup}.
-	 * @return {@link PropertyViewGroupBuilder} builder
+	 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
+	 * @param <P> Property type
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyViewGroupBuilder}
 	 */
-	static PropertyViewGroupBuilder builder() {
-		return PropertyViewGroupBuilder.create();
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyViewGroupBuilder builder(Iterable<P> properties) {
+		return new DefaultPropertyViewGroup.DefaultBuilder(properties);
+	}
+
+	/**
+	 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
+	 * @param properties The property set (not null)
+	 * @return A new {@link PropertyViewGroupBuilder}
+	 */
+	static PropertyViewGroupBuilder builder(Property<?>... properties) {
+		return builder(PropertySet.of(properties));
 	}
 
 	/**
 	 * {@link PropertyViewGroup} builder.
 	 */
 	public interface PropertyViewGroupBuilder extends Builder<PropertyViewGroup, PropertyViewGroupBuilder> {
-
-		/**
-		 * Create a new {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
-		 * @return A new {@link PropertyViewGroupBuilder} builder
-		 */
-		static PropertyViewGroupBuilder create() {
-			return new DefaultPropertyViewGroup.DefaultBuilder();
-		}
 
 	}
 
@@ -114,23 +116,6 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 	 * @param <B> Concrete builder type
 	 */
 	public interface Builder<G extends PropertyViewGroup, B extends Builder<G, B>> {
-
-		/**
-		 * Add given properties to the {@link PropertyViewGroup} property set.
-		 * @param <P> Property type
-		 * @param properties Properties to add
-		 * @return this
-		 */
-		B properties(Property<?>... properties);
-
-		/**
-		 * Add given properties to the {@link PropertyViewGroup} property set.
-		 * @param <P> Property type
-		 * @param properties Properties to add (not null)
-		 * @return this
-		 */
-		@SuppressWarnings("rawtypes")
-		<P extends Property> B properties(Iterable<P> properties);
 
 		/**
 		 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property

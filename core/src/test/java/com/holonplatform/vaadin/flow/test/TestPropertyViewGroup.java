@@ -47,13 +47,10 @@ public class TestPropertyViewGroup {
 	@Test
 	public void testBuilder() {
 
-		PropertyViewGroupBuilder builder = PropertyViewGroupBuilder.create();
+		PropertyViewGroupBuilder builder = PropertyViewGroup.builder(SET);
 		assertNotNull(builder);
 
-		builder = PropertyViewGroup.builder();
-		assertNotNull(builder);
-
-		PropertyViewGroup group = PropertyViewGroup.builder().properties(SET).build();
+		PropertyViewGroup group = PropertyViewGroup.builder(SET).build();
 		assertNotNull(group);
 
 		assertTrue(group.hasProperty(ID));
@@ -64,7 +61,7 @@ public class TestPropertyViewGroup {
 		group.getProperties().iterator().forEachRemaining(p -> size.incrementAndGet());
 		assertEquals(3, size.get());
 
-		group = PropertyViewGroup.builder().properties(ID, NAME, VIRTUAL).build();
+		group = PropertyViewGroup.builder(ID, NAME, VIRTUAL).build();
 		assertNotNull(group);
 
 		assertTrue(group.hasProperty(ID));
@@ -72,23 +69,23 @@ public class TestPropertyViewGroup {
 		assertTrue(group.hasProperty(VIRTUAL));
 
 		final ViewComponent<String> vc = ViewComponent.create(String.class);
-		
+
 		final ViewComponentPropertyRenderer<String> renderer1 = ViewComponentPropertyRenderer.create(p -> vc);
 
-		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, vc).build();
-		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
-		
-		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, renderer1).build();
+		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, vc).build();
 		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
 
-		group = PropertyViewGroup.builder().properties(ID, NAME).bind(NAME, p -> vc).build();
+		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, renderer1).build();
 		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
 
-		group = PropertyViewGroup.builder().properties(ID, NAME).hidden(ID).build();
+		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, p -> vc).build();
+		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
+
+		group = PropertyViewGroup.builder(ID, NAME).hidden(ID).build();
 		assertTrue(group.hasProperty(ID));
 		assertFalse(group.getViewComponent(ID).isPresent());
 
-		group = PropertyViewGroup.builder().properties(ID, NAME).withPostProcessor((property, component) -> {
+		group = PropertyViewGroup.builder(ID, NAME).withPostProcessor((property, component) -> {
 			if (ID.equals(property)) {
 				component.hasEnabled().ifPresent(e -> e.setEnabled(false));
 			}
@@ -100,10 +97,10 @@ public class TestPropertyViewGroup {
 		assertTrue(group.getViewComponent(ID).isPresent());
 		assertFalse(group.getViewComponent(ID).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
 		assertTrue(group.getViewComponent(NAME).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
-		
+
 		final ViewComponent<Number> nvc = ViewComponent.create(Number.class);
 		final NumericProperty<Double> np = NumericProperty.doubleType("test");
-		
+
 		ViewComponentPropertyRenderer<Number> rnd2 = ViewComponentPropertyRenderer.create(p -> nvc);
 		assertEquals(nvc, rnd2.render(np));
 	}
@@ -111,7 +108,7 @@ public class TestPropertyViewGroup {
 	@Test
 	public void testGroup() {
 
-		PropertyViewGroup group = PropertyViewGroup.builder().properties(SET).build();
+		PropertyViewGroup group = PropertyViewGroup.builder(SET).build();
 		assertNotNull(group);
 
 		assertEquals(3, group.propertyStream().count());
@@ -147,8 +144,7 @@ public class TestPropertyViewGroup {
 
 		final AtomicInteger fired = new AtomicInteger(0);
 
-		group = PropertyViewGroup.builder().properties(SET).withValueChangeListener(e -> fired.incrementAndGet())
-				.build();
+		group = PropertyViewGroup.builder(SET).withValueChangeListener(e -> fired.incrementAndGet()).build();
 		assertEquals(0, fired.get());
 
 		group.setValue(PropertyBox.builder(SET).set(ID, 2L).build());
