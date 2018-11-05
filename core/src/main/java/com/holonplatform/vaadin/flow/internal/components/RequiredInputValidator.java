@@ -72,4 +72,25 @@ public class RequiredInputValidator<T> implements Validator<T> {
 		}
 	}
 
+	/**
+	 * Create a new {@link RequiredInputValidator}.
+	 * @param <T> Value type
+	 * @param valueHolder Value holder (not null)
+	 * @return A new {@link RequiredInputValidator}
+	 */
+	public static <T> RequiredInputValidator<T> create(ValueHolder<T> valueHolder) {
+		return new RequiredInputValidator<>(valueHolder);
+	}
+
+	/**
+	 * Create a new {@link RequiredInputValidator}.
+	 * @param <T> Value type
+	 * @param valueHolder Value holder (not null)
+	 * @param message Optional validation error message
+	 * @return A new {@link RequiredInputValidator}
+	 */
+	public static <T> RequiredInputValidator<T> create(ValueHolder<T> valueHolder, Localizable message) {
+		return new RequiredInputValidator<>(valueHolder, message);
+	}
+
 }

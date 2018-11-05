@@ -30,6 +30,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
@@ -48,6 +49,9 @@ public class TestPropertyViewGroup {
 	public void testBuilder() {
 
 		PropertyViewGroupBuilder builder = PropertyViewGroup.builder(SET);
+		assertNotNull(builder);
+		
+		builder = Components.view.propertyGroup(SET);
 		assertNotNull(builder);
 
 		PropertyViewGroup group = PropertyViewGroup.builder(SET).build();

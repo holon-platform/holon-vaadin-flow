@@ -21,13 +21,13 @@ import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
+import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
 import com.holonplatform.vaadin.flow.internal.components.VaadinValidatorWrapper;
@@ -229,6 +229,43 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		<T> B required(Property<T> property);
 
 		/**
+		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
+		 * be setted as required, and its validation will fail when empty.
+		 * @param <T> Property type
+		 * @param property Property to set as required (not null)
+		 * @param message The required validation error message to use
+		 * @return this
+		 */
+		<T> B required(Property<T> property, Localizable message);
+
+		/**
+		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
+		 * be setted as required, and its validation will fail when empty.
+		 * @param <T> Property type
+		 * @param property Property to set as required (not null)
+		 * @param message The required validation error message to use
+		 * @return this
+		 */
+		default <T> B required(Property<T> property, String message) {
+			return required(property, Localizable.builder().message(message).build());
+		}
+
+		/**
+		 * Set the given property as required. If a property is required, the {@link Input} bound to the property will
+		 * be setted as required, and its validation will fail when empty.
+		 * @param <T> Property type
+		 * @param property Property to set as required (not null)
+		 * @param defaultMessage Default required validation error message
+		 * @param messageCode Required validation error message translation key
+		 * @param arguments Optional translation arguments
+		 * @return this
+		 */
+		default <T> B required(Property<T> property, String defaultMessage, String messageCode, Object... arguments) {
+			return required(property, Localizable.builder().message((defaultMessage == null) ? "" : defaultMessage)
+					.messageCode(messageCode).messageArguments(arguments).build());
+		}
+
+		/**
 		 * Set the given property as hidden. If a property is hidden, the {@link Input} bound to the property will never
 		 * be generated, but its value will be written to a {@link PropertyBox} using
 		 * {@link PropertyInputGroup#getValue()}.
@@ -246,6 +283,132 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		<T> B defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider);
+
+		/**
+		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
+		 * <p>
+		 * By default, the {@link PropertyRendererRegistry#get()} method is used to obtain the
+		 * {@link PropertyRendererRegistry} to use.
+		 * </p>
+		 * @param propertyRendererRegistry The {@link PropertyRendererRegistry} to use to render the group components
+		 * @return this
+		 */
+		B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
+
+		/**
+		 * Set the specific {@link PropertyRenderer} to use to render the {@link Input} to bind to given
+		 * <code>property</code>.
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param renderer Property renderer (not null)
+		 * @return this
+		 */
+		<T> B bind(Property<T> property, PropertyRenderer<Input<T>, T> renderer);
+
+		/**
+		 * Set the function to use to render the {@link Input} bound to given <code>property</code>.
+		 * @param <T> Property type
+		 * @param property The property to render (not null)
+		 * @param function The function to use to render the property {@link Input} (not null)
+		 * @return this
+		 */
+		default <T> B bind(Property<T> property, Function<Property<? extends T>, Input<T>> function) {
+			return bind(property, InputPropertyRenderer.create(function));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given <code>input</code> instance. If the property was already bound
+		 * to a {@link Input}, the old input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param input Input to bind (not null)
+		 * @return this
+		 */
+		default <T> B bind(Property<T> property, Input<T> input) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(input, "Input must be not null");
+			return bind(property, InputPropertyRenderer.create(p -> input));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given <code>input</code> instance with different value type, using a
+		 * {@link Converter} to perform value conversions. If the property was already bound to a {@link Input}, the old
+		 * input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param <V> Input value type type
+		 * @param property Property (not null)
+		 * @param input Input to bind (not null)
+		 * @param converter Value converter (not null)
+		 * @return this
+		 */
+		default <T, V> B bind(Property<T> property, Input<V> input, Converter<V, T> converter) {
+			return bind(property, Input.from(input, converter));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given {@link HasValue} component. If the property was already bound
+		 * to a {@link Input}, the old input will be replaced by the new input.
+		 * @param <T> Property type
+		 * @param <F> HasValue type
+		 * @param property Property (not null)
+		 * @param field HasValue component to bind (not null)
+		 * @return this
+		 */
+		default <T, F extends Component & HasValue<?, T>> B bindField(Property<T> property, F field) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(field, "Field must be not null");
+			return bind(property, Input.from(field));
+		}
+
+		/**
+		 * Bind the given <code>property</code> to given {@link HasValue} component with different value type, using a
+		 * {@link Converter} to perform value conversions. If the property was already bound to an {@link Input}, the
+		 * old input will be replaced by the new input.
+		 * <p>
+		 * This method also adds property validators to given {@link Input} when applicable.
+		 * </p>
+		 * @param <T> Property type
+		 * @param <V> Input value type
+		 * @param <F> HasValue type
+		 * @param property Property (not null)
+		 * @param field The field to bind (not null)
+		 * @param converter Value converter (not null)
+		 * @return this
+		 */
+		default <T, V, F extends Component & HasValue<?, V>> B bindField(Property<T> property, F field,
+				Converter<V, T> converter) {
+			return bind(property, Input.from(field, converter));
+		}
+
+		/**
+		 * Add a {@link PostProcessor} to allow further {@link Input} configuration before the input is actually bound
+		 * to a property.
+		 * @param postProcessor the {@link PostProcessor} to add (not null)
+		 * @return this
+		 */
+		B withPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor);
+
+		/**
+		 * Add a {@link ValueChangeListener} to be notified when the input group value changes.
+		 * @param listener The ValueChangeListener to add (not null)
+		 * @return this
+		 */
+		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
+
+		/**
+		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
+		 * @param <T> Property type
+		 * @param property Property (not null)
+		 * @param listener The ValueChangeListener to add (not null)
+		 * @return this
+		 */
+		<T> B withValueChangeListener(Property<T> property, ValueChangeListener<T> listener);
 
 		/**
 		 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.
@@ -318,7 +481,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @param statusLabel the status label to set (not null)
 		 * @return this
 		 */
-		default <L extends Component & HasText> B validationStatusHandler(L statusLabel) {
+		default <L extends Component & HasText> B validationStatusLabel(L statusLabel) {
 			return validationStatusHandler(ValidationStatusHandler.label(statusLabel));
 		}
 
@@ -355,164 +518,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		B stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure);
-
-		/**
-		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
-		 * <p>
-		 * By default, the {@link PropertyRendererRegistry#get()} method is used to obtain the
-		 * {@link PropertyRendererRegistry} to use.
-		 * </p>
-		 * @param propertyRendererRegistry The {@link PropertyRendererRegistry} to use to render the group components
-		 * @return this
-		 */
-		B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
-
-		/**
-		 * Set the specific {@link PropertyRenderer} to use to render the {@link Input} to bind to given
-		 * <code>property</code>.
-		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param renderer Property renderer (not null)
-		 * @return this
-		 */
-		<T> B bind(Property<T> property, PropertyRenderer<Input<T>, T> renderer);
-
-		/**
-		 * Set the function to use to render the {@link Input} bound to given <code>property</code>.
-		 * @param <T> Property type
-		 * @param property The property to render (not null)
-		 * @param function The function to use to render the property {@link Input} (not null)
-		 * @return this
-		 */
-		default <T> B bind(Property<T> property, Function<Property<? extends T>, Input<T>> function) {
-			return bind(property, InputPropertyRenderer.create(function));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given <code>input</code> instance. If the property was already bound
-		 * to a {@link Input}, the old input will be replaced by the new input.
-		 * <p>
-		 * This method also adds property validators to given {@link Input} when applicable.
-		 * </p>
-		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param input Input to bind (not null)
-		 * @return this
-		 */
-		default <T> B bind(Property<T> property, Input<T> input) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(input, "Input must be not null");
-			return bind(property, InputPropertyRenderer.create(p -> input));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given {@link HasValue} component. If the property was already bound
-		 * to a {@link Input}, the old input will be replaced by the new input.
-		 * @param <T> Property type
-		 * @param <F> HasValue type
-		 * @param property Property (not null)
-		 * @param field HasValue component to bind (not null)
-		 * @return this
-		 */
-		default <T, F extends Component & HasValue<?, T>> B bind(Property<T> property, F field) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(field, "Field must be not null");
-			return bind(property, Input.from(field));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given <code>input</code> instance with different value type, using a
-		 * {@link Converter} to perform value conversions. If the property was already bound to a {@link Input}, the old
-		 * input will be replaced by the new input.
-		 * <p>
-		 * This method also adds property validators to given {@link Input} when applicable.
-		 * </p>
-		 * @param <T> Property type
-		 * @param <V> Input value type type
-		 * @param property Property (not null)
-		 * @param input Input to bind (not null)
-		 * @param converter Value converter (not null)
-		 * @return this
-		 */
-		default <T, V> B bind(Property<T> property, Input<V> input, Converter<V, T> converter) {
-			return bind(property, Input.from(input, converter));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given <code>input</code> instance with different value type, using a
-		 * {@link PropertyValueConverter} to perform value conversions. If the property was already bound to a
-		 * {@link Input}, the old input will be replaced by the new input.
-		 * <p>
-		 * This method also adds property validators to given {@link Input} when applicable.
-		 * </p>
-		 * @param <T> Property type
-		 * @param <V> Input value type type
-		 * @param property Property (not null)
-		 * @param input Input to bind (not null)
-		 * @param converter Value converter (not null)
-		 * @return this
-		 */
-		default <T, V> B bind(Property<T> property, Input<V> input, PropertyValueConverter<T, V> converter) {
-			return bind(property, Input.from(input, property, converter));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given {@link HasValue} component with different value type, using a
-		 * {@link Converter} to perform value conversions. If the property was already bound to an {@link Input}, the
-		 * old input will be replaced by the new input.
-		 * <p>
-		 * This method also adds property validators to given {@link Input} when applicable.
-		 * </p>
-		 * @param <T> Property type
-		 * @param <V> Input value type
-		 * @param <F> HasValue type
-		 * @param property Property (not null)
-		 * @param field The field to bind (not null)
-		 * @param converter Value converter (not null)
-		 * @return this
-		 */
-		default <T, V, F extends Component & HasValue<?, V>> B bind(Property<T> property, F field,
-				Converter<V, T> converter) {
-			return bind(property, Input.from(field, converter));
-		}
-
-		/**
-		 * Add a {@link PostProcessor} to allow further {@link Input} configuration before the input is actually bound
-		 * to a property.
-		 * @param postProcessor the {@link PostProcessor} to add (not null)
-		 * @return this
-		 */
-		B withPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor);
-
-		/**
-		 * Add a {@link ValueChangeListener} to be notified when the input group value changes.
-		 * @param listener The ValueChangeListener to add (not null)
-		 * @return this
-		 */
-		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
-
-		/**
-		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
-		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param listener The ValueChangeListener to add (not null)
-		 * @return this
-		 */
-		<T> B withValueChangeListener(Property<T> property, ValueChangeListener<T> listener);
-
-		/**
-		 * Add a {@link PropertyInputValueChangeListener} to the {@link Input} bound to given <code>property</code>.
-		 * <p>
-		 * Differently from the standard {@link ValueChangeListener}, the {@link PropertyInputValueChangeListener}
-		 * provides also a reference to the {@link PropertyInputBinder} to which the value change source belongs, i.e.
-		 * the PropertyInputGroup/Form.
-		 * </p>
-		 * @param <T> Property type
-		 * @param property Property (not null)
-		 * @param listener The {@link PropertyInputValueChangeListener} to add (not null)
-		 * @return this
-		 */
-		<T> B withValueChangeListener(Property<T> property, PropertyInputValueChangeListener<T> listener);
 
 		/**
 		 * Build the {@link PropertyInputGroup}.

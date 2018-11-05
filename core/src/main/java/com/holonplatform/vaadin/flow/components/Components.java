@@ -374,7 +374,8 @@ public interface Components {
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyViewGroupBuilder}
 		 */
-		static <P extends Property<?>> PropertyViewGroupBuilder propertyGroup(Iterable<P> properties) {
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyViewGroupBuilder propertyGroup(Iterable<P> properties) {
 			return PropertyViewGroup.builder(properties);
 		}
 

@@ -15,14 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.Property.PropertyNotFoundException;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
  * Represents a component which binds a property set to {@link Input} components.
@@ -89,25 +87,5 @@ public interface PropertyInputBinder extends PropertySetBound {
 	 * @return <code>true</code> if an {@link Input} bound to given property is available, <code>false</code> otherwise
 	 */
 	<T> boolean refresh(Property<T> property);
-
-	// Value change listener
-
-	/**
-	 * A listener for {@link Input} value change events when the {@link Input} is bound to a {@link Property} within a
-	 * {@link PropertyInputBinder} component.
-	 * @param <V> Value type
-	 */
-	@FunctionalInterface
-	public interface PropertyInputValueChangeListener<V> extends Serializable {
-
-		/**
-		 * Invoked when this listener receives a value change event from an {@link ValueHolder} source to which it has
-		 * been added within a {@link PropertyInputBinder}.
-		 * @param event the value change event
-		 * @param binder The {@link PropertyInputBinder} to which the value change source belongs
-		 */
-		void valueChange(ValueChangeEvent<V> event, PropertyInputBinder binder);
-
-	}
 
 }

@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
 
 public final class LocalizationTestUtils {
 
@@ -39,6 +40,24 @@ public final class LocalizationTestUtils {
 
 	public static void withTestLocalizationContext(Runnable operation) {
 		Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY, getTestLocalizationContext(), operation);
+	}
+
+	public static final String TEST_LOCALIZED_REQUIRED_ERROR = "Localized required error";
+
+	public static LocalizationContext getInputValidationLocalizationContext() {
+		return LocalizationContext.builder().withInitialLocale(Locale.US).messageProvider((locale, code) -> {
+			if (Locale.US.equals(locale)) {
+				if (RequiredInputValidator.DEFAULT_REQUIRED_ERROR.getMessageCode().equals(code)) {
+					return Optional.of(TEST_LOCALIZED_REQUIRED_ERROR);
+				}
+			}
+			return Optional.empty();
+		}).build();
+	}
+
+	public static void withInputValidationLocalizationContext(Runnable operation) {
+		Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY, getInputValidationLocalizationContext(),
+				operation);
 	}
 
 }

@@ -380,6 +380,18 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#required(com.holonplatform.core.property.
+		 * Property, com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public <T> PropertyInputFormBuilder<C> required(Property<T> property, Localizable message) {
+			inputGroupBuilder.required(property, message);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#defaultValue(com.holonplatform.core.
 		 * property.Property, com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider)
 		 */
@@ -495,20 +507,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		@Override
 		public <T> PropertyInputFormBuilder<C> withValueChangeListener(Property<T> property,
 				ValueChangeListener<T> listener) {
-			inputGroupBuilder.withValueChangeListener(property, listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
-		 * .core.property.Property,
-		 * com.holonplatform.vaadin.flow.components.PropertyInputBinder.PropertyInputValueChangeListener)
-		 */
-		@Override
-		public <T> PropertyInputFormBuilder<C> withValueChangeListener(Property<T> property,
-				PropertyInputValueChangeListener<T> listener) {
 			inputGroupBuilder.withValueChangeListener(property, listener);
 			return this;
 		}

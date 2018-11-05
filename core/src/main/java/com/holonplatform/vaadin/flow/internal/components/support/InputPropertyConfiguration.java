@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
@@ -44,7 +45,7 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Set whether the property is read only.
 	 * @param readOnly whether the property is read only
 	 */
-	public void setReadOnly(boolean readOnly);
+	void setReadOnly(boolean readOnly);
 
 	/**
 	 * Get whether the property is required.
@@ -56,7 +57,19 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Set whether the property is required.
 	 * @param required whether the property is required
 	 */
-	public void setRequired(boolean required);
+	void setRequired(boolean required);
+
+	/**
+	 * Get the required validation error message.
+	 * @return Optional required validation error message
+	 */
+	Optional<Localizable> getRequiredMessage();
+
+	/**
+	 * Set the required validation error message.
+	 * @param requiredMessage the required validation error message
+	 */
+	void setRequiredMessage(Localizable requiredMessage);
 
 	/**
 	 * Get the default value provider, if available.
