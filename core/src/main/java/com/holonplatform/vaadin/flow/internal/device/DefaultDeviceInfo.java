@@ -15,10 +15,14 @@
  */
 package com.holonplatform.vaadin.flow.internal.device;
 
+import com.holonplatform.core.internal.Logger;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.holonplatform.vaadin.flow.device.UserAgentInspector;
-import com.vaadin.flow.component.ClientCallable;
+import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.page.BrowserWindowResizeEvent;
+import com.vaadin.flow.component.page.BrowserWindowResizeListener;
 import com.vaadin.flow.component.page.Page;
 
 /**
@@ -26,25 +30,44 @@ import com.vaadin.flow.component.page.Page;
  *
  * @since 5.0.0
  */
-public class DefaultDeviceInfo implements DeviceInfo {
+public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListener {
 
 	private static final long serialVersionUID = -8874983833266879186L;
 
-	/**
-	 * User-Agent inspector
-	 */
+	private static final Logger LOGGER = VaadinLogger.create();
+
 	private final UserAgentInspector userAgentInspector;
-	
-	private Integer viewPortWidth;
+
+	private int windowWidth = -1;
+	private int windowHeight = -1;
 
 	/**
 	 * Constructor
-	 * @param userAgentInspector User-Agent inspector, (not null)
+	 * @param userAgentInspector The User-Agent inspector to use (not null)
+	 * @param ui Optional UI to which this instance refers
 	 */
-	public DefaultDeviceInfo(UserAgentInspector userAgentInspector) {
+	public DefaultDeviceInfo(UserAgentInspector userAgentInspector, UI ui) {
 		super();
-		assert userAgentInspector != null : "Missing UserAgentInspector (null)";
+		ObjectUtils.argumentNotNull(userAgentInspector, "UserAgentInspector must be not null");
 		this.userAgentInspector = userAgentInspector;
+		if (ui != null) {
+			ui.getPage().addBrowserWindowResizeListener(this);
+		} else {
+			LOGGER.warn(
+					"The UI reference is not available, the browser window width and height won't be detected and updated");
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.vaadin.flow.component.page.BrowserWindowResizeListener#browserWindowResized(com.vaadin.flow.component.page.
+	 * BrowserWindowResizeEvent)
+	 */
+	@Override
+	public void browserWindowResized(BrowserWindowResizeEvent event) {
+		this.windowWidth = event.getWidth();
+		this.windowHeight = event.getHeight();
 	}
 
 	/**
@@ -228,66 +251,20 @@ public class DefaultDeviceInfo implements DeviceInfo {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.core.device.DeviceInfo#getScreenWidth()
+	 * @see com.holonplatform.vaadin.flow.device.DeviceInfo#getWindowWidth()
 	 */
-	// TODO
 	@Override
-	public int getScreenWidth() {
-		final UI ui = UI.getCurrent();
-		if (ui != null) {
-			ui.getPage().executeJavaScript("screen.width");
-		}
-		return -1;
+	public int getWindowWidth() {
+		return windowWidth;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.core.device.DeviceInfo#getScreenHeight()
+	 * @see com.holonplatform.vaadin.flow.device.DeviceInfo#getWindowHeight()
 	 */
-	// TODO
 	@Override
-	public int getScreenHeight() {
-		final UI ui = UI.getCurrent();
-		if (ui != null) {
-			ui.getPage().executeJavaScript("screen.height");
-		}
-		return -1;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.core.device.DeviceInfo#getViewPortWidth()
-	 */
-	// TODO
-	@Override
-	public int getViewPortWidth() {
-		if (viewPortWidth != null) {
-			return viewPortWidth.intValue();
-		}
-		final UI ui = UI.getCurrent();
-		if (ui != null) {
-			ui.getPage().executeJavaScript("element.$server.onViewPortWidth(window.innerWidth);");
-		}
-		return -1;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.core.device.DeviceInfo#getViewPortHeight()
-	 */
-	// TODO
-	@Override
-	public int getViewPortHeight() {
-		final UI ui = UI.getCurrent();
-		if (ui != null) {
-			ui.getPage().executeJavaScript("window.innerHeight");
-		}
-		return -1;
-	}
-	
-	@ClientCallable
-	private void onViewPortWidth(int value) {
-		this.viewPortWidth = value;
+	public int getWindowHeight() {
+		return windowHeight;
 	}
 
 }

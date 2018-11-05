@@ -19,16 +19,15 @@ import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.device.DefaultDeviceInfo;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinSession;
 
 /**
- * Provides informations about client device in which application is running
+ * Provides informations about the client device in which application is running.
  * 
  * @see UserAgentInspector
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public interface DeviceInfo extends UserAgentInspector {
 
@@ -38,93 +37,62 @@ public interface DeviceInfo extends UserAgentInspector {
 	public static final String SESSION_ATTRIBUTE_NAME = DeviceInfo.class.getName();
 
 	/**
-	 * Get client screen width in pixels
-	 * @return Client screen width, or <code>-1</code> if not available at method call time
+	 * Get the browser window width.
+	 * @return the browser window width in pixels, or <code>-1</code> if not available at method call time
 	 */
-	int getScreenWidth();
+	int getWindowWidth();
 
 	/**
-	 * Get client screen height in pixels
-	 * @return Client screen height, or <code>-1</code> if not available at method call time
+	 * Get the browser window height.
+	 * @return the browser window height in pixels, or <code>-1</code> if not available at method call time
 	 */
-	int getScreenHeight();
+	int getWindowHeight();
+
+	// Providers
 
 	/**
-	 * Get application viewport width in pixels
-	 * @return Application viewport width, or <code>-1</code> if not available at method call time
+	 * Get the {@link DeviceInfo} for given UI, if available.
+	 * @param ui The UI for which to obtain the {@link DeviceInfo} (not null)
+	 * @return Optional {@link DeviceInfo} for given UI
 	 */
-	int getViewPortWidth();
-
-	/**
-	 * Get application viewport height in pixels
-	 * @return Application viewport height, or <code>-1</code> if not available at method call time
-	 */
-	int getViewPortHeight();
-
-	/**
-	 * Build a DeviceInfo instance using given header values
-	 * @param userAgentHeader the User-Agent header
-	 * @param httpAcceptHeader the Accept header
-	 * @return The {@link DeviceInfo}
-	 */
-	static DeviceInfo create(String userAgentHeader, String httpAcceptHeader) {
-		return new DefaultDeviceInfo(UserAgentInspector.create(userAgentHeader, httpAcceptHeader));
+	static Optional<DeviceInfo> get(UI ui) {
+		return DeviceInfoRegistry.getSessionRegistry().flatMap(registry -> registry.getDeviceInfo(ui));
 	}
 
 	/**
-	 * Build a DeviceInfo instance using a {@link VaadinRequest}
-	 * @param request Vaadin request (not null)
-	 * @return The {@link DeviceInfo}
-	 */
-	static DeviceInfo create(VaadinRequest request) {
-		ObjectUtils.argumentNotNull(request, "VaadinRequest must be not null");
-		return new DefaultDeviceInfo(UserAgentInspector.create(request));
-	}
-
-	/**
-	 * Get the current DeviceInfo instance, if available.
-	 * <p>
-	 * DeviceInfo is created using current {@link VaadinRequest}, if available. It is cached into {@link VaadinSession}
-	 * for further requests.
-	 * </p>
-	 * @return Optional DeviceInfo, empty if it cannot be found in session and no current request is available to create
-	 *         a new instance
+	 * Get the {@link DeviceInfo} for the current UI, if available.
+	 * @return Optional {@link DeviceInfo} for the current UI
 	 */
 	static Optional<DeviceInfo> get() {
-		final VaadinSession session = VaadinSession.getCurrent();
-		if (session != null) {
-			return ensureInited(session);
+		final UI ui = UI.getCurrent();
+		if (ui != null) {
+			return get(ui);
 		}
 		return Optional.empty();
 	}
 
+	// Builders
+
 	/**
-	 * Get the current DeviceInfo instance, or throw an {@link IllegalStateException} if not available.
-	 * @return The current DeviceInfo instance
-	 * @see #get()
+	 * Create a new {@link DeviceInfo} for given UI, using the provided {@link UserAgentInspector}.
+	 * @param ui The UI
+	 * @param userAgentInspector The {@link UserAgentInspector} to use (not null)
+	 * @return A new {@link DeviceInfo}
 	 */
-	static DeviceInfo require() {
-		return get().orElseThrow(() -> new IllegalStateException("DeviceInfo is not available fro current session"));
+	static DeviceInfo create(UI ui, UserAgentInspector userAgentInspector) {
+		return new DefaultDeviceInfo(userAgentInspector, ui);
 	}
 
 	/**
-	 * Ensure that a {@link DeviceInfo} is available from given Vaadin <code>session</code>. For successful
-	 * initialization, a {@link VaadinService#getCurrentRequest()} must be available.
-	 * @param session Vaadin session (not null)
-	 * @return The session scoped {@link DeviceInfo} instance, if a request is available
+	 * Create a new {@link DeviceInfo} for given UI, using the provided {@link VaadinRequest} to configure a default
+	 * {@link UserAgentInspector}.
+	 * @param ui The UI
+	 * @param request The request (not null)
+	 * @return A new {@link DeviceInfo}
 	 */
-	static Optional<DeviceInfo> ensureInited(VaadinSession session) {
-		ObjectUtils.argumentNotNull(session, "VaadinSession must be not null");
-		DeviceInfo deviceInfo = (DeviceInfo) session.getAttribute(SESSION_ATTRIBUTE_NAME);
-		if (deviceInfo == null) {
-			final VaadinRequest request = VaadinService.getCurrentRequest();
-			if (request != null) {
-				synchronized (session) {
-					session.setAttribute(SESSION_ATTRIBUTE_NAME, deviceInfo = create(request));
-				}
-			}
-		}
-		return Optional.ofNullable(deviceInfo);
+	static DeviceInfo create(UI ui, VaadinRequest request) {
+		ObjectUtils.argumentNotNull(request, "Request must be not null");
+		return new DefaultDeviceInfo(UserAgentInspector.create(request), ui);
 	}
 
 }

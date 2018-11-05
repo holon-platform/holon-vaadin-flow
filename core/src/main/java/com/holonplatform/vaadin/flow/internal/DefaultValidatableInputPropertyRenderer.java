@@ -52,12 +52,12 @@ public class DefaultValidatableInputPropertyRenderer<T> implements PropertyRende
 	public ValidatableInput render(Property<? extends T> property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		// render as Input and convert to ValidatableInput
-		return property.renderIfAvailable(Input.class).map(input -> ValidatableInput.from(input)).map(input -> {
-			final ValidatableInput validatableInput = input;
-			// property validators
-			property.getValidators().forEach(validator -> validatableInput.addValidator(validator));
-			return input;
-		}).orElse(null);
+		return property.renderIfAvailable(Input.class).map(input -> (Input<T>) input)
+				.map(input -> ValidatableInput.from(input)).map(input -> {
+					// property validators
+					((Property<T>) property).getValidators().forEach(validator -> input.addValidator(validator));
+					return input;
+				}).orElse(null);
 	}
 
 }
