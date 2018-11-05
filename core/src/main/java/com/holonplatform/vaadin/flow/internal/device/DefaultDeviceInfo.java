@@ -15,11 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.internal.device;
 
+import java.util.function.BiConsumer;
+
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.holonplatform.vaadin.flow.device.UserAgentInspector;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.BrowserWindowResizeEvent;
 import com.vaadin.flow.component.page.BrowserWindowResizeListener;
@@ -51,6 +56,24 @@ public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListene
 		ObjectUtils.argumentNotNull(userAgentInspector, "UserAgentInspector must be not null");
 		this.userAgentInspector = userAgentInspector;
 		if (ui != null) {
+			// initial size
+			final WindowSizeReceiver windowSizeReceiver = new WindowSizeReceiver((w, h) -> {
+				if (windowWidth < 0) {
+					windowWidth = w;
+				}
+				if (windowHeight < 0) {
+					windowHeight = h;
+				}
+			});
+			ui.getElement().appendVirtualChild(windowSizeReceiver.getElement());
+			try {
+				ui.getPage().executeJavaScript(
+						"$0.$server.windowSize(document.body.clientWidth,document.body.clientHeight);",
+						windowSizeReceiver);
+			} catch (Exception e) {
+				LOGGER.error("Failed to execute window size detection JS [" + e.getMessage() + "]");
+			}
+			// resize
 			ui.getPage().addBrowserWindowResizeListener(this);
 		} else {
 			LOGGER.warn(
@@ -265,6 +288,24 @@ public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListene
 	@Override
 	public int getWindowHeight() {
 		return windowHeight;
+	}
+
+	@SuppressWarnings("serial")
+	@Tag(Tag.DIV)
+	private static class WindowSizeReceiver extends Component {
+
+		private final BiConsumer<Integer, Integer> callback;
+
+		public WindowSizeReceiver(BiConsumer<Integer, Integer> callback) {
+			super();
+			this.callback = callback;
+		}
+
+		@ClientCallable
+		private void windowSize(int width, int height) {
+			this.callback.accept(width, height);
+		}
+
 	}
 
 }
