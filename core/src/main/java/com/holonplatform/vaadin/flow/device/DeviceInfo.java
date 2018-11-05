@@ -71,6 +71,15 @@ public interface DeviceInfo extends UserAgentInspector {
 		return Optional.empty();
 	}
 
+	/**
+	 * Get the {@link DeviceInfo} for the current UI, throwing a {@link IllegalStateException} if not available.
+	 * @return The {@link DeviceInfo} for the current UI
+	 * @throws IllegalStateException If a DeviceInfo for current UI is not available
+	 */
+	static DeviceInfo require() {
+		return get().orElseThrow(() -> new IllegalStateException("A DeviceInfo for current UI is not available"));
+	}
+
 	// Builders
 
 	/**

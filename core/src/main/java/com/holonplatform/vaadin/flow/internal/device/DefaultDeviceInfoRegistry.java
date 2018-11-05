@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.device;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
@@ -32,7 +33,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 
 	private static final long serialVersionUID = -3886097061085664626L;
 
-	private final WeakHashMap<UI, DeviceInfo> deviceInfos = new WeakHashMap<>(4);
+	private final Map<Integer, DeviceInfo> deviceInfos = new WeakHashMap<>(4);
 
 	/*
 	 * (non-Javadoc)
@@ -41,7 +42,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public boolean hasDeviceInfo(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		return deviceInfos.containsKey(ui);
+		return deviceInfos.containsKey(ui.getUIId());
 	}
 
 	/*
@@ -51,7 +52,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public Optional<DeviceInfo> getDeviceInfo(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		return Optional.ofNullable(deviceInfos.get(ui));
+		return Optional.ofNullable(deviceInfos.get(ui.getUIId()));
 	}
 
 	/*
@@ -62,7 +63,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public void setDeviceInfo(UI ui, DeviceInfo deviceInfo) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		deviceInfos.put(ui, deviceInfo);
+		deviceInfos.put(ui.getUIId(), deviceInfo);
 	}
 
 }

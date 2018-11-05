@@ -22,6 +22,7 @@ import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.holonplatform.vaadin.flow.device.DeviceInfoRegistry;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
 /**
@@ -44,19 +45,31 @@ public class DeviceInfoServiceInitListener implements VaadinServiceInitListener 
 	 */
 	@Override
 	public void serviceInit(ServiceInitEvent event) {
-		event.addBootstrapListener(e -> {
-			// check DeviceInfo registry is available
+
+		// Session
+		event.getSource().addSessionInitListener(e -> {
+			// DeviceInfo registry is available
 			if (e.getSession().getAttribute(DeviceInfoRegistry.class) == null) {
 				e.getSession().setAttribute(DeviceInfoRegistry.class, new DefaultDeviceInfoRegistry());
 			}
-			// configure DeviceInfo
-			final DeviceInfoRegistry registry = e.getSession().getAttribute(DeviceInfoRegistry.class);
-			if (!registry.hasDeviceInfo(e.getUI())) {
-				registry.setDeviceInfo(e.getUI(), DeviceInfo.create(e.getUI(), e.getRequest()));
-				// log
-				LOGGER.info("A DeviceInfo was configured for UI with id [" + e.getUI().getUIId() + "]");
+		});
+
+		// UI init
+		event.getSource().addUIInitListener(e -> {
+			if (e.getUI().getSession() != null) {
+				// configure DeviceInfo
+				final DeviceInfoRegistry registry = e.getUI().getSession().getAttribute(DeviceInfoRegistry.class);
+				if (registry != null && !registry.hasDeviceInfo(e.getUI())) {
+					final VaadinRequest request = VaadinRequest.getCurrent();
+					if (request != null) {
+						registry.setDeviceInfo(e.getUI(), DeviceInfo.create(e.getUI(), request));
+						// log
+						LOGGER.info("A DeviceInfo was configured for UI with id [" + e.getUI().getUIId() + "]");
+					}
+				}
 			}
 		});
+
 	}
 
 }
