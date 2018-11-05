@@ -85,17 +85,17 @@ public class TestOptionsInput {
 		assertNotNull(input);
 
 		ItemOptionsModeSingleSelectInputBuilder<String, Integer> builder2 = OptionsModeSingleSelectInputBuilder.create(
-				String.class,
+				String.class, Integer.class,
 				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
 		input = builder2.build();
 		assertNotNull(input);
 
-		builder2 = Input.singleOptionSelect(String.class,
+		builder2 = Input.singleOptionSelect(String.class, Integer.class,
 				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
 		input = builder2.build();
 		assertNotNull(input);
 
-		builder2 = Components.input.singleOptionSelect(String.class,
+		builder2 = Components.input.singleOptionSelect(String.class, Integer.class,
 				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
 		input = builder2.build();
 		assertNotNull(input);
@@ -576,7 +576,7 @@ public class TestOptionsInput {
 		assertTrue(items.contains(new BeanTest1("B")));
 
 		SingleSelect<String> input2 = Input
-				.singleOptionSelect(String.class,
+				.singleOptionSelect(String.class, BeanTest1.class,
 						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
 				.dataSource(datastore, TARGET1, BeanTest1.class).build();
 		assertNotNull(input2);

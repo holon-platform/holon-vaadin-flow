@@ -89,7 +89,8 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		super();
 		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
 		this.selectionProperty = selectionProperty;
-		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(selectionProperty.getType(), itemConverter);
+		this.builder = new DefaultItemSelectModeSingleSelectInputBuilder<>(selectionProperty.getType(),
+				PropertyBox.class, itemConverter);
 		this.builder.itemCaptionGenerator(item -> {
 			if (item != null) {
 				return selectionProperty.present(item.getValue(selectionProperty));

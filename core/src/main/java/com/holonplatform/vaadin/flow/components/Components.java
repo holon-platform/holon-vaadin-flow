@@ -628,7 +628,7 @@ public interface Components {
 		 * {@link #singleSelect(ItemConverter)} if not.
 		 * <p>
 		 * @param <T> Value type
-		 * @param type Selection value type
+		 * @param type Selection value type (not null)
 		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 		 */
 		static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
@@ -644,14 +644,15 @@ public interface Components {
 		 * <p>
 		 * @param <T> Value type
 		 * @param <ITEM> Item type
-		 * @param type Selection value type
+		 * @param type Selection value type (not null)
+		 * @param itemType Selection items type (not null)
 		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 		 *        back (not null)
 		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type,
-				ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
-			return Input.singleSelect(type, itemConverter);
+				Class<ITEM> itemType, ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			return Input.singleSelect(type, itemType, itemConverter);
 		}
 
 		/**
@@ -686,7 +687,7 @@ public interface Components {
 		 * {@link #singleSelect(ItemConverter)} if not.
 		 * <p>
 		 * @param <T> Value type
-		 * @param type Selection value type
+		 * @param type Selection value type (not null)
 		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 		 */
 		static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> singleOptionSelect(Class<T> type) {
@@ -703,14 +704,15 @@ public interface Components {
 		 * <p>
 		 * @param <T> Value type
 		 * @param <ITEM> Item type
-		 * @param type Selection value type
+		 * @param type Selection value type (not null)
+		 * @param itemType Selection items type (not null)
 		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 		 *        back (not null)
 		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
-				ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
-			return Input.singleOptionSelect(type, itemConverter);
+				Class<ITEM> itemType, ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			return Input.singleOptionSelect(type, itemType, itemConverter);
 		}
 
 		/**

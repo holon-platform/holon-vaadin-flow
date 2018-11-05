@@ -74,6 +74,7 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
+	private final Class<ITEM> itemType;
 
 	protected final ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter;
 
@@ -86,14 +87,17 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	/**
 	 * Constructor.
 	 * @param type Selection value type (not null)
+	 * @param itemType Selection items type
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	public DefaultItemSelectModeSingleSelectInputBuilder(Class<? extends T> type,
+	public DefaultItemSelectModeSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
 		super(new ComboBox<>());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
+		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
 		this.type = type;
+		this.itemType = itemType;
 		this.itemConverter = itemConverter;
 
 		getComponent().setAllowCustomValue(false);
@@ -109,8 +113,12 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		}, this);
 	}
 
-	public Class<? extends T> getType() {
+	protected Class<? extends T> getType() {
 		return type;
+	}
+
+	protected Class<ITEM> getItemType() {
+		return itemType;
 	}
 
 	/*
