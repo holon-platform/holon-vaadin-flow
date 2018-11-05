@@ -77,17 +77,13 @@ public interface NumberInputBuilder<T extends Number>
 
 	/**
 	 * Sets whether to allow negative numbers.
+	 * <p>
+	 * Default is <code>true</code>.
+	 * </p>
 	 * @param allowNegative <code>true</code> to allow negative numbers, <code>false</code> otherwise
 	 * @return this
 	 */
 	NumberInputBuilder<T> allowNegative(boolean allowNegative);
-
-	/**
-	 * Set whether to use the grouping symbol for number format and conversion.
-	 * @param useGroupingwhether to use the grouping symbol for number format and conversion
-	 * @return this
-	 */
-	NumberInputBuilder<T> useGrouping(boolean useGrouping);
 
 	/**
 	 * Sets the minimum number of digits allowed in the fraction portion of a number.

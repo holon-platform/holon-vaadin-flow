@@ -125,7 +125,6 @@ public class DefaultNumberInputBuilder<T extends Number> extends
 		final StringToNumberConverter<T> oldConverter = this.converter;
 		this.converter = converter;
 		if (oldConverter != null) {
-			this.converter.setUseGrouping(oldConverter.isUseGrouping());
 			this.converter.setAllowNegatives(oldConverter.isAllowNegatives());
 			this.converter.setMinDecimals(oldConverter.getMinDecimals());
 			this.converter.setMaxDecimals(oldConverter.getMaxDecimals());
@@ -206,16 +205,6 @@ public class DefaultNumberInputBuilder<T extends Number> extends
 	@Override
 	public NumberInputBuilder<T> allowNegative(boolean allowNegative) {
 		getConverter().setAllowNegatives(allowNegative);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#useGrouping(boolean)
-	 */
-	@Override
-	public NumberInputBuilder<T> useGrouping(boolean useGrouping) {
-		getConverter().setUseGrouping(useGrouping);
 		return getConfigurator();
 	}
 

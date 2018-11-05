@@ -41,18 +41,6 @@ import com.vaadin.flow.data.converter.Converter;
 public interface StringToNumberConverter<T extends Number> extends Converter<String, T> {
 
 	/**
-	 * Set whether to use grouping.
-	 * @param useGrouping whether to use grouping
-	 */
-	void setUseGrouping(boolean useGrouping);
-
-	/**
-	 * Get whether to use grouping.
-	 * @return whether to use grouping
-	 */
-	boolean isUseGrouping();
-
-	/**
 	 * Get whether to allow negative numbers.
 	 * @return whether to allow negative number
 	 */
@@ -87,12 +75,6 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @param maxDecimals the maximum decimal digits, <code>-1</code> for no limit
 	 */
 	void setMaxDecimals(int maxDecimals);
-
-	/**
-	 * Get the grouping separator character, if available
-	 * @return the grouping separator character, or empty if grouping is disabled
-	 */
-	Optional<Character> getGroupingSymbol();
 
 	/**
 	 * Get the decimal separator character, if available
@@ -211,16 +193,6 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @param <T> Number type
 	 */
 	public interface Builder<T extends Number> {
-
-		/**
-		 * Set whether to use grouping.
-		 * <p>
-		 * Default is <code>true</code>.
-		 * </p>
-		 * @param useGrouping whether to use grouping
-		 * @return this
-		 */
-		Builder<T> grouping(boolean grouping);
 
 		/**
 		 * Set whether to allow negative numbers.

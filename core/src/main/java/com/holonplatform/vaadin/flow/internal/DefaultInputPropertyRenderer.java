@@ -236,11 +236,9 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		final Class<? extends Number> type = (Class<? extends Number>) property.getType();
 		// configuration
 		int decimals = property.getConfiguration().getParameter(StringValuePresenter.DECIMAL_POSITIONS).orElse(-1);
-		boolean useGrouping = !property.getConfiguration().getParameter(StringValuePresenter.DISABLE_GROUPING)
-				.orElse(Boolean.FALSE);
-
-		return (Input<T>) Input.number(type).label(property).readOnly(property.isReadOnly()).useGrouping(useGrouping)
-				.maxDecimals(decimals).build();
+		// build Input
+		return (Input<T>) Input.number(type).label(property).readOnly(property.isReadOnly()).maxDecimals(decimals)
+				.build();
 	}
 
 }

@@ -55,10 +55,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	private static final String PATTERN_INTEGER = "[0-9]*";
 	private static final String PATTERN_NEGATIVE_PREFIX = "-?";
 	private static final String PATTERN_DECIMAL_PREFIX = "[0-9]+";
-	private static final String PATTERN_DECIMAL_SUFFIX = "?[0-9]";
-	private static final String PATTERN_GROUPS_PREFIX = "^[0-9]{1,3}(";
-	private static final String PATTERN_NEGATIVE_GROUPS_PREFIX = "^-?[0-9]{1,3}(";
-	private static final String PATTERN_GROUPS_SUFFIX = "?[0-9]{3})*";
 
 	/**
 	 * Number type
@@ -74,11 +70,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	 * Number format pattern
 	 */
 	private final String numberFormatPattern;
-
-	/**
-	 * Whether to use grouping
-	 */
-	private boolean useGrouping = true;
 
 	/**
 	 * Whether to allow negative numbers
@@ -171,24 +162,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#setUseGrouping(boolean)
-	 */
-	@Override
-	public void setUseGrouping(boolean useGrouping) {
-		this.useGrouping = useGrouping;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#isUseGrouping()
-	 */
-	@Override
-	public boolean isUseGrouping() {
-		return useGrouping;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#isAllowNegatives()
 	 */
 	@Override
@@ -262,10 +235,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 		NumberFormat numberFormat = getNumberFormat().orElseGet(
 				() -> TypeUtils.isDecimalNumber(getNumberType()) ? NumberFormat.getNumberInstance(getLocale(context))
 						: NumberFormat.getIntegerInstance(getLocale(context)));
-		// check grouping
-		if (!isUseGrouping()) {
-			numberFormat.setGroupingUsed(false);
-		}
 		// min decimals
 		if (getMinDecimals() > -1) {
 			numberFormat.setMinimumFractionDigits(getMinDecimals());
@@ -320,18 +289,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	}
 
 	/**
-	 * Get the grouping separator character, if available
-	 * @return the grouping separator character, or empty if grouping is disabled
-	 */
-	@Override
-	public Optional<Character> getGroupingSymbol() {
-		if (!isUseGrouping()) {
-			return Optional.empty();
-		}
-		return getDecimalFormatSymbols().map(dfs -> dfs.getGroupingSeparator());
-	}
-
-	/**
 	 * Get the decimal separator character, if available
 	 * @return the decimal separator character, or empty if the number type is not a decimal number
 	 */
@@ -349,36 +306,21 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	 */
 	@Override
 	public String getValidationPattern() {
-		final Character grouping = getGroupingSymbol().orElse(null);
 		if (TypeUtils.isDecimalNumber(getNumberType())) {
 			// decimals
 			final Character decimals = getDecimalSymbol().orElse('.');
 			// check max decimals
-			final String decimalSuffix = (getMaxDecimals() > -1)
-					? (PATTERN_DECIMAL_SUFFIX + "{0," + getMaxDecimals() + "}")
-					: (PATTERN_DECIMAL_SUFFIX + "+");
-			if (isUseGrouping() && grouping != null) {
-				final String decimalPattern = TextConverterUtils.escape(decimals) + decimalSuffix;
-
-				return isAllowNegatives()
-						? PATTERN_NEGATIVE_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
-								+ decimalPattern
-						: PATTERN_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
-								+ decimalPattern;
-			} else {
-				final String decimalPattern = PATTERN_DECIMAL_PREFIX + TextConverterUtils.escape(decimals)
-						+ decimalSuffix;
-				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + decimalPattern : decimalPattern;
+			final String decimalSuffix = (getMaxDecimals() > -1) ? ("{0," + getMaxDecimals() + "}") : "*";
+			// base pattern
+			final String decimalPattern = PATTERN_DECIMAL_PREFIX + "(" + TextConverterUtils.escape(decimals) + "|"
+					+ TextConverterUtils.escape(decimals) + "[0-9]" + decimalSuffix + ")?";
+			// check negatives
+			if (isAllowNegatives()) {
+				return PATTERN_NEGATIVE_PREFIX + "|" + decimalPattern + "|" + PATTERN_NEGATIVE_PREFIX + decimalPattern;
 			}
+			return decimalPattern;
 		} else {
-			// integers
-			if (isUseGrouping() && grouping != null) {
-				return isAllowNegatives()
-						? PATTERN_NEGATIVE_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX
-						: PATTERN_GROUPS_PREFIX + TextConverterUtils.escape(grouping) + PATTERN_GROUPS_SUFFIX;
-			} else {
-				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + PATTERN_INTEGER : PATTERN_INTEGER;
-			}
+			return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + PATTERN_INTEGER : PATTERN_INTEGER;
 		}
 	}
 
@@ -387,8 +329,13 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	 * @see com.vaadin.data.Converter#convertToModel(java.lang.Object, com.vaadin.data.ValueContext)
 	 */
 	@Override
-	public Result<T> convertToModel(String value, ValueContext context) {
-		if (value != null && !value.trim().equals("")) {
+	public Result<T> convertToModel(String stringValue, ValueContext context) {
+		if (stringValue != null && !stringValue.trim().equals("")) {
+			String value = stringValue;
+			// check no decimal symbol at the end
+			if (!Character.isDigit(value.charAt(value.length() - 1))) {
+				value = value.substring(0, value.length());
+			}
 			try {
 				final T number = ConversionUtils
 						.convertNumberToTargetClass(getNumberFormat(context).parse(value.trim()), getNumberType());
@@ -460,16 +407,6 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 		public DefaultBuilder(Class<? extends T> numberType, String numberFormatPattern) {
 			super();
 			this.instance = new DefaultStringToNumberConverter<>(numberType, numberFormatPattern);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter.Builder#grouping(boolean)
-		 */
-		@Override
-		public Builder<T> grouping(boolean grouping) {
-			this.instance.setUseGrouping(grouping);
-			return this;
 		}
 
 		/*

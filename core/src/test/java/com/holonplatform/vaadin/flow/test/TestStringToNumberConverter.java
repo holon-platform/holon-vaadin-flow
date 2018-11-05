@@ -58,8 +58,6 @@ public class TestStringToNumberConverter {
 			assertNotNull(text2);
 			assertEquals("12,345.67", text2);
 
-			assertTrue(converter1.getGroupingSymbol().isPresent());
-			assertEquals(",", converter1.getGroupingSymbol().map(c -> String.valueOf(c)).orElse(null));
 			assertTrue(converter1.getDecimalSymbol().isPresent());
 			assertEquals(".", converter1.getDecimalSymbol().map(c -> String.valueOf(c)).orElse(null));
 		});
@@ -69,8 +67,6 @@ public class TestStringToNumberConverter {
 			assertNotNull(text2);
 			assertEquals("12.345,67", text2);
 
-			assertTrue(converter1.getGroupingSymbol().isPresent());
-			assertEquals(".", converter1.getGroupingSymbol().map(c -> String.valueOf(c)).orElse(null));
 			assertTrue(converter1.getDecimalSymbol().isPresent());
 			assertEquals(",", converter1.getDecimalSymbol().map(c -> String.valueOf(c)).orElse(null));
 		});
@@ -100,20 +96,9 @@ public class TestStringToNumberConverter {
 			assertEquals("12,345.67", text2);
 		});
 
-		// grouping
-		StringToNumberConverter<Double> converter3 = StringToNumberConverter.create(Double.class);
-		converter3.setUseGrouping(false);
-
-		assertFalse(converter3.isUseGrouping());
-		assertFalse(converter3.getGroupingSymbol().isPresent());
-
-		text = converter3.convertToPresentation(dbl, new ValueContext(Locale.US));
-		assertNotNull(text);
-		assertEquals("12345.67", text);
-
-		text = converter3.convertToPresentation(12345.6d, new ValueContext(Locale.US));
-		assertNotNull(text);
-		assertEquals("12345.6", text);
+		Double dv = converter2.convertToModel("123.", new ValueContext(Locale.US))
+				.getOrThrow(error -> new RuntimeException(error));
+		assertEquals(Double.valueOf(123d), dv);
 
 		// fixed NumberFormat
 		StringToNumberConverter<Double> converter4 = StringToNumberConverter.create(Double.class,
@@ -186,8 +171,6 @@ public class TestStringToNumberConverter {
 			assertNotNull(text2);
 			assertEquals("12,345", text2);
 
-			assertTrue(converter1.getGroupingSymbol().isPresent());
-			assertEquals(",", converter1.getGroupingSymbol().map(c -> String.valueOf(c)).orElse(null));
 			assertFalse(converter1.getDecimalSymbol().isPresent());
 		});
 
@@ -196,21 +179,8 @@ public class TestStringToNumberConverter {
 			assertNotNull(text2);
 			assertEquals("12.345", text2);
 
-			assertTrue(converter1.getGroupingSymbol().isPresent());
-			assertEquals(".", converter1.getGroupingSymbol().map(c -> String.valueOf(c)).orElse(null));
 			assertFalse(converter1.getDecimalSymbol().isPresent());
 		});
-
-		// grouping
-		StringToNumberConverter<Integer> converter2 = StringToNumberConverter.create(Integer.class);
-		converter2.setUseGrouping(false);
-
-		assertFalse(converter2.isUseGrouping());
-		assertFalse(converter2.getGroupingSymbol().isPresent());
-
-		text = converter2.convertToPresentation(itg, new ValueContext(Locale.US));
-		assertNotNull(text);
-		assertEquals("12345", text);
 
 		// negatives
 		StringToNumberConverter<Integer> converter3 = StringToNumberConverter.create(Integer.class);
@@ -226,8 +196,8 @@ public class TestStringToNumberConverter {
 	public void testValidationPattern() {
 
 		// integers
-		String validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).grouping(false)
-				.negatives(false).build().getValidationPattern();
+		String validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).negatives(false).build()
+				.getValidationPattern();
 		assertNotNull(validationPattern);
 		Pattern pattern = Pattern.compile(validationPattern);
 		assertFalse(pattern.matcher("a12345").matches());
@@ -236,8 +206,8 @@ public class TestStringToNumberConverter {
 		assertFalse(pattern.matcher("-12345").matches());
 
 		// integers - negatives
-		validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).grouping(false).negatives(true)
-				.build().getValidationPattern();
+		validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).negatives(true).build()
+				.getValidationPattern();
 		assertNotNull(validationPattern);
 		pattern = Pattern.compile(validationPattern);
 		assertFalse(pattern.matcher("a12345").matches());
@@ -248,21 +218,20 @@ public class TestStringToNumberConverter {
 		assertFalse(pattern.matcher("--12345").matches());
 
 		// decimals
-		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(false).negatives(false)
-				.build().getValidationPattern();
+		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).negatives(false).build()
+				.getValidationPattern();
 		assertNotNull(validationPattern);
 		pattern = Pattern.compile(validationPattern);
 		assertFalse(pattern.matcher("a12345").matches());
 		assertTrue(pattern.matcher("12345").matches());
-		assertFalse(pattern.matcher("12345.").matches());
 		assertFalse(pattern.matcher(".12345").matches());
 		assertFalse(pattern.matcher("12.34.5").matches());
 		assertTrue(pattern.matcher("12345.6").matches());
 		assertTrue(pattern.matcher("12345.67").matches());
 
 		// decimals - negatives
-		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(false).negatives(true)
-				.build().getValidationPattern();
+		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).negatives(true).build()
+				.getValidationPattern();
 		assertNotNull(validationPattern);
 		pattern = Pattern.compile(validationPattern);
 		assertFalse(pattern.matcher("a12345").matches());
@@ -271,72 +240,10 @@ public class TestStringToNumberConverter {
 		assertFalse(pattern.matcher("12.34.5").matches());
 		assertTrue(pattern.matcher("12345.6").matches());
 		assertTrue(pattern.matcher("-12345.67").matches());
-
-		// integers - grouping
-		validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).grouping(true).negatives(false)
-				.build().getValidationPattern();
-		assertNotNull(validationPattern);
-		pattern = Pattern.compile(validationPattern);
-		assertFalse(pattern.matcher("a12345").matches());
-		assertTrue(pattern.matcher("12,345").matches());
-		assertTrue(pattern.matcher("12,789,345").matches());
-		assertTrue(pattern.matcher("12345").matches());
-		assertFalse(pattern.matcher("12345.6").matches());
-		assertFalse(pattern.matcher("-12345").matches());
-		assertFalse(pattern.matcher("4,12").matches());
-		assertFalse(pattern.matcher(",412").matches());
-
-		// integers - grouping - negatives
-		validationPattern = StringToNumberConverter.builder(Integer.class, Locale.US).grouping(true).negatives(true)
-				.build().getValidationPattern();
-		assertNotNull(validationPattern);
-		pattern = Pattern.compile(validationPattern);
-		assertFalse(pattern.matcher("a12345").matches());
-		assertTrue(pattern.matcher("12,345").matches());
-		assertTrue(pattern.matcher("12,789,345").matches());
-		assertTrue(pattern.matcher("12345").matches());
-		assertFalse(pattern.matcher("12345.6").matches());
-		assertTrue(pattern.matcher("-12345").matches());
-		assertFalse(pattern.matcher("4,12").matches());
-		assertFalse(pattern.matcher(",412").matches());
-		assertTrue(pattern.matcher("-12,345").matches());
-		assertTrue(pattern.matcher("-12,789,345").matches());
-
-		// decimals - grouping
-		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(true).negatives(false)
-				.build().getValidationPattern();
-		assertNotNull(validationPattern);
-		pattern = Pattern.compile(validationPattern);
-		assertFalse(pattern.matcher("a12345").matches());
-		assertTrue(pattern.matcher("12345").matches());
-		assertFalse(pattern.matcher("12345.").matches());
-		assertFalse(pattern.matcher(".12345").matches());
-		assertFalse(pattern.matcher("12.34.5").matches());
-		assertTrue(pattern.matcher("12345.6").matches());
-		assertTrue(pattern.matcher("12345.67").matches());
-		assertTrue(pattern.matcher("12,345.67").matches());
-		assertFalse(pattern.matcher("12,34.5").matches());
-
-		// decimals - grouping - negatives
-		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(true).negatives(true)
-				.build().getValidationPattern();
-		assertNotNull(validationPattern);
-		pattern = Pattern.compile(validationPattern);
-		assertFalse(pattern.matcher("a12345").matches());
-		assertTrue(pattern.matcher("12345").matches());
-		assertFalse(pattern.matcher("12345.").matches());
-		assertFalse(pattern.matcher(".12345").matches());
-		assertFalse(pattern.matcher("12.34.5").matches());
-		assertTrue(pattern.matcher("12345.6").matches());
-		assertTrue(pattern.matcher("12345.67").matches());
-		assertTrue(pattern.matcher("12,345.67").matches());
-		assertFalse(pattern.matcher("12,34.5").matches());
-		assertTrue(pattern.matcher("-12345.67").matches());
-		assertTrue(pattern.matcher("-12,345.67").matches());
 
 		// max decimals
-		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).grouping(false).negatives(false)
-				.maxDecimals(2).build().getValidationPattern();
+		validationPattern = StringToNumberConverter.builder(Double.class, Locale.US).negatives(false).maxDecimals(2)
+				.build().getValidationPattern();
 		assertNotNull(validationPattern);
 		pattern = Pattern.compile(validationPattern);
 		assertTrue(pattern.matcher("12345").matches());
