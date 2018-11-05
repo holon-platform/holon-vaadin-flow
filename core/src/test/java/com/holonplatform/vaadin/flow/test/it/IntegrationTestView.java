@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.flow.test.it;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
@@ -27,7 +29,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @Theme(Lumo.class)
 @Route("")
 @PageTitle("Integration Test")
-public class IntegrationTestView extends VerticalLayout {
+public class IntegrationTestView extends VerticalLayout implements AfterNavigationObserver {
 
 	static final String VIEW = "it-view";
 	static final String LABEL1 = "it-lbl1";
@@ -45,6 +47,11 @@ public class IntegrationTestView extends VerticalLayout {
 		add(Components.button().id(BUTTON1).text("TEST").withClickListener(e -> {
 			label1.setText(e.getSource().getId().orElse(null));
 		}).build());
+	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		// noop
 	}
 
 }
