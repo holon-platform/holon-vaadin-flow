@@ -325,7 +325,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		/**
 		 * Sets whether to validate the available {@link Input}s value every time the {@link Input} value changes.
 		 * <p>
-		 * Default is <code>true</code>.
+		 * Default is <code>false</code>.
 		 * </p>
 		 * @param validateOnValueChange <code>true</code> to perform value validation every time a {@link Input} value
 		 *        changes, <code>false</code> if not
@@ -355,13 +355,6 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		B stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure);
-
-		/**
-		 * Set to ignore any {@link Property} registered {@link Validator} when binding the property to an {@link Input}
-		 * component, i.e. to not inherit property {@link Validator}s when the property-input binding is performed.
-		 * @return this
-		 */
-		B ignorePropertyValidation();
 
 		/**
 		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.

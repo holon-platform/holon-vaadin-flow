@@ -488,16 +488,6 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#ignorePropertyValidation()
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> ignorePropertyValidation() {
-			inputGroupBuilder.ignorePropertyValidation();
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
 		 * .core.property.Property, com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)

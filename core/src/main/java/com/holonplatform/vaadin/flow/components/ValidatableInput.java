@@ -20,6 +20,10 @@ import java.util.Optional;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.ValidatableInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
@@ -80,6 +84,8 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 */
 	Optional<ValidationStatusHandler<T>> getValidationStatusHandler();
 
+	// Builders
+
 	/**
 	 * Create a {@link ValidatableInput} from given {@link Input} instance.
 	 * @param <T> Value type
@@ -110,6 +116,43 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 */
 	static <T> ValidatableInputBuilder<T, ValidatableInput<T>> builder(Input<T> input) {
 		return new DefaultValidatableInputBuilder<>(input);
+	}
+
+	// Renderers
+
+	/**
+	 * Try to obtain a {@link ValidatableInput} component to handle the value of given <code>property</code>.
+	 * <p>
+	 * The current {@link PropertyRendererRegistry} is used to look for a suitable {@link PropertyRenderer} to render
+	 * the {@link ValidatableInput} using the provided {@link Property}.
+	 * </p>
+	 * @param <T> Property type
+	 * @param property The property for which to obtain the {@link ValidatableInput} (not null)
+	 * @return Optional property {@link ValidatableInput} component
+	 * @see {@link PropertyRendererRegistry#get()}
+	 */
+	@SuppressWarnings("unchecked")
+	static <T> Optional<ValidatableInput<T>> forProperty(Property<T> property) {
+		return property.renderIfAvailable(ValidatableInput.class).map(input -> input);
+	}
+
+	/**
+	 * Get a {@link ValidatableInput} component to handle the value of given <code>property</code>.
+	 * <p>
+	 * The current {@link PropertyRendererRegistry} is used to look for a suitable {@link PropertyRenderer} to render
+	 * the {@link ValidatableInput} using the provided {@link Property}.
+	 * </p>
+	 * @param <T> Property type
+	 * @param property The property for which to obtain the {@link ValidatableInput} (not null)
+	 * @return The property {@link ValidatableInput} component
+	 * @throws NoSuitableRendererAvailableException If a suitable PropertyRenderer is not available to render given
+	 *         property as a ValidatableInput
+	 * @see {@link PropertyRendererRegistry#get()}
+	 */
+	static <T> ValidatableInput<T> requireForProperty(Property<T> property) {
+		return forProperty(property)
+				.orElseThrow(() -> new NoSuitableRendererAvailableException("Failed to render the property [" + property
+						+ "] as a ValidatableInput: no suitable PropertyRenderer available"));
 	}
 
 }

@@ -88,7 +88,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * Whether to validate inputs at value change
 	 */
-	private boolean validateOnValueChange = true;
+	private boolean validateOnValueChange = false;
 
 	/**
 	 * Validation behaviour
@@ -99,11 +99,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Overall validation behaviour
 	 */
 	private boolean stopOverallValidationAtFirstFailure = false;
-
-	/**
-	 * Ignore validation
-	 */
-	private boolean ignorePropertyValidation = false;
 
 	/**
 	 * Constructor.
@@ -496,22 +491,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		this.stopOverallValidationAtFirstFailure = stopOverallValidationAtFirstFailure;
 	}
 
-	/**
-	 * Get whether to ignore {@link Property} validators.
-	 * @return <code>true</code> if {@link Property} validators must be ignored
-	 */
-	protected boolean isIgnorePropertyValidation() {
-		return ignorePropertyValidation;
-	}
-
-	/**
-	 * Set whether to ignore {@link Property} validators.
-	 * @param ignorePropertyValidation <code>true</code> to ignore {@link Property} validators
-	 */
-	public void setIgnorePropertyValidation(boolean ignorePropertyValidation) {
-		this.ignorePropertyValidation = ignorePropertyValidation;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
@@ -765,11 +744,9 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 			try {
 				// property validators
-				if (!isIgnorePropertyValidation()) {
-					property.getValidators().forEach(v -> {
-						v.validate(value);
-					});
-				}
+				property.getValidators().forEach(v -> {
+					v.validate(value);
+				});
 				// input validators
 				configuration.get(property).getValidators().forEach(v -> {
 					v.validate(value);
@@ -997,16 +974,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		@Override
 		public B validateOnValueChange(boolean validateOnValueChange) {
 			instance.setValidateOnValueChange(validateOnValueChange);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#ignorePropertyValidation()
-		 */
-		@Override
-		public B ignorePropertyValidation() {
-			instance.setIgnorePropertyValidation(true);
 			return builder();
 		}
 

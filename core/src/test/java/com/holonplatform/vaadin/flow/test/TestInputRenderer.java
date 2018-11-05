@@ -27,6 +27,7 @@ import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,6 +76,21 @@ public class TestInputRenderer {
 	@AfterEach
 	public void after() {
 		CurrentInstance.set(UI.class, null);
+	}
+	
+	@Test
+	public void testInputRenderer() {
+		
+		final Property<String> p1 = StringProperty.create("test");
+		Optional<Input<String>> oi = Input.forProperty(p1);
+		assertTrue(oi.isPresent());
+		
+		Input<String> i = Input.requireForProperty(p1);
+		assertNotNull(i);
+		assertNotNull(i.getComponent());
+		i.setValue("X");
+		assertEquals("X", i.getValue());
+		
 	}
 
 	@SuppressWarnings("unchecked")
