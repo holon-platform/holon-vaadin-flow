@@ -49,6 +49,7 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
+import com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
@@ -201,43 +202,6 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	static <F extends Component & HasValue<?, V>, T, V> Input<T> from(F field, Property<T> property,
 			PropertyValueConverter<T, V> converter) {
 		return from(from(field), property, converter);
-	}
-
-	// Input renderers
-
-	/**
-	 * Try to obtain an {@link Input} component to handle the value of given <code>property</code>.
-	 * <p>
-	 * The current {@link PropertyRendererRegistry} is used to look for a suitable {@link PropertyRenderer} to render
-	 * the {@link Input} using the provided {@link Property}.
-	 * </p>
-	 * @param <T> Property type
-	 * @param property The property for which to obtain the {@link Input} (not null)
-	 * @return Optional property {@link Input} component
-	 * @see {@link PropertyRendererRegistry#get()}
-	 */
-	@SuppressWarnings("unchecked")
-	static <T> Optional<Input<T>> forProperty(Property<T> property) {
-		return property.renderIfAvailable(Input.class).map(input -> input);
-	}
-
-	/**
-	 * Get an {@link Input} component to handle the value of given <code>property</code>.
-	 * <p>
-	 * The current {@link PropertyRendererRegistry} is used to look for a suitable {@link PropertyRenderer} to render
-	 * the {@link Input} using the provided {@link Property}.
-	 * </p>
-	 * @param <T> Property type
-	 * @param property The property for which to obtain the {@link Input} (not null)
-	 * @return The property {@link Input} component
-	 * @throws NoSuitableRendererAvailableException If a suitable PropertyRenderer is not available to render given
-	 *         property as an Input
-	 * @see {@link PropertyRendererRegistry#get()}
-	 */
-	static <T> Input<T> requireForProperty(Property<T> property) {
-		return forProperty(property)
-				.orElseThrow(() -> new NoSuitableRendererAvailableException("Failed to render the property [" + property
-						+ "] as an Input: no suitable PropertyRenderer available"));
 	}
 
 	// Builders
@@ -526,6 +490,18 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <E extends Enum<E>> ItemOptionsModeSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
 		return singleOptionSelect(enumType).items(enumType.getEnumConstants());
+	}
+
+	// Create by type
+
+	/**
+	 * Create an {@link Input} to handle given value <code>type</code>, if available.
+	 * @param <T> Value type
+	 * @param type The value type (not null)
+	 * @return Optional {@link Input} component
+	 */
+	static <T> Optional<Input<T>> create(Class<T> type) {
+		return DefaultInputPropertyRenderer.createByType(type);
 	}
 
 	// Renderers

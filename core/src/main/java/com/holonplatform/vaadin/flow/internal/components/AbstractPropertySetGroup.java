@@ -86,6 +86,14 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
 	}
 
 	/**
+	 * Get the current group value, if present.
+	 * @return Optional value
+	 */
+	protected Optional<PropertyBox> getCurrentValueIfPresent() {
+		return Optional.ofNullable(getCurrentValue());
+	}
+
+	/**
 	 * Get the current group value.
 	 * @return the value
 	 */
@@ -128,16 +136,6 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
 	@Override
 	public Stream<Property<?>> propertyStream() {
 		return getPropertySet().stream().map(p -> (Property<?>) p);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#isEmpty()
-	 */
-	@Override
-	public boolean isEmpty() {
-		final PropertyBox value = getValue();
-		return (value == null) || (!value.propertyValues().filter(v -> v.hasValue()).findAny().isPresent());
 	}
 
 	/*

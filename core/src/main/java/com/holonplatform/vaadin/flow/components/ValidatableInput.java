@@ -149,10 +149,10 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 *         property as a ValidatableInput
 	 * @see {@link PropertyRendererRegistry#get()}
 	 */
-	static <T> ValidatableInput<T> requireForProperty(Property<T> property) {
-		return forProperty(property)
-				.orElseThrow(() -> new NoSuitableRendererAvailableException("Failed to render the property [" + property
-						+ "] as a ValidatableInput: no suitable PropertyRenderer available"));
+	@SuppressWarnings("unchecked")
+	static <T> ValidatableInput<T> create(Property<T> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return property.renderIfAvailable(ValidatableInput.class).orElseGet(() -> from(Input.create(property)));
 	}
 
 }

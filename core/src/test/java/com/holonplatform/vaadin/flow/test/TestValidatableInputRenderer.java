@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.Validator;
@@ -60,10 +58,7 @@ public class TestValidatableInputRenderer {
 		final Property<String> p1 = StringProperty.create("test").validator(Validator.min(2))
 				.validator(Validator.max(3));
 
-		Optional<ValidatableInput<String>> oi = ValidatableInput.forProperty(p1);
-		assertTrue(oi.isPresent());
-
-		ValidatableInput<String> i = ValidatableInput.requireForProperty(p1);
+		ValidatableInput<String> i = ValidatableInput.create(p1);
 		assertNotNull(i);
 
 		i.setValue("A");

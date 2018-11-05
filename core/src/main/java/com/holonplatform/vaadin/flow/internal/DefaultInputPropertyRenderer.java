@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.annotation.Priority;
 
@@ -97,6 +98,55 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		}
 
 		return null;
+	}
+
+	/**
+	 * Create an {@link Input} to handle given value <code>type</code>, if available.
+	 * @param <V> Value type
+	 * @param type The value type (not null)
+	 * @return Optional {@link Input} component
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V> Optional<Input<V>> createByType(Class<V> type) {
+		ObjectUtils.argumentNotNull(type, "Type must be not null");
+
+		if (TypeUtils.isString(type)) {
+			// String
+			return Optional.of(Input.string().emptyValuesAsNull(true).build()).map(input -> (Input<V>) input);
+		}
+		if (TypeUtils.isBoolean(type)) {
+			// Boolean
+			return Optional.of(Input.boolean_().build()).map(input -> (Input<V>) input);
+		}
+		if (TypeUtils.isEnum(type)) {
+			// Enum
+			final Class<Enum> enumType = (Class<Enum>) type;
+			return Optional.of(Input.singleSelect(enumType).items(enumType.getEnumConstants()).build())
+					.map(input -> (Input<V>) input);
+		}
+		if (LocalDate.class.isAssignableFrom(type)) {
+			// LocalDate
+			return Optional.of(Input.localDate().build()).map(input -> (Input<V>) input);
+		}
+		if (LocalTime.class.isAssignableFrom(type)) {
+			// LocalDate
+			return Optional.of(Input.localTime().build()).map(input -> (Input<V>) input);
+		}
+		if (LocalDateTime.class.isAssignableFrom(type)) {
+			// LocalDate
+			return Optional.of(Input.localDateTime().build()).map(input -> (Input<V>) input);
+		}
+		if (TypeUtils.isDate(type)) {
+			// Date
+			return Optional.of(Input.date().build()).map(input -> (Input<V>) input);
+		}
+		if (TypeUtils.isNumber(type)) {
+			// Number
+			final Class<? extends Number> numberType = (Class<? extends Number>) type;
+			return Optional.of(Input.number(numberType)).map(input -> (Input<V>) input);
+		}
+
+		return Optional.empty();
 	}
 
 	/**

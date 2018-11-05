@@ -360,11 +360,20 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValueIfPresent()
+	 */
+	@Override
+	public Optional<PropertyBox> getValueIfPresent() {
+		return getCurrentValueIfPresent().map(v -> getValue());
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.ValueHolder#isEmpty()
 	 */
 	@Override
 	public boolean isEmpty() {
-		return getValue(false).propertyValues().filter(v -> v.hasValue()).findAny().isPresent();
+		return !getCurrentValueIfPresent().isPresent();
 	}
 
 	/**

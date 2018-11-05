@@ -30,12 +30,12 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
-import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
-import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
-import com.holonplatform.vaadin.flow.components.ViewComponent;
-import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup.PropertyInputGroupBuilder;
 
-public class TestPropertyViewGroup {
+public class TestPropertyInputGroup {
 
 	private static final NumericProperty<Long> ID = NumericProperty.longType("id");
 	private static final StringProperty NAME = StringProperty.create("name");
@@ -47,10 +47,10 @@ public class TestPropertyViewGroup {
 	@Test
 	public void testBuilder() {
 
-		PropertyViewGroupBuilder builder = PropertyViewGroup.builder(SET);
+		PropertyInputGroupBuilder builder = PropertyInputGroup.builder(SET);
 		assertNotNull(builder);
 
-		PropertyViewGroup group = PropertyViewGroup.builder(SET).build();
+		PropertyInputGroup group = PropertyInputGroup.builder(SET).build();
 		assertNotNull(group);
 
 		assertTrue(group.hasProperty(ID));
@@ -61,31 +61,32 @@ public class TestPropertyViewGroup {
 		group.getProperties().iterator().forEachRemaining(p -> size.incrementAndGet());
 		assertEquals(3, size.get());
 
-		group = PropertyViewGroup.builder(ID, NAME, VIRTUAL).build();
+		group = PropertyInputGroup.builder(ID, NAME, VIRTUAL).build();
 		assertNotNull(group);
 
 		assertTrue(group.hasProperty(ID));
 		assertTrue(group.hasProperty(NAME));
 		assertTrue(group.hasProperty(VIRTUAL));
 
-		final ViewComponent<String> vc = ViewComponent.create(String.class);
+		final Input<String> input = Input.create(String.class).orElseThrow(() -> new RuntimeException("Failed to create Input"));
 
-		final ViewComponentPropertyRenderer<String> renderer1 = ViewComponentPropertyRenderer.create(p -> vc);
+		final InputPropertyRenderer<String> renderer1 = InputPropertyRenderer.create(p -> input);
 
-		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, vc).build();
-		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
+		group = PropertyInputGroup.builder(ID, NAME).bind(NAME, input).build();
+		assertEquals(input, group.getInput(NAME).orElse(null));
 
-		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, renderer1).build();
-		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
+		group = PropertyInputGroup.builder(ID, NAME).bind(NAME, renderer1).build();
+		assertEquals(input, group.getInput(NAME).orElse(null));
 
-		group = PropertyViewGroup.builder(ID, NAME).bind(NAME, p -> vc).build();
-		assertEquals(vc, group.getViewComponent(NAME).orElse(null));
+		// TODO
+		//group = PropertyInputGroup.builder(ID, NAME).bind(NAME, p -> input).build();
+		//assertEquals(input, group.getInput(NAME).orElse(null));
 
-		group = PropertyViewGroup.builder(ID, NAME).hidden(ID).build();
+		group = PropertyInputGroup.builder(ID, NAME).hidden(ID).build();
 		assertTrue(group.hasProperty(ID));
-		assertFalse(group.getViewComponent(ID).isPresent());
+		assertFalse(group.getInput(ID).isPresent());
 
-		group = PropertyViewGroup.builder(ID, NAME).withPostProcessor((property, component) -> {
+		group = PropertyInputGroup.builder(ID, NAME).withPostProcessor((property, component) -> {
 			if (ID.equals(property)) {
 				component.hasEnabled().ifPresent(e -> e.setEnabled(false));
 			}
@@ -93,22 +94,16 @@ public class TestPropertyViewGroup {
 
 		assertTrue(group.hasProperty(ID));
 		assertTrue(group.hasProperty(NAME));
-		assertTrue(group.getViewComponent(ID).isPresent());
-		assertTrue(group.getViewComponent(ID).isPresent());
-		assertFalse(group.getViewComponent(ID).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
-		assertTrue(group.getViewComponent(NAME).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
-
-		final ViewComponent<Number> nvc = ViewComponent.create(Number.class);
-		final NumericProperty<Double> np = NumericProperty.doubleType("test");
-
-		ViewComponentPropertyRenderer<Number> rnd2 = ViewComponentPropertyRenderer.create(p -> nvc);
-		assertEquals(nvc, rnd2.render(np));
+		assertTrue(group.getInput(ID).isPresent());
+		assertTrue(group.getInput(ID).isPresent());
+		assertFalse(group.getInput(ID).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
+		assertTrue(group.getInput(NAME).get().hasEnabled().map(e -> e.isEnabled()).orElse(false));
 	}
 
 	@Test
 	public void testGroup() {
 
-		PropertyViewGroup group = PropertyViewGroup.builder(SET).build();
+		PropertyInputGroup group = PropertyInputGroup.builder(SET).build();
 		assertNotNull(group);
 
 		assertEquals(3, group.propertyStream().count());
@@ -118,12 +113,11 @@ public class TestPropertyViewGroup {
 
 		assertEquals(3, group.stream().filter(b -> b.getComponent() != null).count());
 
-		assertTrue(group.getViewComponent(ID).isPresent());
-		assertTrue(group.getViewComponent(NAME).isPresent());
-		assertTrue(group.getViewComponent(VIRTUAL).isPresent());
+		assertTrue(group.getInput(ID).isPresent());
+		assertTrue(group.getInput(NAME).isPresent());
+		assertTrue(group.getInput(VIRTUAL).isPresent());
 
 		assertTrue(group.isEmpty());
-		assertNull(group.getValue());
 		assertNull(group.getValueIfPresent().orElse(null));
 
 		group.setValue(PropertyBox.create(SET));
@@ -134,17 +128,16 @@ public class TestPropertyViewGroup {
 		assertNotNull(group.getValue());
 		assertFalse(group.isEmpty());
 
-		assertNotNull(group.getViewComponent(ID).map(c -> c.getValue()).orElse(null));
-		assertNotNull(group.getViewComponent(NAME).map(c -> c.getValue()).orElse(null));
-		assertNotNull(group.getViewComponent(VIRTUAL).map(c -> c.getValue()).orElse(null));
+		assertNotNull(group.getInput(ID).map(c -> c.getValue()).orElse(null));
+		assertNotNull(group.getInput(NAME).map(c -> c.getValue()).orElse(null));
+		assertNotNull(group.getInput(VIRTUAL).map(c -> c.getValue()).orElse(null));
 
 		group.clear();
 		assertTrue(group.isEmpty());
-		assertNull(group.getValue());
 
 		final AtomicInteger fired = new AtomicInteger(0);
 
-		group = PropertyViewGroup.builder(SET).withValueChangeListener(e -> fired.incrementAndGet()).build();
+		group = PropertyInputGroup.builder(SET).withValueChangeListener(e -> fired.incrementAndGet()).build();
 		assertEquals(0, fired.get());
 
 		group.setValue(PropertyBox.builder(SET).set(ID, 2L).build());
