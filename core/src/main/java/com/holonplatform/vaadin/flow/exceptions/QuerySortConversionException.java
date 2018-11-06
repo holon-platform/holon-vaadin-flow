@@ -15,20 +15,22 @@
  */
 package com.holonplatform.vaadin.flow.exceptions;
 
+import com.holonplatform.core.query.QuerySort;
+
 /**
- * Exception to notify components configuration errors.
+ * Exception to notify {@link QuerySort} conversion errors.
  * 
  * @since 5.2.0
  */
-public class ComponentConfigurationException extends RuntimeException {
+public class QuerySortConversionException extends RuntimeException {
 
-	private static final long serialVersionUID = 49903885276507258L;
+	private static final long serialVersionUID = 3308933839850541153L;
 
 	/**
 	 * Constructor with error message.
 	 * @param message the error message
 	 */
-	public ComponentConfigurationException(String message) {
+	public QuerySortConversionException(String message) {
 		super(message);
 	}
 
@@ -36,7 +38,7 @@ public class ComponentConfigurationException extends RuntimeException {
 	 * Constructor with cause.
 	 * @param cause The cause
 	 */
-	public ComponentConfigurationException(Throwable cause) {
+	public QuerySortConversionException(Throwable cause) {
 		super(cause);
 	}
 
@@ -45,7 +47,7 @@ public class ComponentConfigurationException extends RuntimeException {
 	 * @param message the error message
 	 * @param cause The cause
 	 */
-	public ComponentConfigurationException(String message, Throwable cause) {
+	public QuerySortConversionException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

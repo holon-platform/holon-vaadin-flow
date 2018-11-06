@@ -49,23 +49,6 @@ public interface ItemSet {
 	}
 
 	/**
-	 * Item icon generator.
-	 * @param <ITEM> Item type
-	 */
-	@FunctionalInterface
-	public interface ItemIconGenerator<ITEM> extends Serializable {
-
-		/**
-		 * Get the icon for given <code>item</code>.
-		 * @param item the item for which to get the icon
-		 * @return Item icon
-		 */
-		// TODO APICHG: was Resource
-		String getItemIcon(ITEM item);
-
-	}
-
-	/**
 	 * Item description generator.
 	 * @param <ITEM> Item type
 	 */
