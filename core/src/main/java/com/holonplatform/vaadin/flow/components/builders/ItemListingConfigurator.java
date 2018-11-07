@@ -29,8 +29,11 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.grid.GridContextMenu;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.renderer.ClickableRenderer.ItemClickListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -43,12 +46,11 @@ import com.vaadin.flow.function.ValueProvider;
  *
  * @param <T> Item type
  * @param <P> Item property type
- * @param <L> Concrete ItemListing type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C>>
+public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator<T, P, C>>
 		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>,
 		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C> {
 
@@ -95,7 +97,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
 	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
 	 */
-	ItemListingColumnBuilder<T, P, L, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
+	ItemListingColumnBuilder<T, P, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
 
 	/**
 	 * Set the visible columns list, using the item properties as column reference. The columns will be displayed in the
@@ -403,7 +405,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @param listener The {@link ItemClickListener} to add (not null)
 	 * @return this
 	 */
-	C withItemClickListener(ClickEventListener<L, ItemClickEvent<L, T>> listener);
+	C withItemClickListener(ClickEventListener<ItemListing<T, P>, ItemClickEvent<ItemListing<T, P>, T>> listener);
 
 	/**
 	 * Sets whether multiple column sorting is enabled on the client-side.
@@ -426,6 +428,18 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C withThemeVariants(GridVariant... variants);
+
+	/**
+	 * Get a {@link ItemListingContextMenuBuilder} to configure and add a context menu to show for each listing item.
+	 * <p>
+	 * Use the {@link ItemListingContextMenuBuilder#add()} method to add the context menu to the item listing.
+	 * </p>
+	 * <p>
+	 * By default, the context menu can be opened with a right click or a long touch on the target component.
+	 * </p>
+	 * @return A {@link ItemListingContextMenuBuilder}
+	 */
+	ItemListingContextMenuBuilder<T, P, C> contextMenu();
 
 	// TODO header/footer builders
 
@@ -605,17 +619,36 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * 
 	 * @param <T> Item type
 	 * @param <P> Item property type
-	 * @param <L> Item listing type
 	 * @param <B> Parent builder type
 	 * 
 	 * @since 5.2.0
 	 */
-	public interface ItemListingColumnBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingConfigurator<T, P, L, B>>
-			extends ItemListingColumnConfigurator<T, P, ItemListingColumnBuilder<T, P, L, B>> {
+	public interface ItemListingColumnBuilder<T, P, B extends ItemListingConfigurator<T, P, B>>
+			extends ItemListingColumnConfigurator<T, P, ItemListingColumnBuilder<T, P, B>> {
 
 		/**
 		 * Add the column to the listing.
 		 * @return The parent listing builder
+		 */
+		B add();
+
+	}
+
+	/**
+	 * {@link ItemListing} context menu builder.
+	 * 
+	 * @param <T> Item type
+	 * @param <P> Item property type
+	 * @param <B> Parent item listing builder type
+	 *
+	 * @since 5.2.0
+	 */
+	public interface ItemListingContextMenuBuilder<T, P, B extends ItemListingConfigurator<T, P, B>> extends
+			ContextMenuConfigurator<ItemListingClickEvent<MenuItem, T, P>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, B>> {
+
+		/**
+		 * Add the context menu to the item listing.
+		 * @return The parent item listing builder
 		 */
 		B add();
 

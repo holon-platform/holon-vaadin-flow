@@ -34,6 +34,7 @@ import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.BaseButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
@@ -65,6 +66,7 @@ import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HtmlContainer;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -266,6 +268,14 @@ public interface Components {
 	 */
 	static FormLayoutBuilder formLayout() {
 		return FormLayoutBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create {@link ContextMenu}s.
+	 * @return A new {@link ContextMenuBuilder}
+	 */
+	static ContextMenuBuilder contextMenu() {
+		return ContextMenuBuilder.create();
 	}
 
 	// TODO tabs, dialogs

@@ -13,21 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components.builders;
+package com.holonplatform.vaadin.flow.components.events;
 
-import com.holonplatform.vaadin.flow.components.events.ClickEvent;
-import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.holonplatform.vaadin.flow.components.ItemListing;
 
 /**
- * Context menu item configurator.
- * 
- * @param <E> Click event type
- * @param <C> Concrete configurator type
+ * An {@link ItemClickEvent} bound to an {@link ItemListing}.
+ *
+ * @param <S> Source type
+ * @param <T> Item type
+ * @param <P> Item property type
  *
  * @since 5.2.0
  */
-public interface MenuItemConfigurator<E extends ClickEvent<MenuItem>, C extends MenuItemConfigurator<E, C>>
-		extends ComponentConfigurator<C>, HasEnabledConfigurator<C>, HasTextConfigurator<C>,
-		ClickNotifierConfigurator<MenuItem, E, C> {
+public interface ItemListingClickEvent<S, T, P> extends ItemClickEvent<S, T> {
+
+	/**
+	 * The {@link ItemListing} on which the event occurred.
+	 * @return The {@link ItemListing} on which the event occurred
+	 */
+	ItemListing<T, P> getItemListing();
 
 }
