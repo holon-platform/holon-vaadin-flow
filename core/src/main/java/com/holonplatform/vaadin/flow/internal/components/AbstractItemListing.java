@@ -34,6 +34,8 @@ import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
+import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
+import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.Component;
@@ -123,6 +125,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	@Override
 	public Component getComponent() {
 		return getGrid();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getHeader()
+	 */
+	@Override
+	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getHeader() {
+		return Optional.of(new DefaultItemListingHeaderSection<>(getGrid(), property -> getColumn(property).orElse(null)));
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getFooter()
+	 */
+	@Override
+	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter() {
+		return Optional.of(new DefaultItemListingFooterSection<>(getGrid(), property -> getColumn(property).orElse(null)));
 	}
 
 	/**

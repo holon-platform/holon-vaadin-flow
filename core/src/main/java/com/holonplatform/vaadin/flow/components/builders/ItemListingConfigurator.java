@@ -16,8 +16,10 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -25,11 +27,16 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell;
+import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingRow;
+import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingSection;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -50,6 +57,7 @@ import com.vaadin.flow.function.ValueProvider;
  * 
  * @since 5.2.0
  */
+// TODO row/cell/column style generators
 public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator<T, P, C>>
 		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>,
 		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C> {
@@ -408,6 +416,17 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	C withItemClickListener(ClickEventListener<ItemListing<T, P>, ItemClickEvent<ItemListing<T, P>, T>> listener);
 
 	/**
+	 * Adds a listener that gets notified when the item listing data is refreshed.
+	 * <p>
+	 * The refresh event is fired when tha data provider detect a data change event, either for all the items or for
+	 * only one. When only one item is updated, it is available from {@link ItemListingRefreshEvent#getItem()}.
+	 * </p>
+	 * @param listener The {@link ItemListingRefreshListener} to add (not null)
+	 * @return this
+	 */
+	C withItemRefreshListener(ItemListingRefreshListener<T, P> listener);
+
+	/**
 	 * Sets whether multiple column sorting is enabled on the client-side.
 	 * @param multiSort <code>true</code> to enable sorting of multiple columns on the client-side, <code>false</code>
 	 *        to disable
@@ -441,9 +460,21 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 */
 	ItemListingContextMenuBuilder<T, P, C> contextMenu();
 
-	// TODO header/footer builders
+	/**
+	 * Provide a {@link Consumer} to configure the item listing header section, using the {@link ItemListingSection}
+	 * API.
+	 * @param headerConfigurator The item listing header section configurator (not null)
+	 * @return this
+	 */
+	C header(Consumer<EditableItemListingSection<P>> headerConfigurator);
 
-	// TODO style generators
+	/**
+	 * Provide a {@link Consumer} to configure the item listing footer section, using the {@link ItemListingSection}
+	 * API.
+	 * @param footerConfigurator The item listing footer section configurator (not null)
+	 * @return this
+	 */
+	C footer(Consumer<EditableItemListingSection<P>> footerConfigurator);
 
 	// -------
 
@@ -651,6 +682,71 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 		 * @return The parent item listing builder
 		 */
 		B add();
+
+	}
+
+	/**
+	 * {@link ItemListing} section handler for header and footer configuration.
+	 *
+	 * @param <P> Item property type
+	 */
+	public interface EditableItemListingSection<P> extends ItemListingSection<P, EditableItemListingRow<P>> {
+
+		/**
+		 * Adds a new row at the bottom of the section.
+		 * @return the new row
+		 */
+		EditableItemListingRow<P> appendRow();
+
+		/**
+		 * Adds a new row at the top of the section.
+		 * @return the new row
+		 */
+		EditableItemListingRow<P> prependRow();
+
+	}
+
+	/**
+	 * An editable {@link ItemListing} section row handler.
+	 * 
+	 * @param <P> Item property type
+	 */
+	public interface EditableItemListingRow<P> extends ItemListingRow<P> {
+
+		/**
+		 * Joins the cells corresponding the given columns in the row.
+		 * <p>
+		 * The columns must be adjacent, and this row must be the out-most row.
+		 * </p>
+		 * <p>
+		 * The way that the client-side web component works also causes some limitations to which cells can be joined.
+		 * For example, if you join the first and second cell in the header, you cannot join the second and third cell
+		 * in the footer.
+		 * </p>
+		 * @param properties The properties of the cells to join (not null)
+		 * @return the merged cell
+		 * @throws IllegalArgumentException if it's not possible to join the given cells
+		 */
+		ItemListingCell join(Collection<P> properties);
+
+		/**
+		 * Joins the cells corresponding the given columns in the row.
+		 * <p>
+		 * The columns must be adjacent, and this row must be the out-most row.
+		 * </p>
+		 * <p>
+		 * The way that the client-side web component works also causes some limitations to which cells can be joined.
+		 * For example, if you join the first and second cell in the header, you cannot join the second and third cell
+		 * in the footer.
+		 * </p>
+		 * @param properties The properties of the cells to join (not null)
+		 * @return the merged cell
+		 * @throws IllegalArgumentException if it's not possible to join the given cells
+		 */
+		@SuppressWarnings("unchecked")
+		default ItemListingCell join(P... properties) {
+			return join(Arrays.asList(properties));
+		}
 
 	}
 
