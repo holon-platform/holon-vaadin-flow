@@ -83,73 +83,10 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	void setSelectionMode(SelectionMode selectionMode);
 
 	/**
-	 * Select all available items.
-	 */
-	void selectAll();
-
-	/**
 	 * Refresh given item in data source
 	 * @param item Item to refresh (not null)
 	 */
 	void refreshItem(T item);
-
-	// -------
-
-	/**
-	 * Enumeration of column content alignment options
-	 */
-	public enum ColumnAlignment {
-
-		/**
-		 * Left aligned column content
-		 */
-		LEFT,
-
-		/**
-		 * Centered column content
-		 */
-		CENTER,
-
-		/**
-		 * Right aligned column content
-		 */
-		RIGHT;
-
-	}
-
-	/**
-	 * Generator to provide the style names for a cell.
-	 * @param <T> Item type
-	 * @param <P> Item property type
-	 */
-	@FunctionalInterface
-	public interface CellStyleGenerator<T, P> extends Serializable {
-
-		/**
-		 * Get the style names for the cell bound to given <code>property</code> column and <code>item</code> row.
-		 * @param property Cell property (column)
-		 * @param item Item bound to the row for which to generate the cell style
-		 * @return Cell style names, <code>null</code> for none
-		 */
-		String getCellStyle(P property, T item);
-
-	}
-
-	/**
-	 * Generator to provide the style names for an item row.
-	 * @param <T> Item type
-	 */
-	@FunctionalInterface
-	public interface RowStyleGenerator<T> extends Serializable {
-
-		/**
-		 * Get the style names for the row bound to given <code>item</code>.
-		 * @param item Item bound to the row for which to generate the style
-		 * @return Row style names, <code>null</code> for none
-		 */
-		String getRowStyle(T item);
-
-	}
 
 	/**
 	 * Event fired when a listing item is clicked.

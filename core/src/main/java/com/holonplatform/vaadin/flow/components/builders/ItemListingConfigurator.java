@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -51,11 +52,6 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	/**
 	 * Configure the column represented by given <code>property</code> to be displayed before any other listing column
 	 * by default.
-	 * <p>
-	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
-	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
-	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
-	 * </p>
 	 * @param property The property which represents the column to display as first (not null)
 	 * @return this
 	 */
@@ -64,11 +60,6 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	/**
 	 * Configure the column represented by given <code>property</code> to be displayed after any other listing column by
 	 * default.
-	 * <p>
-	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
-	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
-	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
-	 * </p>
 	 * @param property The property which represents the column to display as last (not null)
 	 * @return this
 	 */
@@ -77,11 +68,6 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	/**
 	 * Configure the column represented by given <code>property</code> id to be displayed before the column which
 	 * corresponds to the id specified by the given <code>beforeProperty</code>.
-	 * <p>
-	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
-	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
-	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
-	 * </p>
 	 * @param property Property which represents the column to display before the other property (not null)
 	 * @param beforeProperty Property which represents the column before which the first property has to be displayed
 	 *        (not null)
@@ -91,18 +77,22 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 
 	/**
 	 * Configure the column represented by given <code>property</code> id to be displayed after the column which
-	 * corresponds to the id specified by the given <code>beforeProperty</code>.
-	 * <p>
-	 * The default property/column display behaviour is applyed when the {@link #build()} method is used to construct
-	 * the item listing, whilst the default display behaviour is ignored when either {@link #build(Iterable)} or
-	 * {@link #build(Object...)} method is used, because the property/column ordering is explicitly provided.
-	 * </p>
+	 * corresponds to the id specified by the given <code>afterProperty</code>.
 	 * @param property Property which represents the column to display after the other property (not null)
 	 * @param afterProperty Property which represents the column after which the first property has to be displayed (not
 	 *        null)
 	 * @return this
 	 */
 	C displayAfter(P property, P afterProperty);
+
+	/**
+	 * Add a column which contents will be rendered as a {@link Component} using given <code>valueProvider</code>.
+	 * @param valueProvider The value provider to use to provide the column {@link Component} using the current row item
+	 *        instance (not null)
+	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
+	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 */
+	ItemListingColumnBuilder<T, P, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
 
 	/**
 	 * Set the visible columns list, using the item properties as column reference. The columns will be displayed in the
@@ -216,6 +206,17 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	C flexGrow(P property, int flexGrow);
 
 	/**
+	 * Sets the text alignment for the column which corresponds to given property.
+	 * <p>
+	 * Default is {@link ColumnAlignment#LEFT}.
+	 * </p>
+	 * @param property The property to configure (not null)
+	 * @param alignment the text alignment to set
+	 * @return this
+	 */
+	C alignment(P property, ColumnAlignment alignment);
+
+	/**
 	 * Sets the {@link Renderer} to use for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
 	 * @param renderer The column renderer to use
@@ -314,6 +315,17 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	C hideHeaders();
 
 	/**
+	 * Sets the page size, which is the number of items fetched at a time from the data source.
+	 * <p>
+	 * Note: the number of items in the server-side memory can be considerably higher than the page size, since the
+	 * component can show more than one page at a time.
+	 * </p>
+	 * @param pageSize the maximum number of items sent per request. Should be greater than zero
+	 * @return this
+	 */
+	C pageSize(int pageSize);
+
+	/**
 	 * If <code>true</code>, the listing's height is defined by the number of its rows. All items are fetched from the
 	 * data provider, and the Grid shows no vertical scroll bar.
 	 * @param heightByRows <code>true</code> to make listing compute its height by the number of rows,
@@ -390,8 +402,219 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 */
 	C withItemClickListener(ItemClickListener<T> listener);
 
+	/**
+	 * Sets whether multiple column sorting is enabled on the client-side.
+	 * @param multiSort <code>true</code> to enable sorting of multiple columns on the client-side, <code>false</code>
+	 *        to disable
+	 * @return this
+	 */
+	C multiSort(boolean multiSort);
+
+	/**
+	 * Enables or disables the vertical scrolling on the Grid web component. By default, the scrolling is enabled.
+	 * @param enabled <code>true</code> to enable vertical scrolling, <code>false</code> to disabled it
+	 * @return this
+	 */
+	C verticalScrollingEnabled(boolean enabled);
+
+	/**
+	 * Add given theme variants to the listing component.
+	 * @param variants The theme variants to add
+	 * @return this
+	 */
+	C withThemeVariants(GridVariant... variants);
+
 	// TODO header/footer builders
 
 	// TODO style generators
+
+	// -------
+
+	/**
+	 * Enumeration of column text alignments.
+	 */
+	public enum ColumnAlignment {
+
+		/**
+		 * Left aligned column text
+		 */
+		LEFT,
+
+		/**
+		 * Centered column text
+		 */
+		CENTER,
+
+		/**
+		 * Right aligned column text
+		 */
+		RIGHT;
+
+	}
+
+	/**
+	 * ItemListing column configurator.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Item property type
+	 * @param <C> Concrete configurator type
+	 * 
+	 * @since 5.2.0
+	 */
+	public interface ItemListingColumnConfigurator<T, P, C extends ItemListingColumnConfigurator<T, P, C>> {
+
+		/**
+		 * Set whether the column is user-resizable.
+		 * @param resizable Whether the column is user-resizable
+		 * @return this
+		 */
+		C resizable(boolean resizable);
+
+		/**
+		 * Set whether the column is visible.
+		 * @param visible Whether the column is visible
+		 * @return this
+		 */
+		C visible(boolean visible);
+
+		/**
+		 * Set whether the column is frozen.
+		 * @param frozen Whether the column is frozen
+		 * @return this
+		 */
+		C frozen(boolean frozen);
+
+		/**
+		 * Sets the width of the column as a CSS-string.
+		 * @param width the width to set
+		 * @return this
+		 */
+		C width(String width);
+
+		/**
+		 * Sets the flex grow ratio for the column.
+		 * <p>
+		 * When set to 0, column width is fixed.
+		 * </p>
+		 * @param flexGrow the flex grow ratio to set
+		 * @return this
+		 */
+		C flexGrow(int flexGrow);
+
+		/**
+		 * Sets comparator to use with in-memory sorting for the column.
+		 * @param renderer The comparator to use with in-memory sorting
+		 * @return this
+		 */
+		C sortComparator(Comparator<T> comparator);
+
+		/**
+		 * Set the properties to use to implement the sort logic to apply when the column is user-sorted.
+		 * @param sortProperties The properties to use to sort the column
+		 * @return this
+		 */
+		C sortUsing(List<P> sortProperties);
+
+		/**
+		 * Set the properties to use to implement the sort logic to apply when the column is user-sorted.
+		 * @param sortProperties The properties to use to sort the column
+		 * @return this
+		 */
+		@SuppressWarnings("unchecked")
+		default C sortUsing(P... sortProperties) {
+			return sortUsing(Arrays.asList(sortProperties));
+		}
+
+		/**
+		 * Set the function to use to obtain the {@link ItemSort}s to use when the column is user-sorted.
+		 * @param sortProvider Sort provider
+		 * @return this
+		 */
+		C sortProvider(Function<SortDirection, Stream<ItemSort<P>>> sortProvider);
+
+		/**
+		 * Set the header text for the column.
+		 * @param header Localizable column header text (not null)
+		 * @return this
+		 */
+		C header(Localizable header);
+
+		/**
+		 * Set the header text for the column.
+		 * @param header The column header text
+		 * @return this
+		 */
+		default C header(String header) {
+			return header(Localizable.builder().message(header).build());
+		}
+
+		/**
+		 * Set the header text for the column.
+		 * @param defaultHeader The default column header text
+		 * @param headerMessageCode The column header text translation message code
+		 * @return this
+		 */
+		default C header(String defaultHeader, String headerMessageCode) {
+			return header(Localizable.builder().message(defaultHeader).messageCode(headerMessageCode).build());
+		}
+
+		/**
+		 * Set the {@link Component} to use as header for the column.
+		 * @param header The column header component
+		 * @return this
+		 */
+		C headerComponent(Component header);
+
+		/**
+		 * Configure the column to be displayed before any other listing column.
+		 * @return this
+		 */
+		C displayAsFirst();
+
+		/**
+		 * Configure the column to be displayed after any other listing column by default.
+		 * @return this
+		 */
+		C displayAsLast();
+
+		/**
+		 * Configure the column to be displayed before the column which corresponds to the id specified by the given
+		 * <code>beforeProperty</code>.
+		 * @param beforeProperty Property which represents the column before which this column has to be displayed (not
+		 *        null)
+		 * @return this
+		 */
+		C displayBefore(P beforeProperty);
+
+		/**
+		 * Configure the column to be displayed after the column which corresponds to the id specified by the given
+		 * <code>afterProperty</code>.
+		 * @param afterProperty Property which represents the column after which this column has to be displayed (not
+		 *        null)
+		 * @return this
+		 */
+		C displayAfter(P afterProperty);
+
+	}
+
+	/**
+	 * ItemListing column builder.
+	 * 
+	 * @param <T> Item type
+	 * @param <P> Item property type
+	 * @param <B> Parent builder type
+	 * 
+	 * @since 5.2.0
+	 */
+	public interface ItemListingColumnBuilder<T, P, B extends ItemListingConfigurator<T, P, B>>
+			extends ItemListingColumnConfigurator<T, P, ItemListingColumnBuilder<T, P, B>> {
+
+		/**
+		 * Add the column to the listing.
+		 * @return The parent listing builder
+		 */
+		B add();
+
+	}
 
 }

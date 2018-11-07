@@ -633,15 +633,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ItemListing#selectAll()
-	 */
-	@Override
-	public void selectAll() {
-		// TODO Auto-generated method stub
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.components.Selectable#addSelectionListener(com.holonplatform.vaadin.flow.components
 	 * .Selectable.SelectionListener)
