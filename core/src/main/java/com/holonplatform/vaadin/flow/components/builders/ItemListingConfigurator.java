@@ -25,12 +25,14 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.ItemListing;
-import com.holonplatform.vaadin.flow.components.ItemListing.ItemClickListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.data.renderer.ClickableRenderer.ItemClickListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -41,11 +43,12 @@ import com.vaadin.flow.function.ValueProvider;
  *
  * @param <T> Item type
  * @param <P> Item property type
+ * @param <L> Concrete ItemListing type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator<T, P, C>>
+public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C>>
 		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>,
 		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C> {
 
@@ -92,7 +95,7 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
 	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
 	 */
-	ItemListingColumnBuilder<T, P, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
+	ItemListingColumnBuilder<T, P, L, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
 
 	/**
 	 * Set the visible columns list, using the item properties as column reference. The columns will be displayed in the
@@ -400,7 +403,7 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * @param listener The {@link ItemClickListener} to add (not null)
 	 * @return this
 	 */
-	C withItemClickListener(ItemClickListener<T> listener);
+	C withItemClickListener(ClickEventListener<L, ItemClickEvent<L, T>> listener);
 
 	/**
 	 * Sets whether multiple column sorting is enabled on the client-side.
@@ -602,12 +605,13 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * 
 	 * @param <T> Item type
 	 * @param <P> Item property type
+	 * @param <L> Item listing type
 	 * @param <B> Parent builder type
 	 * 
 	 * @since 5.2.0
 	 */
-	public interface ItemListingColumnBuilder<T, P, B extends ItemListingConfigurator<T, P, B>>
-			extends ItemListingColumnConfigurator<T, P, ItemListingColumnBuilder<T, P, B>> {
+	public interface ItemListingColumnBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingConfigurator<T, P, L, B>>
+			extends ItemListingColumnConfigurator<T, P, ItemListingColumnBuilder<T, P, L, B>> {
 
 		/**
 		 * Add the column to the listing.

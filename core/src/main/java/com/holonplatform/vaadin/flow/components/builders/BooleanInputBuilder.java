@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultBooleanInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -30,7 +31,7 @@ public interface BooleanInputBuilder extends InputBuilder<Boolean, Input<Boolean
 		HasStyleConfigurator<BooleanInputBuilder>, HasEnabledConfigurator<BooleanInputBuilder>,
 		HasAutofocusConfigurator<BooleanInputBuilder>, FocusableConfigurator<Component, BooleanInputBuilder>,
 		HasLabelConfigurator<BooleanInputBuilder>, DeferrableLocalizationConfigurator<BooleanInputBuilder>,
-		ClickNotifierConfigurator<Checkbox, BooleanInputBuilder> {
+		ClickNotifierConfigurator<Checkbox, ClickEvent<Checkbox>, BooleanInputBuilder> {
 
 	/**
 	 * Get a new {@link BooleanInputBuilder} to create a {@link Boolean} type {@link Input}.

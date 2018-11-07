@@ -15,25 +15,19 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 
 /**
- * {@link ItemListing} builder.
- *
- * @param <T> Item type
- * @param <P> Item property type
- * @param <L> Item listing type
- * @param <B> Concrete builder type
+ * Context menu item configurator.
  * 
+ * @param <E> Click event type
+ * @param <C> Concrete configurator type
+ *
  * @since 5.2.0
  */
-public interface ItemListingBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingBuilder<T, P, L, B>>
-		extends ItemListingConfigurator<T, P, L, B> {
-
-	/**
-	 * Build the {@link ItemListing}, displaying all the columns which corresponds to the configured properties.
-	 * @return The item listing instance
-	 */
-	L build();
+public interface MenuItemConfigurator<E extends ClickEvent<MenuItem>, C extends MenuItemConfigurator<E, C>>
+		extends ComponentConfigurator<C>, HasEnabledConfigurator<C>, HasTextConfigurator<C>,
+		ClickNotifierConfigurator<MenuItem, E, C> {
 
 }

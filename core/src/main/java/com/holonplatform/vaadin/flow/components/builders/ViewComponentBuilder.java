@@ -20,8 +20,8 @@ import java.util.function.Function;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultViewComponentBuilder;
-import com.vaadin.flow.component.Component;
 
 /**
  * Builder to create {@link ViewComponent}s.
@@ -30,9 +30,9 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface ViewComponentBuilder<T>
-		extends HtmlComponentConfigurator<ViewComponentBuilder<T>>, HasEnabledConfigurator<ViewComponentBuilder<T>>,
-		HasLabelConfigurator<ViewComponentBuilder<T>>, ClickNotifierConfigurator<Component, ViewComponentBuilder<T>>,
+public interface ViewComponentBuilder<T> extends HtmlComponentConfigurator<ViewComponentBuilder<T>>,
+		HasEnabledConfigurator<ViewComponentBuilder<T>>, HasLabelConfigurator<ViewComponentBuilder<T>>,
+		ClickNotifierConfigurator<ViewComponent<T>, ClickEvent<ViewComponent<T>>, ViewComponentBuilder<T>>,
 		DeferrableLocalizationConfigurator<ViewComponentBuilder<T>> {
 
 	/**

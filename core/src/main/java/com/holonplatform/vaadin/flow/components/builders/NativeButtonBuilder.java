@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultNativeButtonBuilder;
 import com.vaadin.flow.component.html.NativeButton;
 
@@ -26,9 +27,9 @@ import com.vaadin.flow.component.html.NativeButton;
  * 
  * @since 5.2.0
  */
-public interface NativeButtonBuilder
-		extends HtmlComponentConfigurator<NativeButtonBuilder>, HasEnabledConfigurator<NativeButtonBuilder>,
-		HasTextConfigurator<NativeButtonBuilder>, ClickNotifierConfigurator<NativeButton, NativeButtonBuilder>,
+public interface NativeButtonBuilder extends HtmlComponentConfigurator<NativeButtonBuilder>,
+		HasEnabledConfigurator<NativeButtonBuilder>, HasTextConfigurator<NativeButtonBuilder>,
+		ClickNotifierConfigurator<NativeButton, ClickEvent<NativeButton>, NativeButtonBuilder>,
 		FocusableConfigurator<NativeButton, NativeButtonBuilder>,
 		DeferrableLocalizationConfigurator<NativeButtonBuilder>, ComponentBuilder<NativeButton, NativeButtonBuilder> {
 

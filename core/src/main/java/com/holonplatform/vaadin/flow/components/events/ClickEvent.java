@@ -13,16 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components.support;
+package com.holonplatform.vaadin.flow.components.events;
 
 import java.io.Serializable;
 
 /**
  * Event fired when a component is clicked.
+ * 
+ * @param <S> Source type
  *
  * @since 5.2.0
  */
-public interface ClickEvent extends Serializable {
+public interface ClickEvent<S> extends Serializable {
+
+	/**
+	 * Get object on which the event occurred.
+	 * @return The object on which the event occurred
+	 */
+	S getSource();
+
+	/**
+	 * Checks if this event originated from the client side.
+	 * @return <code>true</code> if the event originated from the client side, <code>false</code> otherwise
+	 */
+	boolean isFromClient();
 
 	/**
 	 * Gets the x coordinate of the click event, relative to the upper left corner of the browser viewport.

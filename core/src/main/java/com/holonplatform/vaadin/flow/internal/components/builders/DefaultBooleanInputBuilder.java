@@ -25,9 +25,11 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
@@ -261,15 +263,14 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 		return getConfigurator();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
-	public BooleanInputBuilder withClickListener(ComponentEventListener<ClickEvent<Checkbox>> listener) {
-		getComponent().addClickListener(listener);
+	public BooleanInputBuilder withClickListener(
+			ClickEventListener<Checkbox, ClickEvent<Checkbox>> clickEventListener) {
+		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
 	}
 

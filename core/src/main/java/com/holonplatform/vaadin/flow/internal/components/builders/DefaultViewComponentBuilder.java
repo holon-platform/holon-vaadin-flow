@@ -24,10 +24,10 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.DefaultViewComponent;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
+import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 
 /**
  * Default {@link ViewComponentBuilder} implementation.
@@ -185,12 +185,14 @@ public class DefaultViewComponentBuilder<T>
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
+	 * vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
-	public ViewComponentBuilder<T> withClickListener(ComponentEventListener<ClickEvent<Component>> listener) {
-		getComponent().addClickListener(listener);
+	public ViewComponentBuilder<T> withClickListener(
+			ClickEventListener<ViewComponent<T>, ClickEvent<ViewComponent<T>>> clickEventListener) {
+		getComponent()
+				.addClickListener(ComponentClickListenerAdapter.forClickNotifier(getComponent(), clickEventListener));
 		return getConfigurator();
 	}
 

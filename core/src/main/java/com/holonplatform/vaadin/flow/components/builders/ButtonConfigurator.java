@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultButtonConfigurator;
 import com.vaadin.flow.component.button.Button;
 
@@ -30,11 +31,8 @@ import com.vaadin.flow.component.button.Button;
  */
 public interface ButtonConfigurator<C extends ButtonConfigurator<C>> extends ComponentConfigurator<C>,
 		HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasIconConfigurator<C>, HasTextConfigurator<C>,
-		HasEnabledConfigurator<C>, HasTitleConfigurator<C>, ClickNotifierConfigurator<Button, C>,
+		HasEnabledConfigurator<C>, HasTitleConfigurator<C>, ClickNotifierConfigurator<Button, ClickEvent<Button>, C>,
 		FocusableConfigurator<Button, C>, HasAutofocusConfigurator<C>, DeferrableLocalizationConfigurator<C> {
-
-	// TODO APICHG removed
-	// B iconAlternateText(String iconAltText);
 
 	/**
 	 * Sets whether this button's icon should be positioned after it's text content or the other way around.
@@ -53,24 +51,9 @@ public interface ButtonConfigurator<C extends ButtonConfigurator<C>> extends Com
 
 	/**
 	 * Automatically disables button when clicked, typically to prevent (accidental) extra clicks on a button.
-	 * <p>
-	 * Note that this is only used when the click comes from the user, not when calling {@link Button#click()} method
-	 * programmatically. Also, if developer wants to re-enable the button, it needs to be done programmatically.
-	 * </p>
 	 * @return this
 	 */
-	// TODO re-enable when available in Vaadin
-	// B disableOnClick();
-
-	/**
-	 * Makes it possible to invoke a click on this button by pressing the given {@link KeyCode} and (optional)
-	 * modifiers. The shortcut is global.
-	 * @param keyCode the keycode for invoking the shortcut
-	 * @param modifiers the (optional) modifiers for invoking the shortcut, null for none
-	 * @return this
-	 */
-	// TODO: APICHG: removed
-	// B clickShortcut(int keyCode, int... modifiers);
+	C disableOnClick();
 
 	/**
 	 * Sets the button caption using a {@link Localizable} message. In order for the localization to work, a

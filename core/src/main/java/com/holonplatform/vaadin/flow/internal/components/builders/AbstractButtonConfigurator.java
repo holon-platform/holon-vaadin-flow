@@ -17,8 +17,10 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
@@ -182,13 +184,23 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator#disableOnClick()
 	 */
 	@Override
-	public C withClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
-		getComponent().addClickListener(listener);
+	public C disableOnClick() {
+		getComponent().setDisableOnClick(true);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
+	 * vaadin.flow.components.events.ClickEventListener)
+	 */
+	@Override
+	public C withClickListener(ClickEventListener<Button, ClickEvent<Button>> clickEventListener) {
+		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
 	}
 

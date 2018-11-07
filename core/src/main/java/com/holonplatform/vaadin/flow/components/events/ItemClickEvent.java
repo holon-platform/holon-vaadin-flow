@@ -13,27 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components.builders;
-
-import com.holonplatform.vaadin.flow.components.ItemListing;
+package com.holonplatform.vaadin.flow.components.events;
 
 /**
- * {@link ItemListing} builder.
- *
- * @param <T> Item type
- * @param <P> Item property type
- * @param <L> Item listing type
- * @param <B> Concrete builder type
+ * Event fired when a component which represents an item is clicked.
  * 
+ * @param <S> Source type
+ * @param <T> Item type
+ *
  * @since 5.2.0
  */
-public interface ItemListingBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingBuilder<T, P, L, B>>
-		extends ItemListingConfigurator<T, P, L, B> {
+public interface ItemClickEvent<S, T> extends ClickEvent<S> {
 
 	/**
-	 * Build the {@link ItemListing}, displaying all the columns which corresponds to the configured properties.
-	 * @return The item listing instance
+	 * Gets the clicked item.
+	 * @return the clicked item
 	 */
-	L build();
+	T getItem();
 
 }

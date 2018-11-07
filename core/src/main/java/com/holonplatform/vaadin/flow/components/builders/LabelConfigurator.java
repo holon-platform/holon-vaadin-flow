@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.support.ContentMode;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultLabelConfigurator;
 import com.vaadin.flow.component.ClickNotifier;
@@ -32,9 +33,9 @@ import com.vaadin.flow.component.html.Span;
  * @since 5.2.0
  */
 @SuppressWarnings("rawtypes")
-public interface LabelConfigurator<L extends HtmlContainer & ClickNotifier, C extends LabelConfigurator<L, C>>
-		extends HtmlComponentConfigurator<C>, HasEnabledConfigurator<C>, HasTextConfigurator<C>,
-		HasHtmlTextConfigurator<C>, ClickNotifierConfigurator<L, C>, DeferrableLocalizationConfigurator<C> {
+public interface LabelConfigurator<L extends HtmlContainer & ClickNotifier, C extends LabelConfigurator<L, C>> extends
+		HtmlComponentConfigurator<C>, HasEnabledConfigurator<C>, HasTextConfigurator<C>, HasHtmlTextConfigurator<C>,
+		ClickNotifierConfigurator<L, ClickEvent<L>, C>, DeferrableLocalizationConfigurator<C> {
 
 	/**
 	 * Sets the label text content using a {@link Localizable} message.

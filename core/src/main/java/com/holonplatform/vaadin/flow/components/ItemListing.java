@@ -15,12 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import com.holonplatform.vaadin.flow.components.support.ClickEvent;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 
 /**
@@ -87,34 +85,5 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * @param item Item to refresh (not null)
 	 */
 	void refreshItem(T item);
-
-	/**
-	 * Event fired when a listing item is clicked.
-	 * @param <T> Item type
-	 */
-	public interface ItemClickEvent<T> extends ClickEvent {
-
-		/**
-		 * Gets the clicked item.
-		 * @return the clicked item
-		 */
-		T getItem();
-
-	}
-
-	/**
-	 * Listener for user click events on an item (a listing row).
-	 * @param <T> Item type
-	 */
-	@FunctionalInterface
-	public interface ItemClickListener<T> extends Serializable {
-
-		/**
-		 * Invoked when the user clicks on a listing item.
-		 * @param event Item click event
-		 */
-		void onItemClick(ItemClickEvent<T> event);
-
-	}
 
 }

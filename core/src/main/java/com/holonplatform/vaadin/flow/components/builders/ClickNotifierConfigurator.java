@@ -15,35 +15,37 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 
 /**
- * Configurator for {@link ClickNotifier} type components.
+ * Configurator for components which support {@link ClickEventListener} registration.
  * 
- * @param <T> Concrete component type
+ * @param <S> Event source type
+ * @param <E> Click event type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface ClickNotifierConfigurator<T extends Component, C extends ClickNotifierConfigurator<T, C>> {
+public interface ClickNotifierConfigurator<S, E extends ClickEvent<S>, C extends ClickNotifierConfigurator<S, E, C>> {
 
 	/**
-	 * Adds a click listener to this component.
-	 * @param listener The listener to add
+	 * Register a click event listener.
+	 * @param clickEventListener The listener to add (not null)
 	 * @return this
 	 */
-	C withClickListener(ComponentEventListener<ClickEvent<T>> listener);
+	C withClickListener(ClickEventListener<S, E> clickEventListener);
 
 	/**
-	 * Adds a click listener to this component. Alias for {@link #withClickListener(ComponentEventListener)}.
-	 * @param listener The listener to add
+	 * Register a click event listener.
+	 * <p>
+	 * Alias for {@link #withClickListener(ClickEventListener)}.
+	 * </p>
+	 * @param clickEventListener The listener to add (not null)
 	 * @return this
 	 */
-	default C onClick(ComponentEventListener<ClickEvent<T>> listener) {
-		return withClickListener(listener);
+	default C onClick(ClickEventListener<S, E> clickEventListener) {
+		return withClickListener(clickEventListener);
 	}
 
 }

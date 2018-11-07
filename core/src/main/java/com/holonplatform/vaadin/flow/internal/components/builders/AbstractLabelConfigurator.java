@@ -17,10 +17,11 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.support.ContentMode;
-import com.vaadin.flow.component.ClickEvent;
+import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HtmlContainer;
 
 /**
@@ -141,19 +142,6 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public C withClickListener(ComponentEventListener<ClickEvent<L>> listener) {
-		getComponent().addClickListener(listener);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.HasHtmlTextConfigurator#htmlText(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */
@@ -205,6 +193,19 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 		if (text != null) {
 			return content(text);
 		}
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
+	 * vaadin.flow.components.events.ClickEventListener)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public C withClickListener(ClickEventListener<L, ClickEvent<L>> clickEventListener) {
+		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
 	}
 

@@ -17,8 +17,9 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.html.NativeButton;
@@ -152,12 +153,13 @@ public class DefaultNativeButtonBuilder extends
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
+	 * vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
-	public NativeButtonBuilder withClickListener(ComponentEventListener<ClickEvent<NativeButton>> listener) {
-		getComponent().addClickListener(listener);
+	public NativeButtonBuilder withClickListener(
+			ClickEventListener<NativeButton, com.holonplatform.vaadin.flow.components.events.ClickEvent<NativeButton>> clickEventListener) {
+		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
 	}
 

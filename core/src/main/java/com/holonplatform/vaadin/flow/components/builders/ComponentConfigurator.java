@@ -30,14 +30,6 @@ import com.vaadin.flow.component.DetachEvent;
  */
 public interface ComponentConfigurator<C extends ComponentConfigurator<C>> extends HasElementConfigurator<C> {
 
-	// TODO
-	// Size config moved to: HasSizeConfigurator
-	// Style config moved to: HasStyleConfigurator
-	// Description config moved to: HasTitleConfigurator
-	// Icon config moved to: HasIconConfigurator
-	// Enabled moved to: HasEnabledConfigurator
-	// Caption no more supported, see: HasTextConfigurator
-
 	/**
 	 * Sets the id of the root element of this component. The id is used with various APIs to identify the element, and
 	 * it should be unique on the page.
@@ -77,16 +69,6 @@ public interface ComponentConfigurator<C extends ComponentConfigurator<C>> exten
 	}
 
 	/**
-	 * Sets the components as not visible.
-	 * @return this
-	 * @deprecated Use {@link #hidden()}
-	 */
-	@Deprecated
-	default C notVisible() {
-		return hidden();
-	}
-
-	/**
 	 * Add an {@link AttachEvent} {@link ComponentEventListener} to the component, called after the component is
 	 * attached to the application.
 	 * @param listener Listener to add
@@ -101,21 +83,6 @@ public interface ComponentConfigurator<C extends ComponentConfigurator<C>> exten
 	 * @return this
 	 */
 	C withDetachListener(ComponentEventListener<DetachEvent> listener);
-
-	// TODO APICHG: removed
-	// C errorHandler(ErrorHandler errorHandler);
-
-	// TODO APICHG: removed
-	// C withData(Object data);
-
-	// TODO APICHG: removed
-	// C responsive();
-
-	// TODO APICHG: removed
-	// C withShortcutListener(ShortcutListener shortcut);
-
-	// TODO APICHG: removed
-	// C withContextClickListener(ContextClickListener listener);
 
 	/**
 	 * Base component configurator.
