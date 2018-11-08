@@ -26,6 +26,8 @@ import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.function.ValueProvider;
 
 /**
  * Default {@link BeanListing} implementation.
@@ -55,6 +57,15 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		for (PathProperty<?> property : propertySet) {
 			addPropertyColumn(property.relativeName());
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isAlwaysReadOnly(java.lang.Object)
+	 */
+	@Override
+	protected boolean isAlwaysReadOnly(String property) {
+		return false;
 	}
 
 	/*
@@ -120,6 +131,35 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 			}
 			return null;
 		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyType(java.lang.Object)
+	 */
+	@Override
+	protected Class<?> getPropertyType(String property) {
+		return propertySet.property(property).getType();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueGetter(java.lang.Object)
+	 */
+	@Override
+	protected ValueProvider<T, ?> getPropertyValueGetter(String property) {
+		return item -> propertySet.read(property, item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueSetter(java.lang.Object)
+	 */
+	@Override
+	protected Optional<Setter<T, ?>> getPropertyValueSetter(String property) {
+		return Optional.of((item, value) -> propertySet.write(property, value, item));
 	}
 
 }

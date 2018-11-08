@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
@@ -42,8 +43,14 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.PropertyDefinition;
+import com.vaadin.flow.data.binder.PropertySet;
+import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -127,20 +134,24 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		return getGrid();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getHeader()
 	 */
 	@Override
 	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getHeader() {
-		return Optional.of(new DefaultItemListingHeaderSection<>(getGrid(), property -> getColumn(property).orElse(null)));
+		return Optional
+				.of(new DefaultItemListingHeaderSection<>(getGrid(), property -> getColumn(property).orElse(null)));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getFooter()
 	 */
 	@Override
 	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter() {
-		return Optional.of(new DefaultItemListingFooterSection<>(getGrid(), property -> getColumn(property).orElse(null)));
+		return Optional
+				.of(new DefaultItemListingFooterSection<>(getGrid(), property -> getColumn(property).orElse(null)));
 	}
 
 	/**
@@ -149,8 +160,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @return The property column configuration (never null)
 	 */
 	protected ItemListingColumn<P, T> getColumnConfiguration(P property) {
-		return propertyColumns.computeIfAbsent(property,
-				p -> new DefaultItemListingColumn<>(property, ensureUniqueColumnKey(generateColumnKey(p))));
+		return propertyColumns.computeIfAbsent(property, p -> new DefaultItemListingColumn<>(property,
+				ensureUniqueColumnKey(generateColumnKey(p)), isAlwaysReadOnly(p)));
 	}
 
 	/**
@@ -159,6 +170,13 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @return The column key (not null)
 	 */
 	protected abstract String generateColumnKey(P property);
+
+	/**
+	 * Gets whether the given property is always read-only.
+	 * @param property The property
+	 * @return whether the given property is always read-only
+	 */
+	protected abstract boolean isAlwaysReadOnly(P property);
 
 	/**
 	 * Ensure unique column key, appending a numeric suffix to duplicate key names if required.
@@ -410,6 +428,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		getGrid().getColumns().forEach(column -> getGrid().removeColumn(column));
 		// add a column for each visible property
 		getVisibleColumnProperties().forEach(property -> addGridColumn(property));
+		// init editor
+		initEditor(getVisibleColumnProperties());
 	}
 
 	/**
@@ -661,6 +681,212 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		return getGrid().addSelectionListener(e -> {
 			selectionListener.onSelectionChange(new DefaultSelectionEvent<>(e.getAllSelectedItems(), e.isFromClient()));
 		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#editItem(java.lang.Object)
+	 */
+	@Override
+	public void editItem(T item) {
+		ObjectUtils.argumentNotNull(item, "Item to edit must be not null");
+		getEditor().editItem(item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#cancelEditing()
+	 */
+	@Override
+	public void cancelEditing() {
+		getEditor().cancel();
+	}
+
+	/**
+	 * Get the listing editor.
+	 * @return The listing editor
+	 */
+	protected Editor<T> getEditor() {
+		return getGrid().getEditor();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void initEditor(List<P> properties) {
+		// property set
+		final Map<String, PropertyDefinition<T, ?>> definitions = new HashMap<>(properties.size());
+		final PropertySet<T> propertySet = new ItemListingPropertySet<>(definitions);
+		for (P property : properties) {
+			final ItemListingColumn<P, T> configuration = getColumnConfiguration(property);
+			// exclude read-only
+			if (!configuration.isReadOnly()) {
+				definitions.put(configuration.getColumnKey(),
+						new ItemListingPropertyDefinition(propertySet, configuration.getColumnKey(),
+								getPropertyType(property), getPropertyValueGetter(property),
+								getPropertyValueSetter(property).orElse(null)));
+			}
+		}
+		// binder
+		final Binder<T> binder = Binder.withPropertySet(new ItemListingPropertySet<>(definitions));
+		// TODO custom column editors and validators (inlucding property validators)
+
+//		HasValue<?, ?> editor; // from property column configuration or default using renderer		
+//		BindingBuilder<T, ?> builder = getGrid().getEditor().getBinder().forField(editor);
+//		// default validators
+//		getDefaultPropertyValidators(property).forEach(v -> builder.withValidator(new ValidatorWrapper<>(v)));
+//		// validators
+//		configuration.getValidators().forEach(v -> builder.withValidator(v));
+//		// bind
+//		column.setEditorBinding(builder.bind(getColumnId(property)));
+		
+		getEditor().setBinder(binder);
+	}
+
+	/**
+	 * Get the property value type.
+	 * @param property The property
+	 * @return the property value type
+	 */
+	protected abstract Class<?> getPropertyType(P property);
+
+	/**
+	 * Get the property value getter.
+	 * @param property The property
+	 * @return the property value getter
+	 */
+	protected abstract ValueProvider<T, ?> getPropertyValueGetter(P property);
+
+	/**
+	 * Get the property value setter.
+	 * @param property The property
+	 * @return Optional property value setter
+	 */
+	protected abstract Optional<Setter<T, ?>> getPropertyValueSetter(P property);
+
+	/**
+	 * ItemListing {@link PropertySet}.
+	 *
+	 * @param <T> Item type
+	 */
+	@SuppressWarnings("serial")
+	static class ItemListingPropertySet<T> implements PropertySet<T> {
+
+		private final Map<String, PropertyDefinition<T, ?>> definitions;
+
+		public ItemListingPropertySet(Map<String, PropertyDefinition<T, ?>> definitions) {
+			super();
+			this.definitions = definitions;
+		}
+
+		@Override
+		public Stream<PropertyDefinition<T, ?>> getProperties() {
+			return definitions.values().stream();
+		}
+
+		@Override
+		public Optional<PropertyDefinition<T, ?>> getProperty(String name) {
+			return Optional.ofNullable(definitions.get(name));
+		}
+
+	}
+
+	/**
+	 * ItemListing {@link PropertyDefinition}.
+	 *
+	 * @param <T> Item type
+	 * @param <V> Value type
+	 */
+	private static class ItemListingPropertyDefinition<T, V> implements PropertyDefinition<T, V> {
+
+		private static final long serialVersionUID = 3723795023936471324L;
+
+		private final PropertySet<T> propertySet;
+		private final String name;
+		private final Class<V> type;
+		private final ValueProvider<T, V> getter;
+		private final Setter<T, V> setter;
+
+		public ItemListingPropertyDefinition(PropertySet<T> propertySet, String name, Class<V> type,
+				ValueProvider<T, V> getter, Setter<T, V> setter) {
+			super();
+			this.propertySet = propertySet;
+			this.name = name;
+			this.type = type;
+			this.getter = getter;
+			this.setter = setter;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getPropertyHolderType()
+		 */
+		@Override
+		public Class<?> getPropertyHolderType() {
+			return ItemListingPropertySet.class;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getPropertySet()
+		 */
+		@Override
+		public PropertySet<T> getPropertySet() {
+			return propertySet;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getName()
+		 */
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getGetter()
+		 */
+		@Override
+		public ValueProvider<T, V> getGetter() {
+			return getter;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getSetter()
+		 */
+		@Override
+		public Optional<Setter<T, V>> getSetter() {
+			return Optional.ofNullable(setter);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getType()
+		 */
+		@Override
+		public Class<V> getType() {
+			return type;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getCaption()
+		 */
+		@Override
+		public String getCaption() {
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getParent()
+		 */
+		@Override
+		public PropertyDefinition<T, ?> getParent() {
+			return null;
+		}
+
 	}
 
 	/**

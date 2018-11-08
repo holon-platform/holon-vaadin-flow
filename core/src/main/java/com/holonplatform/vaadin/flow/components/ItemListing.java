@@ -100,6 +100,18 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 */
 	Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter();
 
+	/**
+	 * Opens the editor interface for the provided item.
+	 * @param item the item to edit (not null) if already editing a different item in buffered mode
+	 * @throws IllegalArgumentException if the <code>item</code> is not in the backing data provider
+	 */
+	void editItem(T item);
+
+	/**
+	 * Close the editor discarding any unsaved changes.
+	 */
+	void cancelEditing();
+
 	// ------- listing sections handlers
 
 	/**

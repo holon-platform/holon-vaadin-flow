@@ -47,6 +47,12 @@ public interface ItemListingColumn<P, T> extends Serializable {
 	P getProperty();
 
 	/**
+	 * Get whether the column is read only.
+	 * @return whether the column is read only
+	 */
+	boolean isReadOnly();
+
+	/**
 	 * Get the column key.
 	 * @return the column key (never null)
 	 */

@@ -50,9 +50,11 @@ import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer;
+import com.holonplatform.vaadin.flow.internal.components.HasValueInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
@@ -202,6 +204,16 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	static <F extends Component & HasValue<?, V>, T, V> Input<T> from(F field, Property<T> property,
 			PropertyValueConverter<T, V> converter) {
 		return from(from(field), property, converter);
+	}
+
+	/**
+	 * Get the given {@link Input} as an {@link HasValue} component.
+	 * @param <T> Value type
+	 * @param input The input to adapt (not null)
+	 * @return The {@link HasValue} component
+	 */
+	static <T> HasValue<ComponentValueChangeEvent<Component, T>, T> asHasValue(Input<T> input) {
+		return new HasValueInputAdapter<>(input);
 	}
 
 	// Builders

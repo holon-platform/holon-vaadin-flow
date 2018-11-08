@@ -41,7 +41,9 @@ public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
 
 	private final P property;
 	private final String columnKey;
+	private final boolean alwaysReadOnly;
 
+	private boolean readOnly = false;
 	private boolean visible = true;
 	private boolean resizable = false;
 	private boolean frozen = false;
@@ -60,13 +62,15 @@ public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
 	 * Constructor.
 	 * @param property Item property id (not null)
 	 * @param columnKey Column key (not null)
+	 * @param readOnly Whether the column is always read-only
 	 */
-	public DefaultItemListingColumn(P property, String columnKey) {
+	public DefaultItemListingColumn(P property, String columnKey, boolean alwaysReadOnly) {
 		super();
 		ObjectUtils.argumentNotNull(property, "Item property id must be not null");
 		ObjectUtils.argumentNotNull(columnKey, "Column keymust be not null");
 		this.property = property;
 		this.columnKey = columnKey;
+		this.alwaysReadOnly = alwaysReadOnly;
 	}
 
 	/*
@@ -76,6 +80,26 @@ public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
 	@Override
 	public P getProperty() {
 		return property;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#isReadOnly()
+	 */
+	@Override
+	public boolean isReadOnly() {
+		if (alwaysReadOnly) {
+			return true;
+		}
+		return readOnly;
+	}
+
+	/**
+	 * Set the column as read-only.
+	 * @param readOnly whether the column is read-only
+	 */
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 	/*

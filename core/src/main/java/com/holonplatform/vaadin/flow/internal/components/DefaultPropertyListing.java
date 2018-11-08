@@ -30,6 +30,8 @@ import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColu
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.function.ValueProvider;
 
 /**
  * Default {@link PropertyListing} implementation.
@@ -57,6 +59,15 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		for (Property<?> property : propertySet) {
 			addPropertyColumn(property);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isAlwaysReadOnly(java.lang.Object)
+	 */
+	@Override
+	protected boolean isAlwaysReadOnly(Property<?> property) {
+		return property.isReadOnly();
 	}
 
 	/*
@@ -150,6 +161,39 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			}
 			return null;
 		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyType(java.lang.Object)
+	 */
+	@Override
+	protected Class<?> getPropertyType(Property<?> property) {
+		return property.getType();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueGetter(java.lang.Object)
+	 */
+	@Override
+	protected ValueProvider<PropertyBox, ?> getPropertyValueGetter(Property<?> property) {
+		return item -> item.getValue(property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueSetter(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Optional<Setter<PropertyBox, ?>> getPropertyValueSetter(Property<?> property) {
+		if (!property.isReadOnly()) {
+			return Optional.of((item, value) -> item.setValue((Property<Object>) property, value));
+		}
+		return Optional.empty();
 	}
 
 	/*
