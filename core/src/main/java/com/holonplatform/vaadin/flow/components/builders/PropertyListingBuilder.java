@@ -15,8 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 
 /**
@@ -27,5 +29,23 @@ import com.holonplatform.vaadin.flow.components.PropertyListing;
 public interface PropertyListingBuilder
 		extends ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder>,
 		HasPropertyDataSourceConfigurator<PropertyListingBuilder> {
+
+	/**
+	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.
+	 * @param <V> Property value type
+	 * @param property The property for which to add the validator (not null)
+	 * @param validator The validator to add (not null)
+	 * @return this
+	 */
+	<V> PropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator);
+
+	/**
+	 * Set the {@link Input} to use as given property editor.
+	 * @param <V> Property value type
+	 * @param property The property for which to set the editor (not null)
+	 * @param editor The property editor (not null)
+	 * @return this
+	 */
+	<V> PropertyListingBuilder editor(Property<V> property, Input<V> editor);
 
 }

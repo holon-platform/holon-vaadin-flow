@@ -15,50 +15,39 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.function.Supplier;
+
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.ValueContext;
 
 /**
- * Vaadin {@link com.vaadin.data.Validator} to Holon {@link Validator} wrapper.
+ * Vaadin validator adapter.
  * 
  * @param <T> Value type
  *
  * @since 5.2.0
  */
-public class VaadinValidatorWrapper<T> implements Validator<T> {
+public class ValidatorAdapter<T> implements Validator<T> {
 
 	private static final long serialVersionUID = 3664165755542688523L;
 
 	private final com.vaadin.flow.data.binder.Validator<T> validator;
-	private final ValueContext context;
-	private final Input<T> input;
+	private final Supplier<ValueContext> contextSupplier;
 
 	/**
 	 * Constructor
 	 * @param validator Vaadin validator (not null)
-	 * @param context Validation context (may be null)
-	 * @param input Input to validate (may be null)
+	 * @param contextSupplier Validation context supplier (not null)
 	 */
-	public VaadinValidatorWrapper(com.vaadin.flow.data.binder.Validator<T> validator, ValueContext context,
-			Input<T> input) {
+	public ValidatorAdapter(com.vaadin.flow.data.binder.Validator<T> validator,
+			Supplier<ValueContext> contextSupplier) {
 		super();
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		ObjectUtils.argumentNotNull(contextSupplier, "Context supplier must be not null");
 		this.validator = validator;
-		this.context = context;
-		this.input = input;
-	}
-
-	private ValueContext getValueContext() {
-		if (context != null) {
-			return context;
-		}
-		if (input != null && input.getComponent() != null) {
-			return new ValueContext(input.getComponent());
-		}
-		return new ValueContext();
+		this.contextSupplier = contextSupplier;
 	}
 
 	/*
@@ -67,7 +56,7 @@ public class VaadinValidatorWrapper<T> implements Validator<T> {
 	 */
 	@Override
 	public void validate(T value) throws ValidationException {
-		ValidationResult result = validator.apply(value, getValueContext());
+		ValidationResult result = validator.apply(value, contextSupplier.get());
 		if (result.isError()) {
 			throw new ValidationException(result.getErrorMessage());
 		}

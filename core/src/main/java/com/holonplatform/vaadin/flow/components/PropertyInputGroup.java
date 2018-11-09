@@ -30,7 +30,6 @@ import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
-import com.holonplatform.vaadin.flow.internal.components.VaadinValidatorWrapper;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
@@ -427,7 +426,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		default <T> B withValidator(Property<T> property, com.vaadin.flow.data.binder.Validator<T> validator) {
-			return withValidator(property, new VaadinValidatorWrapper<>(validator, null, null));
+			return withValidator(property, Validatable.adapt(validator));
 		}
 
 		/**
@@ -444,7 +443,7 @@ public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<Pro
 		 * @return this
 		 */
 		default B withValidator(com.vaadin.flow.data.binder.Validator<PropertyBox> validator) {
-			return withValidator(new VaadinValidatorWrapper<>(validator, null, null));
+			return withValidator(Validatable.adapt(validator));
 		}
 
 		/**

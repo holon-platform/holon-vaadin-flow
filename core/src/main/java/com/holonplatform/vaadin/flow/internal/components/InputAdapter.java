@@ -551,6 +551,15 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#asHasValue()
+	 */
+	@Override
+	public HasValue<?, T> asHasValue() {
+		return getField();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.components.Input#addValueChangeListener(com.holonplatform.vaadin.components.Input.
 	 * ValueChangeListener)
 	 */

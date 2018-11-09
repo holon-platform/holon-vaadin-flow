@@ -15,16 +15,19 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
@@ -108,8 +111,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
-	protected ItemListingColumn<Property<?>, PropertyBox> preProcessConfiguration(
-			ItemListingColumn<Property<?>, PropertyBox> configuration) {
+	protected ItemListingColumn<Property<?>, PropertyBox, ?> preProcessConfiguration(
+			ItemListingColumn<Property<?>, PropertyBox, ?> configuration) {
 		// sort
 		if (Path.class.isAssignableFrom(configuration.getProperty().getClass())) {
 			if (configuration.getSortProperties().isEmpty()) {
@@ -141,7 +144,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 	 * .vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
-	protected Column<PropertyBox> generateDefaultGridColumn(ItemListingColumn<Property<?>, PropertyBox> configuration) {
+	protected Column<PropertyBox> generateDefaultGridColumn(
+			ItemListingColumn<Property<?>, PropertyBox, ?> configuration) {
 		final Property<?> property = configuration.getProperty();
 		// check component
 		if (Component.class.isAssignableFrom(property.getType())) {
@@ -194,6 +198,28 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			return Optional.of((item, value) -> item.setValue((Property<Object>) property, value));
 		}
 		return Optional.empty();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyEditor(java.lang.Object)
+	 */
+	@Override
+	protected Optional<Input<?>> getDefaultPropertyEditor(Property<?> property) {
+		return property.renderIfAvailable(Input.class).map(i -> i);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyValidators(java.lang.
+	 * Object)
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	protected Collection<Validator<Object>> getDefaultPropertyValidators(Property<?> property) {
+		return ((Property) property).getValidators();
 	}
 
 	/*

@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,11 +27,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
@@ -45,6 +49,7 @@ import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.PropertyDefinition;
 import com.vaadin.flow.data.binder.PropertySet;
 import com.vaadin.flow.data.binder.Setter;
@@ -93,12 +98,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	/**
 	 * Item property column definitions
 	 */
-	private final Map<P, ItemListingColumn<P, T>> propertyColumns = new HashMap<>();
+	private final Map<P, ItemListingColumn<P, T, ?>> propertyColumns = new HashMap<>();
 
 	/**
 	 * Column key suffix generator to ensure unique column names
 	 */
 	private final AtomicInteger columnKeySuffix = new AtomicInteger(0);
+
+	/**
+	 * Whether the listing is editable
+	 */
+	private boolean editable = false;
+
+	/**
+	 * Item validators
+	 */
+	private final List<Validator<T>> validators = new LinkedList<>();
 
 	/**
 	 * Constructor.
@@ -159,7 +174,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param property The property (not null)
 	 * @return The property column configuration (never null)
 	 */
-	protected ItemListingColumn<P, T> getColumnConfiguration(P property) {
+	protected ItemListingColumn<P, T, ?> getColumnConfiguration(P property) {
 		return propertyColumns.computeIfAbsent(property, p -> new DefaultItemListingColumn<>(property,
 				ensureUniqueColumnKey(generateColumnKey(p)), isAlwaysReadOnly(p)));
 	}
@@ -261,7 +276,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param property The item property id to add (not null)
 	 * @return the column configuration
 	 */
-	protected ItemListingColumn<P, T> addPropertyColumn(P property) {
+	protected ItemListingColumn<P, T, ?> addPropertyColumn(P property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		properties.add(property);
 		return getColumnConfiguration(property);
@@ -272,7 +287,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param property The item property id to add (not null)
 	 * @return the column configuration
 	 */
-	protected ItemListingColumn<P, T> addPropertyColumnAsFirst(P property) {
+	protected ItemListingColumn<P, T, ?> addPropertyColumnAsFirst(P property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		properties.addFirst(property);
 		return getColumnConfiguration(property);
@@ -283,7 +298,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param property The item property id to add (not null)
 	 * @return the column configuration
 	 */
-	protected ItemListingColumn<P, T> addPropertyColumnAsLast(P property) {
+	protected ItemListingColumn<P, T, ?> addPropertyColumnAsLast(P property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		properties.addLast(property);
 		return getColumnConfiguration(property);
@@ -297,7 +312,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 *         column will be added at the end of the list
 	 * @return the column configuration
 	 */
-	protected ItemListingColumn<P, T> addPropertyColumnBefore(P property, P beforeProperty) {
+	protected ItemListingColumn<P, T, ?> addPropertyColumnBefore(P property, P beforeProperty) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		if (beforeProperty != null) {
 			int idx = properties.indexOf(beforeProperty);
@@ -317,7 +332,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 *         column will be added at the end of the list
 	 * @return the column configuration
 	 */
-	protected ItemListingColumn<P, T> addPropertyColumnAfter(P property, P afterProperty) {
+	protected ItemListingColumn<P, T, ?> addPropertyColumnAfter(P property, P afterProperty) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		if (afterProperty != null) {
 			int idx = properties.indexOf(afterProperty);
@@ -421,15 +436,20 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	}
 
 	/**
-	 * Build the listing, adding a Grid column for each item property.
+	 * Build the listing, adding a Grid column for each item property and setting up the item editor if
+	 * <code>editable</code> is <code>true</code>.
+	 * @param editable Whether the listing is editable
 	 */
-	public void build() {
+	public void build(boolean editable) {
+		this.editable = editable;
 		// remove all columns
 		getGrid().getColumns().forEach(column -> getGrid().removeColumn(column));
 		// add a column for each visible property
 		getVisibleColumnProperties().forEach(property -> addGridColumn(property));
-		// init editor
-		initEditor(getVisibleColumnProperties());
+		// check init editor
+		if (editable) {
+			initEditor(getVisibleColumnProperties());
+		}
 	}
 
 	/**
@@ -440,7 +460,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	protected String addGridColumn(P property) {
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		// get the column configuration
-		final ItemListingColumn<P, T> configuration = preProcessConfiguration(getColumnConfiguration(property));
+		final ItemListingColumn<P, T, ?> configuration = preProcessConfiguration(getColumnConfiguration(property));
 		// add the column
 		final Column<T> column = generateGridColumn(configuration);
 		if (column == null) {
@@ -491,7 +511,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param configuration Property column configuration
 	 * @return The generated column
 	 */
-	protected Column<T> generateGridColumn(ItemListingColumn<P, T> configuration) {
+	protected Column<T> generateGridColumn(ItemListingColumn<P, T, ?> configuration) {
 		// check renderer
 		if (configuration.getRenderer().isPresent()) {
 			return getGrid().addColumn(configuration.getRenderer().get());
@@ -508,14 +528,14 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param configuration Property column configuration
 	 * @return The generated column
 	 */
-	protected abstract Column<T> generateDefaultGridColumn(ItemListingColumn<P, T> configuration);
+	protected abstract Column<T> generateDefaultGridColumn(ItemListingColumn<P, T, ?> configuration);
 
 	/**
 	 * Process column configuration before adding the column to the grid.
 	 * @param configuration Property column configuration
 	 * @return Processed property column configuration
 	 */
-	protected abstract ItemListingColumn<P, T> preProcessConfiguration(ItemListingColumn<P, T> configuration);
+	protected abstract ItemListingColumn<P, T, ?> preProcessConfiguration(ItemListingColumn<P, T, ?> configuration);
 
 	/**
 	 * Get the {@link QuerySortOrder} property name for given property, if available.
@@ -529,7 +549,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param configuration Property column configuration
 	 * @return Optional column header text
 	 */
-	protected Optional<Localizable> getColumnHeader(ItemListingColumn<P, T> configuration) {
+	protected Optional<Localizable> getColumnHeader(ItemListingColumn<P, T, ?> configuration) {
 		Optional<Localizable> header = configuration.getHeaderText();
 		if (header.isPresent()) {
 			return header;
@@ -588,6 +608,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public void refresh() {
+		// check editing
+		if (isEditable()) {
+			cancelEditing();
+		}
 		getGrid().getDataProvider().refreshAll();
 	}
 
@@ -597,6 +621,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public void refreshItem(T item) {
+		// check editing
+		if (isEditable()) {
+			cancelEditing();
+		}
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		getGrid().getDataProvider().refreshItem(item);
 	}
@@ -685,10 +713,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isEditable()
+	 */
+	@Override
+	public boolean isEditable() {
+		return editable;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#editItem(java.lang.Object)
 	 */
 	@Override
 	public void editItem(T item) {
+		if (!isEditable()) {
+			throw new IllegalStateException("The item listing is not editable");
+		}
 		ObjectUtils.argumentNotNull(item, "Item to edit must be not null");
 		getEditor().editItem(item);
 	}
@@ -699,7 +739,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public void cancelEditing() {
-		getEditor().cancel();
+		if (!isEditable()) {
+			throw new IllegalStateException("The item listing is not editable");
+		}
+		if (getEditor().isOpen()) {
+			getEditor().cancel();
+		}
 	}
 
 	/**
@@ -710,13 +755,27 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		return getGrid().getEditor();
 	}
 
+	/**
+	 * Add an item validator.
+	 * @param validator The validator to add (not null)
+	 */
+	protected void addValidator(Validator<T> validator) {
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		this.validators.add(validator);
+
+	}
+
+	/**
+	 * Init the grid editor
+	 * @param properties Visible properties
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void initEditor(List<P> properties) {
 		// property set
 		final Map<String, PropertyDefinition<T, ?>> definitions = new HashMap<>(properties.size());
 		final PropertySet<T> propertySet = new ItemListingPropertySet<>(definitions);
 		for (P property : properties) {
-			final ItemListingColumn<P, T> configuration = getColumnConfiguration(property);
+			final ItemListingColumn<P, T, ?> configuration = getColumnConfiguration(property);
 			// exclude read-only
 			if (!configuration.isReadOnly()) {
 				definitions.put(configuration.getColumnKey(),
@@ -727,19 +786,57 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		}
 		// binder
 		final Binder<T> binder = Binder.withPropertySet(new ItemListingPropertySet<>(definitions));
-		// TODO custom column editors and validators (inlucding property validators)
+		// item validators
+		validators.forEach(validator -> binder.withValidator(Validatable.adapt(validator)));
+		// property editors and validators
+		for (P property : properties) {
+			final ItemListingColumn<P, T, ?> configuration = getColumnConfiguration(property);
+			if (!configuration.isReadOnly()) {
+				getColumn(property).ifPresent(column -> {
+					getPropertyEditor(configuration).ifPresent(editor -> {
+						final BindingBuilder<T, ?> builder = getGrid().getEditor().getBinder()
+								.forField(editor.asHasValue());
+						// property validators
+						getDefaultPropertyValidators(property)
+								.forEach(validator -> builder.withValidator(Validatable.adapt(validator)));
+						// additional validators
+						configuration.getValidators()
+								.forEach(validator -> builder.withValidator(Validatable.adapt((Validator) validator)));
+						// bind to column
+						column.setEditorBinding(builder.bind(configuration.getColumnKey()));
+					});
+				});
 
-//		HasValue<?, ?> editor; // from property column configuration or default using renderer		
-//		BindingBuilder<T, ?> builder = getGrid().getEditor().getBinder().forField(editor);
-//		// default validators
-//		getDefaultPropertyValidators(property).forEach(v -> builder.withValidator(new ValidatorWrapper<>(v)));
-//		// validators
-//		configuration.getValidators().forEach(v -> builder.withValidator(v));
-//		// bind
-//		column.setEditorBinding(builder.bind(getColumnId(property)));
-		
+			}
+		}
 		getEditor().setBinder(binder);
 	}
+
+	/**
+	 * Get the property editor to use with given property configuration, if available.
+	 * @param configuration The property configuration
+	 * @return Optional property editor
+	 */
+	protected Optional<Input<?>> getPropertyEditor(ItemListingColumn<P, T, ?> configuration) {
+		if (configuration.getEditor().isPresent()) {
+			return configuration.getEditor().map(i -> i);
+		}
+		return getDefaultPropertyEditor(configuration.getProperty());
+	}
+
+	/**
+	 * Get the default property editor to use with given property, if available.
+	 * @param property The property
+	 * @return Optional default property editor
+	 */
+	protected abstract Optional<Input<?>> getDefaultPropertyEditor(P property);
+
+	/**
+	 * Get the default property validators, if available.
+	 * @param property The property
+	 * @return The default property validators, empty if none
+	 */
+	protected abstract Collection<Validator<Object>> getDefaultPropertyValidators(P property);
 
 	/**
 	 * Get the property value type.

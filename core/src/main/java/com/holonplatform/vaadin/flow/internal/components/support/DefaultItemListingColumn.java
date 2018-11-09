@@ -17,11 +17,14 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -32,10 +35,11 @@ import com.vaadin.flow.function.ValueProvider;
  * 
  * @param <T> Item type
  * @param <P> Item property type
+ * @param <V> Property value type
  *
  * @since 5.2.0
  */
-public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
+public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T, V> {
 
 	private static final long serialVersionUID = 8922982578042556430L;
 
@@ -57,6 +61,8 @@ public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
 	private Comparator<T> comparator;
 	private SortOrderProvider sortOrderProvider;
 	private List<P> sortProperties;
+	private List<Validator<V>> validators;
+	private Input<V> editor;
 
 	/**
 	 * Constructor.
@@ -363,6 +369,50 @@ public class DefaultItemListingColumn<P, T> implements ItemListingColumn<P, T> {
 	@Override
 	public void setSortProperties(List<P> sortProperties) {
 		this.sortProperties = sortProperties;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditor(com.holonplatform.vaadin.
+	 * flow.components.Input)
+	 */
+	@Override
+	public void setEditor(Input<V> editor) {
+		this.editor = editor;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditor()
+	 */
+	@Override
+	public Optional<Input<V>> getEditor() {
+		return Optional.ofNullable(editor);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#addValidator(com.holonplatform.core.
+	 * Validator)
+	 */
+	@Override
+	public void addValidator(Validator<V> validator) {
+		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+		if (validators == null) {
+			validators = new LinkedList<>();
+		}
+		validators.add(validator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getValidators()
+	 */
+	@Override
+	public List<Validator<V>> getValidators() {
+		return (validators != null) ? validators : Collections.emptyList();
 	}
 
 }

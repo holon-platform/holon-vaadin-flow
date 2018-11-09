@@ -18,9 +18,9 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.internal.components.VaadinValidatorWrapper;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
 
 /**
@@ -46,7 +46,7 @@ public interface ValidatableInputBuilder<T, C extends ValidatableInput<T>> {
 	 * @return this
 	 */
 	default ValidatableInputBuilder<T, C> withVaadinValidator(com.vaadin.flow.data.binder.Validator<T> validator) {
-		return withValidator(new VaadinValidatorWrapper<>(validator, null, null));
+		return withValidator(Validatable.adapt(validator));
 	}
 
 	/**

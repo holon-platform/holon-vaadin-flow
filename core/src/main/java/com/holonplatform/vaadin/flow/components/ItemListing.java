@@ -101,14 +101,26 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter();
 
 	/**
-	 * Opens the editor interface for the provided item.
+	 * Gets whether this listing is editable.
+	 * <p>
+	 * When a listing is editable, the {@link #editItem(Object)} and {@link #cancelEditing()} methods can be used to
+	 * control item editing.
+	 * </p>
+	 * @return Whether this listing is editable
+	 */
+	boolean isEditable();
+
+	/**
+	 * If the listing {@link #isEditable()}, opens the editor interface for the provided item.
 	 * @param item the item to edit (not null) if already editing a different item in buffered mode
 	 * @throws IllegalArgumentException if the <code>item</code> is not in the backing data provider
+	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void editItem(T item);
 
 	/**
-	 * Close the editor discarding any unsaved changes.
+	 * If the listing {@link #isEditable()}, closes the editor discarding any unsaved changes.
+	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void cancelEditing();
 

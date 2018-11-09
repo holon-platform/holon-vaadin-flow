@@ -15,14 +15,17 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.beans.BeanPropertySet;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.vaadin.flow.components.BeanListing;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.grid.Grid.Column;
@@ -84,7 +87,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 * .vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
-	protected Column<T> generateDefaultGridColumn(ItemListingColumn<String, T> configuration) {
+	protected Column<T> generateDefaultGridColumn(ItemListingColumn<String, T, ?> configuration) {
 		final String property = configuration.getProperty();
 		return getGrid().addColumn(item -> {
 			return propertySet.getProperty(property).map(p -> p.present(propertySet.read(p, item))).orElse(null);
@@ -98,7 +101,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
-	protected ItemListingColumn<String, T> preProcessConfiguration(ItemListingColumn<String, T> configuration) {
+	protected ItemListingColumn<String, T, ?> preProcessConfiguration(ItemListingColumn<String, T, ?> configuration) {
 		if (configuration.getSortProperties().isEmpty()) {
 			configuration.setSortProperties(Collections.singletonList(configuration.getProperty()));
 		}
@@ -160,6 +163,27 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	@Override
 	protected Optional<Setter<T, ?>> getPropertyValueSetter(String property) {
 		return Optional.of((item, value) -> propertySet.write(property, value, item));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyEditor(java.lang.Object)
+	 */
+	@Override
+	protected Optional<Input<?>> getDefaultPropertyEditor(String property) {
+		return propertySet.getProperty(property).flatMap(p -> p.renderIfAvailable(Input.class)).map(i -> i);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyValidators(java.lang.
+	 * Object)
+	 */
+	@Override
+	protected Collection<Validator<Object>> getDefaultPropertyValidators(String property) {
+		return propertySet.getProperty(property).map(p -> p.getValidators()).orElse(Collections.emptyList());
 	}
 
 }

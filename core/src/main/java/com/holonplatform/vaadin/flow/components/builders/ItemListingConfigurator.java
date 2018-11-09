@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort.SortDirection;
@@ -42,6 +43,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.GridContextMenu;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.editor.EditorCancelListener;
+import com.vaadin.flow.component.grid.editor.EditorCloseListener;
+import com.vaadin.flow.component.grid.editor.EditorOpenListener;
+import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.renderer.ClickableRenderer.ItemClickListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -475,6 +480,70 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * @return this
 	 */
 	C footer(Consumer<EditableItemListingSection<P>> footerConfigurator);
+
+	/**
+	 * Set whether the listing is editable.
+	 * <p>
+	 * Use {@link #withEditorSaveListener(EditorSaveListener)} to register a listener for editor item save events.
+	 * </p>
+	 * @param editable whether the listing is editable
+	 * @return this
+	 */
+	C editable(boolean editable);
+
+	/**
+	 * Set the listing as editable.
+	 * @return this
+	 */
+	default C editable() {
+		return editable(true);
+	}
+
+	/**
+	 * Set whether the editor is in buffered mode. Default is <code>true</code>.
+	 * <p>
+	 * When the editor is in buffered mode, edits are only committed when the user clicks the save button. In unbuffered
+	 * mode valid changes are automatically committed.
+	 * </p>
+	 * @param buffered Whether the editor is in buffered mode
+	 * @return this
+	 */
+	C editorBuffered(boolean buffered);
+
+	/**
+	 * Adds an item editor listener for editor <code>save</code> events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withEditorSaveListener(EditorSaveListener<T> listener);
+
+	/**
+	 * Adds an item editor listener for editor <code>cancel</code> events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withEditorCancelListener(EditorCancelListener<T> listener);
+
+	/**
+	 * Adds an item editor save listener for editor <code>open</code> events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withEditorOpenListener(EditorOpenListener<T> listener);
+
+	/**
+	 * Adds an item editor save listener for editor <code>close</code> events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withEditorCloseListener(EditorCloseListener<T> listener);
+
+	/**
+	 * Add a item {@link Validator} to be used with the item editor.
+	 * @param validator The validator to add (not null)
+	 * @return this
+	 */
+	C withValidator(Validator<T> validator);
 
 	// -------
 

@@ -21,8 +21,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
@@ -35,10 +37,11 @@ import com.vaadin.flow.function.ValueProvider;
  * 
  * @param <P> Item property type
  * @param <T> Item type
+ * @param <V> Property value type
  *
  * @since 5.2.0
  */
-public interface ItemListingColumn<P, T> extends Serializable {
+public interface ItemListingColumn<P, T, V> extends Serializable {
 
 	/**
 	 * Get the item property id.
@@ -222,6 +225,30 @@ public interface ItemListingColumn<P, T> extends Serializable {
 	 * @param sortProperties The sort properties to set
 	 */
 	void setSortProperties(List<P> sortProperties);
+
+	/**
+	 * Set the column editor.
+	 * @param editor the column editor to set
+	 */
+	void setEditor(Input<V> editor);
+
+	/**
+	 * Get the column editor, if available.
+	 * @return Optional column editor
+	 */
+	Optional<Input<V>> getEditor();
+
+	/**
+	 * Add a property editor validator.
+	 * @param validator The validator to add (not null)
+	 */
+	void addValidator(Validator<V> validator);
+
+	/**
+	 * Get the property editor validators.
+	 * @return The property editor validators, empty if none
+	 */
+	List<Validator<V>> getValidators();
 
 	/**
 	 * Column sort mode
