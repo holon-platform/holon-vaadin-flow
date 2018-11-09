@@ -35,7 +35,8 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
-import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
@@ -738,7 +739,7 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * @since 5.2.0
 	 */
 	public interface ItemListingContextMenuBuilder<T, P, B extends ItemListingConfigurator<T, P, B>> extends
-			ContextMenuConfigurator<ItemListingClickEvent<MenuItem, T, P>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, B>> {
+			ContextMenuConfigurator<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, B>> {
 
 		/**
 		 * Add the context menu to the item listing.

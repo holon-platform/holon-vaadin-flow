@@ -23,6 +23,7 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
@@ -38,19 +39,20 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
  *
  * @since 5.2.0
  */
-public abstract class AbstractContextMenuConfigurator<E extends ClickEvent<MenuItem>, M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<E, M, C>>
-		extends AbstractComponentConfigurator<M, C> implements ContextMenuConfigurator<E, M, C> {
+public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C>>
+		extends AbstractComponentConfigurator<M, C>
+		implements ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> {
 
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 
 	private final M instance;
 	private final BiFunction<M, String, MenuItem> textMenuItemProvider;
 	private final BiFunction<M, Component, MenuItem> componentMenuItemProvider;
-	private final Function<com.vaadin.flow.component.ClickEvent<MenuItem>, E> clickEventConverter;
+	private final Function<com.vaadin.flow.component.ClickEvent<MenuItem>, ClickEvent<MenuItem>> clickEventConverter;
 
 	public AbstractContextMenuConfigurator(M instance, BiFunction<M, String, MenuItem> textMenuItemProvider,
 			BiFunction<M, Component, MenuItem> componentMenuItemProvider,
-			Function<com.vaadin.flow.component.ClickEvent<MenuItem>, E> clickEventConverter) {
+			Function<com.vaadin.flow.component.ClickEvent<MenuItem>, ClickEvent<MenuItem>> clickEventConverter) {
 		super(instance);
 		this.instance = instance;
 		this.textMenuItemProvider = textMenuItemProvider;
@@ -114,7 +116,7 @@ public abstract class AbstractContextMenuConfigurator<E extends ClickEvent<MenuI
 	 * Localizable)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, C> withItem(Localizable text) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> withItem(Localizable text) {
 		ObjectUtils.argumentNotNull(text, "Text must be not null");
 		return new DefaultContextMenuItemBuilder<>(getConfigurator(),
 				textMenuItemProvider.apply(instance, LocalizationContext.translate(text, true)), clickEventConverter);
@@ -127,7 +129,7 @@ public abstract class AbstractContextMenuConfigurator<E extends ClickEvent<MenuI
 	 * Component)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, C> withItem(Component component) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> withItem(Component component) {
 		ObjectUtils.argumentNotNull(component, "Component must be not null");
 		return new DefaultContextMenuItemBuilder<>(getConfigurator(),
 				componentMenuItemProvider.apply(instance, component), clickEventConverter);

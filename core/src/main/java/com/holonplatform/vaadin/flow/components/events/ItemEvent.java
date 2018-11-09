@@ -16,13 +16,19 @@
 package com.holonplatform.vaadin.flow.components.events;
 
 /**
- * Event fired when a component which represents an item is clicked.
+ * Event fired from a component which represents an item.
  * 
  * @param <S> Source type
  * @param <T> Item type
  *
  * @since 5.2.0
  */
-public interface ItemClickEvent<S, T> extends ItemEvent<S, T>, ClickEvent<S> {
+public interface ItemEvent<S, T> extends Event<S> {
+
+	/**
+	 * Gets the clicked item.
+	 * @return the clicked item
+	 */
+	T getItem();
 
 }

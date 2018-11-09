@@ -40,10 +40,16 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.Validatable;
+import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.EditableItemListingSection;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
@@ -51,6 +57,9 @@ import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingRefreshEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
@@ -62,9 +71,14 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.contextmenu.ContextMenuBase;
+import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.GridContextMenu;
+import com.vaadin.flow.component.grid.GridContextMenu.GridContextMenuItemClickEvent;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.editor.Editor;
@@ -77,6 +91,7 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.PropertyDefinition;
 import com.vaadin.flow.data.binder.PropertySet;
 import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.provider.DataChangeEvent.DataRefreshEvent;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -175,14 +190,29 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		return getGrid();
 	}
 
+	/**
+	 * Get the header section handler.
+	 * @return the header section handler
+	 */
+	protected EditableItemListingSection<P> getHeaderSection() {
+		return new DefaultItemListingHeaderSection<>(getGrid(), property -> getColumn(property).orElse(null));
+	}
+
+	/**
+	 * Get the footer section handler.
+	 * @return the footer section handler
+	 */
+	protected EditableItemListingSection<P> getFooterSection() {
+		return new DefaultItemListingFooterSection<>(getGrid(), property -> getColumn(property).orElse(null));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getHeader()
 	 */
 	@Override
 	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getHeader() {
-		return Optional
-				.of(new DefaultItemListingHeaderSection<>(getGrid(), property -> getColumn(property).orElse(null)));
+		return Optional.of(getHeaderSection());
 	}
 
 	/*
@@ -191,8 +221,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter() {
-		return Optional
-				.of(new DefaultItemListingFooterSection<>(getGrid(), property -> getColumn(property).orElse(null)));
+		return Optional.of(getFooterSection());
 	}
 
 	/**
@@ -1083,8 +1112,15 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		protected Set<T> items = new HashSet<>();
 
+		private final List<ItemListingRefreshListener<T, P>> refreshListeners = new LinkedList<>();
+
 		private boolean editable;
 		private boolean editorBuffered;
+
+		private int frozenColumnsCount;
+
+		private Consumer<EditableItemListingSection<P>> headerConfigurator;
+		private Consumer<EditableItemListingSection<P>> footerConfigurator;
 
 		public AbstractItemListingConfigurator(L instance) {
 			super(instance.getGrid());
@@ -1093,16 +1129,51 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			this.styleConfigurator = new DefaultHasStyleConfigurator(instance.getGrid());
 		}
 
-		protected L configure() {
+		@Override
+		public abstract C getConfigurator();
+
+		/**
+		 * Configure the listing.
+		 * @return the listing
+		 */
+		protected L configureAndBuild() {
 
 			// items
 			if (!items.isEmpty()) {
 				instance.getGrid().setItems(items);
 			}
 
+			// refresh listeners
+			if (instance.getGrid().getDataProvider() != null) {
+				refreshListeners.forEach(l -> instance.getGrid().getDataProvider().addDataProviderListener(e -> {
+					l.onRefreshEvent(new DefaultItemListingRefreshEvent<>(instance,
+							(e instanceof DataRefreshEvent) ? ((DataRefreshEvent<T>) e).getItem() : null));
+				}));
+			}
+
+			// forzen columns
+			if (frozenColumnsCount > 0) {
+				int cnt = 0;
+				for (P property : instance.getVisibleColumnProperties()) {
+					cnt++;
+					instance.getColumnConfiguration(property).setFrozen(cnt <= frozenColumnsCount);
+				}
+			}
+
 			// editable
 			if (editable) {
 				instance.getEditor().setBuffered(editorBuffered);
+			}
+
+			// build
+			instance.build(editable);
+
+			// header and footer
+			if (headerConfigurator != null) {
+				headerConfigurator.accept(instance.getHeaderSection());
+			}
+			if (footerConfigurator != null) {
+				footerConfigurator.accept(instance.getFooterSection());
 			}
 
 			return instance;
@@ -1391,7 +1462,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C frozenColumns(int frozenColumnsCount) {
-			// TODO Auto-generated method stub
+			this.frozenColumnsCount = frozenColumnsCount;
 			return getConfigurator();
 		}
 
@@ -1598,7 +1669,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public C withItemClickListener(
 				ClickEventListener<ItemListing<T, P>, ItemClickEvent<ItemListing<T, P>, T>> listener) {
-			// TODO Auto-generated method stub
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			instance.getGrid().addItemClickListener(e -> {
+				listener.onClickEvent(
+						new DefaultItemListingClickEvent<>(instance, e.isFromClient(), instance, () -> e.getItem()));
+			});
 			return getConfigurator();
 		}
 
@@ -1609,7 +1684,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C withItemRefreshListener(ItemListingRefreshListener<T, P> listener) {
-			// TODO Auto-generated method stub
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			refreshListeners.add(listener);
 			return getConfigurator();
 		}
 
@@ -1619,7 +1695,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C multiSort(boolean multiSort) {
-			// TODO Auto-generated method stub
+			instance.getGrid().setMultiSort(multiSort);
 			return getConfigurator();
 		}
 
@@ -1630,7 +1706,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C verticalScrollingEnabled(boolean enabled) {
-			// TODO Auto-generated method stub
+			instance.getGrid().setVerticalScrollingEnabled(enabled);
 			return getConfigurator();
 		}
 
@@ -1642,7 +1718,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C withThemeVariants(GridVariant... variants) {
-			// TODO Auto-generated method stub
+			instance.getGrid().addThemeVariants(variants);
 			return getConfigurator();
 		}
 
@@ -1652,8 +1728,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public ItemListingContextMenuBuilder<T, P, C> contextMenu() {
-			// TODO Auto-generated method stub
-			return null;
+			return new DefaultItemListingContextMenuBuilder<>(instance, instance.getGrid().addContextMenu(),
+					getConfigurator());
 		}
 
 		/*
@@ -1663,7 +1739,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C header(Consumer<EditableItemListingSection<P>> headerConfigurator) {
-			// TODO Auto-generated method stub
+			this.headerConfigurator = headerConfigurator;
 			return getConfigurator();
 		}
 
@@ -1674,7 +1750,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 */
 		@Override
 		public C footer(Consumer<EditableItemListingSection<P>> footerConfigurator) {
-			// TODO Auto-generated method stub
+			this.footerConfigurator = footerConfigurator;
 			return getConfigurator();
 		}
 
@@ -1764,6 +1840,241 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		public C withValidator(Validator<T> validator) {
 			instance.addValidator(validator);
 			return getConfigurator();
+		}
+
+	}
+
+	private static class DefaultItemListingContextMenuBuilder<T, P, C extends ItemListingConfigurator<T, P, C>>
+			extends AbstractComponentConfigurator<GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>>
+			implements ItemListingContextMenuBuilder<T, P, C> {
+
+		private final ItemListing<T, P> itemListing;
+		private final C parentBuilder;
+		private final DefaultHasStyleConfigurator styleConfigurator;
+
+		public DefaultItemListingContextMenuBuilder(ItemListing<T, P> itemListing, GridContextMenu<T> contextMenu,
+				C parentBuilder) {
+			super(contextMenu);
+			this.itemListing = itemListing;
+			this.parentBuilder = parentBuilder;
+			this.styleConfigurator = new DefaultHasStyleConfigurator(contextMenu);
+
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#openOnClick(boolean)
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> openOnClick(boolean openOnClick) {
+			getComponent().setOpenOnClick(openOnClick);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#withOpenedChangeListener(com.vaadin
+		 * .flow.component.ComponentEventListener)
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> withOpenedChangeListener(
+				ComponentEventListener<OpenedChangeEvent<GridContextMenu<T>>> listener) {
+			getComponent().addOpenedChangeListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> styleNames(String... styleNames) {
+			styleConfigurator.styleNames(styleNames);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> styleName(String styleName) {
+			styleConfigurator.styleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> removeStyleName(String styleName) {
+			styleConfigurator.removeStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> replaceStyleName(String styleName) {
+			styleConfigurator.replaceStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#withItem(com.holonplatform.core.
+		 * i18n.Localizable)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>> withItem(
+				Localizable text) {
+			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
+			final MenuItem item = getComponent().addItem(LocalizationContext.translate(text, true), handler);
+			return new ItemListingContextMenuItemBuilder<>(getConfigurator(), item, handler);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#withItem(com.vaadin.flow.component.
+		 * Component)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>> withItem(
+				Component component) {
+			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
+			final MenuItem item = getComponent().addItem(component, handler);
+			return new ItemListingContextMenuItemBuilder<>(getConfigurator(), item, handler);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder#add()
+		 */
+		@Override
+		public C add() {
+			return parentBuilder;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
+		 */
+		@Override
+		protected ItemListingContextMenuBuilder<T, P, C> getConfigurator() {
+			return this;
+		}
+	}
+
+	private static class ItemListingContextMenuItemBuilder<T, P, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B>>
+			implements MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> {
+
+		private final B parentBuilder;
+		private final MenuItem menuItem;
+		private final ContextMenuItemListenerHandler<T, P> handler;
+
+		public ItemListingContextMenuItemBuilder(B parentBuilder, MenuItem menuItem,
+				ContextMenuItemListenerHandler<T, P> handler) {
+			super();
+			ObjectUtils.argumentNotNull(parentBuilder, "Parent builder must be not null");
+			ObjectUtils.argumentNotNull(menuItem, "Menu item must be not null");
+			this.parentBuilder = parentBuilder;
+			this.menuItem = menuItem;
+			this.handler = handler;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> id(
+				String id) {
+			menuItem.setId(id);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> enabled(
+				boolean enabled) {
+			menuItem.setEnabled(enabled);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(com.holonplatform.core.i18n.
+		 * Localizable)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> text(
+				Localizable text) {
+			menuItem.setText(LocalizationContext.translate(text, true));
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#withClickListener(
+		 * java.util.EventListener)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> withClickListener(
+				ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>> menuItemClickListener) {
+			ObjectUtils.argumentNotNull(menuItemClickListener, "Click listener must be not null");
+			handler.addListener(menuItemClickListener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#add()
+		 */
+		@Override
+		public B add() {
+			return parentBuilder;
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	private static class ContextMenuItemListenerHandler<T, P>
+			implements ComponentEventListener<GridContextMenuItemClickEvent<T>> {
+
+		private final List<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>> listeners = new LinkedList<>();
+		private final ItemListing<T, P> itemListing;
+
+		public ContextMenuItemListenerHandler(ItemListing<T, P> itemListing) {
+			super();
+			this.itemListing = itemListing;
+		}
+
+		public void addListener(ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>> listener) {
+			this.listeners.add(listener);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.vaadin.flow.component.ComponentEventListener#onComponentEvent(com.vaadin.flow.component.ComponentEvent)
+		 */
+		@Override
+		public void onComponentEvent(GridContextMenuItemClickEvent<T> event) {
+			listeners.forEach(l -> l.onItemEvent(new DefaultItemListingItemEvent<>(event.getSource(), itemListing,
+					() -> event.getItem().orElse(null))));
 		}
 
 	}

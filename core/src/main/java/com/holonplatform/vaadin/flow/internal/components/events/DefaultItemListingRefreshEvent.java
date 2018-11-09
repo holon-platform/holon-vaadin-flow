@@ -15,49 +15,50 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.events;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ItemListing;
-import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent;
 
 /**
- * Default {@link ItemListingClickEvent} implementation.
- * 
- * @param <S> Source type
+ * Default {@link ItemListingRefreshEvent} implementation.
+ *
  * @param <T> Item type
  * @param <P> Item property type
  *
  * @since 5.2.0
  */
-public class DefaultItemListingClickEvent<S, T, P> extends DefaultItemClickEvent<S, T>
-		implements ItemListingClickEvent<S, T, P> {
+public class DefaultItemListingRefreshEvent<T, P> implements ItemListingRefreshEvent<T, P> {
 
-	private static final long serialVersionUID = 6849204632601290820L;
+	private static final long serialVersionUID = -6984053550817397704L;
 
 	private final ItemListing<T, P> itemListing;
+	private final T item;
 
-	/**
-	 * Constructor.
-	 * @param source Event source (not null)
-	 * @param fromClient Whether the event was originated from client
-	 * @param itemListing The item listing (not null)
-	 * @param itemSupplier Item supplier (not null)
-	 */
-	public DefaultItemListingClickEvent(S source, boolean fromClient, ItemListing<T, P> itemListing,
-			Supplier<T> itemSupplier) {
-		super(source, fromClient, itemSupplier);
+	public DefaultItemListingRefreshEvent(ItemListing<T, P> itemListing, T item) {
+		super();
 		ObjectUtils.argumentNotNull(itemListing, "ItemListing must be not null");
 		this.itemListing = itemListing;
+		this.item = item;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent#getItemListing()
+	 * @see com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent#getItemListing()
 	 */
 	@Override
 	public ItemListing<T, P> getItemListing() {
 		return itemListing;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent#getItem()
+	 */
+	@Override
+	public Optional<T> getItem() {
+		return Optional.ofNullable(item);
 	}
 
 }

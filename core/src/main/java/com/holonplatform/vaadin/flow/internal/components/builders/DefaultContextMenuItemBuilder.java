@@ -30,21 +30,20 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 /**
  * Default {@link MenuItemBuilder}.
  *
- * @param <E> Click event type
  * @param <M> Concrete ContextMenu component type
  * @param <B> Parent configurator type
  *
  * @since 5.2.0
  */
-public class DefaultContextMenuItemBuilder<E extends ClickEvent<MenuItem>, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<E, M, B>>
-		implements MenuItemBuilder<E, M, B> {
+public class DefaultContextMenuItemBuilder<M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B>>
+		implements MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> {
 
 	private final B parentBuilder;
 	private final MenuItem menuItem;
-	private final Function<com.vaadin.flow.component.ClickEvent<MenuItem>, E> clickEventConverter;
+	private final Function<com.vaadin.flow.component.ClickEvent<MenuItem>, ClickEvent<MenuItem>> clickEventConverter;
 
 	public DefaultContextMenuItemBuilder(B parentBuilder, MenuItem menuItem,
-			Function<com.vaadin.flow.component.ClickEvent<MenuItem>, E> clickEventConverter) {
+			Function<com.vaadin.flow.component.ClickEvent<MenuItem>, ClickEvent<MenuItem>> clickEventConverter) {
 		super();
 		ObjectUtils.argumentNotNull(parentBuilder, "Parent builder must be not null");
 		ObjectUtils.argumentNotNull(menuItem, "Menu item must be not null");
@@ -59,7 +58,7 @@ public class DefaultContextMenuItemBuilder<E extends ClickEvent<MenuItem>, M ext
 	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, B> id(String id) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> id(String id) {
 		menuItem.setId(id);
 		return this;
 	}
@@ -69,7 +68,7 @@ public class DefaultContextMenuItemBuilder<E extends ClickEvent<MenuItem>, M ext
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, B> enabled(boolean enabled) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> enabled(boolean enabled) {
 		menuItem.setEnabled(enabled);
 		return this;
 	}
@@ -80,7 +79,7 @@ public class DefaultContextMenuItemBuilder<E extends ClickEvent<MenuItem>, M ext
 	 * Localizable)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, B> text(Localizable text) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> text(Localizable text) {
 		menuItem.setText(LocalizationContext.translate(text, true));
 		return this;
 	}
@@ -92,7 +91,8 @@ public class DefaultContextMenuItemBuilder<E extends ClickEvent<MenuItem>, M ext
 	 * vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
-	public MenuItemBuilder<E, M, B> withClickListener(ClickEventListener<MenuItem, E> clickEventListener) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> withClickListener(
+			ClickEventListener<MenuItem, ClickEvent<MenuItem>> clickEventListener) {
 		ObjectUtils.argumentNotNull(clickEventListener, "Click listener must be not null");
 		menuItem.addClickListener(e -> clickEventListener.onClickEvent(clickEventConverter.apply(e)));
 		return this;

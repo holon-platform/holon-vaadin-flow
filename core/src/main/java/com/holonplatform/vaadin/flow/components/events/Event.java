@@ -15,14 +15,21 @@
  */
 package com.holonplatform.vaadin.flow.components.events;
 
+import java.io.Serializable;
+
 /**
- * Event fired when a component which represents an item is clicked.
- * 
+ * Base event interface.
+ *
  * @param <S> Source type
- * @param <T> Item type
  *
  * @since 5.2.0
  */
-public interface ItemClickEvent<S, T> extends ItemEvent<S, T>, ClickEvent<S> {
+public interface Event<S> extends Serializable {
+
+	/**
+	 * Get object on which the event occurred.
+	 * @return The object on which the event occurred
+	 */
+	S getSource();
 
 }

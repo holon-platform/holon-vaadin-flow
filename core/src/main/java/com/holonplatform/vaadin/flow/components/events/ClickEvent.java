@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components.events;
 
-import java.io.Serializable;
-
 /**
  * Event fired when a component is clicked.
  * 
@@ -24,13 +22,7 @@ import java.io.Serializable;
  *
  * @since 5.2.0
  */
-public interface ClickEvent<S> extends Serializable {
-
-	/**
-	 * Get object on which the event occurred.
-	 * @return The object on which the event occurred
-	 */
-	S getSource();
+public interface ClickEvent<S> extends Event<S> {
 
 	/**
 	 * Checks if this event originated from the client side.

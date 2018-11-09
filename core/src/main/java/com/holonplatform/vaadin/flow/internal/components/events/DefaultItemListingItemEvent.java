@@ -19,10 +19,10 @@ import java.util.function.Supplier;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ItemListing;
-import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 
 /**
- * Default {@link ItemListingClickEvent} implementation.
+ * Default {@link ItemListingItemEvent} implementation.
  * 
  * @param <S> Source type
  * @param <T> Item type
@@ -30,8 +30,8 @@ import com.holonplatform.vaadin.flow.components.events.ItemListingClickEvent;
  *
  * @since 5.2.0
  */
-public class DefaultItemListingClickEvent<S, T, P> extends DefaultItemClickEvent<S, T>
-		implements ItemListingClickEvent<S, T, P> {
+public class DefaultItemListingItemEvent<S, T, P> extends DefaultItemEvent<S, T>
+		implements ItemListingItemEvent<S, T, P> {
 
 	private static final long serialVersionUID = 6849204632601290820L;
 
@@ -40,13 +40,11 @@ public class DefaultItemListingClickEvent<S, T, P> extends DefaultItemClickEvent
 	/**
 	 * Constructor.
 	 * @param source Event source (not null)
-	 * @param fromClient Whether the event was originated from client
 	 * @param itemListing The item listing (not null)
 	 * @param itemSupplier Item supplier (not null)
 	 */
-	public DefaultItemListingClickEvent(S source, boolean fromClient, ItemListing<T, P> itemListing,
-			Supplier<T> itemSupplier) {
-		super(source, fromClient, itemSupplier);
+	public DefaultItemListingItemEvent(S source, ItemListing<T, P> itemListing, Supplier<T> itemSupplier) {
+		super(source, itemSupplier);
 		ObjectUtils.argumentNotNull(itemListing, "ItemListing must be not null");
 		this.itemListing = itemListing;
 	}

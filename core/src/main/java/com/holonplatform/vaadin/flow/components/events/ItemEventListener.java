@@ -15,14 +15,25 @@
  */
 package com.holonplatform.vaadin.flow.components.events;
 
+import java.io.Serializable;
+import java.util.EventListener;
+
 /**
- * Event fired when a component which represents an item is clicked.
+ * A listener for item events.
  * 
- * @param <S> Source type
+ * @param <S> Event source type
  * @param <T> Item type
- *
+ * @param <E> Event type
+ * 
  * @since 5.2.0
  */
-public interface ItemClickEvent<S, T> extends ItemEvent<S, T>, ClickEvent<S> {
+@FunctionalInterface
+public interface ItemEventListener<S, T, E extends ItemEvent<S, T>> extends EventListener, Serializable {
+
+	/**
+	 * Invoked when an item event has been fired.
+	 * @param event The item event
+	 */
+	void onItemEvent(E event);
 
 }

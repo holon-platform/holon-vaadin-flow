@@ -15,28 +15,28 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.EventListener;
+
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
-import com.vaadin.flow.component.contextmenu.MenuItem;
 
 /**
  * {@link ContextMenu} component configurator.
  * 
- * @param <E> Menu item click event type
+ * @param <L> Menu item click listener type
  * @param <M> Concrete ContextMenu component type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<E, M, C>>
+public interface ContextMenuConfigurator<L extends EventListener, M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<L, M, C>>
 		extends ComponentConfigurator<C>, HasStyleConfigurator<C> {
 
 	/**
@@ -49,7 +49,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
 	 * @see LocalizationContext#getCurrent()
 	 */
-	MenuItemBuilder<E, M, C> withItem(Localizable text);
+	MenuItemBuilder<L, M, C> withItem(Localizable text);
 
 	/**
 	 * Create a new menu item with the given text content.
@@ -59,7 +59,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @param text Menu item text content
 	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
 	 */
-	default MenuItemBuilder<E, M, C> withItem(String text) {
+	default MenuItemBuilder<L, M, C> withItem(String text) {
 		return withItem(Localizable.builder().message(text).build());
 	}
 
@@ -77,7 +77,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
 	 * @see LocalizationContext#getCurrent()
 	 */
-	default MenuItemBuilder<E, M, C> withItem(String defaultText, String messageCode, Object... arguments) {
+	default MenuItemBuilder<L, M, C> withItem(String defaultText, String messageCode, Object... arguments) {
 		return withItem(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)
 				.messageArguments(arguments).build());
 	}
@@ -90,7 +90,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @param component The menu item component (not null)
 	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
 	 */
-	MenuItemBuilder<E, M, C> withItem(Component component);
+	MenuItemBuilder<L, M, C> withItem(Component component);
 
 	/**
 	 * Add a new menu item using given text content and a {@link ClickEventListener} for menu item clicks.
@@ -99,7 +99,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @return this
 	 * @see LocalizationContext#getCurrent()
 	 */
-	default C withItem(Localizable text, ClickEventListener<MenuItem, E> clickEventListener) {
+	default C withItem(Localizable text, L clickEventListener) {
 		return withItem(text).withClickListener(clickEventListener).add();
 	}
 
@@ -113,7 +113,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @return this
 	 * @see LocalizationContext#getCurrent()
 	 */
-	default C withItem(String defaultText, String messageCode, ClickEventListener<MenuItem, E> clickEventListener) {
+	default C withItem(String defaultText, String messageCode, L clickEventListener) {
 		return withItem(defaultText, messageCode).withClickListener(clickEventListener).add();
 	}
 
@@ -123,7 +123,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
 	 * @return this
 	 */
-	default C withItem(String text, ClickEventListener<MenuItem, E> clickEventListener) {
+	default C withItem(String text, L clickEventListener) {
 		return withItem(text).withClickListener(clickEventListener).add();
 	}
 
@@ -134,7 +134,7 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	 * @return this
 	 * @see LocalizationContext#getCurrent()
 	 */
-	default C withItem(Component component, ClickEventListener<MenuItem, E> clickEventListener) {
+	default C withItem(Component component, L clickEventListener) {
 		return withItem(component).withClickListener(clickEventListener).add();
 	}
 
@@ -159,22 +159,40 @@ public interface ContextMenuConfigurator<E extends ClickEvent<MenuItem>, M exten
 	/**
 	 * Context menu item configurator.
 	 * 
-	 * @param <E> Click event type
+	 * @param <L> Click listener type
 	 * @param <M> Concrete ContextMenu component type
 	 * @param <B> Parent configurator type
 	 *
 	 * @since 5.2.0
 	 */
-	public interface MenuItemBuilder<E extends ClickEvent<MenuItem>, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<E, M, B>>
-			extends HasEnabledConfigurator<MenuItemBuilder<E, M, B>>, HasTextConfigurator<MenuItemBuilder<E, M, B>>,
-			ClickNotifierConfigurator<MenuItem, E, MenuItemBuilder<E, M, B>> {
+	public interface MenuItemBuilder<L extends EventListener, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<L, M, B>>
+			extends HasEnabledConfigurator<MenuItemBuilder<L, M, B>>, HasTextConfigurator<MenuItemBuilder<L, M, B>> {
 
 		/**
 		 * Sets the id of the root element of the menu item.
 		 * @param id the id to set
 		 * @return this
 		 */
-		MenuItemBuilder<E, M, B> id(String id);
+		MenuItemBuilder<L, M, B> id(String id);
+
+		/**
+		 * Register a menu item click event listener.
+		 * @param menuItemClickListener The listener to add (not null)
+		 * @return this
+		 */
+		MenuItemBuilder<L, M, B> withClickListener(L menuItemClickListener);
+
+		/**
+		 * Register a menu item click event listener.
+		 * <p>
+		 * Alias for {@link #withClickListener(EventListener)}.
+		 * </p>
+		 * @param menuItemClickListener The listener to add (not null)
+		 * @return this
+		 */
+		default MenuItemBuilder<L, M, B> onClick(L menuItemClickListener) {
+			return withClickListener(menuItemClickListener);
+		}
 
 		/**
 		 * Add the menu item to the context menu.
