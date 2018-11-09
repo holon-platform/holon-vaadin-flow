@@ -17,13 +17,17 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,30 +35,52 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
+import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.Validatable;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
+import com.vaadin.flow.component.BlurNotifier;
+import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.FocusNotifier;
+import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.grid.editor.EditorCancelListener;
+import com.vaadin.flow.component.grid.editor.EditorCloseListener;
+import com.vaadin.flow.component.grid.editor.EditorOpenListener;
+import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.PropertyDefinition;
 import com.vaadin.flow.data.binder.PropertySet;
 import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.shared.Registration;
 
@@ -192,6 +218,14 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @return whether the given property is always read-only
 	 */
 	protected abstract boolean isAlwaysReadOnly(P property);
+
+	/**
+	 * Get the listing property set.
+	 * @return the property set
+	 */
+	protected List<P> getListingProperties() {
+		return properties;
+	}
 
 	/**
 	 * Ensure unique column key, appending a numeric suffix to duplicate key names if required.
@@ -483,6 +517,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		// width
 		configuration.getWidth().ifPresent(w -> column.setWidth(w));
 		column.setFlexGrow(configuration.getFlexGrow());
+		// alignment
+		configuration.getAlignment().ifPresent(a -> column.setTextAlign(asColumnTextAlign(a)));
 		// sort
 		if (configuration.getSortMode() == SortMode.ENABLED) {
 			column.setSortable(true);
@@ -1001,6 +1037,735 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		default:
 			return com.vaadin.flow.component.grid.Grid.SelectionMode.NONE;
 		}
+	}
+
+	/**
+	 * Convert the given {@link ColumnAlignment} into a {@link ColumnTextAlign}.
+	 * @param alignment Alignment to convert
+	 * @return Converted alignment
+	 */
+	private static ColumnTextAlign asColumnTextAlign(ColumnAlignment alignment) {
+		switch (alignment) {
+		case CENTER:
+			return ColumnTextAlign.CENTER;
+		case RIGHT:
+			return ColumnTextAlign.END;
+		case LEFT:
+		default:
+			return ColumnTextAlign.START;
+		}
+	}
+
+	/**
+	 * Convert given {@link SortDirection} into a {@link com.holonplatform.core.query.QuerySort.SortDirection}.
+	 * @param direction Sort direction to convert
+	 * @return Converted sort direction
+	 */
+	static com.holonplatform.core.query.QuerySort.SortDirection convert(SortDirection direction) {
+		switch (direction) {
+		case DESCENDING:
+			return com.holonplatform.core.query.QuerySort.SortDirection.DESCENDING;
+		case ASCENDING:
+		default:
+			return com.holonplatform.core.query.QuerySort.SortDirection.ASCENDING;
+		}
+	}
+
+	// --------- configurator
+
+	static abstract class AbstractItemListingConfigurator<T, P, L extends AbstractItemListing<T, P>, C extends ItemListingConfigurator<T, P, C>>
+			extends AbstractComponentConfigurator<Grid<T>, C> implements ItemListingConfigurator<T, P, C> {
+
+		protected final DefaultHasSizeConfigurator sizeConfigurator;
+		protected final DefaultHasStyleConfigurator styleConfigurator;
+
+		protected final L instance;
+
+		protected Set<T> items = new HashSet<>();
+
+		private boolean editable;
+		private boolean editorBuffered;
+
+		public AbstractItemListingConfigurator(L instance) {
+			super(instance.getGrid());
+			this.instance = instance;
+			this.sizeConfigurator = new DefaultHasSizeConfigurator(instance.getGrid());
+			this.styleConfigurator = new DefaultHasStyleConfigurator(instance.getGrid());
+		}
+
+		protected L configure() {
+
+			// items
+			if (!items.isEmpty()) {
+				instance.getGrid().setItems(items);
+			}
+
+			// editable
+			if (editable) {
+				instance.getEditor().setBuffered(editorBuffered);
+			}
+
+			return instance;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+		 */
+		@Override
+		public C width(String width) {
+			sizeConfigurator.width(width);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+		 */
+		@Override
+		public C height(String height) {
+			sizeConfigurator.height(height);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 */
+		@Override
+		public C styleNames(String... styleNames) {
+			styleConfigurator.styleNames(styleNames);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 */
+		@Override
+		public C styleName(String styleName) {
+			styleConfigurator.styleName(styleName);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
+		 */
+		@Override
+		public C removeStyleName(String styleName) {
+			styleConfigurator.removeStyleName(styleName);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
+		 */
+		@Override
+		public C replaceStyleName(String styleName) {
+			styleConfigurator.replaceStyleName(styleName);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
+		 */
+		@Override
+		public C tabIndex(int tabIndex) {
+			instance.getGrid().setTabIndex(tabIndex);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@SuppressWarnings("serial")
+		@Override
+		public C withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
+			instance.getGrid().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<Grid<T>>>() {
+
+				@Override
+				public void onComponentEvent(FocusEvent<Grid<T>> event) {
+					listener.onComponentEvent(new FocusEvent<Component>(event.getSource(), event.isFromClient()));
+				}
+
+			});
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@SuppressWarnings("serial")
+		@Override
+		public C withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+			instance.getGrid().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<Grid<T>>>() {
+
+				@Override
+				public void onComponentEvent(BlurEvent<Grid<T>> event) {
+					listener.onComponentEvent(new BlurEvent<Component>(event.getSource(), event.isFromClient()));
+				}
+
+			});
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasItemsDataSourceConfigurator#dataSource(com.vaadin.flow.
+		 * data.provider.DataProvider)
+		 */
+		@Override
+		public C dataSource(DataProvider<T, Object> dataProvider) {
+			ObjectUtils.argumentNotNull(dataProvider, "DataProvider must be not null");
+			instance.getGrid().setDataProvider(dataProvider);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(java.lang.Iterable)
+		 */
+		@Override
+		public C items(Iterable<T> items) {
+			this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#addItem(java.lang.Object)
+		 */
+		@Override
+		public C addItem(T item) {
+			ObjectUtils.argumentNotNull(item, "Item must be not null");
+			this.items.add(item);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsFirst(java.lang.Object)
+		 */
+		@Override
+		public C displayAsFirst(P property) {
+			instance.setDisplayAsFirst(property);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsLast(java.lang.Object)
+		 */
+		@Override
+		public C displayAsLast(P property) {
+			instance.setDisplayAsLast(property);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayBefore(java.lang.Object,
+		 * java.lang.Object)
+		 */
+		@Override
+		public C displayBefore(P property, P beforeProperty) {
+			instance.setDisplayBefore(property, beforeProperty);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAfter(java.lang.Object,
+		 * java.lang.Object)
+		 */
+		@Override
+		public C displayAfter(P property, P afterProperty) {
+			instance.setDisplayAfter(property, afterProperty);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
+		 * .function.ValueProvider)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, C> withComponentColumn(ValueProvider<T, Component> valueProvider) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visibleColumns(java.util.List)
+		 */
+		@Override
+		public C visibleColumns(List<? extends P> columns) {
+			instance.setVisibleColumns(columns);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(boolean)
+		 */
+		@Override
+		public C sortable(boolean sortable) {
+			instance.getListingProperties().forEach(p -> instance.getColumnConfiguration(p)
+					.setSortMode(sortable ? SortMode.ENABLED : SortMode.DISABLED));
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public C sortable(P property, boolean sortable) {
+			instance.getColumnConfiguration(property).setSortMode(sortable ? SortMode.ENABLED : SortMode.DISABLED);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(boolean)
+		 */
+		@Override
+		public C resizable(boolean resizable) {
+			instance.getListingProperties().forEach(p -> instance.getColumnConfiguration(p).setResizable(resizable));
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public C resizable(P property, boolean resizable) {
+			instance.getColumnConfiguration(property).setResizable(resizable);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visible(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public C visible(P property, boolean visible) {
+			instance.getColumnConfiguration(property).setVisible(visible);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public C frozen(P property, boolean frozen) {
+			instance.getColumnConfiguration(property).setFrozen(frozen);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozenColumns(int)
+		 */
+		@Override
+		public C frozenColumns(int frozenColumnsCount) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#width(java.lang.Object,
+		 * java.lang.String)
+		 */
+		@Override
+		public C width(P property, String width) {
+			instance.getColumnConfiguration(property).setWidth(width);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#flexGrow(java.lang.Object,
+		 * int)
+		 */
+		@Override
+		public C flexGrow(P property, int flexGrow) {
+			instance.getColumnConfiguration(property).setFlexGrow(flexGrow);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment)
+		 */
+		@Override
+		public C alignment(P property, ColumnAlignment alignment) {
+			instance.getColumnConfiguration(property).setAlignment(alignment);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#renderer(java.lang.Object,
+		 * com.vaadin.flow.data.renderer.Renderer)
+		 */
+		@Override
+		public C renderer(P property, Renderer<T> renderer) {
+			instance.getColumnConfiguration(property).setRenderer(renderer);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#valueProvider(java.lang.Object,
+		 * com.vaadin.flow.function.ValueProvider)
+		 */
+		@Override
+		public C valueProvider(P property, ValueProvider<T, String> valueProvider) {
+			instance.getColumnConfiguration(property).setValueProvider(valueProvider);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortComparator(java.lang.Object,
+		 * java.util.Comparator)
+		 */
+		@Override
+		public C sortComparator(P property, Comparator<T> comparator) {
+			instance.getColumnConfiguration(property).setComparator(comparator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortUsing(java.lang.Object,
+		 * java.util.List)
+		 */
+		@Override
+		public C sortUsing(P property, List<P> sortProperties) {
+			instance.getColumnConfiguration(property).setSortProperties(sortProperties);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortProvider(java.lang.Object,
+		 * java.util.function.Function)
+		 */
+		@Override
+		public C sortProvider(P property,
+				Function<com.holonplatform.core.query.QuerySort.SortDirection, Stream<ItemSort<P>>> sortProvider) {
+			ObjectUtils.argumentNotNull(sortProvider, "Sort provider must be not null");
+			instance.getColumnConfiguration(property).setSortOrderProvider(direction -> {
+				return sortProvider.apply(AbstractItemListing.convert(direction))
+						.map(is -> new QuerySortOrder(instance.getColumnKey(is.getProperty()), direction));
+			});
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public C header(P property, Localizable header) {
+			instance.getColumnConfiguration(property).setHeaderText(header);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#headerComponent(java.lang.Object,
+		 * com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public C headerComponent(P property, Component header) {
+			instance.getColumnConfiguration(property).setHeaderComponent(header);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
+		 */
+		@Override
+		public C pageSize(int pageSize) {
+			instance.getGrid().setPageSize(pageSize);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#heightByRows(boolean)
+		 */
+		@Override
+		public C heightByRows(boolean heightByRows) {
+			instance.getGrid().setHeightByRows(heightByRows);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#columnReorderingAllowed(boolean)
+		 */
+		@Override
+		public C columnReorderingAllowed(boolean columnReorderingAllowed) {
+			instance.getGrid().setColumnReorderingAllowed(columnReorderingAllowed);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsRenderer(com.vaadin.flow
+		 * .data.renderer.Renderer)
+		 */
+		@Override
+		public C itemDetailsRenderer(Renderer<T> renderer) {
+			instance.getGrid().setItemDetailsRenderer(renderer);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsVisibleOnClick(boolean)
+		 */
+		@Override
+		public C itemDetailsVisibleOnClick(boolean detailsVisibleOnClick) {
+			instance.getGrid().setDetailsVisibleOnClick(detailsVisibleOnClick);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#selectionMode(com.holonplatform.
+		 * vaadin.flow.components.Selectable.SelectionMode)
+		 */
+		@Override
+		public C selectionMode(SelectionMode selectionMode) {
+			instance.setSelectionMode(selectionMode);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withSelectionListener(com.
+		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 */
+		@Override
+		public C withSelectionListener(SelectionListener<T> selectionListener) {
+			instance.addSelectionListener(selectionListener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemClickListener(com.
+		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
+		 */
+		@Override
+		public C withItemClickListener(
+				ClickEventListener<ItemListing<T, P>, ItemClickEvent<ItemListing<T, P>, T>> listener) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
+		 * holonplatform.vaadin.flow.components.events.ItemListingRefreshListener)
+		 */
+		@Override
+		public C withItemRefreshListener(ItemListingRefreshListener<T, P> listener) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#multiSort(boolean)
+		 */
+		@Override
+		public C multiSort(boolean multiSort) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#verticalScrollingEnabled(boolean)
+		 */
+		@Override
+		public C verticalScrollingEnabled(boolean enabled) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withThemeVariants(com.vaadin.flow.
+		 * component.grid.GridVariant[])
+		 */
+		@Override
+		public C withThemeVariants(GridVariant... variants) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<T, P, C> contextMenu() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.util.function.Consumer)
+		 */
+		@Override
+		public C header(Consumer<EditableItemListingSection<P>> headerConfigurator) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.util.function.Consumer)
+		 */
+		@Override
+		public C footer(Consumer<EditableItemListingSection<P>> footerConfigurator) {
+			// TODO Auto-generated method stub
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editable(boolean)
+		 */
+		@Override
+		public C editable(boolean editable) {
+			this.editable = editable;
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorBuffered(boolean)
+		 */
+		@Override
+		public C editorBuffered(boolean buffered) {
+			this.editorBuffered = buffered;
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorSaveListener(com.vaadin.
+		 * flow.component.grid.editor.EditorSaveListener)
+		 */
+		@Override
+		public C withEditorSaveListener(EditorSaveListener<T> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			this.editable = true;
+			instance.getEditor().addSaveListener(listener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCancelListener(com.vaadin
+		 * .flow.component.grid.editor.EditorCancelListener)
+		 */
+		@Override
+		public C withEditorCancelListener(EditorCancelListener<T> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			this.editable = true;
+			instance.getEditor().addCancelListener(listener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorOpenListener(com.vaadin.
+		 * flow.component.grid.editor.EditorOpenListener)
+		 */
+		@Override
+		public C withEditorOpenListener(EditorOpenListener<T> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			this.editable = true;
+			instance.getEditor().addOpenListener(listener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCloseListener(com.vaadin.
+		 * flow.component.grid.editor.EditorCloseListener)
+		 */
+		@Override
+		public C withEditorCloseListener(EditorCloseListener<T> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			this.editable = true;
+			instance.getEditor().addCloseListener(listener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withValidator(com.holonplatform.
+		 * core.Validator)
+		 */
+		@Override
+		public C withValidator(Validator<T> validator) {
+			instance.addValidator(validator);
+			return getConfigurator();
+		}
+
 	}
 
 }

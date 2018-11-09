@@ -25,6 +25,7 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -53,6 +54,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private boolean frozen = false;
 	private SortMode sortMode = SortMode.DEFAULT;
 	private int flexGrow = 1;
+	private ColumnAlignment alignment;
 	private String width = null;
 	private Localizable headerText;
 	private Component headerComponent;
@@ -205,6 +207,26 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public void setFlexGrow(int flexGrow) {
 		this.flexGrow = flexGrow;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getAlignment()
+	 */
+	@Override
+	public Optional<ColumnAlignment> getAlignment() {
+		return Optional.ofNullable(alignment);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setAlignment(com.holonplatform.vaadin
+	 * .flow.components.builders.ItemListingConfigurator.ColumnAlignment)
+	 */
+	@Override
+	public void setAlignment(ColumnAlignment alignment) {
+		this.alignment = alignment;
 	}
 
 	/*

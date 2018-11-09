@@ -327,12 +327,6 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	C headerComponent(P property, Component header);
 
 	/**
-	 * Hides the listing headers section.
-	 * @return this
-	 */
-	C hideHeaders();
-
-	/**
 	 * Sets the page size, which is the number of items fetched at a time from the data source.
 	 * <p>
 	 * Note: the number of items in the server-side memory can be considerably higher than the page size, since the

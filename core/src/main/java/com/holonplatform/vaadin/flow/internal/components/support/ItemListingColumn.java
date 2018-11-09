@@ -26,6 +26,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -120,6 +121,18 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	 * @param flexGrow the flex grow ratio
 	 */
 	void setFlexGrow(int flexGrow);
+
+	/**
+	 * Get the column alignment.
+	 * @return Optional column alignment
+	 */
+	Optional<ColumnAlignment> getAlignment();
+
+	/**
+	 * Set the column alignment.
+	 * @param alignment the column alignment to set
+	 */
+	void setAlignment(ColumnAlignment alignment);
 
 	/**
 	 * Gets the column header text.
