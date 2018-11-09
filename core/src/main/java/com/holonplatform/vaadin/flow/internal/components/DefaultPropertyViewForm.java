@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;

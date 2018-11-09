@@ -34,6 +34,8 @@ import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry;
@@ -290,11 +292,6 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 			return this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyViewGroup.Builder#build()
-		 */
-		@Override
 		public DefaultPropertyViewGroup build() {
 			instance.build();
 			return instance;
@@ -330,8 +327,8 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	}
 
-	public static abstract class AbstractBuilder<G extends PropertyViewGroup, B extends Builder<G, B>>
-			implements Builder<G, B> {
+	public static abstract class AbstractBuilder<G extends PropertyViewGroup, B extends PropertyViewGroupConfigurator<G, B>>
+			implements PropertyViewGroupConfigurator<G, B> {
 
 		protected final DefaultPropertyViewGroup instance;
 

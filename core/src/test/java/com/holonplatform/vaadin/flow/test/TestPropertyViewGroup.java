@@ -32,9 +32,9 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
-import com.holonplatform.vaadin.flow.components.PropertyViewGroup.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
 
 public class TestPropertyViewGroup {
 

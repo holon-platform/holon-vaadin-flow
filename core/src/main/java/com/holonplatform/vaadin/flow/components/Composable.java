@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.util.function.Consumer;
-
 import com.holonplatform.vaadin.flow.internal.components.DefaultComponentContainerComposer;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasElement;
@@ -26,8 +24,6 @@ import com.vaadin.flow.component.HasElement;
  * 
  * @since 5.2.0
  */
-// TODO APICHG: ComposableComponent renamed to Composable
-// TODO APICHG: Removed ComponentsWidthMode
 public interface Composable {
 
 	/**
@@ -55,45 +51,6 @@ public interface Composable {
 	}
 
 	/**
-	 * Base {@link Composable} builder.
-	 *
-	 * @param <S> Components source type
-	 * @param <C> Content component type
-	 * @param <B> Concrete builder type
-	 */
-	public interface Builder<S extends PropertyComponentSource, C extends HasElement, B extends Builder<S, C, B>> {
-
-		/**
-		 * Set a content initializer to setup the content component. This initiliazer is called every time the content
-		 * composition is triggered.
-		 * @param initializer Content initializer (not null)
-		 * @return this
-		 */
-		B initializer(Consumer<C> initializer);
-
-		/**
-		 * Set the {@link Composer} to be used to compose the components into the content component.
-		 * @param composer The composer to set (not null)
-		 * @return this
-		 */
-		B composer(Composer<? super C, S> composer);
-
-		/**
-		 * Set whether to compose the components into the content component when the content is attached to a parent
-		 * component, only if the component was not already composed using {@link Composable#compose()}.
-		 * <p>
-		 * Default is <code>true</code>.
-		 * </p>
-		 * @param composeOnAttach <code>true</code> to compose the components when the content is attached to a parent
-		 *        component. If <code>false</code>, the {@link Composable#compose()} method must be invoked to compose
-		 *        the components.
-		 * @return this
-		 */
-		B composeOnAttach(boolean composeOnAttach);
-
-	}
-
-	/**
 	 * Create a {@link Composer} which uses a {@link HasComponents} component as composition layout and adds the
 	 * property components to the parent component in the order they are returned from the
 	 * {@link PropertyValueComponentSource}.
@@ -101,7 +58,6 @@ public interface Composable {
 	 * @param <S> Actual components source
 	 * @return A new {@link ComponentContainer} composer
 	 */
-	// TODO APICHG: com.vaadin.ui.ComponentContainer replaced by HasComponents
 	static <C extends HasComponents, S extends PropertyComponentSource> Composer<C, S> componentContainerComposer() {
 		return new DefaultComponentContainerComposer<>();
 	}

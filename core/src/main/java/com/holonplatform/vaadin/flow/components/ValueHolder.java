@@ -28,7 +28,6 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.0.0
  */
-// TODO APICHG: Removed MaySupportValueChangeMode - use HasValueChangeModeConfigurator
 public interface ValueHolder<V> extends Serializable {
 
 	/**

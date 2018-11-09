@@ -38,7 +38,7 @@ import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyInputGroup.PropertyInputGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.textfield.TextField;

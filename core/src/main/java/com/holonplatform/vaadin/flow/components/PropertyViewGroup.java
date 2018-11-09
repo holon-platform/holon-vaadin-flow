@@ -16,17 +16,12 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.property.PropertyRenderer;
-import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 
 /**
@@ -101,98 +96,6 @@ public interface PropertyViewGroup extends PropertySetBound, ValueHolder<Propert
 	 */
 	static PropertyViewGroupBuilder builder(Property<?>... properties) {
 		return builder(PropertySet.of(properties));
-	}
-
-	/**
-	 * {@link PropertyViewGroup} builder.
-	 */
-	public interface PropertyViewGroupBuilder extends Builder<PropertyViewGroup, PropertyViewGroupBuilder> {
-
-	}
-
-	/**
-	 * Base {@link PropertyViewGroup} builder.
-	 * @param <G> Actual {@link PropertyViewGroup} type
-	 * @param <B> Concrete builder type
-	 */
-	public interface Builder<G extends PropertyViewGroup, B extends Builder<G, B>> {
-
-		/**
-		 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property
-		 * will never be generated, but its value will be written to a {@link PropertyBox} using
-		 * {@link PropertyViewGroup#getValue()}.
-		 * @param <T> Property type
-		 * @param property Property to set as hidden (not null)
-		 * @return this
-		 */
-		<T> B hidden(Property<T> property);
-
-		/**
-		 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
-		 * <p>
-		 * By default, the {@link PropertyRendererRegistry#get()} method is used to obtain the
-		 * {@link PropertyRendererRegistry} to use.
-		 * </p>
-		 * @param propertyRendererRegistry The {@link PropertyRendererRegistry} to use to render the group components
-		 * @return this
-		 */
-		B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
-
-		/**
-		 * Set the {@link PropertyRenderer} to use to render the {@link ViewComponent} bound to given
-		 * <code>property</code>.
-		 * @param <T> Property type
-		 * @param property The property to render (not null)
-		 * @param renderer The renderer to use to render the property {@link ViewComponent} (not null)
-		 * @return this
-		 */
-		<T> B bind(Property<T> property, PropertyRenderer<ViewComponent<T>, T> renderer);
-
-		/**
-		 * Set the function to use to render the {@link ViewComponent} bound to given <code>property</code>.
-		 * @param <T> Property type
-		 * @param property The property to render (not null)
-		 * @param function The function to use to render the property {@link ViewComponent} (not null)
-		 * @return this
-		 */
-		default <T> B bind(Property<T> property, Function<Property<? extends T>, ViewComponent<T>> function) {
-			return bind(property, ViewComponentPropertyRenderer.create(function));
-		}
-
-		/**
-		 * Bind the given <code>property</code> to given <code>viewComponent</code> instance.
-		 * @param <T> Property type
-		 * @param property The property to render (not null)
-		 * @param viewComponent The {@link ViewComponent} to use to render the property (not null)
-		 * @return this
-		 */
-		default <T> B bind(Property<T> property, ViewComponent<T> viewComponent) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(viewComponent, "ViewComponent must be not null");
-			return bind(property, ViewComponentPropertyRenderer.create(p -> viewComponent));
-		}
-
-		/**
-		 * Add a {@link BiConsumer} to allow further {@link ViewComponent} configuration after generation and before the
-		 * {@link ViewComponent} is actually bound to a property.
-		 * @param postProcessor the post processor to add (not null)
-		 * @return this
-		 */
-		B withPostProcessor(BiConsumer<Property<?>, ViewComponent<?>> postProcessor);
-
-		/**
-		 * Add a {@link ValueChangeListener} to the group.
-		 * @param listener The ValueChangeListener to add
-		 * @return this
-		 */
-		B withValueChangeListener(ValueChangeListener<PropertyBox> listener);
-
-		/**
-		 * Build the {@link PropertyViewGroup}
-		 * @return PropertyViewGroup instance
-		 */
-		G build();
-
 	}
 
 }

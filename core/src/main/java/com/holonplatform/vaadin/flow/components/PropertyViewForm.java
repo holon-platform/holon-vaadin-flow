@@ -15,14 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewForm;
 import com.vaadin.flow.component.Component;
@@ -168,55 +166,6 @@ public interface PropertyViewForm extends Composable, ValueComponent<PropertyBox
 	static PropertyViewFormBuilder<HorizontalLayout> horizontalLayout(Property<?>... properties) {
 		return builder(HorizontalLayoutBuilder.create().build(), properties)
 				.composer(Composable.componentContainerComposer());
-	}
-
-	/**
-	 * {@link PropertyViewForm} builder.
-	 * @param <C> Form content element type
-	 */
-	public interface PropertyViewFormBuilder<C extends Component>
-			extends Composable.Builder<PropertyValueComponentSource, C, PropertyViewFormBuilder<C>>,
-			PropertyViewGroup.Builder<PropertyViewForm, PropertyViewFormBuilder<C>>,
-			ComponentConfigurator<PropertyViewFormBuilder<C>> {
-
-		/**
-		 * Set the caption for the view component bound to given property. By default, the caption is obtained from
-		 * {@link Property} itself (which is {@link Localizable}).
-		 * @param property Property for which to set the view component caption (not null)
-		 * @param caption Localizable view component caption
-		 * @return this
-		 */
-		PropertyViewFormBuilder<C> propertyCaption(Property<?> property, Localizable caption);
-
-		/**
-		 * Set the caption for the view component bound to given property. By default, the caption is obtained from
-		 * {@link Property} itself (which is {@link Localizable}).
-		 * @param property Property for which to set the view component caption (not null)
-		 * @param caption View component caption
-		 * @return this
-		 */
-		PropertyViewFormBuilder<C> propertyCaption(Property<?> property, String caption);
-
-		/**
-		 * Set the caption for the view component bound to given property. By default, the caption is obtained from
-		 * {@link Property} itself (which is {@link Localizable}).
-		 * @param property Property for which to set the view component caption (not null)
-		 * @param defaultCaption Default caption if no translation is available for given <code>messageCode</code> for
-		 *        current Locale, or no {@link LocalizationContext} is available at all
-		 * @param messageCode Caption translation message key
-		 * @param arguments Optional translation arguments
-		 * @return this
-		 */
-		PropertyViewFormBuilder<C> propertyCaption(Property<?> property, String defaultCaption, String messageCode,
-				Object... arguments);
-
-		/**
-		 * Set the caption for the view component bound to given property as hidden.
-		 * @param property Property for which to hide the view component caption (not null)
-		 * @return this
-		 */
-		PropertyViewFormBuilder<C> hidePropertyCaption(Property<?> property);
-
 	}
 
 }

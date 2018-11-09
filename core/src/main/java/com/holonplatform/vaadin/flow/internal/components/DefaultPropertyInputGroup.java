@@ -43,6 +43,8 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
@@ -618,7 +620,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param value Value to validate
 	 * @throws OverallValidationException If validation fails
 	 */
-	protected void validate(PropertyBox value) throws OverallValidationException {
+	protected void validate(PropertyBox value) throws ValidationException {
 
 		LinkedList<ValidationException> failures = new LinkedList<>();
 		for (Validator<PropertyBox> validator : getValidators()) {
@@ -635,10 +637,10 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		// collect validation exceptions, if any
 		if (!failures.isEmpty()) {
 
-			OverallValidationException validationException = (failures.size() == 1)
-					? new OverallValidationException(failures.getFirst().getMessage(),
-							failures.getFirst().getMessageCode(), failures.getFirst().getMessageArguments())
-					: new OverallValidationException(failures.toArray(new ValidationException[failures.size()]));
+			ValidationException validationException = (failures.size() == 1)
+					? new ValidationException(failures.getFirst().getMessage(), failures.getFirst().getMessageCode(),
+							failures.getFirst().getMessageArguments())
+					: new ValidationException(failures.toArray(new ValidationException[failures.size()]));
 
 			// notify validation status
 			notifyInvalidValidationStatus(validationException, null);
@@ -842,7 +844,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			return this;
 		}
 
-		@Override
 		public DefaultPropertyInputGroup build() {
 			instance.build();
 			return instance;
@@ -874,12 +875,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	}
 
 	/**
-	 * Abstract {@link Builder} implementation.
+	 * Abstract configurator.
 	 * @param <G> Actual {@link PropertyInputGroup} type
 	 * @param <B> Concrete builder type
 	 */
-	public abstract static class AbstractBuilder<G extends PropertyInputGroup, B extends PropertyInputGroup.Builder<G, B>>
-			implements PropertyInputGroup.Builder<G, B> {
+	public abstract static class AbstractBuilder<G extends PropertyInputGroup, B extends PropertyInputGroupConfigurator<G, B>>
+			implements PropertyInputGroupConfigurator<G, B> {
 
 		protected final DefaultPropertyInputGroup instance;
 
