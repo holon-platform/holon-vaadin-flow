@@ -56,6 +56,7 @@ import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
@@ -72,6 +73,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -189,6 +193,51 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	@Override
 	public Component getComponent() {
 		return getGrid();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		getGrid().setVisible(visible);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return getGrid().isVisible();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
+	 */
+	@Override
+	public Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getGrid());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
+	 */
+	@Override
+	public Optional<HasStyle> hasStyle() {
+		return Optional.of(getGrid());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
+	 */
+	@Override
+	public Optional<HasSize> hasSize() {
+		return Optional.of(getGrid());
 	}
 
 	/**
@@ -316,10 +365,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getVisibleColumns()
 	 */
 	@Override
-	public Set<P> getVisibleColumns() {
+	public List<P> getVisibleColumns() {
 		return getVisibleColumnProperties().stream()
 				.filter(property -> getColumn(property).map(column -> column.isVisible()).orElse(false))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 
 	/*
@@ -1108,6 +1157,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		protected final DefaultHasSizeConfigurator sizeConfigurator;
 		protected final DefaultHasStyleConfigurator styleConfigurator;
+		protected final DefaultHasEnabledConfigurator enabledConfigurator;
 
 		protected final L instance;
 
@@ -1128,6 +1178,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			this.instance = instance;
 			this.sizeConfigurator = new DefaultHasSizeConfigurator(instance.getGrid());
 			this.styleConfigurator = new DefaultHasStyleConfigurator(instance.getGrid());
+			this.enabledConfigurator = new DefaultHasEnabledConfigurator(instance.getGrid());
 		}
 
 		@Override
@@ -1242,6 +1293,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public C replaceStyleName(String styleName) {
 			styleConfigurator.replaceStyleName(styleName);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 */
+		@Override
+		public C enabled(boolean enabled) {
+			enabledConfigurator.enabled(enabled);
 			return getConfigurator();
 		}
 

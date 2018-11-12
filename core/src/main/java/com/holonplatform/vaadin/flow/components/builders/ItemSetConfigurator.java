@@ -15,20 +15,36 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.vaadin.flow.components.SingleSelect;
+import java.io.Serializable;
+
+import com.holonplatform.vaadin.flow.components.ItemSet;
 
 /**
- * {@link SingleSelect} inputs builder.
- * 
- * @param <T> Value type
- * @param <ITEM> Item type
- * @param <CONTEXT> Item conversion context type
- * @param <B> Concrete builder type
+ * {@link ItemSet} configurator.
  *
+ * @param <C> Concrete configurator type
+ * 
  * @since 5.2.0
  */
-public interface SingleSelectInputBuilder<T, ITEM, CONTEXT, B extends SingleSelectInputBuilder<T, ITEM, CONTEXT, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>,
-		SelectableDataSourceInputConfigurator<T, ITEM, CONTEXT, B> {
+public interface ItemSetConfigurator<C extends ItemSetConfigurator<C>> {
+
+	/**
+	 * Item caption generator.
+	 * 
+	 * @param <ITEM> Item type
+	 * 
+	 * @since 5.2.0
+	 */
+	@FunctionalInterface
+	public interface ItemCaptionGenerator<ITEM> extends Serializable {
+
+		/**
+		 * Get the caption for given <code>item</code>.
+		 * @param item the item for which to get the caption
+		 * @return Item caption (not null)
+		 */
+		String getItemCaption(ITEM item);
+
+	}
 
 }

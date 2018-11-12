@@ -25,6 +25,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.IronIcon;
 
@@ -112,6 +113,17 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 	@Override
 	public C replaceStyleName(String styleName) {
 		styleConfigurator.replaceStyleName(styleName);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.Enum[])
+	 */
+	@Override
+	public C withThemeVariants(ButtonVariant... variants) {
+		getComponent().addThemeVariants(variants);
 		return getConfigurator();
 	}
 

@@ -26,7 +26,6 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
-import com.holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemSelectModeSingleSelectInputBuilder;

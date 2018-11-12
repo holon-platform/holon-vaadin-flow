@@ -45,6 +45,7 @@ import com.vaadin.flow.component.KeyUpEvent;
 import com.vaadin.flow.component.textfield.Autocapitalize;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
@@ -580,6 +581,17 @@ public class DefaultPasswordInputBuilder extends
 	@Override
 	public PasswordInputBuilder title(Localizable title) {
 		titleConfigurator.title(title);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.Enum[])
+	 */
+	@Override
+	public PasswordInputBuilder withThemeVariants(TextFieldVariant... variants) {
+		getComponent().addThemeVariants(variants);
 		return getConfigurator();
 	}
 

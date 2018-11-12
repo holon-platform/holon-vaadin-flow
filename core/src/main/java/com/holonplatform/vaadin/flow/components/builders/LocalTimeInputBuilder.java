@@ -22,6 +22,7 @@ import java.util.function.Function;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultLocalTimeInputBuilder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link LocalTime} type {@link Input} components.
@@ -37,6 +38,7 @@ public interface LocalTimeInputBuilder extends InputBuilder<LocalTime, Input<Loc
 		HasPrefixAndSuffixConfigurator<LocalTimeInputBuilder>, CompositionNotifierConfigurator<LocalTimeInputBuilder>,
 		HasPlaceholderConfigurator<LocalTimeInputBuilder>, HasLabelConfigurator<LocalTimeInputBuilder>,
 		HasTitleConfigurator<LocalTimeInputBuilder>, HasPatternConfigurator<LocalTimeInputBuilder>,
+		HasThemeVariantConfigurator<TextFieldVariant, LocalTimeInputBuilder>,
 		DeferrableLocalizationConfigurator<LocalTimeInputBuilder> {
 
 	/**

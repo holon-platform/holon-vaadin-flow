@@ -21,6 +21,7 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultButtonConfigurator;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 
 /**
  * {@link Button} component configurator.
@@ -32,7 +33,8 @@ import com.vaadin.flow.component.button.Button;
 public interface ButtonConfigurator<C extends ButtonConfigurator<C>> extends ComponentConfigurator<C>,
 		HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasIconConfigurator<C>, HasTextConfigurator<C>,
 		HasEnabledConfigurator<C>, HasTitleConfigurator<C>, ClickNotifierConfigurator<Button, ClickEvent<Button>, C>,
-		FocusableConfigurator<Button, C>, HasAutofocusConfigurator<C>, DeferrableLocalizationConfigurator<C> {
+		FocusableConfigurator<Button, C>, HasAutofocusConfigurator<C>, HasThemeVariantConfigurator<ButtonVariant, C>,
+		DeferrableLocalizationConfigurator<C> {
 
 	/**
 	 * Sets whether this button's icon should be positioned after it's text content or the other way around.

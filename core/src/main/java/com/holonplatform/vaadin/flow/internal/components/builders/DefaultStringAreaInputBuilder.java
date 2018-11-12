@@ -45,6 +45,7 @@ import com.vaadin.flow.component.KeyUpEvent;
 import com.vaadin.flow.component.textfield.Autocapitalize;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextAreaVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
@@ -545,6 +546,17 @@ public class DefaultStringAreaInputBuilder extends
 	@Override
 	public StringAreaInputBuilder label(Localizable label) {
 		labelConfigurator.label(label);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.Enum[])
+	 */
+	@Override
+	public StringAreaInputBuilder withThemeVariants(TextAreaVariant... variants) {
+		getComponent().addThemeVariants(variants);
 		return getConfigurator();
 	}
 

@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
@@ -37,7 +36,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * Gets the listing visible columns, in the order thay are displayed.
 	 * @return The listing visible columns references, represented using the property id
 	 */
-	Set<P> getVisibleColumns();
+	List<P> getVisibleColumns();
 
 	/**
 	 * Show or hide the column which corresponds to given <code>property</code> id.

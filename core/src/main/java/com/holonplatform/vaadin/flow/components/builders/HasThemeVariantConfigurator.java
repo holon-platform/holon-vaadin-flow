@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Axioma srl.
+ * Copyright 2016-2018 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,18 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components;
+package com.holonplatform.vaadin.flow.components.builders;
 
 /**
- * Implemented by components which support an item set as data source.
+ * Configurator for components which support theme variants.
+ * 
+ * @param <V> Variant type
+ * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface ItemSet {
+public interface HasThemeVariantConfigurator<V extends Enum<V>, C extends HasThemeVariantConfigurator<V, C>> {
 
 	/**
-	 * Refresh the items set.
+	 * Add given theme variants to the component.
+	 * @param variants The theme variants to add
+	 * @return this
 	 */
-	void refresh();
+	@SuppressWarnings("unchecked")
+	C withThemeVariants(V... variants);
 
 }

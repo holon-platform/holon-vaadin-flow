@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultStringAreaInputBuilder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextAreaVariant;
 
 /**
  * Builder to create {@link String} type {@link Input} components rendered as a text area.
@@ -30,6 +31,7 @@ public interface StringAreaInputBuilder extends InputBuilder<String, Input<Strin
 		HasAutofocusConfigurator<StringAreaInputBuilder>, FocusableConfigurator<Component, StringAreaInputBuilder>,
 		HasPrefixAndSuffixConfigurator<StringAreaInputBuilder>, CompositionNotifierConfigurator<StringAreaInputBuilder>,
 		HasPlaceholderConfigurator<StringAreaInputBuilder>, HasLabelConfigurator<StringAreaInputBuilder>,
+		HasThemeVariantConfigurator<TextAreaVariant, StringAreaInputBuilder>,
 		DeferrableLocalizationConfigurator<StringAreaInputBuilder> {
 
 	/**

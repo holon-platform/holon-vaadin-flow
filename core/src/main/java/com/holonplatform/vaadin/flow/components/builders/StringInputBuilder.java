@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultStringInputBuilder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link String} type {@link Input} components.
@@ -31,6 +32,7 @@ public interface StringInputBuilder extends InputBuilder<String, Input<String>, 
 		HasPrefixAndSuffixConfigurator<StringInputBuilder>, CompositionNotifierConfigurator<StringInputBuilder>,
 		HasPlaceholderConfigurator<StringInputBuilder>, HasLabelConfigurator<StringInputBuilder>,
 		HasTitleConfigurator<StringInputBuilder>, HasPatternConfigurator<StringInputBuilder>,
+		HasThemeVariantConfigurator<TextFieldVariant, StringInputBuilder>,
 		DeferrableLocalizationConfigurator<StringInputBuilder> {
 
 	/**

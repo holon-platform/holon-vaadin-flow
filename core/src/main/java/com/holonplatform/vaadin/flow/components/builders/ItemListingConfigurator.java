@@ -65,8 +65,9 @@ import com.vaadin.flow.function.ValueProvider;
  */
 // TODO row/cell/column style generators
 public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator<T, P, C>>
-		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>,
-		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C> {
+		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
+		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C>,
+		HasThemeVariantConfigurator<GridVariant, C> {
 
 	/**
 	 * Configure the column represented by given <code>property</code> to be displayed before any other listing column
@@ -440,13 +441,6 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	 * @return this
 	 */
 	C verticalScrollingEnabled(boolean enabled);
-
-	/**
-	 * Add given theme variants to the listing component.
-	 * @param variants The theme variants to add
-	 * @return this
-	 */
-	C withThemeVariants(GridVariant... variants);
 
 	/**
 	 * Get a {@link ItemListingContextMenuBuilder} to configure and add a context menu to show for each listing item.

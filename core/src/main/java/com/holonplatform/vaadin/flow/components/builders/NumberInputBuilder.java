@@ -22,22 +22,24 @@ import java.util.Locale;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultNumberInputBuilder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link Number} type {@link Input} components.
  * 
  * @since 5.2.0
  */
-public interface NumberInputBuilder<T extends Number>
-		extends InputBuilder<T, Input<T>, NumberInputBuilder<T>>, InputValueConfigurator<T, NumberInputBuilder<T>>,
-		HasEnabledConfigurator<NumberInputBuilder<T>>, InputNotifierConfigurator<NumberInputBuilder<T>>,
-		KeyNotifierConfigurator<NumberInputBuilder<T>>, HasValueChangeModeConfigurator<NumberInputBuilder<T>>,
-		HasAutocompleteConfigurator<NumberInputBuilder<T>>, HasSizeConfigurator<NumberInputBuilder<T>>,
-		HasStyleConfigurator<NumberInputBuilder<T>>, HasAutofocusConfigurator<NumberInputBuilder<T>>,
-		FocusableConfigurator<Component, NumberInputBuilder<T>>, HasPrefixAndSuffixConfigurator<NumberInputBuilder<T>>,
-		CompositionNotifierConfigurator<NumberInputBuilder<T>>, HasPlaceholderConfigurator<NumberInputBuilder<T>>,
-		HasLabelConfigurator<NumberInputBuilder<T>>, HasTitleConfigurator<NumberInputBuilder<T>>,
-		HasPatternConfigurator<NumberInputBuilder<T>>, DeferrableLocalizationConfigurator<NumberInputBuilder<T>> {
+public interface NumberInputBuilder<T extends Number> extends InputBuilder<T, Input<T>, NumberInputBuilder<T>>,
+		InputValueConfigurator<T, NumberInputBuilder<T>>, HasEnabledConfigurator<NumberInputBuilder<T>>,
+		InputNotifierConfigurator<NumberInputBuilder<T>>, KeyNotifierConfigurator<NumberInputBuilder<T>>,
+		HasValueChangeModeConfigurator<NumberInputBuilder<T>>, HasAutocompleteConfigurator<NumberInputBuilder<T>>,
+		HasSizeConfigurator<NumberInputBuilder<T>>, HasStyleConfigurator<NumberInputBuilder<T>>,
+		HasAutofocusConfigurator<NumberInputBuilder<T>>, FocusableConfigurator<Component, NumberInputBuilder<T>>,
+		HasPrefixAndSuffixConfigurator<NumberInputBuilder<T>>, CompositionNotifierConfigurator<NumberInputBuilder<T>>,
+		HasPlaceholderConfigurator<NumberInputBuilder<T>>, HasLabelConfigurator<NumberInputBuilder<T>>,
+		HasTitleConfigurator<NumberInputBuilder<T>>, HasPatternConfigurator<NumberInputBuilder<T>>,
+		HasThemeVariantConfigurator<TextFieldVariant, NumberInputBuilder<T>>,
+		DeferrableLocalizationConfigurator<NumberInputBuilder<T>> {
 
 	/**
 	 * Set the {@link Locale} to use to represent and convert number values.

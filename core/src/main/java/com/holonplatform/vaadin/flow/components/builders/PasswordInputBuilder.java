@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPasswordInputBuilder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link String} type {@link Input} components.
@@ -31,6 +32,7 @@ public interface PasswordInputBuilder extends InputBuilder<String, Input<String>
 		HasPrefixAndSuffixConfigurator<PasswordInputBuilder>, CompositionNotifierConfigurator<PasswordInputBuilder>,
 		HasPlaceholderConfigurator<PasswordInputBuilder>, HasLabelConfigurator<PasswordInputBuilder>,
 		HasTitleConfigurator<PasswordInputBuilder>, HasPatternConfigurator<PasswordInputBuilder>,
+		HasThemeVariantConfigurator<TextFieldVariant, PasswordInputBuilder>,
 		DeferrableLocalizationConfigurator<PasswordInputBuilder> {
 
 	/**
