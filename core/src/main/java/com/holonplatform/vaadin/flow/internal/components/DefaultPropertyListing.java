@@ -22,12 +22,15 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
@@ -66,6 +69,14 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		for (Property<?> property : propertySet) {
 			addPropertyColumn(property);
 		}
+	}
+
+	/**
+	 * Get the listing property set.
+	 * @return the listing property set
+	 */
+	protected PropertySet<?> getPropertySet() {
+		return propertySet;
 	}
 
 	/*
@@ -333,6 +344,19 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
 			getInstance().addPropertyColumn(property);
 			return new DefaultItemListingColumnBuilder<>(property, getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#dataSource(com.holonplatform.core.
+		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget,
+		 * com.holonplatform.core.query.QueryConfigurationProvider[])
+		 */
+		@Override
+		public PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget,
+				QueryConfigurationProvider... queryConfigurationProviders) {
+			return dataSource(datastore, dataTarget, getInstance().getPropertySet(), queryConfigurationProviders);
 		}
 
 		/*

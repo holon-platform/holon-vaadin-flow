@@ -16,10 +16,15 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.core.Validator;
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyValueProvider;
 import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.vaadin.flow.component.Component;
@@ -63,5 +68,65 @@ public interface PropertyListingBuilder
 	 * @return this
 	 */
 	<V> PropertyListingBuilder editor(Property<V> property, Input<V> editor);
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source. The listing property set
+	 * will be used as query projection.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @return this
+	 */
+	default PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget) {
+		return dataSource(datastore, dataTarget, new QueryConfigurationProvider[0]);
+	}
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source. The listing property set
+	 * will be used as query projection.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @param filter Fixed {@link QueryFilter} to use (may be null)
+	 * @return this
+	 */
+	default PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget, QueryFilter filter) {
+		return dataSource(datastore, dataTarget, QueryConfigurationProvider.create(filter, null));
+	}
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source. The listing property set
+	 * will be used as query projection.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @param sort Fixed {@link QuerySort} to use (may be null)
+	 * @return this
+	 */
+	default PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget, QuerySort sort) {
+		return dataSource(datastore, dataTarget, QueryConfigurationProvider.create(null, sort));
+	}
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source. The listing property set
+	 * will be used as query projection.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @param filter Fixed {@link QueryFilter} to use (may be null)
+	 * @param sort Fixed {@link QuerySort} to use (may be null)
+	 * @return this
+	 */
+	default PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget, QueryFilter filter,
+			QuerySort sort) {
+		return dataSource(datastore, dataTarget, QueryConfigurationProvider.create(filter, sort));
+	}
+
+	/**
+	 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source. The listing property set
+	 * will be used as query projection.
+	 * @param datastore Datastore to use (not null)
+	 * @param dataTarget Data target to use to load items (not null)
+	 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
+	 * @return this
+	 */
+	PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget,
+			QueryConfigurationProvider... queryConfigurationProviders);
 
 }
