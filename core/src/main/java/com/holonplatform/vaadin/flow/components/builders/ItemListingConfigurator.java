@@ -399,6 +399,22 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	C selectionMode(SelectionMode selectionMode);
 
 	/**
+	 * Set the listing selection mode as {@link SelectionMode#SINGLE}.
+	 * @return this
+	 */
+	default C singleSelect() {
+		return selectionMode(SelectionMode.SINGLE);
+	}
+
+	/**
+	 * Set the listing selection mode as {@link SelectionMode#MULTI}.
+	 * @return this
+	 */
+	default C multiSelect() {
+		return selectionMode(SelectionMode.MULTI);
+	}
+
+	/**
 	 * Add a {@link SelectionListener} to listen to items selection changes.
 	 * <p>
 	 * {@link SelectionListener}s are triggred only when listing is selectable, i.e. (i.e. {@link SelectionMode} is not

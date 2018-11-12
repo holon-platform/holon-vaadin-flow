@@ -19,27 +19,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.Query;
 
 public class TestPropertyListing {
 
@@ -205,6 +214,151 @@ public class TestPropertyListing {
 	}
 
 	@Test
+	public void testItemsDataSource() {
+
+		final PropertyBox ITEM1 = PropertyBox.builder(SET).set(ID, 1L).set(NAME, "test1").build();
+		final PropertyBox ITEM2 = PropertyBox.builder(SET).set(ID, 2L).set(NAME, "test2").build();
+
+		PropertyListing listing = PropertyListing.builder(SET).items(Arrays.asList(ITEM1, ITEM2)).build();
+
+		List<PropertyBox> items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(ITEM1));
+		assertTrue(items.contains(ITEM2));
+
+		listing = PropertyListing.builder(SET).items(ITEM1, ITEM2).build();
+
+		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(ITEM1));
+		assertTrue(items.contains(ITEM2));
+
+		listing = PropertyListing.builder(SET).addItem(ITEM1).addItem(ITEM2).build();
+
+		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(ITEM1));
+		assertTrue(items.contains(ITEM2));
+
+	}
+
+	@Test
+	public void testSelectable() {
+
+		final PropertyBox ITEM1 = PropertyBox.builder(SET).set(ID, 1L).set(NAME, "test1").build();
+		final PropertyBox ITEM2 = PropertyBox.builder(SET).set(ID, 2L).set(NAME, "test2").build();
+
+		PropertyListing listing = PropertyListing.builder(SET).items(ITEM1, ITEM2).build();
+
+		assertEquals(SelectionMode.NONE, listing.getSelectionMode());
+		assertEquals(0, listing.getSelectedItems().size());
+		assertFalse(listing.getFirstSelectedItem().isPresent());
+		assertFalse(listing.isSelected(ITEM1));
+		assertFalse(listing.isSelected(ITEM2));
+
+		assertThrows(IllegalStateException.class, () -> listing.select(ITEM1));
+
+		PropertyListing listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).selectionMode(SelectionMode.SINGLE)
+				.build();
+		assertEquals(SelectionMode.SINGLE, listing2.getSelectionMode());
+		assertEquals(0, listing2.getSelectedItems().size());
+		assertFalse(listing2.getFirstSelectedItem().isPresent());
+
+		listing2.select(ITEM2);
+		assertEquals(1, listing2.getSelectedItems().size());
+		assertTrue(listing2.getFirstSelectedItem().isPresent());
+		assertEquals(ITEM2, listing2.getFirstSelectedItem().orElse(null));
+		assertFalse(listing2.isSelected(ITEM1));
+		assertTrue(listing2.isSelected(ITEM2));
+
+		listing2.deselect(ITEM2);
+		assertEquals(0, listing2.getSelectedItems().size());
+		assertFalse(listing2.getFirstSelectedItem().isPresent());
+
+		listing2.select(ITEM1);
+		listing2.deselect(ITEM2);
+		assertEquals(1, listing2.getSelectedItems().size());
+		assertTrue(listing2.getFirstSelectedItem().isPresent());
+		assertTrue(listing2.isSelected(ITEM1));
+
+		listing2.deselectAll();
+		assertEquals(0, listing2.getSelectedItems().size());
+		assertFalse(listing2.getFirstSelectedItem().isPresent());
+
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).singleSelect().build();
+		assertEquals(SelectionMode.SINGLE, listing2.getSelectionMode());
+		listing2.select(ITEM2);
+		assertEquals(1, listing2.getSelectedItems().size());
+
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).build();
+		listing2.setSelectionMode(SelectionMode.SINGLE);
+		assertEquals(SelectionMode.SINGLE, listing2.getSelectionMode());
+		listing2.select(ITEM2);
+		assertEquals(1, listing2.getSelectedItems().size());
+		
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).multiSelect().build();
+		assertEquals(SelectionMode.MULTI, listing2.getSelectionMode());
+		assertEquals(0, listing.getSelectedItems().size());
+		
+		listing2.select(ITEM1);
+		listing2.select(ITEM2);
+		assertEquals(2, listing2.getSelectedItems().size());
+		assertTrue(listing2.isSelected(ITEM1));
+		assertTrue(listing2.isSelected(ITEM2));
+		
+
+		final Set<PropertyBox> selected = new HashSet<>();
+
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).singleSelect().withSelectionListener(e -> {
+			selected.clear();
+			selected.addAll(e.getAllSelectedItems());
+		}).build();
+		
+		assertEquals(0, selected.size());
+		
+		listing2.select(ITEM1);
+		
+		assertEquals(1, selected.size());
+		assertTrue(selected.contains(ITEM1));
+		
+		listing2.select(ITEM2);
+		
+		assertEquals(1, selected.size());
+		assertTrue(selected.contains(ITEM2));
+		
+		listing2.deselectAll();
+		assertEquals(0, selected.size());
+		assertFalse(selected.contains(ITEM1));
+		assertFalse(selected.contains(ITEM2));
+		
+		selected.clear();
+		
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).singleSelect().multiSelect().withSelectionListener(e -> {
+			selected.clear();
+			selected.addAll(e.getAllSelectedItems());
+		}).build();
+		
+		assertEquals(0, selected.size());
+		
+		listing2.select(ITEM1);
+		
+		assertEquals(1, selected.size());
+		assertTrue(selected.contains(ITEM1));
+		
+		listing2.select(ITEM2);
+		
+		assertEquals(2, selected.size());
+		assertTrue(selected.contains(ITEM1));
+		assertTrue(selected.contains(ITEM2));
+		
+		listing2.deselectAll();
+		assertEquals(0, selected.size());
+		assertFalse(selected.contains(ITEM1));
+		assertFalse(selected.contains(ITEM2));
+		
+	}
+
+	@Test
 	public void testVisibleColumns() {
 
 		PropertyListing listing = PropertyListing.builder(SET).visibleColumns(NAME, ID).build();
@@ -219,7 +373,7 @@ public class TestPropertyListing {
 		assertEquals(2, visible.size());
 		assertEquals(NAME, visible.get(0));
 		assertEquals(ID, visible.get(1));
-		
+
 	}
 
 	@Test
@@ -227,12 +381,28 @@ public class TestPropertyListing {
 
 		PropertyListing listing = PropertyListing.builder(SET).build();
 
+		assertTrue(listing.hasProperty(ID));
+		assertTrue(listing.hasProperty(NAME));
+		assertTrue(listing.hasProperty(VIRTUAL));
+
 		List<Property<?>> properties = ConversionUtils.iterableAsList(listing.getProperties());
 		assertEquals(3, properties.size());
 		assertTrue(properties.contains(ID));
 		assertTrue(properties.contains(NAME));
 		assertTrue(properties.contains(VIRTUAL));
 
+		properties = listing.propertyStream().collect(Collectors.toList());
+		assertEquals(3, properties.size());
+		assertTrue(properties.contains(ID));
+		assertTrue(properties.contains(NAME));
+		assertTrue(properties.contains(VIRTUAL));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private static DataProvider<PropertyBox, ?> getDataProvider(PropertyListing listing) {
+		assertTrue(listing.getComponent() instanceof Grid);
+		return ((Grid<PropertyBox>) listing.getComponent()).getDataProvider();
 	}
 
 }

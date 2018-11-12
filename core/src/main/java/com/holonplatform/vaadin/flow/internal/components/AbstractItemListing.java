@@ -762,6 +762,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	@Override
 	public void setSelectionMode(SelectionMode selectionMode) {
 		ObjectUtils.argumentNotNull(selectionMode, "Selection mode must be not null");
+		this.selectionMode = selectionMode;
 		getGrid().setSelectionMode(asGridSelectionMode(selectionMode));
 	}
 
@@ -789,6 +790,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public void select(T item) {
+		if (SelectionMode.NONE == getSelectionMode()) {
+			throw new IllegalStateException("The listing selection mode is NONE: no selection is allowed");
+		}
 		ObjectUtils.argumentNotNull(item, "Item to select must be not null");
 		getGrid().select(item);
 	}
@@ -799,6 +803,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	@Override
 	public void deselect(T item) {
+		if (SelectionMode.NONE == getSelectionMode()) {
+			throw new IllegalStateException("The listing selection mode is NONE: no selection is allowed");
+		}
 		ObjectUtils.argumentNotNull(item, "Item to deselect must be not null");
 		getGrid().deselect(item);
 	}
