@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +43,7 @@ import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder;
+import com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.EditableItemListingSection;
@@ -52,7 +54,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
-import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
@@ -1159,8 +1161,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	// --------- configurator
 
-	static abstract class AbstractItemListingConfigurator<T, P, L extends AbstractItemListing<T, P>, C extends ItemListingConfigurator<T, P, C>>
-			extends AbstractComponentConfigurator<Grid<T>, C> implements ItemListingConfigurator<T, P, C> {
+	static abstract class AbstractItemListingConfigurator<T, P, L extends AbstractItemListing<T, P>, C extends ItemListingConfigurator<T, P, C> & HasDataProviderConfigurator<T, C>>
+			extends AbstractComponentConfigurator<Grid<T>, C>
+			implements ItemListingConfigurator<T, P, C>, HasDataProviderConfigurator<T, C> {
 
 		protected final DefaultHasSizeConfigurator sizeConfigurator;
 		protected final DefaultHasStyleConfigurator styleConfigurator;
@@ -1191,6 +1194,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public abstract C getConfigurator();
 
+		/**
+		 * Get the listing instance.
+		 * @return the listing instance
+		 */
 		protected L getInstance() {
 			return instance;
 		}
@@ -1370,7 +1377,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * data.provider.DataProvider)
 		 */
 		@Override
-		public C dataSource(DataProvider<T, Object> dataProvider) {
+		public C dataSource(DataProvider<T, ?> dataProvider) {
 			ObjectUtils.argumentNotNull(dataProvider, "DataProvider must be not null");
 			instance.getGrid().setDataProvider(dataProvider);
 			return getConfigurator();
@@ -1384,6 +1391,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		public C items(Iterable<T> items) {
 			this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
 			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Object[])
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public C items(T... items) {
+			return items((items == null) ? Collections.emptyList() : Arrays.asList(items));
 		}
 
 		/*
@@ -1916,7 +1933,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	}
 
-	private static class DefaultItemListingContextMenuBuilder<T, P, C extends ItemListingConfigurator<T, P, C>>
+	static class DefaultItemListingContextMenuBuilder<T, P, C extends ItemListingConfigurator<T, P, C>>
 			extends AbstractComponentConfigurator<GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>>
 			implements ItemListingContextMenuBuilder<T, P, C> {
 

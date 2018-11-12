@@ -17,7 +17,11 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
@@ -31,14 +35,37 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
+import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.editor.EditorCancelListener;
+import com.vaadin.flow.component.grid.editor.EditorCloseListener;
+import com.vaadin.flow.component.grid.editor.EditorOpenListener;
+import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.ValueProvider;
 
 /**
@@ -181,7 +208,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			if (item.contains(property)) {
 				return item.present(property);
 			}
-			return null;
+			return this;
 		});
 	}
 
@@ -288,36 +315,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * getConfigurator()
 		 */
 		@Override
-		public PropertyListingBuilder getConfigurator() {
+		public DefaultPropertyListingBuilder getConfigurator() {
 			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#withValidator(com.holonplatform.core
-		 * .property.Property, com.holonplatform.core.Validator)
-		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public <V> PropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(validator, "Validator must be not null");
-			getInstance().getColumnConfiguration(property).addValidator((Validator) validator);
-			return getConfigurator();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#editor(com.holonplatform.core.
-		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
-		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public <V> PropertyListingBuilder editor(Property<V> property, Input<V> editor) {
-			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
-			return getConfigurator();
 		}
 
 		/*
@@ -335,7 +334,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#withComponentColumn(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withComponentColumn(com.
 		 * holonplatform.core.property.VirtualProperty)
 		 */
 		@Override
@@ -343,20 +342,50 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 				VirtualProperty<Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
 			getInstance().addPropertyColumn(property);
-			return new DefaultItemListingColumnBuilder<>(property, getInstance(), this);
+			return new DefaultItemListingColumnBuilder<>(property, getInstance(), getConfigurator());
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#dataSource(com.holonplatform.core.
-		 * datastore.Datastore, com.holonplatform.core.datastore.DataTarget,
-		 * com.holonplatform.core.query.QueryConfigurationProvider[])
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withValidator(com.holonplatform
+		 * .core.property.Property, com.holonplatform.core.Validator)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V> PropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+			getInstance().getColumnConfiguration(property).addValidator((Validator) validator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
+		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V> PropertyListingBuilder editor(Property<V> property, Input<V> editor) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasPropertySetDatastoreDataProviderConfigurator#dataSource(
+		 * com.holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 		 */
 		@Override
-		public PropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> dataTarget,
-				QueryConfigurationProvider... queryConfigurationProviders) {
-			return dataSource(datastore, dataTarget, getInstance().getPropertySet(), queryConfigurationProviders);
+		public DatastorePropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> target) {
+			final DatastoreDataProvider<PropertyBox, QueryFilter> datastoreDataProvider = DatastoreDataProvider
+					.create(datastore, target, getInstance().getPropertySet());
+			getInstance().getGrid().setDataProvider(datastoreDataProvider);
+			return new DefaultDatastorePropertyListingBuilder(this, datastoreDataProvider);
 		}
 
 		/*
@@ -366,6 +395,818 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public PropertyListing build() {
 			return configureAndBuild();
+		}
+
+	}
+
+	public static class DefaultDatastorePropertyListingBuilder implements DatastorePropertyListingBuilder {
+
+		private final DefaultPropertyListingBuilder builder;
+		private final DatastoreDataProvider<PropertyBox, QueryFilter> datastoreDataProvider;
+
+		public DefaultDatastorePropertyListingBuilder(DefaultPropertyListingBuilder builder,
+				DatastoreDataProvider<PropertyBox, QueryFilter> datastoreDataProvider) {
+			super();
+			this.builder = builder;
+			this.datastoreDataProvider = datastoreDataProvider;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withComponentColumn(com.
+		 * holonplatform.core.property.VirtualProperty)
+		 */
+		@Override
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> withComponentColumn(
+				VirtualProperty<Component> property) {
+			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
+			builder.getInstance().addPropertyColumn(property);
+			return new DefaultItemListingColumnBuilder<>(property, builder.getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
+		 * .function.ValueProvider)
+		 */
+		@Override
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> withComponentColumn(
+				ValueProvider<PropertyBox, Component> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			return withComponentColumn(VirtualProperty.create(Component.class, item -> valueProvider.apply(item)));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withValidator(com.holonplatform
+		 * .core.property.Property, com.holonplatform.core.Validator)
+		 */
+		@Override
+		public <V> DatastorePropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator) {
+			builder.withValidator(property, validator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
+		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
+		 */
+		@Override
+		public <V> DatastorePropertyListingBuilder editor(Property<V> property, Input<V> editor) {
+			builder.editor(property, editor);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withQueryConfigurationProvider(
+				QueryConfigurationProvider queryConfigurationProvider) {
+			datastoreDataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
+		 * holonplatform.core.query.QuerySort)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withDefaultQuerySort(QuerySort defaultQuerySort) {
+			datastoreDataProvider.setDefaultSort(defaultQuerySort);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#itemIdentifierProvider(
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder itemIdentifierProvider(
+				Function<PropertyBox, Object> itemIdentifierProvider) {
+			datastoreDataProvider.setItemIdentifier(itemIdentifierProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#querySortOrderConverter(
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder querySortOrderConverter(
+				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
+			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsFirst(java.lang.Object)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder displayAsFirst(Property<?> property) {
+			builder.displayAsFirst(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsLast(java.lang.Object)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder displayAsLast(Property<?> property) {
+			builder.displayAsLast(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayBefore(java.lang.Object,
+		 * java.lang.Object)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder displayBefore(Property<?> property, Property<?> beforeProperty) {
+			builder.displayBefore(property, beforeProperty);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAfter(java.lang.Object,
+		 * java.lang.Object)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder displayAfter(Property<?> property, Property<?> afterProperty) {
+			builder.displayAfter(property, afterProperty);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visibleColumns(java.util.List)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder visibleColumns(List<? extends Property<?>> visibleColumns) {
+			builder.visibleColumns(visibleColumns);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder sortable(boolean sortable) {
+			builder.sortable(sortable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder sortable(Property<?> property, boolean sortable) {
+			builder.sortable(property, sortable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder resizable(boolean resizable) {
+			builder.resizable(resizable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder resizable(Property<?> property, boolean resizable) {
+			builder.resizable(property, resizable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visible(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder visible(Property<?> property, boolean visible) {
+			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#readOnly(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder readOnly(Property<?> property, boolean readOnly) {
+			builder.readOnly(property, readOnly);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder frozen(Property<?> property, boolean frozen) {
+			builder.frozen(property, frozen);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozenColumns(int)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder frozenColumns(int frozenColumnsCount) {
+			builder.frozenColumns(frozenColumnsCount);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#width(java.lang.Object,
+		 * java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder width(Property<?> property, String width) {
+			builder.width(property, width);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#flexGrow(java.lang.Object,
+		 * int)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder flexGrow(Property<?> property, int flexGrow) {
+			builder.flexGrow(property, flexGrow);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder alignment(Property<?> property, ColumnAlignment alignment) {
+			builder.alignment(property, alignment);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#renderer(java.lang.Object,
+		 * com.vaadin.flow.data.renderer.Renderer)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder renderer(Property<?> property, Renderer<PropertyBox> renderer) {
+			builder.renderer(property, renderer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#valueProvider(java.lang.Object,
+		 * com.vaadin.flow.function.ValueProvider)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder valueProvider(Property<?> property,
+				ValueProvider<PropertyBox, String> valueProvider) {
+			builder.valueProvider(property, valueProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortComparator(java.lang.Object,
+		 * java.util.Comparator)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder sortComparator(Property<?> property,
+				Comparator<PropertyBox> comparator) {
+			builder.sortComparator(property, comparator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortUsing(java.lang.Object,
+		 * java.util.List)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder sortUsing(Property<?> property, List<Property<?>> sortProperties) {
+			builder.sortUsing(property, sortProperties);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortProvider(java.lang.Object,
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder sortProvider(Property<?> property,
+				Function<SortDirection, Stream<ItemSort<Property<?>>>> sortProvider) {
+			builder.sortProvider(property, sortProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder header(Property<?> property, Localizable header) {
+			builder.header(property, header);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#headerComponent(java.lang.Object,
+		 * com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder headerComponent(Property<?> property, Component header) {
+			builder.headerComponent(property, header);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder pageSize(int pageSize) {
+			builder.pageSize(pageSize);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#heightByRows(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder heightByRows(boolean heightByRows) {
+			builder.heightByRows(heightByRows);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#columnReorderingAllowed(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder columnReorderingAllowed(boolean columnReorderingAllowed) {
+			builder.columnReorderingAllowed(columnReorderingAllowed);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsRenderer(com.vaadin.flow
+		 * .data.renderer.Renderer)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder itemDetailsRenderer(Renderer<PropertyBox> renderer) {
+			builder.itemDetailsRenderer(renderer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsVisibleOnClick(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder itemDetailsVisibleOnClick(boolean detailsVisibleOnClick) {
+			builder.itemDetailsVisibleOnClick(detailsVisibleOnClick);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#selectionMode(com.holonplatform.
+		 * vaadin.flow.components.Selectable.SelectionMode)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder selectionMode(SelectionMode selectionMode) {
+			builder.selectionMode(selectionMode);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withSelectionListener(com.
+		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withSelectionListener(SelectionListener<PropertyBox> selectionListener) {
+			builder.withSelectionListener(selectionListener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemClickListener(com.
+		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withItemClickListener(
+				ClickEventListener<ItemListing<PropertyBox, Property<?>>, ItemClickEvent<ItemListing<PropertyBox, Property<?>>, PropertyBox>> listener) {
+			builder.withItemClickListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
+		 * holonplatform.vaadin.flow.components.events.ItemListingRefreshListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withItemRefreshListener(
+				ItemListingRefreshListener<PropertyBox, Property<?>> listener) {
+			builder.withItemRefreshListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#multiSort(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder multiSort(boolean multiSort) {
+			builder.multiSort(multiSort);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#verticalScrollingEnabled(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder verticalScrollingEnabled(boolean enabled) {
+			builder.verticalScrollingEnabled(enabled);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
+		 */
+		@Override
+		public ItemListingContextMenuBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> contextMenu() {
+			return new DefaultItemListingContextMenuBuilder<>(builder.getInstance(),
+					builder.getInstance().getGrid().addContextMenu(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.util.function.Consumer)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder header(
+				Consumer<EditableItemListingSection<Property<?>>> headerConfigurator) {
+			builder.header(headerConfigurator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.util.function.Consumer)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder footer(
+				Consumer<EditableItemListingSection<Property<?>>> footerConfigurator) {
+			builder.footer(footerConfigurator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editable(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder editable(boolean editable) {
+			builder.editable(editable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorBuffered(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder editorBuffered(boolean buffered) {
+			builder.editorBuffered(buffered);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorSaveListener(com.vaadin.
+		 * flow.component.grid.editor.EditorSaveListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEditorSaveListener(EditorSaveListener<PropertyBox> listener) {
+			builder.withEditorSaveListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCancelListener(com.vaadin
+		 * .flow.component.grid.editor.EditorCancelListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEditorCancelListener(EditorCancelListener<PropertyBox> listener) {
+			builder.withEditorCancelListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorOpenListener(com.vaadin.
+		 * flow.component.grid.editor.EditorOpenListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEditorOpenListener(EditorOpenListener<PropertyBox> listener) {
+			builder.withEditorOpenListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCloseListener(com.vaadin.
+		 * flow.component.grid.editor.EditorCloseListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEditorCloseListener(EditorCloseListener<PropertyBox> listener) {
+			builder.withEditorCloseListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withValidator(com.holonplatform.
+		 * core.Validator)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withValidator(Validator<PropertyBox> validator) {
+			builder.withValidator(validator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder id(String id) {
+			builder.id(id);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder visible(boolean visible) {
+			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withAttachListener(ComponentEventListener<AttachEvent> listener) {
+			builder.withAttachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withDetachListener(ComponentEventListener<DetachEvent> listener) {
+			builder.withDetachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withThemeName(String themeName) {
+			builder.withThemeName(themeName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+		 * com.vaadin.flow.dom.DomEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEventListener(String eventType, DomEventListener listener) {
+			builder.withEventListener(eventType, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withEventListener(String eventType, DomEventListener listener,
+				String filter) {
+			builder.withEventListener(eventType, listener, filter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder width(String width) {
+			builder.width(width);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder height(String height) {
+			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 */
+		@Override
+		public DatastorePropertyListingBuilder styleNames(String... styleNames) {
+			builder.styleNames(styleNames);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder styleName(String styleName) {
+			builder.styleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder removeStyleName(String styleName) {
+			builder.removeStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder replaceStyleName(String styleName) {
+			builder.replaceStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder enabled(boolean enabled) {
+			builder.enabled(enabled);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder tabIndex(int tabIndex) {
+			builder.tabIndex(tabIndex);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withFocusListener(
+				ComponentEventListener<FocusEvent<Component>> listener) {
+			builder.withFocusListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
+			builder.withBlurListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.
+		 * Enum[])
+		 */
+		@Override
+		public DatastorePropertyListingBuilder withThemeVariants(GridVariant... variants) {
+			builder.withThemeVariants(variants);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 */
+		@Override
+		public PropertyListing build() {
+			return builder.build();
 		}
 
 	}

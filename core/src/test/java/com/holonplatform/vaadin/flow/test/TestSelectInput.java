@@ -51,7 +51,6 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.data.ItemDataProvider;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
@@ -686,8 +685,8 @@ public class TestSelectInput {
 		assertTrue(items.contains("a"));
 		assertTrue(items.contains("aa"));
 
-		final ItemDataProvider<String> idp = ItemDataProvider.create(q -> 3,
-				(q, o, l) -> Arrays.asList("a", "b", "c").stream());
+		final DataProvider<String, ?> idp = DataProvider
+				.<String>fromCallbacks(q -> Arrays.asList("a", "b", "c").stream(), q -> 3);
 
 		input = Input.singleSelect(String.class).dataSource(idp, f -> null).build();
 
@@ -714,8 +713,8 @@ public class TestSelectInput {
 								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
 				.traceEnabled(true).build();
 
-		SingleSelect<BeanTest1> input1 = Input.singleSelect(BeanTest1.class)
-				.dataSource(datastore, TARGET1, BeanTest1.class, f -> null).build();
+		SingleSelect<BeanTest1> input1 = Input.singleSelect(BeanTest1.class).dataSource(datastore, TARGET1, f -> null)
+				.build();
 		assertNotNull(input1);
 
 		DataProvider<BeanTest1, ?> dp1 = ((ComboBox<BeanTest1>) input1.getComponent()).getDataProvider();
@@ -728,8 +727,8 @@ public class TestSelectInput {
 		assertTrue(items.contains(new BeanTest1("A")));
 		assertTrue(items.contains(new BeanTest1("B")));
 
-		input1 = Input.singleSelect(BeanTest1.class)
-				.dataSource(datastore, TARGET1, BeanTest1.class, f -> CODE.contains(f, false)).build();
+		input1 = Input.singleSelect(BeanTest1.class).dataSource(datastore, TARGET1, f -> CODE.contains(f, false))
+				.build();
 		assertNotNull(input1);
 
 		dp1 = ((ComboBox<BeanTest1>) input1.getComponent()).getDataProvider();
@@ -749,7 +748,7 @@ public class TestSelectInput {
 		SingleSelect<String> input2 = Input
 				.singleSelect(String.class, BeanTest1.class,
 						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
-				.dataSource(datastore, TARGET1, BeanTest1.class, f -> CODE.contains(f, false)).build();
+				.dataSource(datastore, TARGET1, f -> CODE.contains(f, false)).build();
 		assertNotNull(input2);
 
 		DataProvider<String, String> dp3 = (DataProvider<String, String>) ((ComboBox<String>) input2.getComponent())
@@ -798,7 +797,7 @@ public class TestSelectInput {
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1, CODE.eq("A")).build();
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.eq("A")).build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
@@ -811,8 +810,8 @@ public class TestSelectInput {
 		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1, CODE.isNotNull(), DESCRIPTION.desc())
-				.build();
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.isNotNull())
+				.withQuerySort(DESCRIPTION.desc()).build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
@@ -849,8 +848,8 @@ public class TestSelectInput {
 		assertEquals(1, pitems.size());
 		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
 
-		input4 = Input.singleSelect(CODE)
-				.dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), TEST1, CODE.eq("A")).build();
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), TEST1)
+				.withQueryFilter(CODE.eq("A")).build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();

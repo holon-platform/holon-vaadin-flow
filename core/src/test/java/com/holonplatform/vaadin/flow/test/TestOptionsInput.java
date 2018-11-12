@@ -50,7 +50,6 @@ import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelect
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.data.ItemDataProvider;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
@@ -533,8 +532,8 @@ public class TestOptionsInput {
 		assertTrue(items.contains("aa"));
 		assertTrue(items.contains("b"));
 
-		final ItemDataProvider<String> idp = ItemDataProvider.create(q -> 3,
-				(q, o, l) -> Arrays.asList("a", "b", "c").stream());
+		final DataProvider<String, ?> idp = DataProvider
+				.<String>fromCallbacks(q -> Arrays.asList("a", "b", "c").stream(), q -> 3);
 
 		input = Input.singleOptionSelect(String.class).dataSource(idp).build();
 
@@ -561,8 +560,8 @@ public class TestOptionsInput {
 								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
 				.traceEnabled(true).build();
 
-		SingleSelect<BeanTest1> input1 = Input.singleOptionSelect(BeanTest1.class)
-				.dataSource(datastore, TARGET1, BeanTest1.class).build();
+		SingleSelect<BeanTest1> input1 = Input.singleOptionSelect(BeanTest1.class).dataSource(datastore, TARGET1)
+				.build();
 		assertNotNull(input1);
 
 		DataProvider<BeanTest1, ?> dp1 = ((RadioButtonGroup<BeanTest1>) input1.getComponent()).getDataProvider();
@@ -578,7 +577,7 @@ public class TestOptionsInput {
 		SingleSelect<String> input2 = Input
 				.singleOptionSelect(String.class, BeanTest1.class,
 						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
-				.dataSource(datastore, TARGET1, BeanTest1.class).build();
+				.dataSource(datastore, TARGET1).build();
 		assertNotNull(input2);
 
 		DataProvider<String, String> dp3 = (DataProvider<String, String>) ((RadioButtonGroup<String>) input2
@@ -624,7 +623,8 @@ public class TestOptionsInput {
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1, CODE.eq("A")).build();
+		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.eq("A"))
+				.build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
@@ -638,8 +638,8 @@ public class TestOptionsInput {
 		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleOptionSelect(CODE)
-				.dataSource(datastore, TARGET1, TEST1, CODE.isNotNull(), DESCRIPTION.desc()).build();
+		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.isNotNull())
+				.withQuerySort(DESCRIPTION.desc()).build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())

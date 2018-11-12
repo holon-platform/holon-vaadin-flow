@@ -28,7 +28,6 @@ import com.holonplatform.vaadin.flow.components.SingleSelect;
  * @since 5.2.0
  */
 public interface SingleSelectInputBuilder<T, ITEM, CONTEXT, B extends SingleSelectInputBuilder<T, ITEM, CONTEXT, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>,
-		SelectableDataSourceInputConfigurator<T, ITEM, CONTEXT, B> {
+		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>, SelectableInputConfigurator<T, B> {
 
 }

@@ -15,41 +15,62 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.vaadin.flow.data.binder.HasDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
- * Configurator for components which supports a set of items.
+ * {@link HasDataProvider} components type configurator.
  * 
- * @param <ITEM> Item type
+ * @param <T> Data item type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface HasItemsConfigurator<ITEM, C extends HasItemsConfigurator<ITEM, C>> {
+public interface HasDataProviderConfigurator<T, C extends HasDataProviderConfigurator<T, C>>
+		extends HasItemsConfigurator<T, C> {
+
+	/**
+	 * Set the data provider which acts as items data source.
+	 * @param dataProvider The data provider to set (not null)
+	 * @return this
+	 */
+	C dataSource(DataProvider<T, ?> dataProvider);
 
 	/**
 	 * Set the items which acts as in-memory items data source.
+	 * <p>
+	 * When an in-memory item set is provided, any data source configured using {@link #dataSource(DataProvider)} will
+	 * be ignored.
+	 * </p>
 	 * @param items The data items to set
 	 * @return this
 	 */
-	C items(Iterable<ITEM> items);
+	@Override
+	C items(Iterable<T> items);
 
 	/**
 	 * Set the items which acts as in-memory items data source.
+	 * <p>
+	 * When an in-memory item set is provided, any data source configured using {@link #dataSource(DataProvider)} will
+	 * be ignored.
+	 * </p>
 	 * @param items The data items to set
 	 * @return this
 	 */
 	@SuppressWarnings("unchecked")
-	default C items(ITEM... items) {
-		return items((items == null) ? Collections.emptyList() : Arrays.asList(items));
-	}
+	@Override
+	C items(T... items);
 
 	/**
 	 * Add given <code>item</code> to the item set which acts as in-memory items data source.
+	 * <p>
+	 * When an in-memory item set is provided, any data source configured using {@link #dataSource(DataProvider)} will
+	 * be ignored.
+	 * </p>
 	 * @param item The data item to add (not null)
 	 * @return this
 	 */
-	C addItem(ITEM item);
+	@Override
+	C addItem(T item);
 
 }

@@ -22,7 +22,7 @@ import java.util.Optional;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
-import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.vaadin.flow.component.Component;
 
 /**

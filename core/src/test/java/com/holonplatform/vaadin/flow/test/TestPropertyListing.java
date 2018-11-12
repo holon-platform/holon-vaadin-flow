@@ -466,71 +466,66 @@ public class TestPropertyListing {
 		assertTrue(items.contains(ITEM2));
 
 	}
-	
+
 	@Test
 	public void testDatastoreDataSource() {
-		
+
 		final DataTarget<?> TARGET = DataTarget.named("test2");
-		
+
 		final Datastore datastore = JdbcDatastore.builder()
 				.dataSource(
 						BasicDataSource.builder().url("jdbc:h2:mem:test;INIT=RUNSCRIPT FROM 'classpath:test_init.sql'")
 								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
 				.traceEnabled(true).build();
-		
+
 		PropertyListing listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).build();
-		
+
 		List<PropertyBox> items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(2, items.size());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 1L).findFirst().isPresent());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 2L).findFirst().isPresent());
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, SET).build();
-		
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).build();
+
 		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(2, items.size());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 1L).findFirst().isPresent());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 2L).findFirst().isPresent());
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, ID, NAME).build();
-		
-		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
-		assertEquals(2, items.size());
-		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 1L).findFirst().isPresent());
-		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 2L).findFirst().isPresent());
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, ID.lt(2L)).build();
-		
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).withQueryFilter(ID.lt(2L)).build();
+
 		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(1, items.size());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 1L).findFirst().isPresent());
 		assertFalse(items.stream().filter(i -> i.getValue(ID).longValue() == 2L).findFirst().isPresent());
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, new QueryConfigurationProvider() {
-			
-			@Override
-			public QueryFilter getQueryFilter() {
-				return ID.lt(2L);
-			}
-		}).build();
-		
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET)
+				.withQueryConfigurationProvider(new QueryConfigurationProvider() {
+
+					@Override
+					public QueryFilter getQueryFilter() {
+						return ID.lt(2L);
+					}
+				}).build();
+
 		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(1, items.size());
 		assertTrue(items.stream().filter(i -> i.getValue(ID).longValue() == 1L).findFirst().isPresent());
 		assertFalse(items.stream().filter(i -> i.getValue(ID).longValue() == 2L).findFirst().isPresent());
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, NAME.desc()).build();
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).withQuerySort(NAME.desc()).build();
 		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(2, items.size());
 		assertEquals(Long.valueOf(2L), items.get(0).getValue(ID));
 		assertEquals(Long.valueOf(1L), items.get(1).getValue(ID));
-		
-		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET, ID.loe(2L), NAME.desc()).build();
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).withQueryFilter(ID.loe(2L))
+				.withQuerySort(NAME.desc()).build();
 		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
 		assertEquals(2, items.size());
 		assertEquals(Long.valueOf(2L), items.get(0).getValue(ID));
 		assertEquals(Long.valueOf(1L), items.get(1).getValue(ID));
-		
+
 	}
 
 	@Test

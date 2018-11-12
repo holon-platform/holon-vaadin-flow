@@ -39,7 +39,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
-import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.GridContextMenu;
@@ -63,11 +63,9 @@ import com.vaadin.flow.function.ValueProvider;
  * 
  * @since 5.2.0
  */
-// TODO row/cell/column style generators
 public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator<T, P, C>>
 		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
-		FocusableConfigurator<Component, C>, HasDataSourceConfigurator<T, C>,
-		HasThemeVariantConfigurator<GridVariant, C> {
+		FocusableConfigurator<Component, C>, HasThemeVariantConfigurator<GridVariant, C> {
 
 	/**
 	 * Configure the column represented by given <code>property</code> to be displayed before any other listing column

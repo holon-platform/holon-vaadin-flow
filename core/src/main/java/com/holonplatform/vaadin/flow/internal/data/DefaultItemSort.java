@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.data;
 
-import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 
 /**
  * Default {@link ItemSort} implementation.

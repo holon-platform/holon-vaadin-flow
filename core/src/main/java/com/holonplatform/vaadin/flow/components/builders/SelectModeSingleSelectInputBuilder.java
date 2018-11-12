@@ -23,7 +23,6 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
@@ -47,7 +46,7 @@ import com.vaadin.flow.data.renderer.Renderer;
 public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
 		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasSizeConfigurator<B>,
 		HasLabelConfigurator<B>, HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
-		FocusableConfigurator<Component, B>, HasFilterableDataSourceConfigurator<ITEM, String, B> {
+		FocusableConfigurator<Component, B> {
 
 	/**
 	 * Sets the Renderer responsible to render the individual items in the list of possible choices.
@@ -132,7 +131,21 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * @param <ITEM> Item type
 	 */
 	public interface ItemSelectModeSingleSelectInputBuilder<T, ITEM>
-			extends SelectModeSingleSelectInputBuilder<T, ITEM, ItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+			extends SelectModeSingleSelectInputBuilder<T, ITEM, ItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
+			HasBeanDatastoreFilterableDataProviderConfigurator<ITEM, String, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>, ItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
+			SelectModeSingleSelectInputBuilder<T, ITEM, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
+			DatastoreDataProviderConfigurator<ITEM, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
@@ -143,117 +156,50 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 */
 	public interface PropertySelectModeSingleSelectInputBuilder<T>
 			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, PropertySelectModeSingleSelectInputBuilder<T>>,
-			HasFilterablePropertyDataSourceConfigurator<String, PropertySelectModeSingleSelectInputBuilder<T>> {
+			HasPropertyBoxDatastoreFilterableDataProviderConfigurator<String, DatastorePropertySelectModeSingleSelectInputBuilder<T>, PropertySelectModeSingleSelectInputBuilder<T>> {
 
 		/**
-		 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
-		 * <p>
-		 * If the selection property is of {@link String} type, a default filter conversion operation is configured,
-		 * using a <em>starts with</em> operator on the selection property value.
-		 * </p>
-		 * <p>
-		 * Use
-		 * {@link #dataSource(Datastore, DataTarget, java.util.function.Function, Iterable, QueryConfigurationProvider...)}
-		 * to provide a specific filter conversion function.
-		 * </p>
-		 * @param <P> Property type
-		 * @param datastore Datastore to use (not null)
-		 * @param dataTarget Data target to use to load items (not null)
-		 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter}
-		 *        instance (not null)
-		 * @param properties Item property set (not null)
-		 * @param queryConfigurationProviders Optional additional {@link QueryConfigurationProvider}s
-		 * @return this
+		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
+		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
+		 * @param datastore The {@link Datastore} to use (not null)
+		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
+		 * @param properties The property set to use as query projection (not null)
+		 * @return An extended builder which allow further data provider configuration, for example to add fixed
+		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @see DatastoreDataProviderConfigurator
 		 */
-		@SuppressWarnings("rawtypes")
-		<P extends Property> PropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-				DataTarget<?> dataTarget, Iterable<P> properties,
-				QueryConfigurationProvider... queryConfigurationProviders);
-
-		/**
-		 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source, providing optional fixed
-		 * filters.
-		 * <p>
-		 * If the selection property is of {@link String} type, a default filter conversion operation is configured,
-		 * using a <em>starts with</em> operator on the selection property value.
-		 * </p>
-		 * <p>
-		 * Use {@link #dataSource(Datastore, DataTarget, java.util.function.Function, Iterable, QueryFilter, QuerySort)}
-		 * to provide a specific filter conversion function.
-		 * </p>
-		 * <p>
-		 * For dynamic filters and sorts configuration, a {@link QueryConfigurationProvider} can be used. See
-		 * {@link #dataSource(Datastore, DataTarget, Iterable, QueryConfigurationProvider...)}.
-		 * </p>
-		 * @param <P> Property type
-		 * @param datastore Datastore to use (not null)
-		 * @param dataTarget Data target to use to load items (not null)
-		 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter}
-		 *        instance (not null)
-		 * @param properties Item property set (not null)
-		 * @param filter Fixed {@link QueryFilter} to use (may be null)
-		 * @return this
-		 */
-		@SuppressWarnings("rawtypes")
-		default <P extends Property> PropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-				DataTarget<?> dataTarget, Iterable<P> properties, QueryFilter filter) {
-			return dataSource(datastore, dataTarget, properties, QueryConfigurationProvider.create(filter, null));
+		default DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
+				DataTarget<?> target, Property<?>... properties) {
+			return dataSource(datastore, target, PropertySet.of(properties));
 		}
 
 		/**
-		 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source, providing optional fixed
-		 * filters and sorts.
-		 * <p>
-		 * If the selection property is of {@link String} type, a default filter conversion operation is configured,
-		 * using a <em>starts with</em> operator on the selection property value.
-		 * </p>
-		 * <p>
-		 * Use {@link #dataSource(Datastore, DataTarget, java.util.function.Function, Iterable, QueryFilter, QuerySort)}
-		 * to provide a specific filter conversion function.
-		 * </p>
-		 * <p>
-		 * <p>
-		 * For dynamic filters and sorts configuration, a {@link QueryConfigurationProvider} can be used. See
-		 * {@link #dataSource(Datastore, DataTarget, Iterable, QueryConfigurationProvider...)}.
-		 * </p>
-		 * @param <P> Property type
-		 * @param datastore Datastore to use (not null)
-		 * @param dataTarget Data target to use to load items (not null)
-		 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter}
-		 *        instance (not null)
-		 * @param properties Item property set (not null)
-		 * @param filter Fixed {@link QueryFilter} to use (may be null)
-		 * @param sort Fixed {@link QuerySort} to use (may be null)
-		 * @return this
+		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
+		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
+		 * @param datastore The {@link Datastore} to use (not null)
+		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
+		 * @param properties The property set to use as query projection (not null)
+		 * @return An extended builder which allow further data provider configuration, for example to add fixed
+		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @see DatastoreDataProviderConfigurator
 		 */
 		@SuppressWarnings("rawtypes")
-		default <P extends Property> PropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-				DataTarget<?> dataTarget, Iterable<P> properties, QueryFilter filter, QuerySort sort) {
-			return dataSource(datastore, dataTarget, properties, QueryConfigurationProvider.create(filter, sort));
-		}
+		<P extends Property> DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
+				DataTarget<?> target, Iterable<P> properties);
 
-		/**
-		 * Use given {@link Datastore} with given <code>dataTarget</code> as items data source.
-		 * <p>
-		 * If the selection property is of {@link String} type, a default filter conversion operation is configured,
-		 * using a <em>starts with</em> operator on the selection property value.
-		 * </p>
-		 * <p>
-		 * Use {@link #dataSource(Datastore, DataTarget, java.util.function.Function, Property...)} to provide a
-		 * specific filter conversion function.
-		 * </p>
-		 * <p>
-		 * @param datastore Datastore to use (not null)
-		 * @param dataTarget Data target to use to load items (not null)
-		 * @param filterConverter The function to use to convert the query filter type into a {@link QueryFilter}
-		 *        instance (not null)
-		 * @param properties Item property set (not null)
-		 * @return this
-		 */
-		default PropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> dataTarget,
-				Property<?>... properties) {
-			return dataSource(datastore, dataTarget, PropertySet.of(properties));
-		}
+	}
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input builder for the <em>select</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface DatastorePropertySelectModeSingleSelectInputBuilder<T> extends
+			SelectModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>>,
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>> {
 
 	}
 

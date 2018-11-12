@@ -22,10 +22,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.query.QueryConfigurationProvider;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
@@ -33,14 +41,17 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -48,7 +59,9 @@ import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.SerializableFunction;
 
 /**
@@ -239,13 +252,46 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataSourceConfigurator#dataSource(com.vaadin.flow.data.
-	 * provider.DataProvider)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasFilterableDataProviderConfigurator#dataSource(com.vaadin.
+	 * flow.data.provider.DataProvider)
 	 */
 	@Override
 	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, String> dataProvider) {
 		getComponent().setDataProvider(dataProvider);
-		return getConfigurator();
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreFilterableDataProviderConfigurator#dataSource(
+	 * com.holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget,
+	 * java.util.function.Function, java.util.function.Function, java.lang.Iterable)
+	 */
+	@SuppressWarnings("rawtypes")
+	@Override
+	public <P extends Property> DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+			DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter,
+			Function<String, QueryFilter> filterConverter, Iterable<P> properties) {
+		final DatastoreDataProvider<ITEM, String> datastoreDataProvider = DatastoreDataProvider.create(datastore,
+				target, DatastoreDataProvider.asPropertySet(properties), itemConverter, filterConverter);
+		getComponent().setDataProvider(datastoreDataProvider);
+		return new DefaultDatastoreItemSelectModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreDataProviderConfigurator#dataSource(com.
+	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
+	 */
+	@Override
+	public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+			DataTarget<?> target, Function<String, QueryFilter> filterConverter) {
+		final DatastoreDataProvider<ITEM, String> datastoreDataProvider = DatastoreDataProvider.create(datastore,
+				target, getItemType(), filterConverter);
+		getComponent().setDataProvider(datastoreDataProvider);
+		return new DefaultDatastoreItemSelectModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
@@ -507,6 +553,463 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 		});
 		return getConfigurator();
+	}
+
+	static class DefaultDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>
+			implements DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> {
+
+		private final DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> builder;
+		private final DatastoreDataProvider<ITEM, String> datastoreDataProvider;
+
+		public DefaultDatastoreItemSelectModeSingleSelectInputBuilder(
+				DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> builder,
+				DatastoreDataProvider<ITEM, String> datastoreDataProvider) {
+			super();
+			this.builder = builder;
+			this.datastoreDataProvider = datastoreDataProvider;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#renderer(com.vaadin.flow
+		 * .data.renderer.Renderer)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> renderer(Renderer<ITEM> renderer) {
+			builder.renderer(renderer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com
+		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
+		 * Object, com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+			builder.itemCaption(item, caption);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#pageSize(int)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> pageSize(int pageSize) {
+			builder.pageSize(pageSize);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.
+		 * flow.data.provider.ListDataProvider)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> dataSource(
+				ListDataProvider<ITEM> dataProvider) {
+			builder.dataSource(dataProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+		 */
+		@Override
+		public ValidatableInputBuilder<T, ValidatableInput<T>> validatable() {
+			return builder.validatable();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+			builder.readOnly(readOnly);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform
+		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
+				ValueChangeListener<T> listener) {
+			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> required(boolean required) {
+			builder.required(required);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> id(String id) {
+			builder.id(id);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
+			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withAttachListener(
+				ComponentEventListener<AttachEvent> listener) {
+			builder.withAttachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withDetachListener(
+				ComponentEventListener<DetachEvent> listener) {
+			builder.withDetachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+			builder.withThemeName(themeName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+		 * com.vaadin.flow.dom.DomEventListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+				DomEventListener listener) {
+			builder.withEventListener(eventType, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+				DomEventListener listener, String filter) {
+			builder.withEventListener(eventType, listener, filter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withSelectionListener(
+				SelectionListener<T> selectionListener) {
+			builder.withSelectionListener(selectionListener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+			builder.styleNames(styleNames);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
+			builder.styleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> removeStyleName(String styleName) {
+			builder.removeStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> replaceStyleName(String styleName) {
+			builder.replaceStyleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+			builder.enabled(enabled);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization
+		 * (boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(
+				boolean deferredLocalization) {
+			builder.withDeferredLocalization(deferredLocalization);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+		 */
+		@Override
+		public boolean isDeferredLocalizationEnabled() {
+			return builder.isDeferredLocalizationEnabled();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> width(String width) {
+			builder.width(width);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> height(String height) {
+			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
+		 * Localizable)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
+			builder.label(label);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.holonplatform.
+		 * core.i18n.Localizable)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> placeholder(Localizable placeholder) {
+			builder.placeholder(placeholder);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#pattern(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> pattern(String pattern) {
+			builder.pattern(pattern);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#preventInvalidInput(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> preventInvalidInput(
+				boolean preventInvalidInput) {
+			builder.preventInvalidInput(preventInvalidInput);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> autofocus(boolean autofocus) {
+			builder.autofocus(autofocus);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> tabIndex(int tabIndex) {
+			builder.tabIndex(tabIndex);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withFocusListener(
+				ComponentEventListener<FocusEvent<Component>> listener) {
+			builder.withFocusListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
+		 * component.ComponentEventListener)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withBlurListener(
+				ComponentEventListener<BlurEvent<Component>> listener) {
+			builder.withBlurListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
+				QueryConfigurationProvider queryConfigurationProvider) {
+			datastoreDataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
+		 * holonplatform.core.query.QuerySort)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> withDefaultQuerySort(
+				QuerySort defaultQuerySort) {
+			datastoreDataProvider.setDefaultSort(defaultQuerySort);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#itemIdentifierProvider(
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+				Function<ITEM, Object> itemIdentifierProvider) {
+			datastoreDataProvider.setItemIdentifier(itemIdentifierProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#querySortOrderConverter(
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
+				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
+			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
+		 */
+		@Override
+		public SingleSelect<T> build() {
+			return builder.build();
+		}
+
 	}
 
 }

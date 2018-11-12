@@ -15,9 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Validator;
 import com.holonplatform.vaadin.flow.components.BeanListing;
-import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder.DatastoreBeanListingBuilder;
 
 /**
  * {@link BeanListing} builder.
@@ -26,22 +25,19 @@ import com.holonplatform.vaadin.flow.components.Input;
  *
  * @since 5.2.0
  */
-public interface BeanListingBuilder<T> extends ItemListingBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> {
+public interface BeanListingBuilder<T> extends BeanListingConfigurator<T, BeanListingBuilder<T>>,
+		HasBeanDatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>, BeanListingBuilder<T>> {
 
 	/**
-	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.
-	 * @param property The property for which to add the validator (not null)
-	 * @param validator The validator to add (not null)
-	 * @return this
+	 * {@link BeanListing} builder with {@link DatastoreDataProviderConfigurator} support.
+	 * 
+	 * @param <T> Bean type
+	 * 
+	 * @since 5.2.0
 	 */
-	BeanListingBuilder<T> withValidator(String property, Validator<?> validator);
+	public interface DatastoreBeanListingBuilder<T> extends BeanListingConfigurator<T, DatastoreBeanListingBuilder<T>>,
+			DatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>> {
 
-	/**
-	 * Set the {@link Input} to use as given property editor.
-	 * @param property The property for which to set the editor (not null)
-	 * @param editor The property editor (not null)
-	 * @return this
-	 */
-	BeanListingBuilder<T> editor(String property, Input<?> editor);
+	}
 
 }

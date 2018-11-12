@@ -40,8 +40,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @since 5.2.0
  */
 public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasLabelConfigurator<B>,
-		HasDataSourceConfigurator<ITEM, B> {
+		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasLabelConfigurator<B> {
 
 	/**
 	 * Sets the {@link ComponentRenderer} responsible to render the individual items in the list of possible choices.
@@ -119,7 +118,21 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 * @param <ITEM> Item type
 	 */
 	public interface ItemOptionsModeSingleSelectInputBuilder<T, ITEM>
-			extends OptionsModeSingleSelectInputBuilder<T, ITEM, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+			extends OptionsModeSingleSelectInputBuilder<T, ITEM, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			HasBeanDatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
+			OptionsModeSingleSelectInputBuilder<T, ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			DatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
@@ -130,7 +143,19 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 */
 	public interface PropertyOptionsModeSingleSelectInputBuilder<T>
 			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, PropertyOptionsModeSingleSelectInputBuilder<T>>,
-			HasPropertyDataSourceConfigurator<PropertyOptionsModeSingleSelectInputBuilder<T>> {
+			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>> {
+
+	}
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface DatastorePropertyOptionsModeSingleSelectInputBuilder<T> extends
+			OptionsModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
 
 	}
 

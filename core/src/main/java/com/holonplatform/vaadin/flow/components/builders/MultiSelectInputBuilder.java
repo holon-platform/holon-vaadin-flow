@@ -31,6 +31,6 @@ import com.holonplatform.vaadin.flow.components.MultiSelect;
  */
 public interface MultiSelectInputBuilder<T, ITEM, CONTEXT, B extends MultiSelectInputBuilder<T, ITEM, CONTEXT, B>>
 		extends InputBuilder<Set<T>, MultiSelect<T>, B>,
-		SelectableDataSourceInputConfigurator<Set<T>, ITEM, CONTEXT, B> {
+		SelectableInputConfigurator<Set<T>, B> {
 
 }
