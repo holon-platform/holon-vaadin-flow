@@ -192,6 +192,17 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 	}
 
 	/**
+	 * Set whether the column which corresponds to given property is read-only.
+	 * <p>
+	 * When a column is read-only, no editor component will be provided when the item is in edit mode.
+	 * </p>
+	 * @param property The property to configure (not null)
+	 * @param resizable Whether given property is read-only
+	 * @return this
+	 */
+	C readOnly(P property, boolean readOnly);
+
+	/**
 	 * Set whether the column which corresponds to given property is frozen.
 	 * @param property The property to configure (not null)
 	 * @param frozen Whether given property is frozen
@@ -384,6 +395,9 @@ public interface ItemListingConfigurator<T, P, C extends ItemListingConfigurator
 
 	/**
 	 * Sets whether the item details can be opened and closed by clicking the rows or not.
+	 * <p>
+	 * Default is <code>true</code>.
+	 * </p>
 	 * @param detailsVisibleOnClick <code>true</code> to enable opening and closing item details by clicking the rows,
 	 *        <code>false</code> otherwise
 	 * @return this

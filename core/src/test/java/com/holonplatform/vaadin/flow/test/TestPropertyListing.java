@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +32,9 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.Property;
@@ -40,19 +43,27 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.internal.components.AbstractItemListing;
+import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
+import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.function.ValueProvider;
 
 public class TestPropertyListing {
 
@@ -218,6 +229,126 @@ public class TestPropertyListing {
 	}
 
 	@Test
+	public void testConfiguration() {
+
+		PropertyListing listing = PropertyListing.builder(SET).build();
+		assertTrue(listing.getComponent() instanceof Grid);
+		assertFalse(((Grid<?>) listing.getComponent()).isColumnReorderingAllowed());
+		assertFalse(((Grid<?>) listing.getComponent()).isHeightByRows());
+		assertTrue(((Grid<?>) listing.getComponent()).isDetailsVisibleOnClick());
+		assertFalse(((Grid<?>) listing.getComponent()).isMultiSort());
+		assertTrue(((Grid<?>) listing.getComponent()).isVerticalScrollingEnabled());
+
+		listing = PropertyListing.builder(SET).columnReorderingAllowed(true).build();
+		assertTrue(((Grid<?>) listing.getComponent()).isColumnReorderingAllowed());
+
+		listing = PropertyListing.builder(SET).heightByRows(true).build();
+		assertTrue(((Grid<?>) listing.getComponent()).isHeightByRows());
+
+		listing = PropertyListing.builder(SET).itemDetailsVisibleOnClick(false).build();
+		assertFalse(((Grid<?>) listing.getComponent()).isDetailsVisibleOnClick());
+
+		listing = PropertyListing.builder(SET).multiSort(true).build();
+		// assertTrue(((Grid<?>) listing.getComponent()).isMultiSort());
+		assertNotNull(((Grid<?>) listing.getComponent()).getElement().getAttribute("multi-sort"));
+
+		listing = PropertyListing.builder(SET).pageSize(100).build();
+		assertEquals(100, ((Grid<?>) listing.getComponent()).getPageSize());
+
+		listing = PropertyListing.builder(SET).verticalScrollingEnabled(false).build();
+		assertFalse(((Grid<?>) listing.getComponent()).isVerticalScrollingEnabled());
+
+	}
+
+	@Test
+	public void testColumnConfiguration() {
+
+		PropertyListing listing = PropertyListing.builder(SET).build();
+
+		final ItemListingColumn<?, ?, ?> c = getImpl(listing).getColumnConfiguration(ID);
+		assertNotNull(c.getColumnKey());
+		assertEquals(ID.getName(), c.getColumnKey());
+		assertFalse(c.isReadOnly());
+		assertFalse(c.isFrozen());
+		assertTrue(c.isVisible());
+		assertEquals(SortMode.ENABLED, c.getSortMode());
+		assertTrue(c.getSortProperties().size() > 0);
+
+		final ItemListingColumn<?, ?, ?> c2 = getImpl(listing).getColumnConfiguration(VIRTUAL);
+		assertTrue(c2.isReadOnly());
+		assertNotNull(c2.getColumnKey());
+		assertEquals(SortMode.DEFAULT, c2.getSortMode());
+		assertTrue(c2.getSortProperties().isEmpty());
+
+		listing = PropertyListing.builder(SET).readOnly(ID, true).build();
+		assertTrue(getImpl(listing).getColumnConfiguration(ID).isReadOnly());
+
+		listing = PropertyListing.builder(SET).visible(ID, false).build();
+		assertFalse(getImpl(listing).getColumnConfiguration(ID).isVisible());
+
+		listing = PropertyListing.builder(SET).resizable(ID, true).build();
+		assertTrue(getImpl(listing).getColumnConfiguration(ID).isResizable());
+
+		listing = PropertyListing.builder(SET).frozen(ID, true).build();
+		assertTrue(getImpl(listing).getColumnConfiguration(ID).isFrozen());
+
+		listing = PropertyListing.builder(SET).width(ID, "50px").build();
+		assertEquals("50px", getImpl(listing).getColumnConfiguration(ID).getWidth().orElse(null));
+
+		listing = PropertyListing.builder(SET).flexGrow(ID, 1).build();
+		assertEquals(1, getImpl(listing).getColumnConfiguration(ID).getFlexGrow());
+
+		listing = PropertyListing.builder(SET).alignment(ID, ColumnAlignment.RIGHT)
+				.alignment(NAME, ColumnAlignment.CENTER).build();
+		assertEquals(ColumnAlignment.RIGHT, getImpl(listing).getColumnConfiguration(ID).getAlignment().orElse(null));
+		assertEquals(ColumnAlignment.CENTER, getImpl(listing).getColumnConfiguration(NAME).getAlignment().orElse(null));
+		assertEquals(ColumnAlignment.LEFT,
+				getImpl(listing).getColumnConfiguration(VIRTUAL).getAlignment().orElse(ColumnAlignment.LEFT));
+
+		listing = PropertyListing.builder(SET).header(ID, "test").build();
+		assertEquals("test", LocalizationContext
+				.translate(getImpl(listing).getColumnConfiguration(ID).getHeaderText().orElse(null), true));
+
+		listing = PropertyListing.builder(SET).header(ID, "test", "mc").build();
+		assertEquals("test", LocalizationContext
+				.translate(getImpl(listing).getColumnConfiguration(ID).getHeaderText().orElse(null), true));
+
+		listing = PropertyListing.builder(SET).header(ID, Localizable.of("test")).build();
+		assertEquals("test", LocalizationContext
+				.translate(getImpl(listing).getColumnConfiguration(ID).getHeaderText().orElse(null), true));
+
+		final Button btn = new Button("test");
+
+		listing = PropertyListing.builder(SET).headerComponent(ID, btn).build();
+		assertEquals(btn, getImpl(listing).getColumnConfiguration(ID).getHeaderComponent().orElse(null));
+
+		final Renderer<PropertyBox> rnd = TemplateRenderer.of("test");
+		listing = PropertyListing.builder(SET).renderer(ID, rnd).build();
+		assertEquals(rnd, getImpl(listing).getColumnConfiguration(ID).getRenderer().orElse(null));
+
+		final ValueProvider<PropertyBox, String> vp = item -> "test";
+		listing = PropertyListing.builder(SET).valueProvider(ID, vp).build();
+		assertEquals(vp, getImpl(listing).getColumnConfiguration(ID).getValueProvider().orElse(null));
+
+		final Comparator<PropertyBox> cmp = Comparator.<PropertyBox, Long>comparing(v -> v.getValue(ID),
+				Comparator.comparingLong(k -> k));
+		listing = PropertyListing.builder(SET).sortComparator(ID, cmp).build();
+		assertEquals(cmp, getImpl(listing).getColumnConfiguration(ID).getComparator().orElse(null));
+
+		listing = PropertyListing.builder(SET).sortUsing(VIRTUAL, ID).build();
+		assertEquals(ID, getImpl(listing).getColumnConfiguration(VIRTUAL).getSortProperties().get(0));
+
+		final Input<Long> edt = Input.number(Long.class).build();
+		listing = PropertyListing.builder(SET).editor(ID, edt).build();
+		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditor().orElse(null));
+
+		final Validator<Long> vdt = Validator.max(3);
+		listing = PropertyListing.builder(SET).withValidator(ID, vdt).build();
+		assertEquals(vdt, getImpl(listing).getColumnConfiguration(ID).getValidators().get(0));
+
+	}
+
+	@Test
 	public void testColumns() {
 
 		PropertyListing listing = PropertyListing.builder(SET).build();
@@ -234,24 +365,24 @@ public class TestPropertyListing {
 		assertNotNull(grid.getColumnByKey(getImpl(listing).getColumnConfiguration(NAME).getColumnKey()));
 		assertNotNull(grid.getColumnByKey(getImpl(listing).getColumnConfiguration(VIRTUAL).getColumnKey()));
 	}
-	
+
 	@Test
 	public void testDefaultHeader() {
-		
+
 		PropertyListing listing = PropertyListing.builder(SET).build();
-		
+
 		assertTrue(listing.getHeader().isPresent());
 		assertEquals(1, listing.getHeader().get().getRows().size());
 		assertTrue(listing.getHeader().get().getFirstRow().isPresent());
-		
+
 		assertTrue(listing.getComponent() instanceof Grid);
 		final Grid<?> grid = (Grid<?>) listing.getComponent();
 		assertEquals(3, grid.getColumns().size());
-		
+
 		Column<?> c1 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(ID).getColumnKey());
 		Column<?> c2 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(NAME).getColumnKey());
 		Column<?> c3 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(VIRTUAL).getColumnKey());
-		
+
 		assertNotNull(c1);
 		assertNotNull(c2);
 		assertNotNull(c3);
@@ -287,17 +418,17 @@ public class TestPropertyListing {
 			assertEquals(2, listing2.getHeader().get().getRows().size());
 		});
 	}
-	
+
 	@Test
 	public void testFooter() {
 
 		PropertyListing listing = PropertyListing.builder(SET).footer(footer -> {
 			footer.appendRow().getCell(ID).get().setText("id");
 		}).build();
-		
+
 		assertTrue(listing.getFooter().isPresent());
 		assertEquals(1, listing.getFooter().get().getRows().size());
-		
+
 	}
 
 	@Test
@@ -531,7 +662,7 @@ public class TestPropertyListing {
 		assertTrue(listing.getComponent() instanceof Grid);
 		return ((Grid<PropertyBox>) listing.getComponent()).getDataProvider();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static AbstractItemListing<PropertyBox, Property<?>> getImpl(PropertyListing listing) {
 		assertTrue(listing instanceof AbstractItemListing);

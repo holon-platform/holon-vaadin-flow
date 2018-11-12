@@ -1508,6 +1508,17 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#readOnly(java.lang.Object,
+		 * boolean)
+		 */
+		@Override
+		public C readOnly(P property, boolean readOnly) {
+			instance.getColumnConfiguration(property).setReadOnly(readOnly);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(java.lang.Object,
 		 * boolean)
 		 */

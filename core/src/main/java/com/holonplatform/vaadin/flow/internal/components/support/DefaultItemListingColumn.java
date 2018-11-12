@@ -102,10 +102,11 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 		return readOnly;
 	}
 
-	/**
-	 * Set the column as read-only.
-	 * @param readOnly whether the column is read-only
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setReadOnly(boolean)
 	 */
+	@Override
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
