@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.Context;
+import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.data.ItemDataSource.ItemSort;
 import com.vaadin.flow.component.Component;
 
@@ -177,13 +180,48 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	public interface ItemListingCell {
 
 		/**
+		 * Sets the localizable text content of this cell.
+		 * <p>
+		 * In order for the localization to work, a {@link LocalizationContext} must be valid (localized) and available
+		 * as a {@link Context} resource.
+		 * </p>
+		 * <p>
+		 * This will remove a component set with {@link #setComponent(Component)}.
+		 * </p>
+		 * @param text the localizable text to be shown in this cell
+		 * @see LocalizationContext#getCurrent()
+		 */
+		void setText(Localizable text);
+
+		/**
 		 * Sets the text content of this cell.
 		 * <p>
 		 * This will remove a component set with {@link #setComponent(Component)}.
 		 * </p>
 		 * @param text the text to be shown in this cell
 		 */
-		void setText(String text);
+		default void setText(String text) {
+			setText(Localizable.of(text));
+		}
+
+		/**
+		 * Sets the text content of this cell using a localizable <code>messageCode</code>.
+		 * <p>
+		 * In order for the localization to work, a {@link LocalizationContext} must be valid (localized) and available
+		 * as a {@link Context} resource.
+		 * </p>
+		 * <p>
+		 * This will remove a component set with {@link #setComponent(Component)}.
+		 * </p>
+		 * @param defaultText Default text content if no translation is available for given <code>messageCode</code>.
+		 * @param messageCode Text translation message key
+		 * @param arguments Optional translation arguments
+		 * @see LocalizationContext#getCurrent()
+		 */
+		default void setText(String defaultText, String messageCode, Object... arguments) {
+			setText(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)
+					.messageArguments(arguments).build());
+		}
 
 		/**
 		 * Sets the component as the content of this cell.

@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.Property;
@@ -43,9 +44,12 @@ import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
+import com.holonplatform.vaadin.flow.internal.components.AbstractItemListing;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
+import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
@@ -53,7 +57,7 @@ import com.vaadin.flow.data.provider.Query;
 public class TestPropertyListing {
 
 	private static final NumericProperty<Long> ID = NumericProperty.longType("id");
-	private static final StringProperty NAME = StringProperty.create("name");
+	private static final StringProperty NAME = StringProperty.create("name").messageCode("test.code");
 	private static final VirtualProperty<String> VIRTUAL = VirtualProperty.create(String.class,
 			pb -> pb.containsValue(NAME) ? "[" + pb.getValue(NAME) + "]" : null);
 
@@ -214,6 +218,89 @@ public class TestPropertyListing {
 	}
 
 	@Test
+	public void testColumns() {
+
+		PropertyListing listing = PropertyListing.builder(SET).build();
+		assertTrue(listing.getComponent() instanceof Grid);
+
+		final Grid<?> grid = (Grid<?>) listing.getComponent();
+		assertEquals(3, grid.getColumns().size());
+
+		assertNotNull(getImpl(listing).getColumnConfiguration(ID).getColumnKey());
+		assertNotNull(getImpl(listing).getColumnConfiguration(NAME).getColumnKey());
+		assertNotNull(getImpl(listing).getColumnConfiguration(VIRTUAL).getColumnKey());
+
+		assertNotNull(grid.getColumnByKey(getImpl(listing).getColumnConfiguration(ID).getColumnKey()));
+		assertNotNull(grid.getColumnByKey(getImpl(listing).getColumnConfiguration(NAME).getColumnKey()));
+		assertNotNull(grid.getColumnByKey(getImpl(listing).getColumnConfiguration(VIRTUAL).getColumnKey()));
+	}
+	
+	@Test
+	public void testDefaultHeader() {
+		
+		PropertyListing listing = PropertyListing.builder(SET).build();
+		
+		assertTrue(listing.getHeader().isPresent());
+		assertEquals(1, listing.getHeader().get().getRows().size());
+		assertTrue(listing.getHeader().get().getFirstRow().isPresent());
+		
+		assertTrue(listing.getComponent() instanceof Grid);
+		final Grid<?> grid = (Grid<?>) listing.getComponent();
+		assertEquals(3, grid.getColumns().size());
+		
+		Column<?> c1 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(ID).getColumnKey());
+		Column<?> c2 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(NAME).getColumnKey());
+		Column<?> c3 = grid.getColumnByKey(getImpl(listing).getColumnConfiguration(VIRTUAL).getColumnKey());
+		
+		assertNotNull(c1);
+		assertNotNull(c2);
+		assertNotNull(c3);
+	}
+
+	@Test
+	public void testHeader() {
+
+		PropertyListing listing = PropertyListing.builder(SET).build();
+
+		assertTrue(listing.getHeader().isPresent());
+
+		assertEquals(1, listing.getHeader().get().getRows().size());
+		assertTrue(listing.getHeader().get().getFirstRow().isPresent());
+
+		assertEquals(3, listing.getHeader().get().getFirstRow().get().getCells().size());
+		assertTrue(listing.getHeader().get().getFirstRow().get().getCell(ID).isPresent());
+		assertTrue(listing.getHeader().get().getFirstRow().get().getCell(NAME).isPresent());
+
+		listing = PropertyListing.builder(SET).header(VIRTUAL, "virtual").header(header -> {
+			header.prependRow().join(ID, NAME).setText("joined");
+		}).build();
+
+		assertEquals(2, listing.getHeader().get().getRows().size());
+		assertEquals(2, listing.getHeader().get().getRows().get(0).getCells().size());
+		assertEquals(3, listing.getHeader().get().getRows().get(1).getCells().size());
+
+		LocalizationTestUtils.withTestLocalizationContext(() -> {
+			PropertyListing listing2 = PropertyListing.builder(SET).header(VIRTUAL, "virtual").header(header -> {
+				header.prependRow().join(ID, NAME)
+						.setText(Localizable.builder().message("test").messageCode("test.code").build());
+			}).build();
+			assertEquals(2, listing2.getHeader().get().getRows().size());
+		});
+	}
+	
+	@Test
+	public void testFooter() {
+
+		PropertyListing listing = PropertyListing.builder(SET).footer(footer -> {
+			footer.appendRow().getCell(ID).get().setText("id");
+		}).build();
+		
+		assertTrue(listing.getFooter().isPresent());
+		assertEquals(1, listing.getFooter().get().getRows().size());
+		
+	}
+
+	@Test
 	public void testItemsDataSource() {
 
 		final PropertyBox ITEM1 = PropertyBox.builder(SET).set(ID, 1L).set(NAME, "test1").build();
@@ -295,17 +382,16 @@ public class TestPropertyListing {
 		assertEquals(SelectionMode.SINGLE, listing2.getSelectionMode());
 		listing2.select(ITEM2);
 		assertEquals(1, listing2.getSelectedItems().size());
-		
+
 		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).multiSelect().build();
 		assertEquals(SelectionMode.MULTI, listing2.getSelectionMode());
 		assertEquals(0, listing.getSelectedItems().size());
-		
+
 		listing2.select(ITEM1);
 		listing2.select(ITEM2);
 		assertEquals(2, listing2.getSelectedItems().size());
 		assertTrue(listing2.isSelected(ITEM1));
 		assertTrue(listing2.isSelected(ITEM2));
-		
 
 		final Set<PropertyBox> selected = new HashSet<>();
 
@@ -313,49 +399,50 @@ public class TestPropertyListing {
 			selected.clear();
 			selected.addAll(e.getAllSelectedItems());
 		}).build();
-		
+
 		assertEquals(0, selected.size());
-		
+
 		listing2.select(ITEM1);
-		
+
 		assertEquals(1, selected.size());
 		assertTrue(selected.contains(ITEM1));
-		
+
 		listing2.select(ITEM2);
-		
+
 		assertEquals(1, selected.size());
 		assertTrue(selected.contains(ITEM2));
-		
+
 		listing2.deselectAll();
 		assertEquals(0, selected.size());
 		assertFalse(selected.contains(ITEM1));
 		assertFalse(selected.contains(ITEM2));
-		
+
 		selected.clear();
-		
-		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).singleSelect().multiSelect().withSelectionListener(e -> {
-			selected.clear();
-			selected.addAll(e.getAllSelectedItems());
-		}).build();
-		
+
+		listing2 = PropertyListing.builder(SET).items(ITEM1, ITEM2).singleSelect().multiSelect()
+				.withSelectionListener(e -> {
+					selected.clear();
+					selected.addAll(e.getAllSelectedItems());
+				}).build();
+
 		assertEquals(0, selected.size());
-		
+
 		listing2.select(ITEM1);
-		
+
 		assertEquals(1, selected.size());
 		assertTrue(selected.contains(ITEM1));
-		
+
 		listing2.select(ITEM2);
-		
+
 		assertEquals(2, selected.size());
 		assertTrue(selected.contains(ITEM1));
 		assertTrue(selected.contains(ITEM2));
-		
+
 		listing2.deselectAll();
 		assertEquals(0, selected.size());
 		assertFalse(selected.contains(ITEM1));
 		assertFalse(selected.contains(ITEM2));
-		
+
 	}
 
 	@Test
@@ -374,6 +461,46 @@ public class TestPropertyListing {
 		assertEquals(NAME, visible.get(0));
 		assertEquals(ID, visible.get(1));
 
+		listing = PropertyListing.builder(SET).visibleColumns(NAME, ID).build();
+		listing.setColumnVisible(ID, false);
+
+		visible = listing.getVisibleColumns();
+		assertEquals(1, visible.size());
+		assertTrue(visible.contains(NAME));
+		assertFalse(visible.contains(ID));
+
+		listing.setColumnVisible(ID, true);
+		visible = listing.getVisibleColumns();
+		assertEquals(2, visible.size());
+		assertTrue(visible.contains(NAME));
+		assertTrue(visible.contains(ID));
+
+		listing = PropertyListing.builder(SET).visible(ID, false).build();
+		visible = listing.getVisibleColumns();
+		assertEquals(2, visible.size());
+		assertTrue(visible.contains(NAME));
+		assertTrue(visible.contains(VIRTUAL));
+		assertFalse(visible.contains(ID));
+
+	}
+
+	@Test
+	public void testItemDetails() {
+
+		final PropertyBox ITEM1 = PropertyBox.builder(SET).set(ID, 1L).set(NAME, "test1").build();
+		final PropertyBox ITEM2 = PropertyBox.builder(SET).set(ID, 2L).set(NAME, "test2").build();
+
+		PropertyListing listing = PropertyListing.builder(SET).items(ITEM1, ITEM2)
+				.itemDetailsText(item -> item.getValue(NAME)).build();
+
+		assertFalse(listing.isItemDetailsVisible(ITEM1));
+
+		listing.setItemDetailsVisible(ITEM1, true);
+		assertTrue(listing.isItemDetailsVisible(ITEM1));
+		assertFalse(listing.isItemDetailsVisible(ITEM2));
+
+		listing.setItemDetailsVisible(ITEM1, false);
+		assertFalse(listing.isItemDetailsVisible(ITEM1));
 	}
 
 	@Test
@@ -403,6 +530,12 @@ public class TestPropertyListing {
 	private static DataProvider<PropertyBox, ?> getDataProvider(PropertyListing listing) {
 		assertTrue(listing.getComponent() instanceof Grid);
 		return ((Grid<PropertyBox>) listing.getComponent()).getDataProvider();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static AbstractItemListing<PropertyBox, Property<?>> getImpl(PropertyListing listing) {
+		assertTrue(listing instanceof AbstractItemListing);
+		return (AbstractItemListing<PropertyBox, Property<?>>) listing;
 	}
 
 }

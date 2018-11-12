@@ -279,7 +279,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param property The property (not null)
 	 * @return The property column configuration (never null)
 	 */
-	protected ItemListingColumn<P, T, ?> getColumnConfiguration(P property) {
+	public ItemListingColumn<P, T, ?> getColumnConfiguration(P property) {
 		return propertyColumns.computeIfAbsent(property, p -> new DefaultItemListingColumn<>(property,
 				ensureUniqueColumnKey(generateColumnKey(p)), isAlwaysReadOnly(p)));
 	}

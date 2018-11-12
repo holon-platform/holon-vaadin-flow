@@ -151,7 +151,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 				return Localizable.builder().message((p.getMessage() != null) ? p.getMessage() : p.getName())
 						.messageCode(p.getMessageCode()).build();
 			}
-			return null;
+			return Localizable.of(p.getName());
 		});
 	}
 

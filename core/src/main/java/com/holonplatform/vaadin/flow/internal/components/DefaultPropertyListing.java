@@ -105,6 +105,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 					.message((property.getMessage() != null) ? property.getMessage() : property.getName())
 					.messageCode(property.getMessageCode()).build());
 		}
+		if (Path.class.isAssignableFrom(property.getClass()) && property.getName() != null) {
+			return Optional.of(Localizable.of(property.getName()));
+		}
 		return Optional.empty();
 	}
 

@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.support;
 
+import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell;
 import com.vaadin.flow.component.Component;
@@ -37,11 +39,12 @@ public class DefaultItemListingHeaderCell implements ItemListingCell {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell#setText(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell#setText(com.holonplatform.core.i18n.
+	 * Localizable)
 	 */
 	@Override
-	public void setText(String text) {
-		cell.setText(text);
+	public void setText(Localizable text) {
+		cell.setText((text == null) ? null : LocalizationContext.translate(text, true));
 	}
 
 	/*
