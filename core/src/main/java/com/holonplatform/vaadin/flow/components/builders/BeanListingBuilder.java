@@ -34,7 +34,7 @@ public interface BeanListingBuilder<T> extends ItemListingBuilder<T, String, Bea
 	 * @param validator The validator to add (not null)
 	 * @return this
 	 */
-	PropertyListingBuilder withValidator(String property, Validator<?> validator);
+	BeanListingBuilder<T> withValidator(String property, Validator<?> validator);
 
 	/**
 	 * Set the {@link Input} to use as given property editor.
@@ -42,6 +42,6 @@ public interface BeanListingBuilder<T> extends ItemListingBuilder<T, String, Bea
 	 * @param editor The property editor (not null)
 	 * @return this
 	 */
-	PropertyListingBuilder editor(String property, Input<?> editor);
+	BeanListingBuilder<T> editor(String property, Input<?> editor);
 
 }

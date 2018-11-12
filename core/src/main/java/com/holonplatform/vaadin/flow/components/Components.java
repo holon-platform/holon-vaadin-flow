@@ -26,6 +26,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.Composable.Composer;
+import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
@@ -50,6 +51,7 @@ import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelect
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
@@ -925,65 +927,42 @@ public interface Components {
 
 	}
 
-	// Item listings TODO
+	// Item listings
 
 	/**
 	 * {@link ItemListing} builders provider.
 	 */
 	static interface listing {
 
-		// /**
-		// * Builder to create an {@link ItemListing} instance using a {@link Grid} as backing component.
-		// * @param <T> Item data type
-		// * @param itemType Item bean type
-		// * @return Grid {@link ItemListing} builder
-		// */
-		// static <T> BeanListingBuilder<T> items(Class<T> itemType) {
-		// return BeanListing.builder(itemType);
-		// }
-		//
-		// /**
-		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-		// * @param <P> Actual property type
-		// * @param properties The property set to use for the listing
-		// * @return Grid {@link PropertyListing} builder
-		// */
-		// @SafeVarargs
-		// static <P extends Property<?>> GridPropertyListingBuilder properties(P... properties) {
-		// return properties(PropertySet.of(properties));
-		// }
-		//
-		// /**
-		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-		// * @param <P> Actual property type
-		// * @param properties The property set to use for the listing
-		// * @return Grid {@link PropertyListing} builder
-		// */
-		// static <P extends Property<?>> GridPropertyListingBuilder properties(Iterable<P> properties) {
-		// return PropertyListing.builder(properties);
-		// }
-		//
-		// /**
-		// * Builder to create an {@link PropertyListing} instance using a {@link Grid} as backing component.
-		// * @param <P> Actual property type
-		// * @param properties The property set to use for the listing (not null)
-		// * @param additionalProperties Additional properties to declare
-		// * @return Grid {@link PropertyListing} builder
-		// */
-		// @SafeVarargs
-		// @SuppressWarnings("rawtypes")
-		// static <P extends Property> GridPropertyListingBuilder properties(PropertySet<P> properties,
-		// P... additionalProperties) {
-		// ObjectUtils.argumentNotNull(properties, "Properties must be not null");
-		// if (additionalProperties != null && additionalProperties.length > 0) {
-		// PropertySet.Builder<Property<?>> builder = PropertySet.builder().add(properties);
-		// for (P property : additionalProperties) {
-		// builder.add(property);
-		// }
-		// return PropertyListing.builder(builder.build());
-		// }
-		// return PropertyListing.builder(properties);
-		// }
+		/**
+		 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing} using given <code>beanType</code>.
+		 * @param <T> Bean type
+		 * @param properties The listing bean class, i.e. the item type (not null)
+		 * @return A new {@link BeanListingBuilder}
+		 */
+		static <T> BeanListingBuilder<T> items(Class<T> beanType) {
+			return BeanListing.builder(beanType);
+		}
+
+		/**
+		 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
+		 * @param <P> Property type
+		 * @param properties The listing property set (not null)
+		 * @return A new {@link PropertyListingBuilder}
+		 */
+		@SuppressWarnings("rawtypes")
+		static <P extends Property> PropertyListingBuilder properties(Iterable<P> properties) {
+			return PropertyListing.builder(properties);
+		}
+
+		/**
+		 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
+		 * @param properties The listing property set (not null)
+		 * @return A new {@link PropertyListingBuilder}
+		 */
+		static PropertyListingBuilder properties(Property<?>... properties) {
+			return PropertyListing.builder(properties);
+		}
 
 	}
 

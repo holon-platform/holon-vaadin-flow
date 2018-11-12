@@ -17,6 +17,9 @@ package com.holonplatform.vaadin.flow.components;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
+import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyListing;
 
 /**
  * An {@link ItemListing} component using {@link Property}s as item properties and {@link PropertyBox} as item data
@@ -27,9 +30,25 @@ import com.holonplatform.core.property.PropertyBox;
 public interface PropertyListing extends ItemListing<PropertyBox, Property<?>>, PropertySetBound {
 
 	// Builders
-// TODO
-//	static <P extends Property> GridPropertyListingBuilder builder(Iterable<P> properties) {
-//		return new DefaultGridPropertyListingBuilder(properties);
-//	}
+
+	/**
+	 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
+	 * @param <P> Property type
+	 * @param properties The listing property set (not null)
+	 * @return A new {@link PropertyListingBuilder}
+	 */
+	@SuppressWarnings("rawtypes")
+	static <P extends Property> PropertyListingBuilder builder(Iterable<P> properties) {
+		return new DefaultPropertyListing.DefaultPropertyListingBuilder(properties);
+	}
+
+	/**
+	 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
+	 * @param properties The listing property set (not null)
+	 * @return A new {@link PropertyListingBuilder}
+	 */
+	static PropertyListingBuilder builder(Property<?>... properties) {
+		return builder(PropertySet.of(properties));
+	}
 
 }

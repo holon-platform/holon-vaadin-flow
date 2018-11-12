@@ -45,6 +45,7 @@ import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.EditableItemListingSection;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
@@ -1132,6 +1133,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public abstract C getConfigurator();
 
+		protected L getInstance() {
+			return instance;
+		}
+
 		/**
 		 * Configure the listing.
 		 * @return the listing
@@ -1367,18 +1372,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		public C displayAfter(P property, P afterProperty) {
 			instance.setDisplayAfter(property, afterProperty);
 			return getConfigurator();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
-		 * .function.ValueProvider)
-		 */
-		@Override
-		public ItemListingColumnBuilder<T, P, C> withComponentColumn(ValueProvider<T, Component> valueProvider) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		/*
@@ -2075,6 +2068,197 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		public void onComponentEvent(GridContextMenuItemClickEvent<T> event) {
 			listeners.forEach(l -> l.onItemEvent(new DefaultItemListingItemEvent<>(event.getSource(), itemListing,
 					() -> event.getItem().orElse(null))));
+		}
+
+	}
+
+	/**
+	 * Default {@link ItemListingColumnBuilder} implementation.
+	 * 
+	 * @param <T> Item type
+	 * @param <P> Item property type
+	 * @param <B> Parent builder type
+	 */
+	static class DefaultItemListingColumnBuilder<T, P, B extends ItemListingConfigurator<T, P, B>>
+			implements ItemListingColumnBuilder<T, P, B> {
+
+		private final P property;
+		private final AbstractItemListing<T, P> listing;
+		private final B parent;
+
+		public DefaultItemListingColumnBuilder(P property, AbstractItemListing<T, P> listing, B parent) {
+			super();
+			this.property = property;
+			this.listing = listing;
+			this.parent = parent;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * resizable(boolean)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> resizable(boolean resizable) {
+			listing.getColumnConfiguration(property).setResizable(resizable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * visible(boolean)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> visible(boolean visible) {
+			listing.getColumnConfiguration(property).setVisible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * frozen(boolean)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> frozen(boolean frozen) {
+			listing.getColumnConfiguration(property).setFrozen(frozen);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#width
+		 * (java.lang.String)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> width(String width) {
+			listing.getColumnConfiguration(property).setWidth(width);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * flexGrow(int)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> flexGrow(int flexGrow) {
+			listing.getColumnConfiguration(property).setFlexGrow(flexGrow);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * sortComparator(java.util.Comparator)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> sortComparator(Comparator<T> comparator) {
+			listing.getColumnConfiguration(property).setComparator(comparator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * sortUsing(java.util.List)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> sortUsing(List<P> sortProperties) {
+			listing.getColumnConfiguration(property).setSortProperties(sortProperties);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * sortProvider(java.util.function.Function)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> sortProvider(
+				Function<com.holonplatform.core.query.QuerySort.SortDirection, Stream<ItemSort<P>>> sortProvider) {
+			listing.getColumnConfiguration(property).setSortOrderProvider(direction -> {
+				return sortProvider.apply(AbstractItemListing.convert(direction))
+						.map(is -> new QuerySortOrder(listing.getColumnKey(is.getProperty()), direction));
+			});
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * header(com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> header(Localizable header) {
+			listing.getColumnConfiguration(property).setHeaderText(header);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * headerComponent(com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> headerComponent(Component header) {
+			listing.getColumnConfiguration(property).setHeaderComponent(header);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * displayAsFirst()
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> displayAsFirst() {
+			listing.setDisplayAsFirst(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * displayAsLast()
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> displayAsLast() {
+			listing.setDisplayAsLast(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * displayBefore(java.lang.Object)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> displayBefore(P beforeProperty) {
+			listing.setDisplayBefore(property, beforeProperty);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * displayAfter(java.lang.Object)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, B> displayAfter(P afterProperty) {
+			listing.setDisplayAfter(property, afterProperty);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnBuilder#add()
+		 */
+		@Override
+		public B add() {
+			return parent;
 		}
 
 	}

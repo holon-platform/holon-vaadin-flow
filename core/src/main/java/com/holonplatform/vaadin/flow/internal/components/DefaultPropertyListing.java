@@ -27,8 +27,10 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.Component;
@@ -52,12 +54,14 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/**
 	 * Constructor.
-	 * @param propertySet Property set (not null)
+	 * @param <P> Property type
+	 * @param properties Property set (not null)
 	 */
-	public DefaultPropertyListing(PropertySet<?> propertySet) {
+	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
 		super();
-		ObjectUtils.argumentNotNull(propertySet, "PropertySet must be not null");
-		this.propertySet = propertySet;
+		ObjectUtils.argumentNotNull(properties, "Property set must be not null");
+		this.propertySet = (properties instanceof PropertySet<?>) ? (PropertySet<?>) properties
+				: PropertySet.of(properties);
 		// add properties as columns
 		for (Property<?> property : propertySet) {
 			addPropertyColumn(property);
@@ -249,6 +253,94 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 	@Override
 	public Stream<Property<?>> propertyStream() {
 		return propertySet.stream().map(p -> (Property<?>) p);
+	}
+
+	// ------- Builder
+
+	/**
+	 * Default {@link PropertyListingBuilder} implementation.
+	 */
+	public static class DefaultPropertyListingBuilder extends
+			AbstractItemListingConfigurator<PropertyBox, Property<?>, DefaultPropertyListing, PropertyListingBuilder>
+			implements PropertyListingBuilder {
+
+		public <P extends Property<?>> DefaultPropertyListingBuilder(Iterable<P> properties) {
+			super(new DefaultPropertyListing(properties));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
+		 * getConfigurator()
+		 */
+		@Override
+		public PropertyListingBuilder getConfigurator() {
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#withValidator(com.holonplatform.core
+		 * .property.Property, com.holonplatform.core.Validator)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V> PropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+			getInstance().getColumnConfiguration(property).addValidator((Validator) validator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#editor(com.holonplatform.core.
+		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V> PropertyListingBuilder editor(Property<V> property, Input<V> editor) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
+		 * .function.ValueProvider)
+		 */
+		@Override
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListingBuilder> withComponentColumn(
+				ValueProvider<PropertyBox, Component> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			return withComponentColumn(VirtualProperty.create(Component.class, item -> valueProvider.apply(item)));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder#withComponentColumn(com.
+		 * holonplatform.core.property.VirtualProperty)
+		 */
+		@Override
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListingBuilder> withComponentColumn(
+				VirtualProperty<Component> property) {
+			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
+			getInstance().addPropertyColumn(property);
+			return new DefaultItemListingColumnBuilder<>(property, getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 */
+		@Override
+		public PropertyListing build() {
+			return configureAndBuild();
+		}
+
 	}
 
 }

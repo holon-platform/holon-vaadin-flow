@@ -17,7 +17,9 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.beans.BeanPropertySet;
@@ -26,8 +28,10 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.function.ValueProvider;
@@ -49,6 +53,11 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	private final BeanPropertySet<T> propertySet;
 
 	/**
+	 * Component columns
+	 */
+	private final Set<String> componentColumnProperties = new HashSet<>(4);
+
+	/**
 	 * Constructor.
 	 * @param beanType Bean type (not null)
 	 */
@@ -62,13 +71,23 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		}
 	}
 
+	/**
+	 * Add a component type virtual column.
+	 * @return The property id
+	 */
+	protected String addComponentColumnProperty() {
+		final String id = "_component" + componentColumnProperties.size();
+		addPropertyColumn(id);
+		return id;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isAlwaysReadOnly(java.lang.Object)
 	 */
 	@Override
 	protected boolean isAlwaysReadOnly(String property) {
-		return false;
+		return property != null && componentColumnProperties.contains(property);
 	}
 
 	/*
@@ -184,6 +203,83 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	@Override
 	protected Collection<Validator<Object>> getDefaultPropertyValidators(String property) {
 		return propertySet.getProperty(property).map(p -> p.getValidators()).orElse(Collections.emptyList());
+	}
+
+	// ------- Builder
+
+	/**
+	 * Default {@link BeanListingBuilder} implementation.
+	 * 
+	 * @param <T> Bean type
+	 */
+	public static class DefaultBeanListingBuilder<T>
+			extends AbstractItemListingConfigurator<T, String, DefaultBeanListing<T>, BeanListingBuilder<T>>
+			implements BeanListingBuilder<T> {
+
+		public DefaultBeanListingBuilder(Class<T> beanType) {
+			super(new DefaultBeanListing<>(beanType));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder#withValidator(java.lang.String,
+		 * com.holonplatform.core.Validator)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public BeanListingBuilder<T> withValidator(String property, Validator<?> validator) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			ObjectUtils.argumentNotNull(validator, "Validator must be not null");
+			getInstance().getColumnConfiguration(property).addValidator((Validator) validator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder#editor(java.lang.String,
+		 * com.holonplatform.vaadin.flow.components.Input)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public BeanListingBuilder<T> editor(String property, Input<?> editor) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
+		 * .function.ValueProvider)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, String, BeanListingBuilder<T>> withComponentColumn(
+				ValueProvider<T, Component> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			return new DefaultItemListingColumnBuilder<>(getInstance().addComponentColumnProperty(), getInstance(),
+					this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
+		 * getConfigurator()
+		 */
+		@Override
+		public BeanListingBuilder<T> getConfigurator() {
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 */
+		@Override
+		public BeanListing<T> build() {
+			return configureAndBuild();
+		}
+
 	}
 
 }

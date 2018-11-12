@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
+import com.holonplatform.vaadin.flow.internal.components.DefaultBeanListing;
+
 /**
  * An {@link ItemListing} component using a bean type as item type and the bean property names as property set.
  * 
@@ -24,9 +27,16 @@ package com.holonplatform.vaadin.flow.components;
  */
 public interface BeanListing<T> extends ItemListing<T, String> {
 
-	// TODO
-	// static <T> BeanListingBuilder<T> builder(Class<T> itemType) {
-	// return new DefaultBeanListingBuilder<>(itemType);
-	// }
+	// Builders
+
+	/**
+	 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing} using given <code>beanType</code>.
+	 * @param <T> Bean type
+	 * @param properties The listing bean class (not null)
+	 * @return A new {@link BeanListingBuilder}
+	 */
+	static <T> BeanListingBuilder<T> builder(Class<T> beanType) {
+		return new DefaultBeanListing.DefaultBeanListingBuilder<>(beanType);
+	}
 
 }

@@ -18,8 +18,11 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyValueProvider;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.vaadin.flow.component.Component;
 
 /**
  * {@link PropertyListing} builder.
@@ -29,6 +32,19 @@ import com.holonplatform.vaadin.flow.components.PropertyListing;
 public interface PropertyListingBuilder
 		extends ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder>,
 		HasPropertyDataSourceConfigurator<PropertyListingBuilder> {
+
+	/**
+	 * Add a column which contents will be rendered as a {@link Component} using given {@link VirtualProperty}.
+	 * <p>
+	 * The virtual property {@link PropertyValueProvider} will be invoked for each listing item to obtain the Component
+	 * to display.
+	 * </p>
+	 * @param property The virtual property which represent the column.
+	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
+	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 */
+	ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListingBuilder> withComponentColumn(
+			VirtualProperty<Component> property);
 
 	/**
 	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.
