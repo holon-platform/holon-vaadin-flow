@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.function.BiFunction;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
@@ -82,7 +82,6 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Main provider of UI components builders and configurators.
@@ -664,7 +663,7 @@ public interface Components {
 		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type,
-				Class<ITEM> itemType, ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+				Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
 			return Input.singleSelect(type, itemType, itemConverter);
 		}
 
@@ -688,7 +687,7 @@ public interface Components {
 		 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
 		 */
 		static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
-				BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+				Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.singleSelect(selectionProperty, itemConverter);
 		}
 
@@ -724,7 +723,7 @@ public interface Components {
 		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
-				Class<ITEM> itemType, ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+				Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
 			return Input.singleOptionSelect(type, itemType, itemConverter);
 		}
 
@@ -750,8 +749,7 @@ public interface Components {
 		 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
 		 */
 		static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(
-				final Property<T> selectionProperty,
-				BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+				final Property<T> selectionProperty, Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.singleOptionSelect(selectionProperty, itemConverter);
 		}
 

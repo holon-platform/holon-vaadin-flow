@@ -83,7 +83,7 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 	private final Class<? extends T> type;
 	private final Class<ITEM> itemType;
 
-	protected final ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter;
+	protected final ItemConverter<T, ITEM> itemConverter;
 
 	protected Set<ITEM> items = new HashSet<>();
 
@@ -98,7 +98,7 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 	 * @param itemConverter The item converter to use (not null)
 	 */
 	public DefaultItemOptionsModeSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
-			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			ItemConverter<T, ITEM> itemConverter) {
 		super(new RadioButtonGroup<>());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
@@ -161,9 +161,8 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).hasEnabledSupplier(f -> f)
 				.build();
 
-		final Input<T> input = Input.from(itemInput,
-				Converter.from(item -> Result.ok(itemConverter.getValue(component.getDataProvider(), item)),
-						value -> itemConverter.getItem(component.getDataProvider(), value)));
+		final Input<T> input = Input.from(itemInput, Converter.from(item -> Result.ok(itemConverter.getValue(item)),
+				value -> itemConverter.getItem(value).orElse(null)));
 		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
 
 		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,

@@ -15,7 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
@@ -215,7 +216,7 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
 	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
-			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			ItemConverter<T, ITEM> itemConverter) {
 		return new DefaultItemSelectModeSingleSelectInputBuilder<>(type, itemType, itemConverter);
 	}
 
@@ -251,7 +252,7 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			Function<T, Optional<PropertyBox>> itemConverter) {
 		return new DefaultPropertySelectModeSingleSelectInputBuilder<>(selectionProperty, itemConverter);
 	}
 

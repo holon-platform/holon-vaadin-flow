@@ -15,7 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.data;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
@@ -25,16 +26,15 @@ import com.holonplatform.vaadin.flow.data.ItemConverter;
  * 
  * @param <T> Value type
  * @param <ITEM> Item type
- * @param <CONTEXT> Conversion context type
  * 
  * @since 5.2.0
  */
-public class CallbackItemConverter<T, ITEM, CONTEXT> implements ItemConverter<T, ITEM, CONTEXT> {
+public class CallbackItemConverter<T, ITEM> implements ItemConverter<T, ITEM> {
 
-	private final BiFunction<CONTEXT, ITEM, T> toValue;
-	private final BiFunction<CONTEXT, T, ITEM> toItem;
+	private final Function<ITEM, T> toValue;
+	private final Function<T, Optional<ITEM>> toItem;
 
-	public CallbackItemConverter(BiFunction<CONTEXT, ITEM, T> toValue, BiFunction<CONTEXT, T, ITEM> toItem) {
+	public CallbackItemConverter(Function<ITEM, T> toValue, Function<T, Optional<ITEM>> toItem) {
 		super();
 		ObjectUtils.argumentNotNull(toValue, "Conversion to value function must be not null");
 		ObjectUtils.argumentNotNull(toItem, "Conversion to item function must be not null");
@@ -44,20 +44,20 @@ public class CallbackItemConverter<T, ITEM, CONTEXT> implements ItemConverter<T,
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getValue(java.lang.Object, java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getValue(java.lang.Object)
 	 */
 	@Override
-	public T getValue(CONTEXT context, ITEM item) {
-		return toValue.apply(context, item);
+	public T getValue(ITEM item) {
+		return toValue.apply(item);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getItem(java.lang.Object, java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getItem(java.lang.Object)
 	 */
 	@Override
-	public ITEM getItem(CONTEXT context, T value) {
-		return toItem.apply(context, value);
+	public Optional<ITEM> getItem(T value) {
+		return toItem.apply(value);
 	}
 
 }

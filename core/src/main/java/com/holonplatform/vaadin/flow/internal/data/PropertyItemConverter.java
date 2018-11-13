@@ -15,14 +15,15 @@
  */
 package com.holonplatform.vaadin.flow.internal.data;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Function;
 
+import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.Query;
+import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 
 /**
  * {@link ItemConverter} using a {@link Property} to represents the value within a {@link PropertyBox} item type.
@@ -31,10 +32,12 @@ import com.vaadin.flow.data.provider.Query;
  * 
  * @since 5.2.0
  */
-public class PropertyItemConverter<T> implements ItemConverter<T, PropertyBox, DataProvider<PropertyBox, ?>> {
+public class PropertyItemConverter<T> implements ItemConverter<T, PropertyBox> {
+
+	private static final Logger LOGGER = VaadinLogger.create();
 
 	private final Property<T> property;
-	private final BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> toItem;
+	private Function<T, Optional<PropertyBox>> toItemConverter;
 
 	/**
 	 * Constructor.
@@ -47,43 +50,45 @@ public class PropertyItemConverter<T> implements ItemConverter<T, PropertyBox, D
 	/**
 	 * Constructor.
 	 * @param property The property which represents the value (not null)
-	 * @param toItem Optional function to convert a value into the corresponding item
+	 * @param toItemConverter Optional function to convert a value into the corresponding item
 	 */
-	public PropertyItemConverter(Property<T> property,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> toItem) {
+	public PropertyItemConverter(Property<T> property, Function<T, Optional<PropertyBox>> toItemConverter) {
 		super();
 		ObjectUtils.argumentNotNull(property, "Property must be not null");
 		this.property = property;
-		this.toItem = toItem;
+		this.toItemConverter = toItemConverter;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getValue(java.lang.Object, java.lang.Object)
+	/**
+	 * Get the function to use to convert a value into a {@link PropertyBox} type item.
+	 * @return the toItemConverter The function to use to convert a value into a {@link PropertyBox} type item,
+	 *         <code>null</code> if not available
 	 */
-	@Override
-	public T getValue(DataProvider<PropertyBox, ?> context, PropertyBox item) {
-		if (item != null) {
-			return item.getValue(property);
-		}
-		return null;
+	public Function<T, Optional<PropertyBox>> getToItemConverter() {
+		return toItemConverter;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.ItemConverter#getItem(java.lang.Object, java.lang.Object)
+	/**
+	 * Set the function to use to convert a value into a {@link PropertyBox} type item.
+	 * @param toItemConverter the to item converter function to set
 	 */
+	public void setToItemConverter(Function<T, Optional<PropertyBox>> toItemConverter) {
+		this.toItemConverter = toItemConverter;
+	}
+
 	@Override
-	public PropertyBox getItem(DataProvider<PropertyBox, ?> context, T value) {
-		if (toItem != null) {
-			return toItem.apply(context, value);
+	public T getValue(PropertyBox item) {
+		return (item != null) ? item.getValue(property) : null;
+	}
+
+	@Override
+	public Optional<PropertyBox> getItem(T value) {
+		if (toItemConverter != null) {
+			return toItemConverter.apply(value);
 		}
-		if (value != null) {
-			// TODO THIS OPERATION IS HIGHLY INEFFICIENT
-			return context.fetch(new Query<>()).filter(item -> value.equals(item.getValue(property))).findFirst()
-					.orElse(null);
-		}
-		return null;
+		LOGGER.warn(
+				"The value to PropertyBox item conversion logic was not configured, no item will never be returned");
+		return Optional.empty();
 	}
 
 }

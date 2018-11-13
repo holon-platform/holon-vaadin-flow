@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.holonplatform.core.TypedExpression;
@@ -26,6 +26,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
@@ -65,6 +66,8 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 	private final Property<T> selectionProperty;
 
+	private PropertyItemConverter<T> propertyItemConverter;
+
 	/**
 	 * Constructor.
 	 * @param selectionProperty The property to use to represent the selection value (not null)
@@ -76,19 +79,19 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 	/**
 	 * Constructor.
 	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param toItem The function to use to convert a selection value into the corresponding selection item
+	 * @param itemConverter The function to use to convert a selection value into the corresponding selection item
 	 */
 	public DefaultPropertySelectModeSingleSelectInputBuilder(Property<T> selectionProperty,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			Function<T, Optional<PropertyBox>> itemConverter) {
 		this(selectionProperty, new PropertyItemConverter<>(selectionProperty, itemConverter));
 	}
 
 	/**
 	 * Constructor.
-	 * @param itemConverter Item converter to use (not null)
+	 * @param itemConverter the item converter to use (not null)
 	 */
 	protected DefaultPropertySelectModeSingleSelectInputBuilder(Property<T> selectionProperty,
-			ItemConverter<T, PropertyBox, DataProvider<PropertyBox, ?>> itemConverter) {
+			ItemConverter<T, PropertyBox> itemConverter) {
 		super();
 		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
 		this.selectionProperty = selectionProperty;
@@ -100,6 +103,25 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 			}
 			return String.valueOf(item);
 		});
+		if (itemConverter instanceof PropertyItemConverter) {
+			this.propertyItemConverter = (PropertyItemConverter<T>) itemConverter;
+		}
+	}
+
+	/**
+	 * Setup a item converter function if the current item converter is a {@link PropertyItemConverter}, using the
+	 * selection property to retrieve an item.
+	 * @param datastore The datastore
+	 * @param target The query target
+	 * @param propertySet The query projection
+	 */
+	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
+		if (propertyItemConverter != null && propertyItemConverter.getToItemConverter() == null) {
+			propertyItemConverter.setToItemConverter(value -> {
+				return (value == null) ? Optional.empty()
+						: datastore.query(target).filter(QueryFilter.eq(selectionProperty, value)).findOne(propertySet);
+			});
+		}
 	}
 
 	/*
@@ -121,6 +143,7 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 					return null;
 				});
 		builder.dataSource(datastoreDataProvider);
+		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
 		return new DefaultDatastorePropertySelectModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
@@ -137,6 +160,7 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		final DatastoreDataProvider<PropertyBox, String> datastoreDataProvider = DatastoreDataProvider.create(datastore,
 				target, DatastoreDataProvider.asPropertySet(properties), filterConverter);
 		builder.dataSource(datastoreDataProvider);
+		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
 		return new DefaultDatastorePropertySelectModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 

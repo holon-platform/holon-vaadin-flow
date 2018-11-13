@@ -58,7 +58,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * Input component representation, i.e. a UI component that has a user-editable value.
@@ -386,7 +385,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
 	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type, Class<ITEM> itemType,
-			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			ItemConverter<T, ITEM> itemConverter) {
 		return SelectModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
 	}
 
@@ -409,7 +408,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			Function<T, Optional<PropertyBox>> itemConverter) {
 		return SelectModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
 	}
 
@@ -445,7 +444,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
-			Class<ITEM> itemType, ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
 		return OptionsModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
 	}
 
@@ -470,7 +469,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			Function<T, Optional<PropertyBox>> itemConverter) {
 		return OptionsModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
 	}
 

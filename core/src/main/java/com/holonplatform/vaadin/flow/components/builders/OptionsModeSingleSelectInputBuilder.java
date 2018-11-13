@@ -15,7 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
@@ -171,7 +172,7 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
-			ItemConverter<T, ITEM, DataProvider<ITEM, ?>> itemConverter) {
+			ItemConverter<T, ITEM> itemConverter) {
 		return new DefaultItemOptionsModeSingleSelectInputBuilder<>(type, itemType, itemConverter);
 	}
 
@@ -207,7 +208,7 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
-			BiFunction<DataProvider<PropertyBox, ?>, T, PropertyBox> itemConverter) {
+			Function<T, Optional<PropertyBox>> itemConverter) {
 		return new DefaultPropertyOptionsModeSingleSelectInputBuilder<>(selectionProperty, itemConverter);
 	}
 

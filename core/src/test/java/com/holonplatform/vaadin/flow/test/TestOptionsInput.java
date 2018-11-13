@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -85,17 +86,17 @@ public class TestOptionsInput {
 
 		ItemOptionsModeSingleSelectInputBuilder<String, Integer> builder2 = OptionsModeSingleSelectInputBuilder.create(
 				String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
 		builder2 = Input.singleOptionSelect(String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
 		builder2 = Components.input.singleOptionSelect(String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
@@ -122,17 +123,17 @@ public class TestOptionsInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = OptionsModeSingleSelectInputBuilder.create(PROPERTY, (ctx, value) -> null);
+		builder = OptionsModeSingleSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.singleOptionSelect(PROPERTY, (ctx, value) -> null);
+		builder = Input.singleOptionSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.singleOptionSelect(PROPERTY, (ctx, value) -> null);
+		builder = Components.input.singleOptionSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -576,7 +577,7 @@ public class TestOptionsInput {
 
 		SingleSelect<String> input2 = Input
 				.singleOptionSelect(String.class, BeanTest1.class,
-						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
+						ItemConverter.create(item -> item.getCode(), value -> Optional.of(new BeanTest1(value))))
 				.dataSource(datastore, TARGET1).build();
 		assertNotNull(input2);
 

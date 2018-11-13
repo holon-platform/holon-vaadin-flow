@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -86,17 +87,17 @@ public class TestSelectInput {
 
 		ItemSelectModeSingleSelectInputBuilder<String, Integer> builder2 = SelectModeSingleSelectInputBuilder.create(
 				String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
 		builder2 = Input.singleSelect(String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
 		builder2 = Components.input.singleSelect(String.class, Integer.class,
-				ItemConverter.create((ctx, item) -> item.toString(), (ctx, value) -> Integer.valueOf(value)));
+				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
@@ -123,17 +124,17 @@ public class TestSelectInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = SelectModeSingleSelectInputBuilder.create(PROPERTY, (ctx, value) -> null);
+		builder = SelectModeSingleSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.singleSelect(PROPERTY, (ctx, value) -> null);
+		builder = Input.singleSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.singleSelect(PROPERTY, (ctx, value) -> null);
+		builder = Components.input.singleSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -612,6 +613,52 @@ public class TestSelectInput {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testItemsDataProvider() {
+
+		SingleSelect<String> input = Input.singleSelect(String.class).items(Arrays.asList("one", "two")).build();
+
+		DataProvider<String, ?> dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		Set<String> items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+		input = Input.singleSelect(String.class).items("one", "two").build();
+
+		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+		input = Input.singleSelect(String.class).addItem("one").addItem("two").build();
+
+		dp = ((ComboBox<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+	}
+
+	@Test
+	public void testBeanDataProvider() {
+
+		// SingleSelect<String> input = Input.singleSelect(String.class, TestBean.class).
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testDataProvider() {
 
 		SingleSelect<String> input = Input.singleSelect(String.class)
@@ -747,7 +794,7 @@ public class TestSelectInput {
 
 		SingleSelect<String> input2 = Input
 				.singleSelect(String.class, BeanTest1.class,
-						ItemConverter.create((ctx, item) -> item.getCode(), (ctx, value) -> new BeanTest1(value)))
+						ItemConverter.create(item -> item.getCode(), value -> Optional.of(new BeanTest1(value))))
 				.dataSource(datastore, TARGET1, f -> CODE.contains(f, false)).build();
 		assertNotNull(input2);
 

@@ -15,59 +15,56 @@
  */
 package com.holonplatform.vaadin.flow.data;
 
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.vaadin.flow.internal.data.CallbackItemConverter;
 
 /**
- * A converter interface to obtain an item from a different type value.
+ * Item to value converter.
  * 
  * @param <T> Value type
  * @param <ITEM> Item type
- * @param <CONTEXT> Conversion context type
  * 
  * @since 5.2.0
  */
-public interface ItemConverter<T, ITEM, CONTEXT> {
+public interface ItemConverter<T, ITEM> {
 
 	/**
 	 * Convert an <code>item</code> instance into the required value type.
-	 * @param context Conversion context
 	 * @param item Item instance
 	 * @return The converted value
 	 */
-	T getValue(CONTEXT context, ITEM item);
+	T getValue(ITEM item);
 
 	/**
-	 * Convert a <code>value</code> into an item instance.
-	 * @param context Conversion context
+	 * Convert a <code>value</code> into an item instance, if available.
 	 * @param value The value to convert
-	 * @return The item instance
+	 * @return Optional item instance
 	 */
-	ITEM getItem(CONTEXT context, T value);
+	Optional<ITEM> getItem(T value);
+
+	// ------- builders
 
 	/**
-	 * Create a new {@link ItemConverter} using given function to perform conversions.
+	 * Create a new {@link ItemConverter} using given functions to perform conversions.
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
-	 * @param <CONTEXT> Conversion context type
-	 * @param toValue Conversion to value function (not null)
-	 * @param toItem Conversion to item function (not null)
+	 * @param toValue Function to convert the item into a value (not null)
+	 * @param toItem Function to convert the value into an item, if available (not null)
 	 * @return A new {@link ItemConverter}
 	 */
-	static <T, ITEM, CONTEXT> ItemConverter<T, ITEM, CONTEXT> create(BiFunction<CONTEXT, ITEM, T> toValue,
-			BiFunction<CONTEXT, T, ITEM> toItem) {
+	static <T, ITEM> ItemConverter<T, ITEM> create(Function<ITEM, T> toValue, Function<T, Optional<ITEM>> toItem) {
 		return new CallbackItemConverter<>(toValue, toItem);
 	}
 
 	/**
 	 * Create a new {@link ItemConverter} for consistent item and value types, which do not perform any conversion.
 	 * @param <T> Value and item type
-	 * @param <CONTEXT> Conversion context type
-	 * @return A identity new {@link ItemConverter}
+	 * @return A new identity {@link ItemConverter}
 	 */
-	static <T, CONTEXT> ItemConverter<T, T, CONTEXT> identity() {
-		return create((ctx, item) -> item, (ctx, value) -> value);
+	static <T> ItemConverter<T, T> identity() {
+		return create(item -> item, value -> Optional.ofNullable(value));
 	}
 
 }
