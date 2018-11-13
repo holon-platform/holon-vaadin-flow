@@ -18,9 +18,13 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.holonplatform.core.datastore.DataTarget;
+import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.query.QueryFilter;
+import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemOptionsModeSingleSelectInputBuilder;
@@ -145,6 +149,20 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	public interface PropertyOptionsModeSingleSelectInputBuilder<T>
 			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, PropertyOptionsModeSingleSelectInputBuilder<T>>,
 			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>> {
+
+		/**
+		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
+		 * given {@link DataTarget} as query target.
+		 * <p>
+		 * The query projection property set will be represented by the selection property only.
+		 * </p>
+		 * @param datastore The {@link Datastore} to use (not null)
+		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * @return An extended builder which allow further data provider configuration, for example to add fixed
+		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @see DatastoreDataProviderConfigurator
+		 */
+		DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
 
 	}
 

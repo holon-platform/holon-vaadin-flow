@@ -650,13 +650,6 @@ public class TestSelectInput {
 
 	}
 
-	@Test
-	public void testBeanDataProvider() {
-
-		// SingleSelect<String> input = Input.singleSelect(String.class, TestBean.class).
-
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDataProvider() {
@@ -906,6 +899,19 @@ public class TestSelectInput {
 
 		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
 		assertEquals(0, pitems.size());
+
+		// single property
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1).build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+		assertEquals(2, dp4.size(new Query<>()));
+		pitems = dp4.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
 
 	}
 

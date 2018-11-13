@@ -503,6 +503,45 @@ public class TestOptionsInput {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testItemsDataProvider() {
+
+		SingleSelect<String> input = Input.singleOptionSelect(String.class).items(Arrays.asList("one", "two")).build();
+
+		DataProvider<String, ?> dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		Set<String> items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+		input = Input.singleOptionSelect(String.class).items("one", "two").build();
+
+		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+		input = Input.singleOptionSelect(String.class).addItem("one").addItem("two").build();
+
+		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		assertNotNull(dp);
+		assertEquals(2, dp.size(new Query<>()));
+
+		items = dp.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, items.size());
+		assertTrue(items.contains("one"));
+		assertTrue(items.contains("two"));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testDataProvider() {
 
 		SingleSelect<String> input = Input.singleOptionSelect(String.class)
@@ -652,6 +691,19 @@ public class TestOptionsInput {
 		PropertyBox itm = dp4.fetch(new Query<>()).findFirst().orElse(null);
 		assertNotNull(itm);
 		assertEquals("B", itm.getValue(CODE));
+
+		// single property
+
+		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1).build();
+
+		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
+				.getDataProvider();
+		assertNotNull(dp4);
+		assertEquals(2, dp4.size(new Query<>()));
+		pitems = dp4.fetch(new Query<>()).collect(Collectors.toSet());
+		assertEquals(2, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
 
 	}
 

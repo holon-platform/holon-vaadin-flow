@@ -190,6 +190,36 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 		<P extends Property> DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
 				DataTarget<?> target, Iterable<P> properties);
 
+		/**
+		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
+		 * given {@link DataTarget} as query target.
+		 * <p>
+		 * The query projection property set will be represented by the selection property only.
+		 * </p>
+		 * @param datastore The {@link Datastore} to use (not null)
+		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * @return An extended builder which allow further data provider configuration, for example to add fixed
+		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @see DatastoreDataProviderConfigurator
+		 */
+		DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
+
+		/**
+		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
+		 * given {@link DataTarget} as query target.
+		 * <p>
+		 * The query projection property set will be represented by the selection property only.
+		 * </p>
+		 * @param datastore The {@link Datastore} to use (not null)
+		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
+		 * @return An extended builder which allow further data provider configuration, for example to add fixed
+		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @see DatastoreDataProviderConfigurator
+		 */
+		DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target,
+				Function<String, QueryFilter> filterConverter);
+
 	}
 
 	/**

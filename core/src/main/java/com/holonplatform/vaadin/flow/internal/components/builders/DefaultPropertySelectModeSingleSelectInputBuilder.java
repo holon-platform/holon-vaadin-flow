@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -162,6 +163,30 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		builder.dataSource(datastoreDataProvider);
 		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
 		return new DefaultDatastorePropertySelectModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.
+	 * PropertySelectModeSingleSelectInputBuilder#dataSource(com.holonplatform.core.datastore.Datastore,
+	 * com.holonplatform.core.datastore.DataTarget)
+	 */
+	@Override
+	public DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
+			DataTarget<?> target) {
+		return dataSource(datastore, target, Collections.singletonList(selectionProperty));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.
+	 * PropertySelectModeSingleSelectInputBuilder#dataSource(com.holonplatform.core.datastore.Datastore,
+	 * com.holonplatform.core.datastore.DataTarget, java.util.function.Function)
+	 */
+	@Override
+	public DatastorePropertySelectModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target,
+			Function<String, QueryFilter> filterConverter) {
+		return dataSource(datastore, target, filterConverter, Collections.singletonList(selectionProperty));
 	}
 
 	/*
