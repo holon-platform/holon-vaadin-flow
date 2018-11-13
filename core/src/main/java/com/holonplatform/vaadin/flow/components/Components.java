@@ -34,6 +34,11 @@ import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator.Base
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.ConfirmDialogBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.MessageDialogBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogBuilder;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogCallback;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator.BaseFormLayoutConfigurator;
@@ -279,7 +284,51 @@ public interface Components {
 		return ContextMenuBuilder.create();
 	}
 
-	// TODO tabs, dialogs
+	// Dialogs
+
+	/**
+	 * Dialog builders provider.
+	 */
+	static interface dialog {
+
+		/**
+		 * Get a builder to create a generic message dialog.
+		 * @return A new {@link MessageDialogBuilder}
+		 */
+		static MessageDialogBuilder message() {
+			return DialogBuilder.message();
+		}
+
+		/**
+		 * Get a builder to create a message dialog with a <em>OK</em> button in the dialog toolbar which can be used to
+		 * close the dialog.
+		 * <p>
+		 * The default <em>OK</em> button message localization code is {@link #DEFAULT_OK_BUTTON_MESSAGE_CODE}.
+		 * </p>
+		 * @return A new {@link ConfirmDialogBuilder}
+		 */
+		static ConfirmDialogBuilder confirm() {
+			return DialogBuilder.confirm();
+		}
+
+		/**
+		 * Get a builder to create a question dialog, with a <em>confirm</em> button and a <em>deny</em> button in the
+		 * dialog toolbar which will trigger the given <code>questionDialogCallback</code> to react to the user choice.
+		 * <p>
+		 * The default <em>confirm</em> button message localization code is
+		 * {@link #DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE}. The default <em>deny</em> button message localization code is
+		 * {@link #DEFAULT_DENY_BUTTON_MESSAGE_CODE}.
+		 * </p>
+		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
+		 * @return A new {@link QuestionDialogBuilder}
+		 */
+		static QuestionDialogBuilder question(QuestionDialogCallback questionDialogCallback) {
+			return DialogBuilder.question(questionDialogCallback);
+		}
+
+	}
+
+	// TODO tabs
 
 	// /**
 	// * Gets a builder to create a {@link TabSheet}.
@@ -287,35 +336,6 @@ public interface Components {
 	// */
 	// static TabsBuilder<TabSheet> tabSheet() {
 	// return new TabSheetBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create an {@link Accordion}.
-	// * @return Accordion builder
-	// */
-	// static TabsBuilder<Accordion> accordion() {
-	// return new AccordionBuilder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create and open a {@link Dialog} window. The dialog will present by default a single
-	// * <em>ok</em> button.
-	// * @return DialogBuilder
-	// */
-	// static DialogBuilder dialog() {
-	// return Dialog.builder();
-	// }
-	//
-	// /**
-	// * Gets a builder to create and open a question {@link Dialog} window. The dialog will present by default a
-	// * <em>yes</em> and a <em>no</em> button. Use
-	// * {@link QuestionDialogBuilder#callback(com.holonplatform.vaadin.components.Dialog.QuestionCallback)} to handle
-	// the
-	// * user selected answer.
-	// * @return QuestionDialogBuilder
-	// */
-	// static QuestionDialogBuilder questionDialog() {
-	// return Dialog.question();
 	// }
 	//
 
