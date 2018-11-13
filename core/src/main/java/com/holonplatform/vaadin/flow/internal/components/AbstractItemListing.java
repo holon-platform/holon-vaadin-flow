@@ -51,9 +51,9 @@ import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
-import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
@@ -61,9 +61,9 @@ import com.holonplatform.vaadin.flow.internal.components.builders.AbstractCompon
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
-import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingRefreshEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
@@ -1161,19 +1161,19 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	// --------- configurator
 
-	static abstract class AbstractItemListingConfigurator<T, P, L extends AbstractItemListing<T, P>, C extends ItemListingConfigurator<T, P, C> & HasDataProviderConfigurator<T, C>>
+	static abstract class AbstractItemListingConfigurator<T, P, L extends ItemListing<T, P>, I extends AbstractItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C> & HasDataProviderConfigurator<T, C>>
 			extends AbstractComponentConfigurator<Grid<T>, C>
-			implements ItemListingConfigurator<T, P, C>, HasDataProviderConfigurator<T, C> {
+			implements ItemListingConfigurator<T, P, L, C>, HasDataProviderConfigurator<T, C> {
 
 		protected final DefaultHasSizeConfigurator sizeConfigurator;
 		protected final DefaultHasStyleConfigurator styleConfigurator;
 		protected final DefaultHasEnabledConfigurator enabledConfigurator;
 
-		protected final L instance;
+		protected final I instance;
 
 		protected Set<T> items = new HashSet<>();
 
-		private final List<ItemListingRefreshListener<T, P>> refreshListeners = new LinkedList<>();
+		private final List<ItemEventListener<L, T, ItemEvent<L, T>>> refreshListeners = new LinkedList<>();
 
 		private boolean editable;
 		private boolean editorBuffered;
@@ -1183,7 +1183,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		private Consumer<EditableItemListingSection<P>> headerConfigurator;
 		private Consumer<EditableItemListingSection<P>> footerConfigurator;
 
-		public AbstractItemListingConfigurator(L instance) {
+		public AbstractItemListingConfigurator(I instance) {
 			super(instance.getGrid());
 			this.instance = instance;
 			this.sizeConfigurator = new DefaultHasSizeConfigurator(instance.getGrid());
@@ -1194,11 +1194,13 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public abstract C getConfigurator();
 
+		protected abstract L getItemListing();
+
 		/**
 		 * Get the listing instance.
 		 * @return the listing instance
 		 */
-		protected L getInstance() {
+		protected I getInstance() {
 			return instance;
 		}
 
@@ -1206,7 +1208,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * Configure the listing.
 		 * @return the listing
 		 */
-		protected L configureAndBuild() {
+		protected I configureAndBuild() {
 
 			// items
 			if (!items.isEmpty()) {
@@ -1216,8 +1218,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			// refresh listeners
 			if (instance.getGrid().getDataProvider() != null) {
 				refreshListeners.forEach(l -> instance.getGrid().getDataProvider().addDataProviderListener(e -> {
-					l.onRefreshEvent(new DefaultItemListingRefreshEvent<>(instance,
-							(e instanceof DataRefreshEvent) ? ((DataRefreshEvent<T>) e).getItem() : null));
+					l.onItemEvent(new DefaultItemEvent<>(getItemListing(),
+							() -> (e instanceof DataRefreshEvent) ? ((DataRefreshEvent<T>) e).getItem() : null));
 				}));
 			}
 
@@ -1756,12 +1758,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
 		 */
 		@Override
-		public C withItemClickListener(
-				ClickEventListener<ItemListing<T, P>, ItemClickEvent<ItemListing<T, P>, T>> listener) {
+		public C withItemClickListener(ClickEventListener<L, ItemClickEvent<L, T>> listener) {
 			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
 			instance.getGrid().addItemClickListener(e -> {
-				listener.onClickEvent(
-						new DefaultItemListingClickEvent<>(instance, e.isFromClient(), instance, () -> e.getItem()));
+				listener.onClickEvent(new DefaultItemListingClickEvent<>(getItemListing(), e.isFromClient(), instance,
+						() -> e.getItem()));
 			});
 			return getConfigurator();
 		}
@@ -1769,10 +1770,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
-		 * holonplatform.vaadin.flow.components.events.ItemListingRefreshListener)
+		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
-		public C withItemRefreshListener(ItemListingRefreshListener<T, P> listener) {
+		public C withItemRefreshListener(ItemEventListener<L, T, ItemEvent<L, T>> listener) {
 			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
 			refreshListeners.add(listener);
 			return getConfigurator();
@@ -1816,7 +1817,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> contextMenu() {
+		public ItemListingContextMenuBuilder<T, P, L, C> contextMenu() {
 			return new DefaultItemListingContextMenuBuilder<>(instance, instance.getGrid().addContextMenu(),
 					getConfigurator());
 		}
@@ -1933,9 +1934,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	}
 
-	static class DefaultItemListingContextMenuBuilder<T, P, C extends ItemListingConfigurator<T, P, C>>
-			extends AbstractComponentConfigurator<GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>>
-			implements ItemListingContextMenuBuilder<T, P, C> {
+	static class DefaultItemListingContextMenuBuilder<T, P, L extends ItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C>>
+			extends AbstractComponentConfigurator<GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>>
+			implements ItemListingContextMenuBuilder<T, P, L, C> {
 
 		private final ItemListing<T, P> itemListing;
 		private final C parentBuilder;
@@ -1955,7 +1956,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#openOnClick(boolean)
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> openOnClick(boolean openOnClick) {
+		public ItemListingContextMenuBuilder<T, P, L, C> openOnClick(boolean openOnClick) {
 			getComponent().setOpenOnClick(openOnClick);
 			return this;
 		}
@@ -1967,7 +1968,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * .flow.component.ComponentEventListener)
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> withOpenedChangeListener(
+		public ItemListingContextMenuBuilder<T, P, L, C> withOpenedChangeListener(
 				ComponentEventListener<OpenedChangeEvent<GridContextMenu<T>>> listener) {
 			getComponent().addOpenedChangeListener(listener);
 			return this;
@@ -1978,7 +1979,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> styleNames(String... styleNames) {
+		public ItemListingContextMenuBuilder<T, P, L, C> styleNames(String... styleNames) {
 			styleConfigurator.styleNames(styleNames);
 			return this;
 		}
@@ -1988,7 +1989,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> styleName(String styleName) {
+		public ItemListingContextMenuBuilder<T, P, L, C> styleName(String styleName) {
 			styleConfigurator.styleName(styleName);
 			return this;
 		}
@@ -1998,7 +1999,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> removeStyleName(String styleName) {
+		public ItemListingContextMenuBuilder<T, P, L, C> removeStyleName(String styleName) {
 			styleConfigurator.removeStyleName(styleName);
 			return this;
 		}
@@ -2009,7 +2010,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, P, C> replaceStyleName(String styleName) {
+		public ItemListingContextMenuBuilder<T, P, L, C> replaceStyleName(String styleName) {
 			styleConfigurator.replaceStyleName(styleName);
 			return this;
 		}
@@ -2021,7 +2022,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * i18n.Localizable)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>> withItem(
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
 				Localizable text) {
 			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
 			final MenuItem item = getComponent().addItem(LocalizationContext.translate(text, true), handler);
@@ -2035,7 +2036,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * Component)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, C>> withItem(
+		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
 				Component component) {
 			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
 			final MenuItem item = getComponent().addItem(component, handler);
@@ -2058,9 +2059,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 		 */
 		@Override
-		protected ItemListingContextMenuBuilder<T, P, C> getConfigurator() {
+		protected ItemListingContextMenuBuilder<T, P, L, C> getConfigurator() {
 			return this;
 		}
+
 	}
 
 	private static class ItemListingContextMenuItemBuilder<T, P, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B>>
@@ -2173,10 +2175,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * 
 	 * @param <T> Item type
 	 * @param <P> Item property type
+	 * @param <L> Item listing type
 	 * @param <B> Parent builder type
 	 */
-	static class DefaultItemListingColumnBuilder<T, P, B extends ItemListingConfigurator<T, P, B>>
-			implements ItemListingColumnBuilder<T, P, B> {
+	static class DefaultItemListingColumnBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingConfigurator<T, P, L, B>>
+			implements ItemListingColumnBuilder<T, P, L, B> {
 
 		private final P property;
 		private final AbstractItemListing<T, P> listing;
@@ -2195,7 +2198,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * resizable(boolean)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> resizable(boolean resizable) {
+		public ItemListingColumnBuilder<T, P, L, B> resizable(boolean resizable) {
 			listing.getColumnConfiguration(property).setResizable(resizable);
 			return this;
 		}
@@ -2206,7 +2209,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * visible(boolean)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> visible(boolean visible) {
+		public ItemListingColumnBuilder<T, P, L, B> visible(boolean visible) {
 			listing.getColumnConfiguration(property).setVisible(visible);
 			return this;
 		}
@@ -2217,7 +2220,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * frozen(boolean)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> frozen(boolean frozen) {
+		public ItemListingColumnBuilder<T, P, L, B> frozen(boolean frozen) {
 			listing.getColumnConfiguration(property).setFrozen(frozen);
 			return this;
 		}
@@ -2229,7 +2232,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * (java.lang.String)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> width(String width) {
+		public ItemListingColumnBuilder<T, P, L, B> width(String width) {
 			listing.getColumnConfiguration(property).setWidth(width);
 			return this;
 		}
@@ -2240,7 +2243,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * flexGrow(int)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> flexGrow(int flexGrow) {
+		public ItemListingColumnBuilder<T, P, L, B> flexGrow(int flexGrow) {
 			listing.getColumnConfiguration(property).setFlexGrow(flexGrow);
 			return this;
 		}
@@ -2251,7 +2254,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * sortComparator(java.util.Comparator)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> sortComparator(Comparator<T> comparator) {
+		public ItemListingColumnBuilder<T, P, L, B> sortComparator(Comparator<T> comparator) {
 			listing.getColumnConfiguration(property).setComparator(comparator);
 			return this;
 		}
@@ -2262,7 +2265,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * sortUsing(java.util.List)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> sortUsing(List<P> sortProperties) {
+		public ItemListingColumnBuilder<T, P, L, B> sortUsing(List<P> sortProperties) {
 			listing.getColumnConfiguration(property).setSortProperties(sortProperties);
 			return this;
 		}
@@ -2273,7 +2276,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * sortProvider(java.util.function.Function)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> sortProvider(
+		public ItemListingColumnBuilder<T, P, L, B> sortProvider(
 				Function<com.holonplatform.core.query.QuerySort.SortDirection, Stream<ItemSort<P>>> sortProvider) {
 			listing.getColumnConfiguration(property).setSortOrderProvider(direction -> {
 				return sortProvider.apply(AbstractItemListing.convert(direction))
@@ -2288,7 +2291,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * header(com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> header(Localizable header) {
+		public ItemListingColumnBuilder<T, P, L, B> header(Localizable header) {
 			listing.getColumnConfiguration(property).setHeaderText(header);
 			return this;
 		}
@@ -2299,7 +2302,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * headerComponent(com.vaadin.flow.component.Component)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> headerComponent(Component header) {
+		public ItemListingColumnBuilder<T, P, L, B> headerComponent(Component header) {
 			listing.getColumnConfiguration(property).setHeaderComponent(header);
 			return this;
 		}
@@ -2310,7 +2313,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * displayAsFirst()
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> displayAsFirst() {
+		public ItemListingColumnBuilder<T, P, L, B> displayAsFirst() {
 			listing.setDisplayAsFirst(property);
 			return this;
 		}
@@ -2321,7 +2324,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * displayAsLast()
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> displayAsLast() {
+		public ItemListingColumnBuilder<T, P, L, B> displayAsLast() {
 			listing.setDisplayAsLast(property);
 			return this;
 		}
@@ -2332,7 +2335,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * displayBefore(java.lang.Object)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> displayBefore(P beforeProperty) {
+		public ItemListingColumnBuilder<T, P, L, B> displayBefore(P beforeProperty) {
 			listing.setDisplayBefore(property, beforeProperty);
 			return this;
 		}
@@ -2343,7 +2346,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		 * displayAfter(java.lang.Object)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, P, B> displayAfter(P afterProperty) {
+		public ItemListingColumnBuilder<T, P, L, B> displayAfter(P afterProperty) {
 			listing.setDisplayAfter(property, afterProperty);
 			return this;
 		}

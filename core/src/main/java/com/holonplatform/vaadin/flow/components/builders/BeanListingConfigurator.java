@@ -28,7 +28,7 @@ import com.holonplatform.vaadin.flow.components.Input;
  * @since 5.2.0
  */
 public interface BeanListingConfigurator<T, C extends BeanListingConfigurator<T, C>>
-		extends ItemListingBuilder<T, String, BeanListing<T>, C> {
+		extends ItemListingConfigurator<T, String, BeanListing<T>, C> {
 
 	/**
 	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.

@@ -41,12 +41,12 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder.DatastoreBeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
-import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
+import com.holonplatform.vaadin.flow.components.events.ItemEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
@@ -259,12 +259,22 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 * 
 	 * @param <T> Bean type
 	 */
-	public static class DefaultBeanListingBuilder<T>
-			extends AbstractItemListingConfigurator<T, String, DefaultBeanListing<T>, BeanListingBuilder<T>>
+	public static class DefaultBeanListingBuilder<T> extends
+			AbstractItemListingConfigurator<T, String, BeanListing<T>, DefaultBeanListing<T>, BeanListingBuilder<T>>
 			implements BeanListingBuilder<T> {
 
 		public DefaultBeanListingBuilder(Class<T> beanType) {
 			super(new DefaultBeanListing<>(beanType));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
+		 * getItemListing()
+		 */
+		@Override
+		protected BeanListing<T> getItemListing() {
+			return getInstance();
 		}
 
 		/*
@@ -301,7 +311,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * .function.ValueProvider)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, String, BeanListingBuilder<T>> withComponentColumn(
+		public ItemListingColumnBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> withComponentColumn(
 				ValueProvider<T, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
 			return new DefaultItemListingColumnBuilder<>(getInstance().addComponentColumnProperty(), getInstance(),
@@ -799,7 +809,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<T, String, DatastoreBeanListingBuilder<T>> contextMenu() {
+		public ItemListingContextMenuBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> contextMenu() {
 			return new DefaultItemListingContextMenuBuilder<>(builder.getInstance(),
 					builder.getInstance().getGrid().addContextMenu(), this);
 		}
@@ -913,7 +923,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * .function.ValueProvider)
 		 */
 		@Override
-		public ItemListingColumnBuilder<T, String, DatastoreBeanListingBuilder<T>> withComponentColumn(
+		public ItemListingColumnBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> withComponentColumn(
 				ValueProvider<T, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
 			return new DefaultItemListingColumnBuilder<>(builder.getInstance().addComponentColumnProperty(),
@@ -927,7 +937,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withItemClickListener(
-				ClickEventListener<ItemListing<T, String>, ItemClickEvent<ItemListing<T, String>, T>> listener) {
+				ClickEventListener<BeanListing<T>, ItemClickEvent<BeanListing<T>, T>> listener) {
 			builder.withItemClickListener(listener);
 			return this;
 		}
@@ -935,10 +945,11 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
-		 * holonplatform.vaadin.flow.components.events.ItemListingRefreshListener)
+		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
-		public DatastoreBeanListingBuilder<T> withItemRefreshListener(ItemListingRefreshListener<T, String> listener) {
+		public DatastoreBeanListingBuilder<T> withItemRefreshListener(
+				ItemEventListener<BeanListing<T>, T, ItemEvent<BeanListing<T>, T>> listener) {
 			builder.withItemRefreshListener(listener);
 			return this;
 		}

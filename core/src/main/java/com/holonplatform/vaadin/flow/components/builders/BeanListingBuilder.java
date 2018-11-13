@@ -26,7 +26,8 @@ import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder.Data
  * @since 5.2.0
  */
 public interface BeanListingBuilder<T> extends BeanListingConfigurator<T, BeanListingBuilder<T>>,
-		HasBeanDatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>, BeanListingBuilder<T>> {
+		HasBeanDatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>, BeanListingBuilder<T>>,
+		ItemListingBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> {
 
 	/**
 	 * {@link BeanListing} builder with {@link DatastoreDataProviderConfigurator} support.
@@ -36,7 +37,8 @@ public interface BeanListingBuilder<T> extends BeanListingConfigurator<T, BeanLi
 	 * @since 5.2.0
 	 */
 	public interface DatastoreBeanListingBuilder<T> extends BeanListingConfigurator<T, DatastoreBeanListingBuilder<T>>,
-			DatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>> {
+			DatastoreDataProviderConfigurator<T, DatastoreBeanListingBuilder<T>>,
+			ItemListingBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> {
 
 	}
 

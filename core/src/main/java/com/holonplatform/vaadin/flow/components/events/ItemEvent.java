@@ -26,8 +26,8 @@ package com.holonplatform.vaadin.flow.components.events;
 public interface ItemEvent<S, T> extends Event<S> {
 
 	/**
-	 * Gets the clicked item.
-	 * @return the clicked item
+	 * Gets the item.
+	 * @return the item (may be null)
 	 */
 	T getItem();
 

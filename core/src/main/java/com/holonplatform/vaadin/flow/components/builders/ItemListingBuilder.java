@@ -28,7 +28,7 @@ import com.holonplatform.vaadin.flow.components.ItemListing;
  * @since 5.2.0
  */
 public interface ItemListingBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingBuilder<T, P, L, B>>
-		extends ItemListingConfigurator<T, P, B> {
+		extends ItemListingConfigurator<T, P, L, B> {
 
 	/**
 	 * Build the {@link ItemListing}, displaying all the columns which corresponds to the configured properties.

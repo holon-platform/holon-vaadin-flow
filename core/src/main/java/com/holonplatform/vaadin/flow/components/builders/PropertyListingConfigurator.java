@@ -32,7 +32,7 @@ import com.vaadin.flow.component.Component;
  * @since 5.2.0
  */
 public interface PropertyListingConfigurator<C extends PropertyListingConfigurator<C>>
-		extends ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, C> {
+		extends ItemListingConfigurator<PropertyBox, Property<?>, PropertyListing, C> {
 
 	/**
 	 * Add a column which contents will be rendered as a {@link Component} using given {@link VirtualProperty}.
@@ -44,7 +44,8 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
 	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
 	 */
-	ItemListingColumnBuilder<PropertyBox, Property<?>, C> withComponentColumn(VirtualProperty<Component> property);
+	ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, C> withComponentColumn(
+			VirtualProperty<Component> property);
 
 	/**
 	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.

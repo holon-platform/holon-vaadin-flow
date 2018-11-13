@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
@@ -25,7 +26,8 @@ import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.
  * @since 5.2.0
  */
 public interface PropertyListingBuilder extends PropertyListingConfigurator<PropertyListingBuilder>,
-		HasPropertySetDatastoreDataProviderConfigurator<DatastorePropertyListingBuilder, PropertyListingBuilder> {
+		HasPropertySetDatastoreDataProviderConfigurator<DatastorePropertyListingBuilder, PropertyListingBuilder>,
+		ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> {
 
 	/**
 	 * {@link PropertyListing} builder with {@link DatastoreDataProviderConfigurator} support.
@@ -34,7 +36,8 @@ public interface PropertyListingBuilder extends PropertyListingConfigurator<Prop
 	 */
 	public interface DatastorePropertyListingBuilder
 			extends PropertyListingConfigurator<DatastorePropertyListingBuilder>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyListingBuilder> {
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyListingBuilder>,
+			ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> {
 
 	}
 

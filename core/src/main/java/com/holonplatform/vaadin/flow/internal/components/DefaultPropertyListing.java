@@ -39,13 +39,13 @@ import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
-import com.holonplatform.vaadin.flow.components.events.ItemListingRefreshListener;
+import com.holonplatform.vaadin.flow.components.events.ItemEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
@@ -302,11 +302,21 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 	 * Default {@link PropertyListingBuilder} implementation.
 	 */
 	public static class DefaultPropertyListingBuilder extends
-			AbstractItemListingConfigurator<PropertyBox, Property<?>, DefaultPropertyListing, PropertyListingBuilder>
+			AbstractItemListingConfigurator<PropertyBox, Property<?>, PropertyListing, DefaultPropertyListing, PropertyListingBuilder>
 			implements PropertyListingBuilder {
 
 		public <P extends Property<?>> DefaultPropertyListingBuilder(Iterable<P> properties) {
 			super(new DefaultPropertyListing(properties));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
+		 * getItemListing()
+		 */
+		@Override
+		protected PropertyListing getItemListing() {
+			return getInstance();
 		}
 
 		/*
@@ -326,7 +336,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * .function.ValueProvider)
 		 */
 		@Override
-		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListingBuilder> withComponentColumn(
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
 				ValueProvider<PropertyBox, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
 			return withComponentColumn(VirtualProperty.create(Component.class, item -> valueProvider.apply(item)));
@@ -338,7 +348,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * holonplatform.core.property.VirtualProperty)
 		 */
 		@Override
-		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListingBuilder> withComponentColumn(
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
 				VirtualProperty<Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
 			getInstance().addPropertyColumn(property);
@@ -417,7 +427,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * holonplatform.core.property.VirtualProperty)
 		 */
 		@Override
-		public ItemListingColumnBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> withComponentColumn(
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withComponentColumn(
 				VirtualProperty<Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
 			builder.getInstance().addPropertyColumn(property);
@@ -431,7 +441,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * .function.ValueProvider)
 		 */
 		@Override
-		public ItemListingColumnBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> withComponentColumn(
+		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withComponentColumn(
 				ValueProvider<PropertyBox, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
 			return withComponentColumn(VirtualProperty.create(Component.class, item -> valueProvider.apply(item)));
@@ -851,7 +861,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withItemClickListener(
-				ClickEventListener<ItemListing<PropertyBox, Property<?>>, ItemClickEvent<ItemListing<PropertyBox, Property<?>>, PropertyBox>> listener) {
+				ClickEventListener<PropertyListing, ItemClickEvent<PropertyListing, PropertyBox>> listener) {
 			builder.withItemClickListener(listener);
 			return this;
 		}
@@ -859,11 +869,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
-		 * holonplatform.vaadin.flow.components.events.ItemListingRefreshListener)
+		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withItemRefreshListener(
-				ItemListingRefreshListener<PropertyBox, Property<?>> listener) {
+				ItemEventListener<PropertyListing, PropertyBox, ItemEvent<PropertyListing, PropertyBox>> listener) {
 			builder.withItemRefreshListener(listener);
 			return this;
 		}
@@ -894,7 +904,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
 		 */
 		@Override
-		public ItemListingContextMenuBuilder<PropertyBox, Property<?>, DatastorePropertyListingBuilder> contextMenu() {
+		public ItemListingContextMenuBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> contextMenu() {
 			return new DefaultItemListingContextMenuBuilder<>(builder.getInstance(),
 					builder.getInstance().getGrid().addContextMenu(), this);
 		}

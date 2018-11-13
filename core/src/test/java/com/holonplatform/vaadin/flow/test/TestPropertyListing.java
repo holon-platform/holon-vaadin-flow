@@ -23,11 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -56,18 +58,23 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
+import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.AbstractItemListing;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.data.provider.DataCommunicator;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.function.ValueProvider;
@@ -465,8 +472,18 @@ public class TestPropertyListing {
 		assertTrue(items.contains(ITEM1));
 		assertTrue(items.contains(ITEM2));
 
+		final List<PropertyBox> itemList = Arrays.asList(ITEM1, ITEM2);
+
+		listing = PropertyListing.builder(SET).dataSource(DataProvider.fromCallbacks(q -> itemList.stream(), q -> 2))
+				.build();
+		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
+		assertEquals(2, items.size());
+		assertTrue(items.contains(ITEM1));
+		assertTrue(items.contains(ITEM2));
+
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testDatastoreDataSource() {
 
@@ -525,6 +542,67 @@ public class TestPropertyListing {
 		assertEquals(2, items.size());
 		assertEquals(Long.valueOf(2L), items.get(0).getValue(ID));
 		assertEquals(Long.valueOf(1L), items.get(1).getValue(ID));
+
+		listing = PropertyListing.builder(SET).dataSource(datastore, TARGET).withDefaultQuerySort(NAME.desc()).build();
+		items = getDataProvider(listing).fetch(new Query<>()).collect(Collectors.toList());
+		assertEquals(2, items.size());
+		assertEquals(Long.valueOf(2L), items.get(0).getValue(ID));
+		assertEquals(Long.valueOf(1L), items.get(1).getValue(ID));
+
+		listing.sort(ItemSort.asc(ID));
+		List<QuerySortOrder> bs = getDataCommunicator(listing).getBackEndSorting();
+		assertEquals(1, bs.size());
+		assertEquals(ID.getName(), bs.get(0).getSorted());
+		assertEquals(SortDirection.ASCENDING, bs.get(0).getDirection());
+
+		listing.sort(Collections.singletonList(ItemSort.desc(ID)));
+		bs = getDataCommunicator(listing).getBackEndSorting();
+		assertEquals(1, bs.size());
+		assertEquals(ID.getName(), bs.get(0).getSorted());
+		assertEquals(SortDirection.DESCENDING, bs.get(0).getDirection());
+
+	}
+
+	@Test
+	public void testRefresh() {
+
+		final DataTarget<?> TARGET = DataTarget.named("test2");
+
+		final Datastore datastore = JdbcDatastore.builder()
+				.dataSource(
+						BasicDataSource.builder().url("jdbc:h2:mem:test;INIT=RUNSCRIPT FROM 'classpath:test_init.sql'")
+								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
+				.traceEnabled(true).build();
+
+		final AtomicInteger fired = new AtomicInteger(0);
+		final ItemValue value = new ItemValue();
+
+		PropertyListing listing = PropertyListing.builder(SET).dataSource(datastore, TARGET)
+				.withItemRefreshListener(e -> {
+					fired.incrementAndGet();
+					value.item = e.getItem();
+				}).build();
+
+		assertNull(value.item);
+		assertEquals(0, fired.get());
+
+		listing.refresh();
+		assertNull(value.item);
+		assertEquals(1, fired.get());
+
+		PropertyBox itm = datastore.query(TARGET).filter(ID.eq(1L)).findOne(SET)
+				.orElseThrow(() -> new RuntimeException("item not found"));
+		listing.refreshItem(itm);
+
+		assertNotNull(value.item);
+		assertEquals(itm, value.item);
+		assertEquals(2, fired.get());
+
+	}
+
+	private class ItemValue {
+
+		public PropertyBox item;
 
 	}
 
@@ -684,6 +762,66 @@ public class TestPropertyListing {
 	}
 
 	@Test
+	public void testComponentColumns() {
+
+		final VirtualProperty<Component> VC = VirtualProperty.create(Component.class,
+				item -> new Button(item.getValue(NAME)));
+
+		PropertyListing listing = PropertyListing.builder(ID, NAME).withComponentColumn(VC).add().build();
+
+		List<Property<?>> visible = listing.getVisibleColumns();
+		assertEquals(3, visible.size());
+		assertEquals(ID, visible.get(0));
+		assertEquals(NAME, visible.get(1));
+		assertEquals(VC, visible.get(2));
+
+		ItemListingColumn<?, ?, ?> c = getImpl(listing).getColumnConfiguration(VC);
+		assertNotNull(c.getColumnKey());
+		assertTrue(c.isReadOnly());
+		assertFalse(c.isFrozen());
+		assertTrue(c.isVisible());
+		assertEquals(SortMode.DEFAULT, c.getSortMode());
+		assertTrue(c.getSortProperties().size() == 0);
+
+		listing = PropertyListing.builder(ID, NAME).withComponentColumn(VC).frozen(true).sortUsing(ID).displayAsFirst()
+				.add().build();
+
+		visible = listing.getVisibleColumns();
+		assertEquals(3, visible.size());
+		assertEquals(VC, visible.get(0));
+		assertEquals(ID, visible.get(1));
+		assertEquals(NAME, visible.get(2));
+
+		c = getImpl(listing).getColumnConfiguration(VC);
+		assertNotNull(c.getColumnKey());
+		assertTrue(c.isReadOnly());
+		assertTrue(c.isFrozen());
+		assertTrue(c.isVisible());
+		assertEquals(SortMode.ENABLED, c.getSortMode());
+		assertTrue(c.getSortProperties().size() == 1);
+		assertEquals(ID, c.getSortProperties().get(0));
+
+		listing = PropertyListing.builder(ID, NAME).withComponentColumn(item -> new Button(item.getValue(NAME)))
+				.displayAfter(ID).add().build();
+
+		visible = listing.getVisibleColumns();
+		assertEquals(3, visible.size());
+		assertEquals(ID, visible.get(0));
+		assertTrue(Component.class.isAssignableFrom(visible.get(1).getType()));
+		assertEquals(NAME, visible.get(2));
+
+		listing = PropertyListing.builder(ID, NAME).withComponentColumn(item -> new Button(item.getValue(NAME)))
+				.displayBefore(ID).add().build();
+
+		visible = listing.getVisibleColumns();
+		assertEquals(3, visible.size());
+		assertTrue(Component.class.isAssignableFrom(visible.get(0).getType()));
+		assertEquals(ID, visible.get(1));
+		assertEquals(NAME, visible.get(2));
+
+	}
+
+	@Test
 	public void testItemDetails() {
 
 		final PropertyBox ITEM1 = PropertyBox.builder(SET).set(ID, 1L).set(NAME, "test1").build();
@@ -729,6 +867,12 @@ public class TestPropertyListing {
 	private static DataProvider<PropertyBox, ?> getDataProvider(PropertyListing listing) {
 		assertTrue(listing.getComponent() instanceof Grid);
 		return ((Grid<PropertyBox>) listing.getComponent()).getDataProvider();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static DataCommunicator<PropertyBox> getDataCommunicator(PropertyListing listing) {
+		assertTrue(listing.getComponent() instanceof Grid);
+		return ((Grid<PropertyBox>) listing.getComponent()).getDataCommunicator();
 	}
 
 	@SuppressWarnings("unchecked")
