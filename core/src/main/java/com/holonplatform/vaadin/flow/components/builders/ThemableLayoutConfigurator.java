@@ -25,7 +25,6 @@ import com.vaadin.flow.component.orderedlayout.ThemableLayout;
  * 
  * @since 5.2.0
  */
-// TODO APICHG: removed marginTop(), marginLeft(), marginBottom(), marginRight()
 public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator<C>> extends HasElementConfigurator<C> {
 
 	/**

@@ -38,7 +38,6 @@ import com.vaadin.flow.component.notification.Notification;
  * 
  * @since 5.2.0
  */
-// TODO APICHG: Label validation status handler replaced with HasText
 @FunctionalInterface
 public interface ValidationStatusHandler<T> {
 

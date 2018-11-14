@@ -29,9 +29,8 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
  * 
  * @param <T> Selection item type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
-// TODO builders
 public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/**

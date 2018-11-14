@@ -39,11 +39,9 @@ import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
@@ -366,7 +364,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
 	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
-		return SelectModeSingleSelectInputBuilder.create(type);
+		return SingleSelect.create(type);
 	}
 
 	/**
@@ -386,7 +384,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		return SelectModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
+		return SingleSelect.create(type, itemType, itemConverter);
 	}
 
 	/**
@@ -396,7 +394,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
-		return SelectModeSingleSelectInputBuilder.create(selectionProperty);
+		return SingleSelect.create(selectionProperty);
 	}
 
 	/**
@@ -409,7 +407,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
-		return SelectModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
+		return SingleSelect.create(selectionProperty, itemConverter);
 	}
 
 	/**
@@ -424,7 +422,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> singleOptionSelect(Class<T> type) {
-		return OptionsModeSingleSelectInputBuilder.create(type);
+		return SingleSelect.options(type);
 	}
 
 	/**
@@ -445,7 +443,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
 			Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
-		return OptionsModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
+		return SingleSelect.options(type, itemType, itemConverter);
 	}
 
 	/**
@@ -456,7 +454,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
 	 */
 	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty) {
-		return OptionsModeSingleSelectInputBuilder.create(selectionProperty);
+		return SingleSelect.options(selectionProperty);
 	}
 
 	/**
@@ -470,7 +468,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
-		return OptionsModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
+		return SingleSelect.options(selectionProperty, itemConverter);
 	}
 
 	/**

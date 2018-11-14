@@ -18,6 +18,17 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+
+import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.data.ItemConverter;
 
 /**
  * A {@link Selectable} component in which at most one item can be selected at a time.
@@ -70,97 +81,124 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 		getSelectedItem().ifPresent(this::deselect);
 	}
 
-	// Builders TODO
+	// ------- builders
 
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect}.
-//	 * @param <T> Selection value type
-//	 * @param type Selection value type
-//	 * @param renderingMode Rendering mode
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> GenericSingleSelectInputBuilder<T> builder(Class<? extends T> type, RenderingMode renderingMode) {
-//		return new SingleSelectField.GenericBuilder<>(type, renderingMode);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#SELECT}.
-//	 * @param <T> Selection value type
-//	 * @param type Selection value type
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> SelectModeSingleSelectInputBuilder<T> select(Class<? extends T> type) {
-//		return new SingleSelectField.SelectModeBuilder<>(type);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#NATIVE_SELECT}.
-//	 * @param <T> Selection value type
-//	 * @param type Selection value type
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> NativeModeSingleSelectInputBuilder<T> nativeSelect(Class<? extends T> type) {
-//		return new SingleSelectField.NativeModeBuilder<>(type);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} using {@link RenderingMode#OPTIONS}.
-//	 * @param <T> Selection value type
-//	 * @param type Selection value type
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> OptionsModeSingleSelectInputBuilder<T> options(Class<? extends T> type) {
-//		return new SingleSelectField.OptionsModeBuilder<>(type);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-//	 * {@link Property} as item properties.
-//	 * @param <T> Selection value type
-//	 * @param selectProperty Property to select (not null)
-//	 * @param renderingMode Rendering mode
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> GenericSinglePropertySelectInputBuilder<T> property(Property<T> selectProperty,
-//			RenderingMode renderingMode) {
-//		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-//		return new SingleSelectField.GenericPropertyBuilder<>(selectProperty, renderingMode);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-//	 * {@link Property} as item properties using {@link RenderingMode#SELECT}.
-//	 * @param <T> Selection value type
-//	 * @param selectProperty Property to select (not null)
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> SelectModeSinglePropertySelectInputBuilder<T> select(Property<T> selectProperty) {
-//		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-//		return new SingleSelectField.SelectModePropertyBuilder<>(selectProperty);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-//	 * {@link Property} as item properties using {@link RenderingMode#NATIVE_SELECT}.
-//	 * @param <T> Selection value type
-//	 * @param selectProperty Property to select (not null)
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> NativeModeSinglePropertySelectInputBuilder<T> nativeSelect(Property<T> selectProperty) {
-//		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-//		return new SingleSelectField.NativeModePropertyBuilder<>(selectProperty);
-//	}
-//
-//	/**
-//	 * Gets a builder to create a {@link SingleSelect} with a {@link PropertyBox} items data source with
-//	 * {@link Property} as item properties using {@link RenderingMode#OPTIONS}.
-//	 * @param <T> Selection value type
-//	 * @param selectProperty Property to select (not null)
-//	 * @return {@link SingleSelect} builder
-//	 */
-//	static <T> OptionsModeSinglePropertySelectInputBuilder<T> options(Property<T> selectProperty) {
-//		ObjectUtils.argumentNotNull(selectProperty, "Selection property must be not null");
-//		return new SingleSelectField.OptionsModePropertyBuilder<>(selectProperty);
-//	}
+	/**
+	 * Gets a builder to create a {@link SingleSelect}.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are consistent. Use
+	 * {@link #singleSelect(ItemConverter)} if not.
+	 * <p>
+	 * @param <T> Value type
+	 * @param type Selection value type (not null)
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> create(Class<T> type) {
+		return SelectModeSingleSelectInputBuilder.create(type);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect}.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
+	 * different type). When the the selection item and the selection value types are consistent, the
+	 * {@link #singleSelect()} method can be used.
+	 * <p>
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param type Selection value type (not null)
+	 * @param itemType Selection items type (not null)
+	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+	 *        back (not null)
+	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 */
+	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
+			ItemConverter<T, ITEM> itemConverter) {
+		return SelectModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect}, using given selection {@link Property}.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
+		return SelectModeSingleSelectInputBuilder.create(selectionProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect}, using given selection {@link Property} and converter.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
+	 *        item
+	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
+			Function<T, Optional<PropertyBox>> itemConverter) {
+		return SelectModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} using the <em>options</em> rendering mode, i.e. a radio button
+	 * group.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are consistent. Use
+	 * {@link #singleSelect(ItemConverter)} if not.
+	 * <p>
+	 * @param <T> Value type
+	 * @param type Selection value type (not null)
+	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+	 */
+	static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> options(Class<T> type) {
+		return OptionsModeSingleSelectInputBuilder.create(type);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect} using the <em>options</em> rendering mode, i.e. a radio button
+	 * group.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
+	 * different type). When the the selection item and the selection value types are consistent, the
+	 * {@link #singleOptionSelect()} method can be used.
+	 * <p>
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param type Selection value type (not null)
+	 * @param itemType Selection items type (not null)
+	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+	 *        back (not null)
+	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+	 */
+	static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> options(Class<T> type, Class<ITEM> itemType,
+			ItemConverter<T, ITEM> itemConverter) {
+		return OptionsModeSingleSelectInputBuilder.create(type, itemType, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect}, using given selection {@link Property} and the <em>options</em>
+	 * rendering mode, i.e. a radio button group.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> options(final Property<T> selectionProperty) {
+		return OptionsModeSingleSelectInputBuilder.create(selectionProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link SingleSelect}, using given selection {@link Property}, a converter and the
+	 * <em>options</em> rendering mode, i.e. a radio button group.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
+	 *        item
+	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+	 */
+	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> options(final Property<T> selectionProperty,
+			Function<T, Optional<PropertyBox>> itemConverter) {
+		return OptionsModeSingleSelectInputBuilder.create(selectionProperty, itemConverter);
+	}
 
 }

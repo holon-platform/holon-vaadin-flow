@@ -28,12 +28,6 @@ import com.vaadin.flow.component.Component;
 public interface ComponentBuilder<C extends Component, B extends ComponentBuilder<C, B>>
 		extends ComponentConfigurator<B> {
 
-	// TODO APICHG removed
-	// B dragSource(Consumer<DragSourceExtension<? extends AbstractComponent>> configurator);
-
-	// TODO APICHG removed
-	// B dropTarget(BiConsumer<DropTargetExtension<? extends AbstractComponent>, C> configurator);
-
 	/**
 	 * Build and returns the component.
 	 * @return The component instance

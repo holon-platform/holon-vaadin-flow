@@ -64,7 +64,6 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * @param unit The size unit used for the width
 	 * @return this
 	 */
-	// TODO APICHG: Unit as support enum
 	default C width(float width, Unit unit) {
 		return (width < 0) ? width(null) : width(Unit.sizeToString(width) + Unit.orDefault(unit).getSymbol());
 	}
@@ -78,7 +77,6 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * @param unit The size unit used for the height
 	 * @return this
 	 */
-	// TODO APICHG: Unit as support enum
 	default C height(float height, Unit unit) {
 		return (height < 0) ? height(null) : height(Unit.sizeToString(height) + Unit.orDefault(unit).getSymbol());
 	}
