@@ -475,8 +475,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
-	 * group.
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
 	 * {@link #multiOptionSelect(Class, Class, ItemConverter)} if not.
@@ -490,8 +489,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
-	 * group.
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
@@ -512,7 +510,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 
 	/**
 	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property} and the <em>options</em>
-	 * rendering mode, i.e. a radio button group.
+	 * rendering mode, i.e. a checkbox group.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
@@ -523,7 +521,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 
 	/**
 	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property}, a converter and the
-	 * <em>options</em> rendering mode, i.e. a radio button group.
+	 * <em>options</em> rendering mode, i.e. a checkbox group.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
@@ -561,6 +559,21 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	static <E extends Enum<E>> ItemOptionsModeSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
 		return singleOptionSelect(enumType).items(enumType.getEnumConstants())
+				.itemCaptionGenerator(new EnumItemCaptionGenerator<>());
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect} type Input for given <code>enum</code> class with the
+	 * <em>options</em> rendering mode, i.e. using a checkbox group.
+	 * <p>
+	 * All the enum constants declared for the given enum type will be available as selection items.
+	 * </p>
+	 * @param <E> Enum type
+	 * @param enumType Enum type (not null)
+	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+	 */
+	static <E extends Enum<E>> ItemOptionsModeMultiSelectInputBuilder<E, E> enumMultiSelect(Class<E> enumType) {
+		return multiOptionSelect(enumType).items(enumType.getEnumConstants())
 				.itemCaptionGenerator(new EnumItemCaptionGenerator<>());
 	}
 

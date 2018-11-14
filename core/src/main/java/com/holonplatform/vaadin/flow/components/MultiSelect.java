@@ -130,8 +130,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	// ------- builders
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
-	 * group.
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
 	 * {@link #options(Class, Class, ItemConverter)} if not.
@@ -145,8 +144,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
-	 * group.
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
@@ -167,7 +165,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/**
 	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property} and the <em>options</em>
-	 * rendering mode, i.e. a radio button group.
+	 * rendering mode, i.e. a checkbox group.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
@@ -178,7 +176,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/**
 	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property}, a converter and the
-	 * <em>options</em> rendering mode, i.e. a radio button group.
+	 * <em>options</em> rendering mode, i.e. a checkbox group.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
