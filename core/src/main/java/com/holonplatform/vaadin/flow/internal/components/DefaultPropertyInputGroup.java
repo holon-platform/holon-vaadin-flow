@@ -45,6 +45,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
+import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
@@ -672,34 +673,29 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @throws OverallValidationException If validation fails
 	 */
 	protected void validate(PropertyBox value) throws ValidationException {
-
-		LinkedList<ValidationException> failures = new LinkedList<>();
+		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
+		// invoke group validators
 		for (Validator<PropertyBox> validator : getValidators()) {
 			try {
 				validator.validate(value);
 			} catch (ValidationException ve) {
-				failures.add(ve);
+				failures.add(new InputGroupValidationException(ve));
 				if (isStopOverallValidationAtFirstFailure()) {
 					break;
 				}
 			}
 		}
-
-		// collect validation exceptions, if any
+		// check validation failed
 		if (!failures.isEmpty()) {
-
-			ValidationException validationException = (failures.size() == 1)
-					? new ValidationException(failures.getFirst().getMessage(), failures.getFirst().getMessageCode(),
-							failures.getFirst().getMessageArguments())
-					: new ValidationException(failures.toArray(new ValidationException[failures.size()]));
-
-			// notify validation status
+			InputGroupValidationException validationException = (failures.size() == 1) ? failures.getFirst()
+					: new InputGroupValidationException(failures);
+			// INVALID: notify validation status
 			notifyInvalidValidationStatus(validationException, null);
-
+			// throw the exception
 			throw validationException;
 		}
 
-		// notify validation status
+		// VALID: notify validation status
 		notifyValidValidationStatus(null);
 	}
 
@@ -714,13 +710,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			components.stream().forEach(b -> resetValidationStatus(b.getProperty()));
 		}
 
-		final LinkedList<ValidationException> failures = new LinkedList<>();
+		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
 
 		List<PropertyBinding<Object, Input<Object>>> bindings = components.stream().collect(Collectors.toList());
 		for (PropertyBinding<Object, Input<Object>> b : bindings) {
 			if (!b.getComponent().isReadOnly()) {
 				final Optional<ValidationException> ve = validateProperty(b.getProperty(), b.getComponent().getValue());
-				ve.ifPresent(v -> failures.add(v));
+				ve.ifPresent(
+						v -> failures.add(new InputGroupValidationException(b.getProperty(), b.getComponent(), v)));
 				if (isStopValidationAtFirstFailure() && ve.isPresent()) {
 					// break if stop validation at first failure
 					break;
@@ -733,7 +730,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			if (failures.size() == 1) {
 				throw failures.getFirst();
 			} else {
-				throw new ValidationException(failures.toArray(new ValidationException[0]));
+				throw new InputGroupValidationException(failures);
 			}
 		}
 	}
@@ -749,14 +746,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			throws ValidationException {
 		final LinkedList<ValidationException> failures = new LinkedList<>();
 		getInput(property).ifPresent(input -> {
-			// user input
-			configuration.get(property).getUserInputValidator().ifPresent(v -> {
-				try {
-					v.validate(value);
-				} catch (ValidationException e) {
-					failures.add(e);
-				}
-			});
 			// required
 			if (input.isRequired()) {
 				RequiredInputValidator<T> requiredValidator = configuration.get(property).getRequiredMessage()
@@ -768,6 +757,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 					failures.add(e);
 				}
 			}
+			// user input
+			configuration.get(property).getUserInputValidator().ifPresent(v -> {
+				try {
+					v.validate(value);
+				} catch (ValidationException e) {
+					failures.add(e);
+				}
+			});
 			// property validators
 			property.getValidators().forEach(v -> {
 				try {
