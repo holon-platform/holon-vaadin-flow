@@ -58,6 +58,8 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private String width = null;
 	private Localizable headerText;
 	private Component headerComponent;
+	private Localizable footerText;
+	private Component footerComponent;
 	private Renderer<T> renderer;
 	private ValueProvider<T, String> valueProvider;
 	private Comparator<T> comparator;
@@ -268,6 +270,46 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public void setHeaderComponent(Component component) {
 		this.headerComponent = component;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getFooterComponent()
+	 */
+	@Override
+	public Optional<Component> getFooterComponent() {
+		return Optional.ofNullable(footerComponent);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getFooterText()
+	 */
+	@Override
+	public Optional<Localizable> getFooterText() {
+		return Optional.ofNullable(footerText);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setFooterText(com.holonplatform.core.
+	 * i18n.Localizable)
+	 */
+	@Override
+	public void setFooterText(Localizable text) {
+		this.footerText = text;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setFooterComponent(com.vaadin.flow.
+	 * component.Component)
+	 */
+	@Override
+	public void setFooterComponent(Component component) {
+		this.footerComponent = component;
 	}
 
 	/*

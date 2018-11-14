@@ -708,6 +708,29 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> footer(String property, Localizable footer) {
+			builder.footer(property, footer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footerComponent(java.lang.Object,
+		 * com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> footerComponent(String property, Component footer) {
+			builder.footerComponent(property, footer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
 		 */
 		@Override

@@ -338,6 +338,43 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C headerComponent(P property, Component header);
 
 	/**
+	 * Set the footer text for the column which corresponds to given property.
+	 * @param property The property to configure (not null)
+	 * @param footer Localizable column footer text (not null)
+	 * @return this
+	 */
+	C footer(P property, Localizable footer);
+
+	/**
+	 * Set the footer text for the column which corresponds to given property.
+	 * @param property The property to configure (not null)
+	 * @param header The column footer text
+	 * @return this
+	 */
+	default C footer(P property, String footer) {
+		return footer(property, Localizable.builder().message(footer).build());
+	}
+
+	/**
+	 * Set the footer text for the column which corresponds to given property.
+	 * @param property The property to configure (not null)
+	 * @param defaultFooter The default column footer text
+	 * @param footerMessageCode The column footer text translation message code
+	 * @return this
+	 */
+	default C footer(P property, String defaultFooter, String footerMessageCode) {
+		return footer(property, Localizable.builder().message(defaultFooter).messageCode(footerMessageCode).build());
+	}
+
+	/**
+	 * Set the {@link Component} to use as footer for the column which corresponds to given property.
+	 * @param property The property to configure (not null)
+	 * @param footer The column footer component
+	 * @return this
+	 */
+	C footerComponent(P property, Component footer);
+
+	/**
 	 * Sets the page size, which is the number of items fetched at a time from the data source.
 	 * <p>
 	 * Note: the number of items in the server-side memory can be considerably higher than the page size, since the

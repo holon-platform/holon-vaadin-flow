@@ -99,10 +99,10 @@ public class TestValidatableInput {
 		assertFalse(input4.isValid());
 		Assertions.assertThrows(ValidationException.class, () -> input4.validate());
 
-		Assertions.assertThrows(ValidationException.class, () -> input4.getValueIfValid());
+		Assertions.assertThrows(ValidationException.class, () -> input4.getValue());
 
 		input4.setValue("X");
-		assertEquals("X", input4.getValueIfValid());
+		assertEquals("X", input4.getValue());
 
 	}
 
@@ -147,26 +147,6 @@ public class TestValidatableInput {
 			return null;
 		}
 		return value;
-	}
-
-	@Test
-	public void testHasValidation() {
-
-		TextField tf = new TextField();
-		tf.setPattern("[0-9]*");
-		tf.setPreventInvalidInput(false);
-
-		ValidatableInput<String> input = ValidatableInput.from(tf);
-		assertTrue(input.isValid());
-		Assertions.assertDoesNotThrow(() -> input.validate());
-
-		tf.setInvalid(true);
-		assertFalse(input.isValid());
-		Assertions.assertThrows(ValidationException.class, () -> input.validate());
-
-		tf.setErrorMessage("Test error");
-		ValidationException ve = Assertions.assertThrows(ValidationException.class, () -> input.validate());
-		assertEquals("Test error", ve.getMessage());
 	}
 
 	@Test

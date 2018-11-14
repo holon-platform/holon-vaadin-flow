@@ -590,6 +590,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			column.setHeader(LocalizationContext.translate(h, true));
 		});
 		configuration.getHeaderComponent().ifPresent(c -> column.setHeader(c));
+		// footer
+		configuration.getFooterText().ifPresent(t -> column.setFooter(LocalizationContext.translate(t, true)));
+		configuration.getFooterComponent().ifPresent(c -> column.setFooter(c));
 		// visible
 		column.setVisible(configuration.isVisible());
 		// resizable
@@ -1675,6 +1678,29 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public C headerComponent(P property, Component header) {
 			instance.getColumnConfiguration(property).setHeaderComponent(header);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public C footer(P property, Localizable footer) {
+			instance.getColumnConfiguration(property).setFooterText(footer);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footerComponent(java.lang.Object,
+		 * com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public C footerComponent(P property, Component footer) {
+			instance.getColumnConfiguration(property).setFooterComponent(footer);
 			return getConfigurator();
 		}
 

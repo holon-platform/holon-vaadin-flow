@@ -779,6 +779,29 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder footer(Property<?> property, Localizable footer) {
+			builder.footer(property, footer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footerComponent(java.lang.Object,
+		 * com.vaadin.flow.component.Component)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder footerComponent(Property<?> property, Component footer) {
+			builder.footerComponent(property, footer);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
 		 */
 		@Override

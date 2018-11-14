@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
+import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -82,6 +83,12 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 		super();
 		ObjectUtils.argumentNotNull(input, "Input must be not null");
 		this.input = input;
+		// check user input validation
+		input.hasInvalidChangeEventNotifier().ifPresent(n -> {
+			final DefaultUserInputValidator<T> uiv = new DefaultUserInputValidator<>();
+			n.addInvalidChangeListener(uiv);
+			addValidator(uiv);
+		});
 	}
 
 	/*
@@ -243,17 +250,8 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 */
 	@Override
 	public T getValue() {
-		return input.getValue();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValidatableInput#getValueIfValid()
-	 */
-	@Override
-	public T getValueIfValid() {
 		validate();
-		return getValue();
+		return input.getValue();
 	}
 
 	/*
@@ -263,7 +261,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	@Override
 	public void clear() {
 		ValidatableInput.super.clear();
-		// notify ValidationStatusHandler
+		// reset validation status
 		getValidationStatusHandler()
 				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this, this, null)));
 	}
@@ -293,14 +291,11 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 */
 	@Override
 	public void validate() throws ValidationException {
-		// check HasValidation
-		Optional<ValidationException> ve = hasValidation().filter(v -> v.isInvalid()).map(v -> new ValidationException(
-				(v.getErrorMessage() != null) ? v.getErrorMessage() : "Invalid input value"));
-		if (ve.isPresent()) {
-			throw ve.get();
-		}
+		// reset validation status
+		getValidationStatusHandler()
+				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this, this, null)));
 		// validate using validators
-		validate(getValue());
+		validate(input.getValue());
 	}
 
 	/*

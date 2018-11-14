@@ -165,6 +165,30 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	void setHeaderComponent(Component component);
 
 	/**
+	 * Gets the column footer component.
+	 * @return Optional column footer component
+	 */
+	Optional<Component> getFooterComponent();
+
+	/**
+	 * Sets the column footer component.
+	 * @param component the column footer component
+	 */
+	void setFooterComponent(Component component);
+
+	/**
+	 * Gets the column footer text.
+	 * @return Optional column footer text
+	 */
+	Optional<Localizable> getFooterText();
+
+	/**
+	 * Sets the column footer text.
+	 * @param text the column footer text
+	 */
+	void setFooterText(Localizable text);
+
+	/**
 	 * Get the renderer for this column, if available.
 	 * @return Optional renderer used for this column
 	 */

@@ -41,14 +41,16 @@ import com.vaadin.flow.shared.Registration;
 public interface ValidatableInput<T> extends Input<T>, Validatable {
 
 	/**
-	 * Get the input value only if it is valid.
+	 * Get the input value.
 	 * <p>
-	 * If validation fails, a {@link ValidationException} is thrown.
+	 * The value is validated using the registered {@link Validator}s, if any, and a {@link ValidationException} is
+	 * thrown if any validator fail.
 	 * </p>
-	 * @return The input value
+	 * @return the input value
 	 * @throws ValidationException If validation fails
 	 */
-	T getValueIfValid();
+	@Override
+	T getValue();
 
 	/**
 	 * Adds a {@link Validator} to validate the input value.
