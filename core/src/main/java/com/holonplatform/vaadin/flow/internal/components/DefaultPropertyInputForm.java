@@ -529,6 +529,18 @@ public class DefaultPropertyInputForm<C extends Component>
 			return this;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#enableRefreshOnValueChange(
+		 * boolean)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> enableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+			inputGroupBuilder.enableRefreshOnValueChange(enableRefreshOnValueChange);
+			return this;
+		}
+
 		@Override
 		public PropertyInputFormBuilder<C> initializer(Consumer<C> initializer) {
 			ObjectUtils.argumentNotNull(initializer, "Form content initializer must be not null");

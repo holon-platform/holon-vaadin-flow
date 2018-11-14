@@ -30,6 +30,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.temporal.TemporalType;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.internal.converters.DateToLocalTimeConverter;
 
 /**
@@ -175,8 +176,9 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	@SuppressWarnings("unchecked")
 	protected Input<T> renderEnum(Property<? extends T> property) {
 		final Class<Enum> enumType = (Class<Enum>) property.getType();
-		return (Input<T>) Input.singleSelect(enumType).items(enumType.getEnumConstants()).label(property)
-				.readOnly(property.isReadOnly()).build();
+		return (Input<T>) Input.singleSelect(enumType).items(enumType.getEnumConstants())
+				.itemCaptionGenerator(new EnumItemCaptionGenerator<>()).label(property).readOnly(property.isReadOnly())
+				.build();
 	}
 
 	/**

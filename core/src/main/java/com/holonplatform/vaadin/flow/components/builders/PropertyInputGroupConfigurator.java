@@ -25,6 +25,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
@@ -331,5 +332,20 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	 * @return this
 	 */
 	C stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure);
+
+	/**
+	 * Set whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
+	 * <p>
+	 * Default is <code>false</code>.
+	 * </p>
+	 * <p>
+	 * The {@link PropertyInputGroup#refresh()} and {@link PropertyInputGroup#refresh(Property)} to explicitly trigger
+	 * the {@link VirtualProperty} inputs value refresh.
+	 * </p>
+	 * @param enableRefreshOnValueChange Whether to enable {@link VirtualProperty} input value refresh when any group
+	 *        input value changes
+	 * @return this
+	 */
+	C enableRefreshOnValueChange(boolean enableRefreshOnValueChange);
 
 }

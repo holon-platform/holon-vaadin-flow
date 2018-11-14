@@ -48,6 +48,7 @@ import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer;
+import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.internal.components.HasValueInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
@@ -470,7 +471,8 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
 	 */
 	static <E extends Enum<E>> ItemSelectModeSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
-		return singleSelect(enumType).items(enumType.getEnumConstants());
+		return singleSelect(enumType).items(enumType.getEnumConstants())
+				.itemCaptionGenerator(new EnumItemCaptionGenerator<>());
 	}
 
 	/**
@@ -484,7 +486,8 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
 	 */
 	static <E extends Enum<E>> ItemOptionsModeSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
-		return singleOptionSelect(enumType).items(enumType.getEnumConstants());
+		return singleOptionSelect(enumType).items(enumType.getEnumConstants())
+				.itemCaptionGenerator(new EnumItemCaptionGenerator<>());
 	}
 
 	// Create by type

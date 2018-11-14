@@ -104,6 +104,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	private boolean useDefaultPropertyValidationStatusHandler = true;
 
 	/**
+	 * Refresh on value change
+	 */
+	private boolean enableRefreshOnValueChange = false;
+
+	/**
 	 * Constructor.
 	 * @param propertySet The property set (not null)
 	 */
@@ -506,6 +511,23 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		this.useDefaultPropertyValidationStatusHandler = useDefaultPropertyValidationStatusHandler;
 	}
 
+	/**
+	 * Get whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
+	 * @return whether to enable {@link VirtualProperty} input value refresh when any group input value changes
+	 */
+	public boolean isEnableRefreshOnValueChange() {
+		return enableRefreshOnValueChange;
+	}
+
+	/**
+	 * Set whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
+	 * @param enableRefreshOnValueChange whether to enable {@link VirtualProperty} input value refresh when any group
+	 *        input value changes
+	 */
+	public void setEnableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+		this.enableRefreshOnValueChange = enableRefreshOnValueChange;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
@@ -530,6 +552,16 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			input.setValue((value != null) ? value.getValue(property) : null);
 			return true;
 		}).orElse(false);
+	}
+
+	/**
+	 * Refresh all the input values bound to a {@link VirtualProperty}.
+	 */
+	public void refreshVirtualProperties() {
+		final PropertyBox value = getValue(false);
+		components.stream().filter(b -> b.getProperty() instanceof VirtualProperty).forEach(b -> {
+			b.getComponent().setValue((value != null) ? value.getValue(b.getProperty()) : null);
+		});
 	}
 
 	/**
@@ -613,6 +645,10 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			// Validate on value change
 			if (isValidateOnValueChange()) {
 				input.addValueChangeListener(e -> validateProperty(configuration.getProperty(), e.getValue()));
+			}
+			// Refresh on value change
+			if (isEnableRefreshOnValueChange()) {
+				input.addValueChangeListener(e -> refreshVirtualProperties());
 			}
 			// default validation status handler
 			if (!configuration.getValidationStatusHandler().isPresent()
@@ -719,15 +755,15 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			}
 			// invalid state
 			// TODO
-//			input.hasValidation().ifPresent(v -> {
-//				if (v.isInvalid()) {
-//					String message = v.getErrorMessage();
-//					if (message == null || message.trim().equals("")) {
-//						message = "Input value is not valid";
-//					}
-//					failures.add(new ValidationException(message));
-//				}
-//			});
+			// input.hasValidation().ifPresent(v -> {
+			// if (v.isInvalid()) {
+			// String message = v.getErrorMessage();
+			// if (message == null || message.trim().equals("")) {
+			// message = "Input value is not valid";
+			// }
+			// failures.add(new ValidationException(message));
+			// }
+			// });
 			// property validators
 			property.getValidators().forEach(v -> {
 				try {
@@ -1103,6 +1139,18 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		@Override
 		public B usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
 			instance.setPropertyRendererRegistry(propertyRendererRegistry);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#enableRefreshOnValueChange(
+		 * boolean)
+		 */
+		@Override
+		public B enableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+			instance.setEnableRefreshOnValueChange(enableRefreshOnValueChange);
 			return builder();
 		}
 
