@@ -44,6 +44,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	private Localizable requiredMessage;
 	private DefaultValueProvider<T> defaultValueProvider;
 	private List<Validator<T>> validators = new LinkedList<>();
+	private Validator<T> userInputValidator;
 	private ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler;
 	private List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
 
@@ -145,6 +146,26 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	public void addValidator(Validator<T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		this.validators.add(validator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getUserInputValidator()
+	 */
+	@Override
+	public Optional<Validator<T>> getUserInputValidator() {
+		return Optional.ofNullable(userInputValidator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#setUserInputValidator(com.
+	 * holonplatform.core.Validator)
+	 */
+	@Override
+	public void setUserInputValidator(Validator<T> validator) {
+		this.userInputValidator = validator;
 	}
 
 	/*

@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry;
@@ -655,6 +656,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 					&& isUseDefaultPropertyValidationStatusHandler()) {
 				configuration.setValidationStatusHandler(ValidationStatusHandler.getDefault());
 			}
+			// check invalid user originated events
+			input.hasInvalidChangeEventNotifier().ifPresent(n -> {
+				final DefaultUserInputValidator<T> uiv = new DefaultUserInputValidator<>();
+				n.addInvalidChangeListener(uiv);
+				configuration.setUserInputValidator(uiv);
+			});
 		}
 		return input;
 	}
@@ -742,6 +749,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			throws ValidationException {
 		final LinkedList<ValidationException> failures = new LinkedList<>();
 		getInput(property).ifPresent(input -> {
+			// user input
+			configuration.get(property).getUserInputValidator().ifPresent(v -> {
+				try {
+					v.validate(value);
+				} catch (ValidationException e) {
+					failures.add(e);
+				}
+			});
 			// required
 			if (input.isRequired()) {
 				RequiredInputValidator<T> requiredValidator = configuration.get(property).getRequiredMessage()
@@ -753,17 +768,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 					failures.add(e);
 				}
 			}
-			// invalid state
-			// TODO
-			// input.hasValidation().ifPresent(v -> {
-			// if (v.isInvalid()) {
-			// String message = v.getErrorMessage();
-			// if (message == null || message.trim().equals("")) {
-			// message = "Input value is not valid";
-			// }
-			// failures.add(new ValidationException(message));
-			// }
-			// });
 			// property validators
 			property.getValidators().forEach(v -> {
 				try {

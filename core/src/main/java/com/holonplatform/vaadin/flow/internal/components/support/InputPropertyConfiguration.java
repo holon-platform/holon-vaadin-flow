@@ -97,6 +97,18 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	void addValidator(Validator<T> validator);
 
 	/**
+	 * Get the user input validator, if available.
+	 * @return Optional user input validator
+	 */
+	Optional<Validator<T>> getUserInputValidator();
+
+	/**
+	 * Set the user input validator.
+	 * @param validator the validator to set
+	 */
+	void setUserInputValidator(Validator<T> validator);
+
+	/**
 	 * Get the {@link ValidationStatusHandler} to use.
 	 * @return Optional {@link ValidationStatusHandler}
 	 */

@@ -135,7 +135,7 @@ public class DefaultLocalDateTimeInputBuilder
 		return Input.builder(component).requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
-				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
+				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).invalidChangeEventNotifierSupplier(f -> f)
 				.withValueChangeListeners(valueChangeListeners).build();
 	}
 

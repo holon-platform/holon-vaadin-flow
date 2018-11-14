@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -226,6 +227,19 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	@Override
 	public HasValueInputBuilder<T, H, C> hasValidationSupplier(Function<H, HasValidation> hasValidationSupplier) {
 		getInstance().setHasValidationSupplier(hasValidationSupplier);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputAdapterBuilder#invalidChangeEventNotifierSupplier(java.
+	 * util.function.Function)
+	 */
+	@Override
+	public HasValueInputBuilder<T, H, C> invalidChangeEventNotifierSupplier(
+			Function<H, InvalidChangeEventNotifier> invalidChangeEventNotifierSupplier) {
+		getInstance().setInvalidChangeEventNotifierSupplier(invalidChangeEventNotifierSupplier);
 		return getConfigurator();
 	}
 

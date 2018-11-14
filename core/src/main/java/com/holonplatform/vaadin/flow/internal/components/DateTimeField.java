@@ -26,6 +26,9 @@ import java.util.Optional;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventListener;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -50,7 +53,7 @@ import com.vaadin.flow.shared.Registration;
  */
 public class DateTimeField extends Composite<HorizontalLayout>
 		implements HasValueAndElement<ComponentValueChangeEvent<DateTimeField, LocalDateTime>, LocalDateTime>, HasLabel,
-		HasStyle, HasSize, HasValidation, Focusable<DateTimeField> {
+		HasStyle, HasSize, HasValidation, Focusable<DateTimeField>, InvalidChangeEventNotifier {
 
 	private static final long serialVersionUID = -6960232589608854521L;
 
@@ -584,6 +587,17 @@ public class DateTimeField extends Composite<HorizontalLayout>
 			}
 
 		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier#addInvalidChangeListener(com.
+	 * holonplatform.vaadin.flow.components.events.InvalidChangeEventListener)
+	 */
+	@Override
+	public Registration addInvalidChangeListener(InvalidChangeEventListener listener) {
+		return this.date.addInvalidChangeListener(
+				e -> listener.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), this.date)));
 	}
 
 }

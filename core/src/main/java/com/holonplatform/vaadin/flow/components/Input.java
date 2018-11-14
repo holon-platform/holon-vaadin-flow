@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectI
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
@@ -113,10 +114,20 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	/**
 	 * Checks whether this component supports a placeholder, which text can be handled using the {@link HasPlaceholder}
 	 * interface.
-	 * @return If this component supports a placeholder, return the {@link HasPlaceholder} interface} reference. An
-	 *         empty Optional is returned otherwise.
+	 * @return If this component supports a placeholder, return the {@link HasPlaceholder} reference. An empty Optional
+	 *         is returned otherwise.
 	 */
 	default Optional<HasPlaceholder> hasPlaceholder() {
+		return Optional.empty();
+	}
+
+	/**
+	 * Checks whether this input supports invalid change events notification, using a
+	 * {@link InvalidChangeEventNotifier}.
+	 * @return If this input supports invalid change events notification, return the {@link InvalidChangeEventNotifier}
+	 *         reference. An empty Optional is returned otherwise.
+	 */
+	default Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
 		return Optional.empty();
 	}
 

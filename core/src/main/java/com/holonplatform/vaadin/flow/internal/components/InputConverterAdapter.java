@@ -23,6 +23,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -252,6 +253,15 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public Optional<HasValidation> hasValidation() {
 		return input.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasInvalidChangeEventNotifier()
+	 */
+	@Override
+	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
+		return input.hasInvalidChangeEventNotifier();
 	}
 
 	/*

@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -112,6 +113,13 @@ public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends C
 	 * @return this
 	 */
 	B hasValidationSupplier(Function<H, HasValidation> hasValidationSupplier);
+
+	/**
+	 * Set the {@link InvalidChangeEventNotifier} supplier
+	 * @param invalidChangeEventNotifierSupplier the supplier to set
+	 * @return this
+	 */
+	B invalidChangeEventNotifierSupplier(Function<H, InvalidChangeEventNotifier> invalidChangeEventNotifierSupplier);
 
 	/**
 	 * Provide the {@link PropertyHandler} to use to get and set the <em>required</em> property value.

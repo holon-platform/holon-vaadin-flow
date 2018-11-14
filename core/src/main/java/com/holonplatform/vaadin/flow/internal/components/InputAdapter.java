@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.Focusable;
@@ -76,6 +77,7 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	private Function<V, HasEnabled> hasEnabledSupplier;
 	private Function<V, HasValueChangeMode> hasValueChangeModeSupplier;
 	private Function<V, HasValidation> hasValidationSupplier;
+	private Function<V, InvalidChangeEventNotifier> invalidChangeEventNotifierSupplier;
 
 	/**
 	 * Property handlers
@@ -244,6 +246,23 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	 */
 	public void setHasValidationSupplier(Function<V, HasValidation> hasValidationSupplier) {
 		this.hasValidationSupplier = hasValidationSupplier;
+	}
+
+	/**
+	 * Get the {@link InvalidChangeEventNotifier} supplier.
+	 * @return Optional InvalidChangeEventNotifier} supplier
+	 */
+	public Optional<Function<V, InvalidChangeEventNotifier>> getInvalidChangeEventNotifierSupplier() {
+		return Optional.ofNullable(invalidChangeEventNotifierSupplier);
+	}
+
+	/**
+	 * Set the {@link InvalidChangeEventNotifier} supplier.
+	 * @param invalidChangeEventNotifierSupplier the supplier to set
+	 */
+	public void setInvalidChangeEventNotifierSupplier(
+			Function<V, InvalidChangeEventNotifier> invalidChangeEventNotifierSupplier) {
+		this.invalidChangeEventNotifierSupplier = invalidChangeEventNotifierSupplier;
 	}
 
 	/**
@@ -498,6 +517,18 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 			return getHasValidationSupplier().map(s -> s.apply(getField()));
 		}
 		return Input.super.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#getInvalidChangeEventNotifier()
+	 */
+	@Override
+	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
+		if (getInvalidChangeEventNotifierSupplier().isPresent()) {
+			return getInvalidChangeEventNotifierSupplier().map(s -> s.apply(getField()));
+		}
+		return Input.super.hasInvalidChangeEventNotifier();
 	}
 
 	/*
