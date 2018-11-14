@@ -19,9 +19,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.holonplatform.core.Context;
+import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
@@ -300,6 +304,34 @@ public interface Components {
 		}
 
 		/**
+		 * Show a message dialog with given localizable message text.
+		 * @param message The dialog message text
+		 */
+		static void showMessage(Localizable message) {
+			message().message(message).open();
+		}
+
+		/**
+		 * Show a message dialog with given message text.
+		 * @param message The dialog message text
+		 */
+		static void showMessage(String message) {
+			showMessage(Localizable.of(message));
+		}
+
+		/**
+		 * Show a message dialog with given localizable message text.
+		 * @param defaultMessage Default dialog message if no translation is available for given
+		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 * @param messageCode Dialog message translation message key
+		 * @param arguments Optional dialog message translation arguments
+		 */
+		static void showMessage(String defaultMessage, String messageCode, Object... arguments) {
+			showMessage(Localizable.builder().message(defaultMessage).messageCode(messageCode)
+					.messageArguments(arguments).build());
+		}
+
+		/**
 		 * Get a builder to create a message dialog with a <em>OK</em> button in the dialog toolbar which can be used to
 		 * close the dialog.
 		 * <p>
@@ -309,6 +341,34 @@ public interface Components {
 		 */
 		static ConfirmDialogBuilder confirm() {
 			return DialogBuilder.confirm();
+		}
+
+		/**
+		 * Show a confirm dialog with given localizable message text.
+		 * @param message The dialog message text
+		 */
+		static void showConfirm(Localizable message) {
+			confirm().message(message).open();
+		}
+
+		/**
+		 * Show a confirm dialog with given message text.
+		 * @param message The dialog message text
+		 */
+		static void showConfirm(String message) {
+			showConfirm(Localizable.of(message));
+		}
+
+		/**
+		 * Show a confirm dialog with given localizable message text.
+		 * @param defaultMessage Default dialog message if no translation is available for given
+		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 * @param messageCode Dialog message translation message key
+		 * @param arguments Optional dialog message translation arguments
+		 */
+		static void showConfirm(String defaultMessage, String messageCode, Object... arguments) {
+			showConfirm(Localizable.builder().message(defaultMessage).messageCode(messageCode)
+					.messageArguments(arguments).build());
 		}
 
 		/**
@@ -326,18 +386,39 @@ public interface Components {
 			return DialogBuilder.question(questionDialogCallback);
 		}
 
+		/**
+		 * Show a question dialog with given localizable message text.
+		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
+		 * @param message The dialog message text
+		 */
+		static void showQuestion(QuestionDialogCallback questionDialogCallback, Localizable message) {
+			question(questionDialogCallback).message(message).open();
+		}
+
+		/**
+		 * Show a question dialog with given message text.
+		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
+		 * @param message The dialog message text
+		 */
+		static void showQuestion(QuestionDialogCallback questionDialogCallback, String message) {
+			showQuestion(questionDialogCallback, Localizable.of(message));
+		}
+
+		/**
+		 * Show a question dialog with given localizable message text.
+		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
+		 * @param defaultMessage Default dialog message if no translation is available for given
+		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 * @param messageCode Dialog message translation message key
+		 * @param arguments Optional dialog message translation arguments
+		 */
+		static void showQuestion(QuestionDialogCallback questionDialogCallback, String defaultMessage,
+				String messageCode, Object... arguments) {
+			showQuestion(questionDialogCallback, Localizable.builder().message(defaultMessage).messageCode(messageCode)
+					.messageArguments(arguments).build());
+		}
+
 	}
-
-	// TODO tabs
-
-	// /**
-	// * Gets a builder to create a {@link TabSheet}.
-	// * @return TabSheet builder
-	// */
-	// static TabsBuilder<TabSheet> tabSheet() {
-	// return new TabSheetBuilder();
-	// }
-	//
 
 	// View components
 
@@ -982,6 +1063,38 @@ public interface Components {
 			return PropertyListing.builder(properties);
 		}
 
+	}
+
+	// utils
+
+	/**
+	 * Localize given <code>message</code> using the current {@link LocalizationContext}, if it is available as a
+	 * {@link Context} resource and a {@link Locale} is configured.
+	 * @param message The message to localize (not null)
+	 * @return The localized message, according to the {@link Localizable#getMessageCode()} localization code and to the
+	 *         current {@link LocalizationContext} configuration, or the default {@link Localizable#getMessage()} if a
+	 *         {@link LocalizationContext} is not available or not localized
+	 * @see LocalizationContext#getCurrent()
+	 */
+	static String localize(Localizable message) {
+		return LocalizationContext.translate(message, true);
+	}
+
+	/**
+	 * Localize given <code>defaultMessage</code> with the provided <code>messageCode</code> using the current
+	 * {@link LocalizationContext}, if it is available as a {@link Context} resource and a {@link Locale} is configured.
+	 * @param defaultMessage The default message to use if no translation is available for given
+	 *        <code>messageCode</code> for current {@link Locale}, or no {@link LocalizationContext} is available at all
+	 * @param messageCode The message translation code
+	 * @param arguments Optional message translation arguments
+	 * @return The localized message, according to the {@link Localizable#getMessageCode()} localization code and to the
+	 *         current {@link LocalizationContext} configuration, or the <code>defaultMessage</code> if a
+	 *         {@link LocalizationContext} is not available or not localized
+	 * @see LocalizationContext#getCurrent()
+	 */
+	static String localize(String defaultMessage, String messageCode, Object... arguments) {
+		return localize(Localizable.builder().message(defaultMessage).messageCode(messageCode)
+				.messageArguments(arguments).build());
 	}
 
 }
