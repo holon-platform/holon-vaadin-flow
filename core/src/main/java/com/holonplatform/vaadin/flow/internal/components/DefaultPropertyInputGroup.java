@@ -239,7 +239,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	@Override
 	public PropertyBox getValue(boolean validate) {
 		final PropertyBox value = (getCurrentValue() != null) ? getCurrentValue()
-				: PropertyBox.create(getPropertySet());
+				: PropertyBox.builder(getPropertySet()).invalidAllowed(true).build();
 		flush(value, validate);
 		return value;
 	}
@@ -272,12 +272,17 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			validateInputs();
 		}
 
+		final boolean wasInvalidAllowed = propertyBox.isInvalidAllowed();
+		propertyBox.setInvalidAllowed(true);
 		// flush the Input values
 		components.stream().forEach(b -> {
 			if (!b.getProperty().isReadOnly() && !b.getComponent().isReadOnly()) { // exclude read-only properties
 				propertyBox.setValue(b.getProperty(), b.getComponent().getValue());
 			}
 		});
+		if (!wasInvalidAllowed) {
+			propertyBox.setInvalidAllowed(false);
+		}
 
 		if (validate) {
 			// Overall validation
