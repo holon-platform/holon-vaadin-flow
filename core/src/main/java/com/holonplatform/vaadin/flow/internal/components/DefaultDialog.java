@@ -57,6 +57,8 @@ public class DefaultDialog extends Dialog implements HasStyle {
 		this.toolbar.setAlignItems(Alignment.END);
 
 		this.content = new VerticalLayout();
+		this.content.setPadding(false);
+		this.content.setSpacing(true);
 		this.content.add(message);
 		this.content.add(this.toolbar);
 		this.content.setAlignSelf(Alignment.CENTER, this.message);
@@ -64,6 +66,8 @@ public class DefaultDialog extends Dialog implements HasStyle {
 
 		this.message.setVisible(false);
 		this.toolbar.setVisible(false);
+		
+		add(content);
 	}
 
 	/**
@@ -112,6 +116,7 @@ public class DefaultDialog extends Dialog implements HasStyle {
 	public void addToolbarComponent(Component component) {
 		ObjectUtils.argumentNotNull(component, "Component must be not null");
 		this.toolbar.addComponentAsFirst(component);
+		this.toolbar.setVisible(true);
 	}
 
 	/**

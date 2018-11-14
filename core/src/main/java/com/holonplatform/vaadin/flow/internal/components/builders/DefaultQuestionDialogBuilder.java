@@ -42,11 +42,15 @@ public class DefaultQuestionDialogBuilder extends AbstractDialogConfigurator<Que
 		super();
 		ObjectUtils.argumentNotNull(questionDialogCallback, "Question dialog callback must be not null");
 		this.confirmButton = ButtonBuilder.create()
-				.text(Localizable.of("Yes", DialogBuilder.DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE))
-				.withClickListener(e -> questionDialogCallback.onUserAnswer(true)).build();
+				.text(Localizable.of("Yes", DialogBuilder.DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE)).withClickListener(e -> {
+					getComponent().close();
+					questionDialogCallback.onUserAnswer(true);
+				}).build();
 		this.denyButton = ButtonBuilder.create()
-				.text(Localizable.of("No", DialogBuilder.DEFAULT_DENY_BUTTON_MESSAGE_CODE))
-				.withClickListener(e -> questionDialogCallback.onUserAnswer(false)).build();
+				.text(Localizable.of("No", DialogBuilder.DEFAULT_DENY_BUTTON_MESSAGE_CODE)).withClickListener(e -> {
+					getComponent().close();
+					questionDialogCallback.onUserAnswer(false);
+				}).build();
 		getComponent().addToolbarComponent(this.denyButton);
 		getComponent().addToolbarComponent(this.confirmButton);
 
