@@ -919,8 +919,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			if (!configuration.isReadOnly()) {
 				getColumn(property).ifPresent(column -> {
 					getPropertyEditor(configuration).ifPresent(editor -> {
-						final BindingBuilder<T, ?> builder = getGrid().getEditor().getBinder()
-								.forField(editor.asHasValue());
+						// editor
+						column.setEditorComponent(editor.getComponent());
+						// validation
+						final BindingBuilder<T, ?> builder = binder.forField(editor.asHasValue());
 						// property validators
 						getDefaultPropertyValidators(property)
 								.forEach(validator -> builder.withValidator(Validatable.adapt(validator)));
@@ -928,7 +930,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 						configuration.getValidators()
 								.forEach(validator -> builder.withValidator(Validatable.adapt((Validator) validator)));
 						// bind to column
-						column.setEditorBinding(builder.bind(configuration.getColumnKey()));
+						builder.bind(configuration.getColumnKey());
 					});
 				});
 

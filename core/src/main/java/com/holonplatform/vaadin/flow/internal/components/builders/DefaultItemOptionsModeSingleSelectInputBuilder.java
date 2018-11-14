@@ -159,7 +159,7 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 		final Input<ITEM> itemInput = Input.builder(component)
 				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).hasEnabledSupplier(f -> f)
-				.build();
+				.hasValidationSupplier(f -> f).build();
 
 		final Input<T> input = Input.from(itemInput, Converter.from(item -> Result.ok(itemConverter.getValue(item)),
 				value -> itemConverter.getItem(value).orElse(null)));
