@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.internal.components.DefaultValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.LabelValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.NotificationValidationStatusHandler;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultValidationStatusEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValidation;
@@ -34,19 +36,21 @@ import com.vaadin.flow.component.notification.Notification;
 /**
  * Handler for validation status change events, typically bound to a {@link ValueComponent} source object.
  * 
- * @param <T> Value type
+ * @param <S> Validation source
+ * @param <V> Validation value type
+ * @param <C> Value component to which the validation event refers
  * 
  * @since 5.2.0
  */
 @FunctionalInterface
-public interface ValidationStatusHandler<T> {
+public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 
 	/**
 	 * Invoked when the validation status has changed.
 	 * @param statusChangeEvent the changed status event, providing validation status, error message and the optional
 	 *        source component
 	 */
-	void validationStatusChange(ValidationStatusEvent<T> statusChangeEvent);
+	void validationStatusChange(ValidationStatusEvent<S, V, C> statusChangeEvent);
 
 	/**
 	 * Create and return the default {@link ValidationStatusHandler}.
@@ -59,10 +63,12 @@ public interface ValidationStatusHandler<T> {
 	 * If the component against whom the validation is performed does not implement {@link HasValidation}, a warning is
 	 * logged.
 	 * </p>
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 * @return A new default {@link ValidationStatusHandler} instance
 	 */
-	static <T> ValidationStatusHandler<T> getDefault() {
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> getDefault() {
 		return new DefaultValidationStatusHandler<>();
 	}
 
@@ -72,22 +78,30 @@ public interface ValidationStatusHandler<T> {
 	 * By default, the status label is set to visible only when the validation status is invalid, i.e. a validation
 	 * error to display is available.
 	 * </p>
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
+	 * @param <L> Label component type
 	 * @param statusLabel The {@link HasText} component to use to notify validation errors (not null)
 	 * @return A new validation status handler instance
 	 */
-	static <T, L extends Component & HasText> ValidationStatusHandler<T> label(L statusLabel) {
+	static <S, V, C extends ValueComponent<V>, L extends Component & HasText> ValidationStatusHandler<S, V, C> label(
+			L statusLabel) {
 		return label(statusLabel, true);
 	}
 
 	/**
 	 * Create a {@link ValidationStatusHandler} which uses a {@link HasText} component to notify validation errors.
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
+	 * @param <L> Label component type
 	 * @param statusLabel The {@link HasText} component to use to notify validation errors (not null)
 	 * @param hideWhenValid whether to hide the component when the validation status is not invalid
 	 * @return A new validation status handler instance
 	 */
-	static <T, L extends Component & HasText> ValidationStatusHandler<T> label(L statusLabel, boolean hideWhenValid) {
+	static <S, V, C extends ValueComponent<V>, L extends Component & HasText> ValidationStatusHandler<S, V, C> label(
+			L statusLabel, boolean hideWhenValid) {
 		return new LabelValidationStatusHandler<>(statusLabel, hideWhenValid);
 	}
 
@@ -97,22 +111,26 @@ public interface ValidationStatusHandler<T> {
 	 * <p>
 	 * This methods creates a notification validation status handler which displays only the first validation error.
 	 * </p>
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 * @return A new notification validation status handler instance
 	 */
-	static <T> ValidationStatusHandler<T> notification() {
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> notification() {
 		return new NotificationValidationStatusHandler<>(null, false);
 	}
 
 	/**
 	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} of type
 	 * {@link Notification#TYPE_ERROR_MESSAGE} to notify validation errors.
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 * @param showAllErrors <code>true</code> to display all validation errors, <code>false</code> to show only the
 	 *        first
 	 * @return A new notification validation status handler instance
 	 */
-	static <T> ValidationStatusHandler<T> notification(boolean showAllErrors) {
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> notification(boolean showAllErrors) {
 		return new NotificationValidationStatusHandler<>(null, showAllErrors);
 	}
 
@@ -121,11 +139,14 @@ public interface ValidationStatusHandler<T> {
 	 * <p>
 	 * This methods creates a notification validation status handler which displays only the first validation error.
 	 * </p>
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 * @param notification The notification instance to use, <code>null</code> for default
 	 * @return A new notification validation status handler instance
 	 */
-	static <T> ValidationStatusHandler<T> notification(Notification notification) {
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> notification(
+			Notification notification) {
 		return new NotificationValidationStatusHandler<>(notification, false);
 	}
 
@@ -134,10 +155,13 @@ public interface ValidationStatusHandler<T> {
 	 * @param notification The notification instance to use, <code>null</code> for default
 	 * @param showAllErrors <code>true</code> to display all validation errors, <code>false</code> to show only the
 	 *        first
-	 * @param <T> Value type
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 * @return A new notification validation status handler instance
 	 */
-	static <T> ValidationStatusHandler<T> notification(Notification notification, boolean showAllErrors) {
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> notification(Notification notification,
+			boolean showAllErrors) {
 		return new NotificationValidationStatusHandler<>(notification, showAllErrors);
 	}
 
@@ -166,12 +190,32 @@ public interface ValidationStatusHandler<T> {
 	/**
 	 * A validation status event.
 	 * 
+	 * @param <S> Validation source
 	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
 	 */
-	public interface ValidationStatusEvent<V> extends Serializable {
+	public interface ValidationStatusEvent<S, V, C extends ValueComponent<V>> extends Serializable {
 
 		/**
-		 * Get the current validation status
+		 * Ge the validation event source
+		 * @return the validation event source.
+		 */
+		S getSource();
+
+		/**
+		 * Get the component against whom the validation was performed, if available.
+		 * @return Optional validation event {@link Property}
+		 */
+		Optional<Property<V>> getProperty();
+
+		/**
+		 * Get the component against whom the validation was performed, if available.
+		 * @return Optional validation event component
+		 */
+		Optional<C> getComponent();
+
+		/**
+		 * Get the validation status.
 		 * @return the validation status (never null)
 		 */
 		Status getStatus();
@@ -220,19 +264,191 @@ public interface ValidationStatusHandler<T> {
 			return getError().map(e -> LocalizationContext.translate(e, true)).orElse(null);
 		}
 
-		/**
-		 * If the validation event refers to a {@link Property} binding, returns the property to which the value
-		 * component is bound.
-		 * @return Optional {@link Property} to which the value component source of the validation event is bound, empty
-		 *         if no property binding is available
-		 */
-		Optional<Property<V>> getProperty();
+		// ------- builders
 
 		/**
-		 * Get the {@link ValueComponent} against whom the validation was performed.
-		 * @return the source {@link ValueComponent}, empty if not available
+		 * Create a new {@link ValidationStatusEvent}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param status Validation status (not null)
+		 * @param errors Validation errors
+		 * @return A new {@link ValidationStatusEvent}
 		 */
-		Optional<ValueComponent<V>> getSource();
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> create(S source, Status status,
+				List<Localizable> errors) {
+			return new DefaultValidationStatusEvent<>(source, status, errors);
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param status Validation status (not null)
+		 * @param error Validation error
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> create(S source, Status status,
+				Localizable error) {
+			return create(source, status, (error != null) ? Collections.singletonList(error) : Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} bound to a property and/or a value component.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @param status Validation status (not null)
+		 * @param errors Validation errors
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> create(S source, C component,
+				Property<V> property, Status status, List<Localizable> errors) {
+			return new DefaultValidationStatusEvent<>(source, component, property, status, errors);
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} bound to a property and/or a value component.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @param status Validation status (not null)
+		 * @param error Validation error
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> create(S source, C component,
+				Property<V> property, Status status, Localizable error) {
+			return create(source, component, property, status,
+					(error != null) ? Collections.singletonList(error) : Collections.emptyList());
+		}
+
+		// ------- builders by status
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#UNRESOLVED}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> unresolved(S source) {
+			return new DefaultValidationStatusEvent<>(source, Status.UNRESOLVED, Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#UNRESOLVED}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> unresolved(S source, C component,
+				Property<V> property) {
+			return new DefaultValidationStatusEvent<>(source, component, property, Status.UNRESOLVED,
+					Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#VALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> valid(S source) {
+			return new DefaultValidationStatusEvent<>(source, Status.VALID, Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#VALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> valid(S source, C component,
+				Property<V> property) {
+			return new DefaultValidationStatusEvent<>(source, component, property, Status.VALID,
+					Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param errors Validation errors
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> invalid(S source,
+				List<Localizable> errors) {
+			return new DefaultValidationStatusEvent<>(source, Status.INVALID, errors);
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param error Validation error
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> invalid(S source, Localizable error) {
+			return new DefaultValidationStatusEvent<>(source, Status.INVALID,
+					(error != null) ? Collections.singletonList(error) : Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @param errors Validation errors
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> invalid(S source, C component,
+				Property<V> property, List<Localizable> errors) {
+			return new DefaultValidationStatusEvent<>(source, component, property, Status.INVALID, errors);
+		}
+
+		/**
+		 * Create a new {@link ValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <V> Validation value type
+		 * @param <C> Value component to which the validation event refers
+		 * @param source Event source (not null)
+		 * @param component Optional value component
+		 * @param property Optional property
+		 * @param error Validation error
+		 * @return A new {@link ValidationStatusEvent}
+		 */
+		static <S, V, C extends ValueComponent<V>> ValidationStatusEvent<S, V, C> invalid(S source, C component,
+				Property<V> property, Localizable error) {
+			return new DefaultValidationStatusEvent<>(source, component, property, Status.INVALID,
+					(error != null) ? Collections.singletonList(error) : Collections.emptyList());
+		}
 
 	}
 

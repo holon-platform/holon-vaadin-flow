@@ -18,16 +18,20 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.stream.Collectors;
 
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.vaadin.flow.component.notification.Notification;
 
 /**
  * A {@link ValidationStatusHandler} which uses an error {@link Notification} to notify validation errors.
  *
- * @param <T> Value type
+ * @param <S> Validation source
+ * @param <V> Validation value type
+ * @param <C> Value component to which the validation event refers
  *
  * @since 5.2.0
  */
-public class NotificationValidationStatusHandler<T> implements ValidationStatusHandler<T> {
+public class NotificationValidationStatusHandler<S, V, C extends ValueComponent<V>>
+		implements ValidationStatusHandler<S, V, C> {
 
 	private final Notification notification;
 	private final boolean showAllErrors;
@@ -44,13 +48,8 @@ public class NotificationValidationStatusHandler<T> implements ValidationStatusH
 		this.showAllErrors = showAllErrors;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValidationStatusHandler#validationStatusChange(com.holonplatform.vaadin.
-	 * components.ValidationStatusHandler.ValidationStatusEvent)
-	 */
 	@Override
-	public void validationStatusChange(ValidationStatusEvent<T> statusChangeEvent) {
+	public void validationStatusChange(ValidationStatusEvent<S, V, C> statusChangeEvent) {
 		if (statusChangeEvent.isInvalid()) {
 
 			String error = showAllErrors

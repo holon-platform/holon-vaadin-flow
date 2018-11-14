@@ -31,6 +31,7 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
@@ -268,14 +269,16 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	 *        (not null)
 	 * @return this
 	 */
-	<T> C validationStatusHandler(Property<T> property, ValidationStatusHandler<T> validationStatusHandler);
+	<T> C validationStatusHandler(Property<T> property,
+			ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler);
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use to track overall validation status changes.
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set (not null)
 	 * @return this
 	 */
-	C validationStatusHandler(ValidationStatusHandler<PropertyBox> validationStatusHandler);
+	C validationStatusHandler(
+			ValidationStatusHandler<PropertyInputGroup, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler);
 
 	/**
 	 * Use given label as status label to track overall validation status changes.

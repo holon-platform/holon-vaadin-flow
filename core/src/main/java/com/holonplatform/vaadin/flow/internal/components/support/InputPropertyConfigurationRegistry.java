@@ -32,6 +32,10 @@ public interface InputPropertyConfigurationRegistry {
 	 */
 	<T> InputPropertyConfiguration<T> get(Property<T> property);
 
+	/**
+	 * Create a new {@link InputPropertyConfigurationRegistry}.
+	 * @return A new {@link InputPropertyConfigurationRegistry}
+	 */
 	static InputPropertyConfigurationRegistry create() {
 		return new DefaultInputPropertyConfigurationRegistry();
 	}

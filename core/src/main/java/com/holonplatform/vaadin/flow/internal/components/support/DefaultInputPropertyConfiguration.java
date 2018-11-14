@@ -24,6 +24,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -43,7 +44,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	private Localizable requiredMessage;
 	private DefaultValueProvider<T> defaultValueProvider;
 	private List<Validator<T>> validators = new LinkedList<>();
-	private ValidationStatusHandler<T> validationStatusHandler;
+	private ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler;
 	private List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
 
 	public DefaultInputPropertyConfiguration(Property<T> property) {
@@ -152,7 +153,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler<T>> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<PropertyInputGroup, T, Input<T>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
 	}
 
@@ -163,7 +164,8 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(ValidationStatusHandler<T> validationStatusHandler) {
+	public void setValidationStatusHandler(
+			ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 

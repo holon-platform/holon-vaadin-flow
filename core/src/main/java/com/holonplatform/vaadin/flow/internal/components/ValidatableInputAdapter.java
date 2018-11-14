@@ -29,8 +29,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
-import com.holonplatform.vaadin.flow.internal.components.events.DefaultValidationStatusEvent;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -62,7 +61,8 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	/**
 	 * Validation status handler
 	 */
-	private ValidationStatusHandler<T> validationStatusHandler = ValidationStatusHandler.getDefault();
+	private ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler = ValidationStatusHandler
+			.getDefault();
 
 	/**
 	 * Whether to validate the input when value changes
@@ -219,7 +219,8 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 		return input.getEmptyValue();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#isEmpty()
 	 */
 	@Override
@@ -263,8 +264,8 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	public void clear() {
 		ValidatableInput.super.clear();
 		// notify ValidationStatusHandler
-		getValidationStatusHandler().ifPresent(vsh -> vsh
-				.validationStatusChange(new DefaultValidationStatusEvent<>(Status.UNRESOLVED, null, this, null)));
+		getValidationStatusHandler()
+				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this, this, null)));
 	}
 
 	/*
@@ -352,7 +353,8 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 * components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(ValidationStatusHandler<T> validationStatusHandler) {
+	public void setValidationStatusHandler(
+			ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 
@@ -361,7 +363,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 * @see com.holonplatform.vaadin.components.ValidatableInput#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler<T>> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<ValidatableInput<T>, T, Input<T>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
 	}
 
@@ -392,20 +394,19 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 		// collect validation exceptions, if any
 		if (!failures.isEmpty()) {
 
-			ValidationException validationException = (failures.size() == 1) ? failures.getFirst()
+			final ValidationException validationException = (failures.size() == 1) ? failures.getFirst()
 					: new ValidationException(failures.toArray(new ValidationException[0]));
 
-			// notify ValidationStatusHandler
-			getValidationStatusHandler()
-					.ifPresent(vsh -> vsh.validationStatusChange(new DefaultValidationStatusEvent<>(Status.INVALID,
-							validationException.getValidationMessages(), this, null)));
+			// INVALID: notify ValidationStatusHandler
+			getValidationStatusHandler().ifPresent(vsh -> vsh.validationStatusChange(
+					ValidationStatusEvent.invalid(this, this, null, validationException.getValidationMessages())));
 
 			throw validationException;
 		}
 
 		// VALID: notify ValidationStatusHandler
-		getValidationStatusHandler().ifPresent(
-				vsh -> vsh.validationStatusChange(new DefaultValidationStatusEvent<>(Status.VALID, null, this, null)));
+		getValidationStatusHandler()
+				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.valid(this, this, null)));
 	}
 
 }

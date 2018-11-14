@@ -53,7 +53,6 @@ import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.CallbackPropertyHandler;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -118,16 +117,6 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 */
 	default Optional<HasPlaceholder> hasPlaceholder() {
 		return Optional.empty();
-	}
-
-	/**
-	 * Checks whether the {@link Component} supports input validation, using the {@link HasValidation} interface.
-	 * @return If the component supports input validation, return the {@link HasValidation} reference. An empty Optional
-	 *         otherwise.
-	 */
-	default Optional<HasValidation> hasValidation() {
-		return (getComponent() instanceof HasValidation) ? Optional.of((HasValidation) getComponent())
-				: Optional.empty();
 	}
 
 	// Adapters

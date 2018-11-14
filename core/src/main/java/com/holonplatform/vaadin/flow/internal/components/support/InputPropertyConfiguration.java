@@ -22,6 +22,7 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -99,13 +100,13 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Get the {@link ValidationStatusHandler} to use.
 	 * @return Optional {@link ValidationStatusHandler}
 	 */
-	Optional<ValidationStatusHandler<T>> getValidationStatusHandler();
+	Optional<ValidationStatusHandler<PropertyInputGroup, T, Input<T>>> getValidationStatusHandler();
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use.
 	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
 	 */
-	void setValidationStatusHandler(ValidationStatusHandler<T> validationStatusHandler);
+	void setValidationStatusHandler(ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler);
 
 	/**
 	 * Get the property {@link ValueChangeListener}s.

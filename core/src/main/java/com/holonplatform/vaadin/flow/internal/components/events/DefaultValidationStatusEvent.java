@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
@@ -28,62 +29,66 @@ import com.holonplatform.vaadin.flow.components.ValueComponent;
 /**
  * Default {@link ValidationStatusEvent} implementation.
  *
+ * @param <S> Validation source
  * @param <V> Validation value type
+ * @param <C> Value component to which the validation event refers
  *
- * @since 5.0.0
+ * @since 5.2.0
  */
-public class DefaultValidationStatusEvent<V> implements ValidationStatusEvent<V> {
+public class DefaultValidationStatusEvent<S, V, C extends ValueComponent<V>> implements ValidationStatusEvent<S, V, C> {
 
 	private static final long serialVersionUID = -2504760138806763843L;
 
+	private final S source;
+	private final C component;
+	private final Property<V> property;
 	private final Status status;
 	private final List<Localizable> errors;
-	private final ValueComponent<V> source;
-	private final Property<V> property;
 
-	public DefaultValidationStatusEvent(Status status, List<Localizable> errors, ValueComponent<V> source,
-			Property<V> property) {
+	public DefaultValidationStatusEvent(S source, Status status, List<Localizable> errors) {
+		this(source, null, null, status, errors);
+	}
+
+	public DefaultValidationStatusEvent(S source, C component, Property<V> property, Status status,
+			List<Localizable> errors) {
 		super();
+		ObjectUtils.argumentNotNull(source, "Source must be not null");
+		ObjectUtils.argumentNotNull(status, "Status must be not null");
+		this.source = source;
+		this.component = component;
+		this.property = property;
 		this.status = status;
 		this.errors = errors;
-		this.source = source;
-		this.property = property;
+
+	}
+
+	@Override
+	public S getSource() {
+		return source;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValidationStatusHandler.ValidationStatusEvent#getStatus()
+	 * @see com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent#getComponent()
 	 */
 	@Override
-	public Status getStatus() {
-		return status;
+	public Optional<C> getComponent() {
+		return Optional.ofNullable(component);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValidationStatusHandler.ValidationStatusEvent#getErrors()
-	 */
-	@Override
-	public List<Localizable> getErrors() {
-		return (errors != null) ? errors : Collections.emptyList();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValidationStatusHandler.ValidationStatusEvent#getProperty()
-	 */
 	@Override
 	public Optional<Property<V>> getProperty() {
 		return Optional.ofNullable(property);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValidationStatusHandler.ValidationStatusEvent#getSource()
-	 */
 	@Override
-	public Optional<ValueComponent<V>> getSource() {
-		return Optional.ofNullable(source);
+	public Status getStatus() {
+		return status;
+	}
+
+	@Override
+	public List<Localizable> getErrors() {
+		return (errors != null) ? errors : Collections.emptyList();
 	}
 
 }

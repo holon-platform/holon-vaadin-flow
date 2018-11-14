@@ -69,13 +69,12 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.components.ValidatableInput.Builder#validationStatusHandler(com.holonplatform.vaadin
-	 * .components.ValidationStatusHandler)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder#validationStatusHandler(com.
+	 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 	 */
 	@Override
 	public ValidatableInputBuilder<T, ValidatableInput<T>> validationStatusHandler(
-			ValidationStatusHandler<T> validationStatusHandler) {
+			ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler) {
 		ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
 		instance.setValidationStatusHandler(validationStatusHandler);
 		return this;

@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.PropertyInputForm;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
@@ -430,12 +431,12 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#validationStatusHandler(com.holonplatform
-		 * .core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#validationStatusHandler(com.
+		 * holonplatform.core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public <T> PropertyInputFormBuilder<C> validationStatusHandler(Property<T> property,
-				ValidationStatusHandler<T> validationStatusHandler) {
+				ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler) {
 			inputGroupBuilder.validationStatusHandler(property, validationStatusHandler);
 			return this;
 		}
@@ -443,12 +444,12 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#validationStatusHandler(com.holonplatform
-		 * .vaadin.flow.components.ValidationStatusHandler)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#validationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public PropertyInputFormBuilder<C> validationStatusHandler(
-				ValidationStatusHandler<PropertyBox> validationStatusHandler) {
+				ValidationStatusHandler<PropertyInputGroup, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler) {
 			inputGroupBuilder.validationStatusHandler(validationStatusHandler);
 			return this;
 		}

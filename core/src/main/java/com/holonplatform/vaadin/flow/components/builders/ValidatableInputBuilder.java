@@ -54,7 +54,8 @@ public interface ValidatableInputBuilder<T, C extends ValidatableInput<T>> {
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set (not null)
 	 * @return this
 	 */
-	ValidatableInputBuilder<T, C> validationStatusHandler(ValidationStatusHandler<T> validationStatusHandler);
+	ValidatableInputBuilder<T, C> validationStatusHandler(
+			ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler);
 
 	/**
 	 * Sets whether to validate the {@link Input} component value every time the {@link Input} value changes.

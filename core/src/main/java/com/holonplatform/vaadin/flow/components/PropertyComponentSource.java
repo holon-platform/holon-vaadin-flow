@@ -23,7 +23,7 @@ import com.vaadin.flow.component.Component;
 /**
  * Represents a source of {@link Component}s associated with a {@link Property}.
  *
- * @since 5.2.6
+ * @since 5.2.0
  */
 public interface PropertyComponentSource {
 

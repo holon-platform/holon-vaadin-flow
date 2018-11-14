@@ -255,7 +255,7 @@ public class TestValidatableInput {
 
 	private class ValidationEventValue<T> {
 
-		ValidationStatusEvent<T> event;
+		ValidationStatusEvent<ValidatableInput<T>, T, Input<T>> event;
 
 	}
 

@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.support;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,7 +32,7 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
  */
 public class DefaultViewComponentPropertyRegistry implements ViewComponentPropertyRegistry {
 
-	private final Map<Property<?>, ViewComponent<?>> components = new HashMap<>();
+	private final Map<Property<?>, ViewComponent<?>> components = new LinkedHashMap<>();
 
 	/*
 	 * (non-Javadoc)
