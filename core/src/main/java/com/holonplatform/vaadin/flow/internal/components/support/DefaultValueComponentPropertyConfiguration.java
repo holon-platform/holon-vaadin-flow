@@ -35,8 +35,6 @@ public class DefaultValueComponentPropertyConfiguration<T, V extends ValueCompon
 
 	private final Property<T> property;
 
-	private V valueComponent;
-
 	private boolean hidden;
 
 	private PropertyRenderer<V, T> renderer;
@@ -54,27 +52,6 @@ public class DefaultValueComponentPropertyConfiguration<T, V extends ValueCompon
 	@Override
 	public Property<T> getProperty() {
 		return property;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.support.ValueComponentPropertyConfiguration#getValueComponent()
-	 */
-	@Override
-	public Optional<V> getValueComponent() {
-		return Optional.ofNullable(valueComponent);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.support.ValueComponentPropertyConfiguration#setValueComponent(
-	 * com.holonplatform.vaadin.flow.components.ValueComponent)
-	 */
-	@Override
-	public void setValueComponent(V valueComponent) {
-		this.valueComponent = valueComponent;
 	}
 
 	/*

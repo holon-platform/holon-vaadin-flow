@@ -28,6 +28,7 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
@@ -87,8 +88,10 @@ public class TestValidatableInput {
 		assertFalse(input3.isValid());
 		Assertions.assertThrows(ValidationException.class, () -> input3.validate());
 
-		final ValidatableInput<String> input4 = ValidatableInput.builder(Input.string().build()).withVaadinValidator(
-				com.vaadin.flow.data.binder.Validator.from(v -> v == null || v.length() <= 1, "Max 1")).build();
+		final ValidatableInput<String> input4 = ValidatableInput.builder(Input.string().build())
+				.withValidator(Validatable
+						.adapt(com.vaadin.flow.data.binder.Validator.from(v -> v == null || v.length() <= 1, "Max 1")))
+				.build();
 		assertTrue(input4.isValid());
 		Assertions.assertDoesNotThrow(() -> input4.validate());
 

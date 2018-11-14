@@ -38,18 +38,6 @@ public interface ValueComponentPropertyConfiguration<T, V extends ValueComponent
 	Property<T> getProperty();
 
 	/**
-	 * Get the value component bound to the property, if available.
-	 * @return The property value component
-	 */
-	Optional<V> getValueComponent();
-
-	/**
-	 * Set the value component bound to the property.
-	 * @param valueComponent The property value component to set
-	 */
-	void setValueComponent(V valueComponent);
-
-	/**
 	 * Get whether the property is hidden.
 	 * @return whether the property is hidden
 	 */

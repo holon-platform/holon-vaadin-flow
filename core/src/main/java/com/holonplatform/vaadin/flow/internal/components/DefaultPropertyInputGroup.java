@@ -99,6 +99,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	private boolean stopOverallValidationAtFirstFailure = false;
 
 	/**
+	 * Use default property validation status handler
+	 */
+	private boolean useDefaultPropertyValidationStatusHandler = true;
+
+	/**
 	 * Constructor.
 	 * @param propertySet The property set (not null)
 	 */
@@ -484,6 +489,23 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		this.stopOverallValidationAtFirstFailure = stopOverallValidationAtFirstFailure;
 	}
 
+	/**
+	 * Get whether to use the default {@link ValidationStatusHandler} for property inputs.
+	 * @return whether to use the default {@link ValidationStatusHandler} for property inputs
+	 */
+	public boolean isUseDefaultPropertyValidationStatusHandler() {
+		return useDefaultPropertyValidationStatusHandler;
+	}
+
+	/**
+	 * Set whether to use the default {@link ValidationStatusHandler} for property inputs.
+	 * @param useDefaultPropertyValidationStatusHandler whether to use the default {@link ValidationStatusHandler} for
+	 *        property inputs
+	 */
+	public void setUseDefaultPropertyValidationStatusHandler(boolean useDefaultPropertyValidationStatusHandler) {
+		this.useDefaultPropertyValidationStatusHandler = useDefaultPropertyValidationStatusHandler;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
@@ -592,6 +614,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			if (isValidateOnValueChange()) {
 				input.addValueChangeListener(e -> validateProperty(configuration.getProperty(), e.getValue()));
 			}
+			// default validation status handler
+			if (!configuration.getValidationStatusHandler().isPresent()
+					&& isUseDefaultPropertyValidationStatusHandler()) {
+				configuration.setValidationStatusHandler(ValidationStatusHandler.getDefault());
+			}
 		}
 		return input;
 	}
@@ -691,15 +718,16 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 				}
 			}
 			// invalid state
-			input.hasValidation().ifPresent(v -> {
-				if (v.isInvalid()) {
-					String message = v.getErrorMessage();
-					if (message == null || message.trim().equals("")) {
-						message = "Input value is not valid";
-					}
-					failures.add(new ValidationException(message));
-				}
-			});
+			// TODO
+//			input.hasValidation().ifPresent(v -> {
+//				if (v.isInvalid()) {
+//					String message = v.getErrorMessage();
+//					if (message == null || message.trim().equals("")) {
+//						message = "Input value is not valid";
+//					}
+//					failures.add(new ValidationException(message));
+//				}
+//			});
 			// property validators
 			property.getValidators().forEach(v -> {
 				try {
@@ -742,8 +770,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	protected <T> void resetValidationStatus(Property<T> property) {
 		if (property != null) {
 			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
-				validationStatusHandler.validationStatusChange(ValidationStatusEvent.unresolved(this,
-						configuration.get(property).getValueComponent().orElse(null), property));
+				validationStatusHandler.validationStatusChange(
+						ValidationStatusEvent.unresolved(this, getInput(property).orElse(null), property));
 			});
 		} else {
 			getValidationStatusHandler()
@@ -759,8 +787,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	protected <T> void notifyValidValidationStatus(Property<T> property) {
 		if (property != null) {
 			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
-				validationStatusHandler.validationStatusChange(ValidationStatusEvent.valid(this,
-						configuration.get(property).getValueComponent().orElse(null), property));
+				validationStatusHandler.validationStatusChange(
+						ValidationStatusEvent.valid(this, getInput(property).orElse(null), property));
 			});
 		} else {
 			getValidationStatusHandler()
@@ -778,8 +806,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		if (property != null) {
 			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
 				validationStatusHandler.validationStatusChange(ValidationStatusEvent.invalid(this,
-						configuration.get(property).getValueComponent().orElse(null), property,
-						e.getValidationMessages()));
+						getInput(property).orElse(null), property, e.getValidationMessages()));
 			});
 		} else {
 			getValidationStatusHandler().ifPresent(
@@ -1014,6 +1041,17 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		@Override
 		public B stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
 			instance.setStopOverallValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#
+		 * disableDefaultPropertyValidationStatusHandler()
+		 */
+		@Override
+		public B disableDefaultPropertyValidationStatusHandler() {
+			instance.setUseDefaultPropertyValidationStatusHandler(false);
 			return builder();
 		}
 

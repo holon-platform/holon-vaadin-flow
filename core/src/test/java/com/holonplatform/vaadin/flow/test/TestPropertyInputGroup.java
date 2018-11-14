@@ -239,24 +239,6 @@ public class TestPropertyInputGroup {
 	}
 
 	@Test
-	public void testHasValidation() {
-
-		TextField tf = new TextField();
-		tf.setInvalid(true);
-		tf.setErrorMessage("Test error");
-
-		PropertyInputGroup group = PropertyInputGroup.builder(ID, NAME).bindField(NAME, tf).build();
-		assertEquals(tf, group.getInput(NAME).map(i -> i.getComponent()).orElse(null));
-
-		group.setValue(PropertyBox.builder(ID, NAME).set(NAME, "test").build());
-		assertFalse(group.isValid());
-
-		ValidationException ve = assertThrows(ValidationException.class, () -> group.validate());
-		assertEquals("Test error", ve.getMessage());
-
-	}
-
-	@Test
 	public void testDefaultValue() {
 
 		PropertyInputGroup group = PropertyInputGroup.builder(ID, NAME).defaultValue(NAME, property -> "DFT").build();

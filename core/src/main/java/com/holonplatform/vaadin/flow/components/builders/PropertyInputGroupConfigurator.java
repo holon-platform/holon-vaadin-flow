@@ -281,6 +281,15 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 			ValidationStatusHandler<PropertyInputGroup, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler);
 
 	/**
+	 * By default, a default {@link ValidationStatusHandler} is associated to each group property {@link Input}. This
+	 * method can be used to avoid the default {@link ValidationStatusHandler} configuration.
+	 * @return this
+	 * @see ValidationStatusHandler#getDefault()
+	 * @see #validationStatusHandler(Property, ValidationStatusHandler)
+	 */
+	C disableDefaultPropertyValidationStatusHandler();
+
+	/**
 	 * Use given label as status label to track overall validation status changes.
 	 * @param statusLabel the status label to set (not null)
 	 * @return this

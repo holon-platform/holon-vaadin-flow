@@ -489,6 +489,17 @@ public class DefaultPropertyInputForm<C extends Component>
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#
+		 * disableDefaultPropertyValidationStatusHandler()
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> disableDefaultPropertyValidationStatusHandler() {
+			inputGroupBuilder.disableDefaultPropertyValidationStatusHandler();
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
 		 * .core.property.Property, com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
