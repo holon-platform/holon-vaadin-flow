@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.internal.components;
+package com.holonplatform.vaadin.flow.internal.components.events;
 
 import java.util.Collections;
 import java.util.Optional;

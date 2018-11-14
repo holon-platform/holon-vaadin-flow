@@ -597,28 +597,6 @@ public class TestPropertyInputGroup {
 		assertNull(perror.value);
 		assertNotNull(error.value);
 
-		error.value = null;
-		perror.value = null;
-
-		final PropertyInputGroup group3 = PropertyInputGroup.builder(SET).withValidator(NAME, Validator.max(2))
-				.propertiesValidationStatusHandler(e -> {
-					perror.value = e.isInvalid() ? e.getErrorMessage() : null;
-				}).build();
-
-		assertTrue(group3.isValid());
-		assertNull(perror.value);
-
-		group3.setValue(PropertyBox.builder(SET).set(NAME, "abc").build());
-		ve = assertThrows(ValidationException.class, () -> group3.validate());
-		assertNotNull(perror.value);
-
-		group3.clear();
-		assertNull(perror.value);
-
-		group3.setValue(PropertyBox.builder(SET).set(NAME, "ab").build());
-		assertTrue(group3.isValid());
-		assertNull(perror.value);
-
 	}
 
 }

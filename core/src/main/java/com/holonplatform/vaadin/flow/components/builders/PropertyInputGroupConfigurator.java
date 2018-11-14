@@ -271,17 +271,6 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	<T> C validationStatusHandler(Property<T> property, ValidationStatusHandler<T> validationStatusHandler);
 
 	/**
-	 * Set the {@link ValidationStatusHandler} to use to track all the properties validation status changes.
-	 * <p>
-	 * A specific {@link ValidationStatusHandler} for each property can be configured using
-	 * {@link #validationStatusHandler(Property, ValidationStatusHandler)}.
-	 * </p>
-	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
-	 * @return this
-	 */
-	C propertiesValidationStatusHandler(ValidationStatusHandler<?> validationStatusHandler);
-
-	/**
 	 * Set the {@link ValidationStatusHandler} to use to track overall validation status changes.
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set (not null)
 	 * @return this

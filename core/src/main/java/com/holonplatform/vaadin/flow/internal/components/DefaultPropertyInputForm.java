@@ -443,19 +443,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#propertiesValidationStatusHandler(com.
-		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> propertiesValidationStatusHandler(
-				ValidationStatusHandler<?> validationStatusHandler) {
-			inputGroupBuilder.propertiesValidationStatusHandler(validationStatusHandler);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#validationStatusHandler(com.holonplatform
 		 * .vaadin.flow.components.ValidationStatusHandler)
 		 */

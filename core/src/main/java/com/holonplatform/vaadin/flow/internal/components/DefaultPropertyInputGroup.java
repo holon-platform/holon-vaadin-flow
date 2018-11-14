@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultValidationStatusEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry;
@@ -82,11 +83,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Overall validation status handler
 	 */
 	private ValidationStatusHandler<PropertyBox> validationStatusHandler;
-
-	/**
-	 * Validation status handler for all the properties
-	 */
-	private ValidationStatusHandler<?> propertiesValidationStatusHandler = null;
 
 	/**
 	 * Whether to validate inputs at value change
@@ -255,6 +251,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * to given <code>propertyBox</code>,
 	 * @param propertyBox the {@link PropertyBox} into which to write the property values (not null)
 	 * @param validate whether to perform inputs and overall validation
+	 * @throws ValidationException If <code>validate</code> is <code>true</code> and validation fails
 	 */
 	private void flush(PropertyBox propertyBox, boolean validate) {
 		ObjectUtils.argumentNotNull(propertyBox, "PropertyBox must be not null");
@@ -455,22 +452,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	}
 
 	/**
-	 * Set the {@link ValidationStatusHandler} to use for all the properties.
-	 * @param propertiesValidationStatusHandler the {@link ValidationStatusHandler} to set
-	 */
-	public void setPropertiesValidationStatusHandler(ValidationStatusHandler<?> propertiesValidationStatusHandler) {
-		this.propertiesValidationStatusHandler = propertiesValidationStatusHandler;
-	}
-
-	/**
-	 * Get the {@link ValidationStatusHandler} to use for all the properties.
-	 * @return properties {@link ValidationStatusHandler}
-	 */
-	protected Optional<ValidationStatusHandler<?>> getPropertiesValidationStatusHandler() {
-		return Optional.ofNullable(propertiesValidationStatusHandler);
-	}
-
-	/**
 	 * Get whether to stop validation at first validation failure.
 	 * @return whether to stop validation at first validation failure
 	 */
@@ -609,7 +590,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			}
 			// Validate on value change
 			if (isValidateOnValueChange()) {
-				input.addValueChangeListener(e -> validatePropertyInput(configuration.getProperty(), e.getValue()));
+				input.addValueChangeListener(e -> validateProperty(configuration.getProperty(), e.getValue()));
 			}
 		}
 		return input;
@@ -668,15 +649,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		List<PropertyBinding<Object, Input<Object>>> bindings = components.stream().collect(Collectors.toList());
 		for (PropertyBinding<Object, Input<Object>> b : bindings) {
 			if (!b.getComponent().isReadOnly()) {
-				try {
-					validatePropertyInput(b.getProperty(), b.getComponent().getValue());
-				} catch (ValidationException e) {
-					failures.add(e);
-
-					if (isStopValidationAtFirstFailure()) {
-						// break if stop validation at first failure
-						break;
-					}
+				final Optional<ValidationException> ve = validateProperty(b.getProperty(), b.getComponent().getValue());
+				ve.ifPresent(v -> failures.add(v));
+				if (isStopValidationAtFirstFailure() && ve.isPresent()) {
+					// break if stop validation at first failure
+					break;
 				}
 			}
 		}
@@ -696,58 +673,65 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param <T> Property type
 	 * @param property Property to validate
 	 * @param value Value to validate
-	 * @throws ValidationException If a validation error occurred
+	 * @return Optional {@link ValidationException} if the input validation fails
 	 */
-	private <T> void validatePropertyInput(final Property<T> property, final T value) throws ValidationException {
-		Input<T> input = getInput(property).orElse(null);
-		if (input != null) {
-
-			final LinkedList<ValidationException> failures = new LinkedList<>();
-
-			try {
-				// required
-				if (input.isRequired()) {
-					RequiredInputValidator<T> requiredValidator = configuration.get(property).getRequiredMessage()
-							.map(rm -> RequiredInputValidator.create(input, rm))
-							.orElseGet(() -> RequiredInputValidator.create(input));
+	private <T> Optional<ValidationException> validateProperty(final Property<T> property, final T value)
+			throws ValidationException {
+		final LinkedList<ValidationException> failures = new LinkedList<>();
+		getInput(property).ifPresent(input -> {
+			// required
+			if (input.isRequired()) {
+				RequiredInputValidator<T> requiredValidator = configuration.get(property).getRequiredMessage()
+						.map(rm -> RequiredInputValidator.create(input, rm))
+						.orElseGet(() -> RequiredInputValidator.create(input));
+				try {
 					requiredValidator.validate(value);
+				} catch (ValidationException e) {
+					failures.add(e);
 				}
-				// invalid state
-				input.hasValidation().ifPresent(v -> {
-					if (v.isInvalid()) {
-						String message = v.getErrorMessage();
-						if (message == null || message.trim().equals("")) {
-							message = "Input value is not valid";
-						}
-						failures.add(new ValidationException(message));
+			}
+			// invalid state
+			input.hasValidation().ifPresent(v -> {
+				if (v.isInvalid()) {
+					String message = v.getErrorMessage();
+					if (message == null || message.trim().equals("")) {
+						message = "Input value is not valid";
 					}
-				});
-				// property validators
-				property.getValidators().forEach(v -> {
+					failures.add(new ValidationException(message));
+				}
+			});
+			// property validators
+			property.getValidators().forEach(v -> {
+				try {
 					v.validate(value);
-				});
-				// input validators
-				configuration.get(property).getValidators().forEach(v -> {
+				} catch (ValidationException e) {
+					failures.add(e);
+				}
+			});
+			// input validators
+			configuration.get(property).getValidators().forEach(v -> {
+				try {
 					v.validate(value);
-				});
-			} catch (ValidationException ve) {
-				failures.add(ve);
-			}
+				} catch (ValidationException e) {
+					failures.add(e);
+				}
+			});
+		});
 
-			if (!failures.isEmpty()) {
-
-				ValidationException ve = (failures.size() == 1) ? failures.getFirst()
-						: new ValidationException(failures.toArray(new ValidationException[0]));
-
-				// notify status
-				notifyInvalidValidationStatus(ve, property);
-
-				throw ve;
-			}
-
-			// notify validation status
-			notifyValidValidationStatus(property);
+		if (!failures.isEmpty()) {
+			// validation failed
+			ValidationException ve = (failures.size() == 1) ? failures.getFirst()
+					: new ValidationException(failures.toArray(new ValidationException[0]));
+			// notify status
+			notifyInvalidValidationStatus(ve, property);
+			// return the validation exception
+			return Optional.ofNullable(ve);
 		}
+
+		// notify validation status
+		notifyValidValidationStatus(property);
+		// no validation errors
+		return Optional.empty();
 	}
 
 	/**
@@ -755,20 +739,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param <T> Property type
 	 * @param property Validation property, if <code>null</code> resets the overall validation status
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> void resetValidationStatus(Property<T> property) {
 		if (property != null) {
-			final Optional<ValidationStatusHandler<T>> propertyVsh = configuration.get(property)
-					.getValidationStatusHandler();
-			if (propertyVsh.isPresent()) {
-				propertyVsh.get().validationStatusChange(new DefaultValidationStatusEvent<>(Status.UNRESOLVED, null,
-						configuration.get(property).getValueComponent().orElse(null), property));
-			} else {
-				getPropertiesValidationStatusHandler().map(vsh -> (ValidationStatusHandler) vsh).ifPresent(vsh -> {
-					vsh.validationStatusChange(new DefaultValidationStatusEvent<>(Status.UNRESOLVED, null,
-							configuration.get(property).getValueComponent().orElse(null), property));
-				});
-			}
+			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
+				validationStatusHandler.validationStatusChange(new DefaultValidationStatusEvent<>(Status.UNRESOLVED,
+						null, configuration.get(property).getValueComponent().orElse(null), property));
+			});
 		} else {
 			getValidationStatusHandler().ifPresent(vsh -> vsh
 					.validationStatusChange(new DefaultValidationStatusEvent<>(Status.UNRESOLVED, null, null, null)));
@@ -780,20 +756,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param <T> Property type
 	 * @param property Validation property, if <code>null</code> notify the overall validation status
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> void notifyValidValidationStatus(Property<T> property) {
 		if (property != null) {
-			final Optional<ValidationStatusHandler<T>> propertyVsh = configuration.get(property)
-					.getValidationStatusHandler();
-			if (propertyVsh.isPresent()) {
-				propertyVsh.get().validationStatusChange(new DefaultValidationStatusEvent<>(Status.VALID, null,
+			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
+				validationStatusHandler.validationStatusChange(new DefaultValidationStatusEvent<>(Status.VALID, null,
 						configuration.get(property).getValueComponent().orElse(null), property));
-			} else {
-				getPropertiesValidationStatusHandler().map(vsh -> (ValidationStatusHandler) vsh).ifPresent(vsh -> {
-					vsh.validationStatusChange(new DefaultValidationStatusEvent<>(Status.VALID, null,
-							configuration.get(property).getValueComponent().orElse(null), property));
-				});
-			}
+			});
 		} else {
 			getValidationStatusHandler().ifPresent(vsh -> vsh
 					.validationStatusChange(new DefaultValidationStatusEvent<>(Status.VALID, null, null, null)));
@@ -806,22 +774,13 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param e Validation exception
 	 * @param property Validation property, if <code>null</code> notify the overall validation status
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> void notifyInvalidValidationStatus(ValidationException e, Property<T> property) {
 		if (property != null) {
-			final Optional<ValidationStatusHandler<T>> propertyVsh = configuration.get(property)
-					.getValidationStatusHandler();
-			if (propertyVsh.isPresent()) {
-				propertyVsh.get().validationStatusChange(
+			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
+				validationStatusHandler.validationStatusChange(
 						new DefaultValidationStatusEvent<>(Status.INVALID, e.getValidationMessages(),
 								configuration.get(property).getValueComponent().orElse(null), property));
-			} else {
-				getPropertiesValidationStatusHandler().map(vsh -> (ValidationStatusHandler) vsh).ifPresent(vsh -> {
-					vsh.validationStatusChange(
-							new DefaultValidationStatusEvent<>(Status.INVALID, e.getValidationMessages(),
-									configuration.get(property).getValueComponent().orElse(null), property));
-				});
-			}
+			});
 		} else {
 			getValidationStatusHandler().ifPresent(vsh -> vsh.validationStatusChange(
 					new DefaultValidationStatusEvent<>(Status.INVALID, e.getValidationMessages(), null, null)));
@@ -999,18 +958,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
 			instance.getPropertyConfiguration(property).setValidationStatusHandler(validationStatusHandler);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#propertiesValidationStatusHandler(com.
-		 * holonplatform.vaadin.components.ValidationStatusHandler)
-		 */
-		@Override
-		public B propertiesValidationStatusHandler(ValidationStatusHandler<?> validationStatusHandler) {
-			ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
-			instance.setPropertiesValidationStatusHandler(validationStatusHandler);
 			return builder();
 		}
 

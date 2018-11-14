@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -565,7 +566,10 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	 */
 	@Override
 	public Registration addValueChangeListener(Input.ValueChangeListener<T> listener) {
-		return ValueChangeListenerUtils.adapt(field, this, listener);
+		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+		return field
+				.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this, e.getOldValue(),
+						e.getValue(), (e instanceof ComponentEvent) ? ((ComponentEvent<?>) e).isFromClient() : false)));
 	}
 
 	/**

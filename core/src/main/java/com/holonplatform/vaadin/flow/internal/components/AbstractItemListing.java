@@ -64,6 +64,7 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyl
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
