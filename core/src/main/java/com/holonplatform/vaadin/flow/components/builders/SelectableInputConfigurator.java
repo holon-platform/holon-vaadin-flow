@@ -22,11 +22,12 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
  * Configurator for {@link Selectable} input components.
  * 
  * @param <T> Value type
+ * @param <S> Selection type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface SelectableInputConfigurator<T, C extends SelectableInputConfigurator<T, C>>
+public interface SelectableInputConfigurator<T, S, C extends SelectableInputConfigurator<T, S, C>>
 		extends InputConfigurator<T, C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
 		DeferrableLocalizationConfigurator<C> {
 
@@ -35,6 +36,6 @@ public interface SelectableInputConfigurator<T, C extends SelectableInputConfigu
 	 * @param selectionListener The listener to add (not null)
 	 * @return this
 	 */
-	C withSelectionListener(SelectionListener<T> selectionListener);
+	C withSelectionListener(SelectionListener<S> selectionListener);
 
 }

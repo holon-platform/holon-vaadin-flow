@@ -25,17 +25,15 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
-import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemOptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyOptionsModeSingleSelectInputBuilder;
-import com.vaadin.flow.component.Component;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyOptionsModeMultiSelectInputBuilder;
 import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+ * {@link MultiSelect} input builder for the <em>options</em> rendering mode.
  *
  * @param <T> Value type
  * @param <ITEM> Item type
@@ -43,16 +41,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  *
  * @since 5.2.0
  */
-public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputBuilder<T, ITEM, B>, HasLabelConfigurator<B> {
-
-	/**
-	 * Sets the {@link ComponentRenderer} responsible to render the individual items in the list of possible choices.
-	 * The renderer is applied to each item to create a component which represents the item.
-	 * @param renderer the item renderer, not <code>null</code>
-	 * @return this
-	 */
-	B renderer(ComponentRenderer<? extends Component, ITEM> renderer);
+public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsModeMultiSelectInputBuilder<T, ITEM, B>>
+		extends MultiSelectInputBuilder<T, ITEM, B>, HasLabelConfigurator<B> {
 
 	/**
 	 * Sets the item enabled state predicate. The predicate is applied to each item to determine whether the item should
@@ -116,38 +106,38 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	// specific builders
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 * {@link MultiSelect} input builder for the <em>options</em> rendering mode.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface ItemOptionsModeSingleSelectInputBuilder<T, ITEM>
-			extends OptionsModeSingleSelectInputBuilder<T, ITEM, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
-			HasBeanDatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface ItemOptionsModeMultiSelectInputBuilder<T, ITEM>
+			extends OptionsModeMultiSelectInputBuilder<T, ITEM, ItemOptionsModeMultiSelectInputBuilder<T, ITEM>>,
+			HasBeanDatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM>, ItemOptionsModeMultiSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link MultiSelect} input builder for the <em>options</em> rendering mode with
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
-			OptionsModeSingleSelectInputBuilder<T, ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
-			DatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
+			OptionsModeMultiSelectInputBuilder<T, ITEM, DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM>>,
+			DatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 * {@link Property} model based {@link MultiSelect} input builder for the <em>options</em> rendering mode.
 	 *
 	 * @param <T> Value type
 	 */
-	public interface PropertyOptionsModeSingleSelectInputBuilder<T>
-			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, PropertyOptionsModeSingleSelectInputBuilder<T>>,
-			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>> {
+	public interface PropertyOptionsModeMultiSelectInputBuilder<T>
+			extends OptionsModeMultiSelectInputBuilder<T, PropertyBox, PropertyOptionsModeMultiSelectInputBuilder<T>>,
+			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeMultiSelectInputBuilder<T>, PropertyOptionsModeMultiSelectInputBuilder<T>> {
 
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
@@ -161,72 +151,72 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 		 *         {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
-		DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
+		DatastorePropertyOptionsModeMultiSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
 
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link Property} model based {@link MultiSelect} input builder for the <em>options</em> rendering mode with
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 */
-	public interface DatastorePropertyOptionsModeSingleSelectInputBuilder<T> extends
-			OptionsModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
+	public interface DatastorePropertyOptionsModeMultiSelectInputBuilder<T> extends
+			OptionsModeMultiSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>>,
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>> {
 
 	}
 
 	// builders
 
 	/**
-	 * Create a new {@link ItemOptionsModeSingleSelectInputBuilder}.
+	 * Create a new {@link ItemOptionsModeMultiSelectInputBuilder}.
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 * @param type Selection value type (not null)
 	 * @param itemType Selection items type (not null)
 	 * @param itemConverter The item converter to use (not null)
-	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
 	 */
-	static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
+	static <T, ITEM> ItemOptionsModeMultiSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		return new DefaultItemOptionsModeSingleSelectInputBuilder<>(type, itemType, itemConverter);
+		return new DefaultItemOptionsModeMultiSelectInputBuilder<>(type, itemType, itemConverter);
 	}
 
 	/**
-	 * Create a new {@link ItemOptionsModeSingleSelectInputBuilder}.
+	 * Create a new {@link ItemOptionsModeMultiSelectInputBuilder}.
 	 * @param type Selection value type (not null)
 	 * @param <T> Value type
-	 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
 	 */
-	static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> create(Class<T> type) {
-		return new DefaultItemOptionsModeSingleSelectInputBuilder<>(type, type, ItemConverter.identity());
+	static <T> ItemOptionsModeMultiSelectInputBuilder<T, T> create(Class<T> type) {
+		return new DefaultItemOptionsModeMultiSelectInputBuilder<>(type, type, ItemConverter.identity());
 	}
 
 	// property
 
 	/**
-	 * Create a new {@link PropertyOptionsModeSingleSelectInputBuilder} using given selection {@link Property} and
+	 * Create a new {@link PropertyOptionsModeMultiSelectInputBuilder} using given selection {@link Property} and
 	 * converter.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
 	 */
-	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
-		return new DefaultPropertyOptionsModeSingleSelectInputBuilder<>(selectionProperty);
+	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> create(final Property<T> selectionProperty) {
+		return new DefaultPropertyOptionsModeMultiSelectInputBuilder<>(selectionProperty);
 	}
 
 	/**
-	 * Create a new {@link PropertyOptionsModeSingleSelectInputBuilder} using given selection {@link Property}.
+	 * Create a new {@link PropertyOptionsModeMultiSelectInputBuilder} using given selection {@link Property}.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
 	 *        item
-	 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
 	 */
-	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
+	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> create(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
-		return new DefaultPropertyOptionsModeSingleSelectInputBuilder<>(selectionProperty, itemConverter);
+		return new DefaultPropertyOptionsModeMultiSelectInputBuilder<>(selectionProperty, itemConverter);
 	}
 
 }

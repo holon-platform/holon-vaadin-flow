@@ -24,13 +24,11 @@ import com.holonplatform.vaadin.flow.components.MultiSelect;
  * 
  * @param <T> Value type
  * @param <ITEM> Item type
- * @param <CONTEXT> Item conversion context type
  * @param <B> Concrete builder type
  *
  * @since 5.2.0
  */
-public interface MultiSelectInputBuilder<T, ITEM, CONTEXT, B extends MultiSelectInputBuilder<T, ITEM, CONTEXT, B>>
-		extends InputBuilder<Set<T>, MultiSelect<T>, B>,
-		SelectableInputConfigurator<Set<T>, B> {
+public interface MultiSelectInputBuilder<T, ITEM, B extends MultiSelectInputBuilder<T, ITEM, B>> extends
+		ItemSetConfigurator<B>, InputBuilder<Set<T>, MultiSelect<T>, B>, SelectableInputConfigurator<Set<T>, T, B> {
 
 }

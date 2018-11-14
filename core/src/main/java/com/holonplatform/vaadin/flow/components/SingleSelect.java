@@ -87,7 +87,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * Gets a builder to create a {@link SingleSelect}.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
-	 * {@link #singleSelect(ItemConverter)} if not.
+	 * {@link #create(Class, Class, ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
 	 * @param type Selection value type (not null)
@@ -102,7 +102,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
-	 * {@link #singleSelect()} method can be used.
+	 * {@link #create(Class)} method can be used.
 	 * <p>
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
@@ -145,7 +145,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
-	 * {@link #singleSelect(ItemConverter)} if not.
+	 * {@link #options(Class, Class, ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
 	 * @param type Selection value type (not null)
@@ -161,7 +161,7 @@ public interface SingleSelect<T> extends Selectable<T>, Input<T>, ItemSet {
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
-	 * {@link #singleOptionSelect()} method can be used.
+	 * {@link #options(Class)} method can be used.
 	 * <p>
 	 * @param <T> Value type
 	 * @param <ITEM> Item type

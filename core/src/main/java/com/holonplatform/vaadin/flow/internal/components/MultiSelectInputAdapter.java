@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -29,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
+import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -42,19 +44,23 @@ import com.vaadin.flow.shared.Registration;
  * Adapter to use a {@link HasValue} {@link Component} as a {@link MultiSelect}.
  *
  * @param <T> Value type
+ * @param <ITEM> Item type
+ * @param <M> MultiSelect type
  * @param <V> Concrete {@link HasValue} type
  * @param <C> Concrete {@link Component} type
  * 
  * @since 5.2.0
  */
-public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadin.flow.data.selection.MultiSelect<C, T>>
+public class MultiSelectInputAdapter<T, ITEM, C extends Component, M extends com.vaadin.flow.data.selection.MultiSelect<C, ITEM>>
 		implements MultiSelect<T> {
 
 	private static final long serialVersionUID = -238233555416654435L;
 
 	private final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
-	private final Input<Set<T>> input;
+	private final Input<Set<ITEM>> input;
+
+	private final ItemConverter<T, ITEM> itemConverter;
 
 	private final M multiSelect;
 
@@ -65,22 +71,40 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	/**
 	 * Constructor.
 	 * @param input The concrete {@link Input} instance (not null)
+	 * @param itemConverter Item converter (not null)
 	 * @param multiSelect The MultiSelect instance
 	 * @param refreshOperation The <code>refresh</code> operation (not null)
 	 * @param selectAllOperation The <code>selectAll</code> operation
 	 */
-	public MultiSelectInputAdapter(Input<Set<T>> input, M multiSelect, Consumer<M> refreshOperation,
-			Consumer<M> selectAllOperation) {
+	public MultiSelectInputAdapter(Input<Set<ITEM>> input, ItemConverter<T, ITEM> itemConverter, M multiSelect,
+			Consumer<M> refreshOperation, Consumer<M> selectAllOperation) {
 		super();
 		ObjectUtils.argumentNotNull(input, "Input must be not null");
+		ObjectUtils.argumentNotNull(itemConverter, "Item converter must be not null");
 		ObjectUtils.argumentNotNull(multiSelect, "MultiSelect must be not null");
 		ObjectUtils.argumentNotNull(refreshOperation, "Refresh operation must be not null");
 		this.input = input;
+		this.itemConverter = itemConverter;
 		this.multiSelect = multiSelect;
 		this.refreshOperation = refreshOperation;
 		this.selectAllOperation = selectAllOperation;
 		// selection change on value change
 		input.addValueChangeListener(e -> fireSelectionListeners(e.getValue(), e.isUserOriginated()));
+	}
+
+	protected Set<T> asValues(Set<ITEM> items) {
+		if (items == null) {
+			return Collections.emptySet();
+		}
+		return items.stream().map(v -> itemConverter.getValue(v)).collect(Collectors.toSet());
+	}
+
+	protected Set<ITEM> asItems(Set<T> values) {
+		if (values == null) {
+			return Collections.emptySet();
+		}
+		return values.stream().map(v -> itemConverter.getItem(v).orElse(null)).filter(i -> i != null)
+				.collect(Collectors.toSet());
 	}
 
 	/*
@@ -89,7 +113,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public Set<T> getSelectedItems() {
-		return multiSelect.getSelectedItems();
+		return asValues(multiSelect.getSelectedItems());
 	}
 
 	/*
@@ -116,7 +140,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public void select(Iterable<T> items) {
-		multiSelect.updateSelection(ConversionUtils.iterableAsSet(items), Collections.emptySet());
+		multiSelect.updateSelection(asItems(ConversionUtils.iterableAsSet(items)), Collections.emptySet());
 	}
 
 	/*
@@ -125,7 +149,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public void deselect(Iterable<T> items) {
-		multiSelect.updateSelection(Collections.emptySet(), ConversionUtils.iterableAsSet(items));
+		multiSelect.updateSelection(Collections.emptySet(), asItems(ConversionUtils.iterableAsSet(items)));
 	}
 
 	/*
@@ -157,10 +181,9 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 * @param selectedItems The selected items (may be null)
 	 * @param fromClient Whether the selection event was originated from the client side
 	 */
-	protected void fireSelectionListeners(Set<T> selectedItems, boolean fromClient) {
-		final Set<T> values = (selectedItems != null) ? selectedItems : Collections.emptySet();
-		selectionListeners
-				.forEach(listener -> listener.onSelectionChange(new DefaultSelectionEvent<>(values, fromClient)));
+	protected void fireSelectionListeners(Set<ITEM> selectedItems, boolean fromClient) {
+		selectionListeners.forEach(listener -> listener
+				.onSelectionChange(new DefaultSelectionEvent<>(asValues(selectedItems), fromClient)));
 	}
 
 	/*
@@ -214,7 +237,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public void setValue(Set<T> value) {
-		input.setValue(value);
+		input.setValue(asItems(value));
 	}
 
 	/*
@@ -223,7 +246,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public Set<T> getValue() {
-		return input.getValue();
+		return asValues(input.getValue());
 	}
 
 	/*
@@ -232,7 +255,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public Set<T> getEmptyValue() {
-		return input.getEmptyValue();
+		return Collections.emptySet();
 	}
 
 	/*
@@ -241,7 +264,7 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public boolean isEmpty() {
-		return input.isEmpty();
+		return getValue().isEmpty();
 	}
 
 	/*
@@ -260,7 +283,8 @@ public class MultiSelectInputAdapter<T, C extends Component, M extends com.vaadi
 	 */
 	@Override
 	public Registration addValueChangeListener(ValueChangeListener<Set<T>> listener) {
-		return input.addValueChangeListener(listener);
+		return input.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this,
+				asValues(e.getOldValue()), asValues(e.getValue()), e.isUserOriginated())));
 	}
 
 	/*

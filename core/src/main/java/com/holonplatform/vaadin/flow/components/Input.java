@@ -39,6 +39,8 @@ import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
@@ -358,7 +360,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * Gets a builder to create a {@link SingleSelect} type Input.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
-	 * {@link #singleSelect(ItemConverter)} if not.
+	 * {@link #singleSelect(Class, Class, ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
 	 * @param type Selection value type (not null)
@@ -373,7 +375,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
-	 * {@link #singleSelect()} method can be used.
+	 * {@link #singleSelect(Class)} method can be used.
 	 * <p>
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
@@ -416,7 +418,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * radio button group.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
-	 * {@link #singleSelect(ItemConverter)} if not.
+	 * {@link #singleOptionSelect(Class, Class, ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
 	 * @param type Selection value type (not null)
@@ -432,7 +434,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
-	 * {@link #singleOptionSelect()} method can be used.
+	 * {@link #singleOptionSelect(Class)} method can be used.
 	 * <p>
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
@@ -470,6 +472,67 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
 		return SingleSelect.options(selectionProperty, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
+	 * group.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are consistent. Use
+	 * {@link #multiOptionSelect(Class, Class, ItemConverter)} if not.
+	 * <p>
+	 * @param <T> Value type
+	 * @param type Selection value type (not null)
+	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+	 */
+	static <T> ItemOptionsModeMultiSelectInputBuilder<T, T> multiOptionSelect(Class<T> type) {
+		return MultiSelect.options(type);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a radio button
+	 * group.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
+	 * different type). When the the selection item and the selection value types are consistent, the
+	 * {@link #multiOptionSelect(Class)} method can be used.
+	 * <p>
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 * @param type Selection value type (not null)
+	 * @param itemType Selection items type (not null)
+	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+	 *        back (not null)
+	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+	 */
+	static <T, ITEM> ItemOptionsModeMultiSelectInputBuilder<T, ITEM> multiOptionSelect(Class<T> type,
+			Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
+		return MultiSelect.options(type, itemType, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property} and the <em>options</em>
+	 * rendering mode, i.e. a radio button group.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+	 */
+	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty) {
+		return MultiSelect.options(selectionProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property}, a converter and the
+	 * <em>options</em> rendering mode, i.e. a radio button group.
+	 * @param <T> Value type
+	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
+	 *        item
+	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+	 */
+	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty,
+			Function<T, Optional<PropertyBox>> itemConverter) {
+		return MultiSelect.options(selectionProperty, itemConverter);
 	}
 
 	/**

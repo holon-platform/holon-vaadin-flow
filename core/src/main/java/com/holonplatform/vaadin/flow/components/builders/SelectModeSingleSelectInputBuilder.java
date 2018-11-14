@@ -31,7 +31,6 @@ import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemSelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertySelectModeSingleSelectInputBuilder;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.Renderer;
 
@@ -45,8 +44,8 @@ import com.vaadin.flow.data.renderer.Renderer;
  * @since 5.2.0
  */
 public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputBuilder<T, ITEM, DataProvider<ITEM, ?>, B>, HasSizeConfigurator<B>,
-		HasLabelConfigurator<B>, HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
+		extends SingleSelectInputBuilder<T, ITEM, B>, HasSizeConfigurator<B>, HasLabelConfigurator<B>,
+		HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
 		FocusableConfigurator<Component, B> {
 
 	/**

@@ -22,12 +22,11 @@ import com.holonplatform.vaadin.flow.components.SingleSelect;
  * 
  * @param <T> Value type
  * @param <ITEM> Item type
- * @param <CONTEXT> Item conversion context type
  * @param <B> Concrete builder type
  *
  * @since 5.2.0
  */
-public interface SingleSelectInputBuilder<T, ITEM, CONTEXT, B extends SingleSelectInputBuilder<T, ITEM, CONTEXT, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>, SelectableInputConfigurator<T, B> {
+public interface SingleSelectInputBuilder<T, ITEM, B extends SingleSelectInputBuilder<T, ITEM, B>>
+		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>, SelectableInputConfigurator<T, T, B> {
 
 }
