@@ -199,7 +199,7 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 		 * <p>
 		 * Default is <code>true</code>.
 		 * </p>
-		 * @param allowNegatives whether to allow negative numbers
+		 * @param negatives whether to allow negative numbers
 		 * @return this
 		 */
 		Builder<T> negatives(boolean negatives);

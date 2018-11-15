@@ -52,7 +52,7 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * Sets the Renderer responsible to render the individual items in the list of possible choices.
 	 * <p>
 	 * It doesn't affect how the selected item is rendered - that can be configured by using
-	 * {@link #itemCaptionGenerator(ItemCaptionGenerator)}.
+	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
 	 * </p>
 	 * @param renderer a renderer for the items in the selection list, not <code>null</code>
 	 * @return this
@@ -69,8 +69,9 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	/**
 	 * Set an explicit caption for given item.
 	 * <p>
-	 * This is an alternative for {@link #itemCaptionGenerator(ItemCaptionGenerator)}. When an
-	 * {@link ItemCaptionGenerator} is configured, explicit item captions will be ignored.
+	 * This is an alternative for
+	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
+	 * When an <code>ItemCaptionGenerator</code> is configured, explicit item captions will be ignored.
 	 * </p>
 	 * @param item Item to set the caption for (not null)
 	 * @param caption Item caption (not null)
@@ -115,7 +116,8 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * Set the items data provider using a {@link ListDataProvider}.
 	 * <p>
 	 * Filtering will use a case insensitive match to show all items where the filter text is a substring of the label
-	 * displayed for that item, which you can configure with {@link #itemCaptionGenerator(ItemCaptionGenerator)}.
+	 * displayed for that item, which you can configure with
+	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
 	 * </p>
 	 * @param dataProvider The data provider to set
 	 * @return this
@@ -163,7 +165,6 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
 		 * @param datastore The {@link Datastore} to use (not null)
 		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
 		 * @param properties The property set to use as query projection (not null)
 		 * @return An extended builder which allow further data provider configuration, for example to add fixed
 		 *         {@link QueryFilter} and {@link QuerySort}.
@@ -177,9 +178,9 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
 		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
+		 * @param <P> Property type
 		 * @param datastore The {@link Datastore} to use (not null)
 		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
 		 * @param properties The property set to use as query projection (not null)
 		 * @return An extended builder which allow further data provider configuration, for example to add fixed
 		 *         {@link QueryFilter} and {@link QuerySort}.

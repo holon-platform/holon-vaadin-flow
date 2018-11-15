@@ -63,6 +63,8 @@ public interface ValueComponentPropertyConfiguration<T, V extends ValueComponent
 
 	/**
 	 * Create a new {@link ValueComponentPropertyConfiguration} for given property.
+	 * @param <T> Property type
+	 * @param <V> ValueComponent type
 	 * @param property The property (not null)
 	 * @return A new {@link ValueComponentPropertyConfiguration} for given property
 	 */

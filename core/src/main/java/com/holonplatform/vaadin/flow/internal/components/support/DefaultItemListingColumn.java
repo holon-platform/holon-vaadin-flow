@@ -72,7 +72,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	 * Constructor.
 	 * @param property Item property id (not null)
 	 * @param columnKey Column key (not null)
-	 * @param readOnly Whether the column is always read-only
+	 * @param alwaysReadOnly Whether the column is always read-only
 	 */
 	public DefaultItemListingColumn(P property, String columnKey, boolean alwaysReadOnly) {
 		super();

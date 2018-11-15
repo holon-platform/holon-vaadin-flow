@@ -30,6 +30,7 @@ public interface HasElementConfigurator<C extends HasElementConfigurator<C>> {
 	/**
 	 * Adds a theme name to this component.
 	 * @param themeName the theme name to add, not <code>null</code>
+	 * @return this
 	 */
 	C withThemeName(String themeName);
 

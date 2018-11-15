@@ -53,6 +53,8 @@ public class InputGroupValidationException extends ValidationException {
 
 	/**
 	 * Constructor.
+	 * @param property The property source of the validation exception (may be null)
+	 * @param input The input source of the validation exception (may be null)
 	 * @param cause Actual validation exception cause (not null)
 	 */
 	public InputGroupValidationException(Property<?> property, Input<?> input, ValidationException cause) {

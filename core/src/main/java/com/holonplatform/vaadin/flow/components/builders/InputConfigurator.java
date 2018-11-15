@@ -33,6 +33,7 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	 * <p>
 	 * When the input component is read-only, the user can not change the value of the input.
 	 * </p>
+	 * @param readOnly Whether to set the input as read-only
 	 * @return this
 	 */
 	C readOnly(boolean readOnly);

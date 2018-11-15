@@ -233,8 +233,8 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	/**
 	 * Render given property as a {@link ViewComponent} and register the binding.
+	 * @param <T> Property type
 	 * @param property The property to render and bind
-	 * @return The property component
 	 */
 	protected <T> void renderAndBind(final Property<T> property) {
 		if (property != null) {
@@ -252,6 +252,7 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	/**
 	 * Render given property configuration as a {@link ViewComponent}.
+	 * @param <T> Property type
 	 * @param propertyConfiguration Property configuration
 	 * @return Optional rendered component
 	 */

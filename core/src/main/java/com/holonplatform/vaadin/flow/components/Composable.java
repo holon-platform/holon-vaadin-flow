@@ -56,7 +56,7 @@ public interface Composable {
 	 * {@link PropertyValueComponentSource}.
 	 * @param <C> Actual ComponentContainer type
 	 * @param <S> Actual components source
-	 * @return A new {@link ComponentContainer} composer
+	 * @return A new {@link Composer}
 	 */
 	static <C extends HasComponents, S extends PropertyComponentSource> Composer<C, S> componentContainerComposer() {
 		return new DefaultComponentContainerComposer<>();

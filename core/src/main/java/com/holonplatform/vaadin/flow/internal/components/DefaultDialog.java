@@ -66,7 +66,7 @@ public class DefaultDialog extends Dialog implements HasStyle {
 
 		this.message.setVisible(false);
 		this.toolbar.setVisible(false);
-		
+
 		add(content);
 	}
 

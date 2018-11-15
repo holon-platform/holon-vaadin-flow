@@ -91,13 +91,12 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	 * @param querySortOrderConverter the query sort order converter to set (not null)
 	 */
 	void setQuerySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter);
-	
+
 	// ------- builders
 
 	/**
 	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type and {@link QueryFilter} type
 	 * data provider filters.
-	 * @param <F> Query filter type
 	 * @param datastore The {@link Datastore} to use (not null)
 	 * @param target The {@link DataTarget} to use as query target (not null)
 	 * @param propertySet The property set to use as query projection (not null)
@@ -175,7 +174,6 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	/**
 	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
 	 * type and {@link QueryFilter} type data provider filters.
-	 * @param <T> Data type
 	 * @param datastore The {@link Datastore} to use (not null)
 	 * @param target The {@link DataTarget} to use as query target (not null)
 	 * @param propertySet The property set to use as query projection (not null)

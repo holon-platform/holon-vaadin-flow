@@ -342,7 +342,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	/**
 	 * Get the property which corresponds to given column key, if available.
-	 * @param column The column key (not null)
+	 * @param columnKey The column key (not null)
 	 * @return Optional property which corresponds to given column key
 	 */
 	protected Optional<P> getProperty(String columnKey) {

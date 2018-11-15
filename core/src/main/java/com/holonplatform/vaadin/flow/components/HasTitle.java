@@ -43,6 +43,7 @@ public interface HasTitle {
 	 * Create a new {@link HasTitle} using given callback functions to get and set the title text.
 	 * @param getter title text getter (not null)
 	 * @param setter title text setter (not null)
+	 * @return A new {@link HasTitle} using given callback functions
 	 */
 	static HasTitle create(Supplier<String> getter, Consumer<String> setter) {
 		return new CallbackHasTitle(getter, setter);

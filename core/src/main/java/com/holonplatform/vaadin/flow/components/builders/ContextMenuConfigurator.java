@@ -46,7 +46,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
 	 * </p>
 	 * @param text Localizable menu item text content
-	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
+	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 * @see LocalizationContext#getCurrent()
 	 */
 	MenuItemBuilder<L, M, C> withItem(Localizable text);
@@ -57,7 +57,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
 	 * </p>
 	 * @param text Menu item text content
-	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
+	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 */
 	default MenuItemBuilder<L, M, C> withItem(String text) {
 		return withItem(Localizable.builder().message(text).build());
@@ -74,7 +74,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 *        <code>messageCode</code>.
 	 * @param messageCode Menu item text content translation message key
 	 * @param arguments Optional translation arguments
-	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
+	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 * @see LocalizationContext#getCurrent()
 	 */
 	default MenuItemBuilder<L, M, C> withItem(String defaultText, String messageCode, Object... arguments) {
@@ -88,7 +88,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
 	 * </p>
 	 * @param component The menu item component (not null)
-	 * @return A {@link MenuItemConfigurator} to configure and add the menu item
+	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 */
 	MenuItemBuilder<L, M, C> withItem(Component component);
 

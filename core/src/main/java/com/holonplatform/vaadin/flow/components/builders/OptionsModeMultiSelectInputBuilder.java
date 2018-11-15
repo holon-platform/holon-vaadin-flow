@@ -62,8 +62,9 @@ public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsMo
 	/**
 	 * Set an explicit caption for given item.
 	 * <p>
-	 * This is an alternative for {@link #itemCaptionGenerator(ItemCaptionGenerator)}. When an
-	 * {@link ItemCaptionGenerator} is configured, explicit item captions will be ignored.
+	 * This is an alternative for
+	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}
+	 * When an {@link ItemCaptionGenerator} is configured, explicit item captions will be ignored.
 	 * </p>
 	 * @param item Item to set the caption for (not null)
 	 * @param caption Item caption (not null)
@@ -94,10 +95,6 @@ public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsMo
 
 	/**
 	 * Set the items data provider using a {@link ListDataProvider}.
-	 * <p>
-	 * Filtering will use a case insensitive match to show all items where the filter text is a substring of the label
-	 * displayed for that item, which you can configure with {@link #itemCaptionGenerator(ItemCaptionGenerator)}.
-	 * </p>
 	 * @param dataProvider The data provider to set
 	 * @return this
 	 */

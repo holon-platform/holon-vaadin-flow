@@ -27,8 +27,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
  * 
  * @since 5.2.0
  */
-public interface InputBuilder<T, C extends Input<T>, B extends InputBuilder<T, C, B>>
-		extends InputConfigurator<T, B> {
+public interface InputBuilder<T, C extends Input<T>, B extends InputBuilder<T, C, B>> extends InputConfigurator<T, B> {
 
 	/**
 	 * Build and returns the {@link Input} instance.

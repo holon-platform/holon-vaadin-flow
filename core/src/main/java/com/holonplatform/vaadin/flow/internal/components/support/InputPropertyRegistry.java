@@ -52,6 +52,7 @@ public interface InputPropertyRegistry {
 
 	/**
 	 * Get the registered bindings.
+	 * @param <T> Property type
 	 * @return the registered bindings
 	 */
 	<T> Stream<PropertyBinding<T, Input<T>>> stream();

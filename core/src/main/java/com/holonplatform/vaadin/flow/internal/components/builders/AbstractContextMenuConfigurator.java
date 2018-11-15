@@ -33,7 +33,6 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 /**
  * Abstract {@link ContextMenuConfigurator}.
  *
- * @param <E> Menu item click event type
  * @param <M> Concrete ContextMenu component type
  * @param <C> Concrete configurator type
  *

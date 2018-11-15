@@ -187,8 +187,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	/**
 	 * Set the input placeholder, i.e. a hint to the user of what can be entered.
 	 * <p>
-	 * The placeholder will be shown for the <code>date</code> input field. Use {@link #setHoursPlaceholder(String)} and
-	 * {@link #setMinutesPlaceholder(String)} to set a placeholder for the time part fields.
+	 * The placeholder will be shown for the <code>date</code> input field.
 	 * </p>
 	 * @param placeholder The placeholder to set
 	 */

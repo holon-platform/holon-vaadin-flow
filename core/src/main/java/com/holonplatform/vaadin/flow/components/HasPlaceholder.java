@@ -43,6 +43,7 @@ public interface HasPlaceholder {
 	 * Create a new {@link HasPlaceholder} using given callback functions to get and set the placeholder text.
 	 * @param getter placeholder text getter (not null)
 	 * @param setter placeholder text setter (not null)
+	 * @return A new {@link HasPlaceholder} using given callback functions
 	 */
 	static HasPlaceholder create(Supplier<String> getter, Consumer<String> setter) {
 		return new CallbackHasPlaceholder(getter, setter);

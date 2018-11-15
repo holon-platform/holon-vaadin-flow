@@ -27,12 +27,10 @@ import com.holonplatform.vaadin.flow.internal.components.DefaultBeanListing;
  */
 public interface BeanListing<T> extends ItemListing<T, String> {
 
-	// Builders
-
 	/**
 	 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing} using given <code>beanType</code>.
 	 * @param <T> Bean type
-	 * @param properties The listing bean class (not null)
+	 * @param beanType The bean class to use (not null)
 	 * @return A new {@link BeanListingBuilder}
 	 */
 	static <T> BeanListingBuilder<T> builder(Class<T> beanType) {

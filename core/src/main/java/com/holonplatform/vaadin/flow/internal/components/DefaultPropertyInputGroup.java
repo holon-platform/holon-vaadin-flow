@@ -586,7 +586,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Render given property as a {@link Input} and register the binding.
 	 * @param <T> Property type
 	 * @param property The property to render and bind
-	 * @return The property component
 	 */
 	protected <T> void renderAndBind(final Property<T> property) {
 		// configuration
@@ -606,6 +605,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/**
 	 * Render given property configuration as a {@link ViewComponent}.
+	 * @param <T> Property type
 	 * @param propertyConfiguration Property configuration
 	 * @return Optional rendered component
 	 */
@@ -675,9 +675,9 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * Overall validation
 	 * @param value Value to validate
-	 * @throws OverallValidationException If validation fails
+	 * @throws InputGroupValidationException If validation fails
 	 */
-	protected void validate(PropertyBox value) throws ValidationException {
+	protected void validate(PropertyBox value) throws InputGroupValidationException {
 		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
 		// invoke group validators
 		for (Validator<PropertyBox> validator : getValidators()) {
@@ -706,9 +706,9 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/**
 	 * Validate all the {@link Input}s.
-	 * @throws ValidationException If one or more input is not valid
+	 * @throws InputGroupValidationException If one or more input is not valid
 	 */
-	private void validateInputs() throws ValidationException {
+	private void validateInputs() throws InputGroupValidationException {
 
 		if (isStopValidationAtFirstFailure()) {
 			// reset validation status

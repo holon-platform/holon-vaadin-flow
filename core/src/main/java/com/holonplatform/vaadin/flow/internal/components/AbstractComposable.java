@@ -135,16 +135,18 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	}
 
 	/**
-	 * Gets whether the form must be composed on {@link #attach()}, if not already composed invoking {@link #compose()}.
-	 * @return <code>true</code> if the form must be composed on {@link #attach()}
+	 * Gets whether the form must be composed on content component <code>attach</code>, if not already composed invoking
+	 * {@link #compose()}.
+	 * @return <code>true</code> if the form must be composed on content component <code>attach</code>
 	 */
 	public boolean isComposeOnAttach() {
 		return composeOnAttach;
 	}
 
 	/**
-	 * Sets whether the form must be composed on {@link #attach()}, if not already composed invoking {@link #compose()}.
-	 * @param composeOnAttach <code>true</code> to compose the form on {@link #attach()}
+	 * Sets whether the form must be composed on content component <code>attach</code>, if not already composed invoking
+	 * {@link #compose()}.
+	 * @param composeOnAttach <code>true</code> to compose the form on content component <code>attach</code>
 	 */
 	public void setComposeOnAttach(boolean composeOnAttach) {
 		this.composeOnAttach = composeOnAttach;

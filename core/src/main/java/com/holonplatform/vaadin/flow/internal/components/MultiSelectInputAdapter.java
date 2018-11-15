@@ -47,7 +47,6 @@ import com.vaadin.flow.shared.Registration;
  *
  * @param <T> Value type
  * @param <ITEM> Item type
- * @param <V> Concrete {@link HasValue} type
  * @param <C> Concrete {@link Component} type
  * 
  * @since 5.2.0

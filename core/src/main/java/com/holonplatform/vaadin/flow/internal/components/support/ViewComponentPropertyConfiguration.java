@@ -25,10 +25,11 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
  * 
  * @since 5.2.0
  */
-public interface ViewComponentPropertyConfiguration<T> extends ValueComponentPropertyConfiguration<T, ViewComponent<T>> {
+public interface ViewComponentPropertyConfiguration<T>
+		extends ValueComponentPropertyConfiguration<T, ViewComponent<T>> {
 
 	static <T> ViewComponentPropertyConfiguration<T> create(Property<T> property) {
 		return new DefaultViewComponentPropertyConfiguration<>(property);
 	}
-	
+
 }

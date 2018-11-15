@@ -194,7 +194,7 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
 	}
 
 	/**
-	 * Register a value component {@link PostProcessor}.
+	 * Register a value component post-processor.
 	 * @param postProcessor the post-processor to register (not null)
 	 */
 	protected void addPostProcessor(BiConsumer<Property<?>, C> postProcessor) {
@@ -203,7 +203,7 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
 	}
 
 	/**
-	 * Get the value component {@link PostProcessor}s.
+	 * Get the value component post-processors.
 	 * @return the post processors
 	 */
 	protected List<BiConsumer<Property<?>, C>> getPostProcessors() {

@@ -195,7 +195,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * When a column is read-only, no editor component will be provided when the item is in edit mode.
 	 * </p>
 	 * @param property The property to configure (not null)
-	 * @param resizable Whether given property is read-only
+	 * @param readOnly Whether given property is read-only
 	 * @return this
 	 */
 	C readOnly(P property, boolean readOnly);
@@ -257,7 +257,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * Sets the {@link ValueProvider} to use to obtain the text to display in the column which corresponds to given
 	 * property.
 	 * @param property The property to configure (not null)
-	 * @param renderer The value provider to use
+	 * @param valueProvider The value provider to use
 	 * @return this
 	 */
 	C valueProvider(P property, ValueProvider<T, String> valueProvider);
@@ -265,7 +265,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Sets comparator to use with in-memory sorting for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param renderer The comparator to use with in-memory sorting
+	 * @param comparator The comparator to use with in-memory sorting
 	 * @return this
 	 */
 	C sortComparator(P property, Comparator<T> comparator);
@@ -348,7 +348,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set the footer text for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param header The column footer text
+	 * @param footer The column footer text
 	 * @return this
 	 */
 	default C footer(P property, String footer) {
@@ -436,7 +436,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @param detailsVisibleOnClick <code>true</code> to enable opening and closing item details by clicking the rows,
 	 *        <code>false</code> otherwise
 	 * @return this
-	 * @see #setItemDetailsRenderer(Renderer)
+	 * @see #itemDetailsRenderer(Renderer)
 	 */
 	C itemDetailsVisibleOnClick(boolean detailsVisibleOnClick);
 
@@ -674,7 +674,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 		/**
 		 * Sets comparator to use with in-memory sorting for the column.
-		 * @param renderer The comparator to use with in-memory sorting
+		 * @param comparator The comparator to use with in-memory sorting
 		 * @return this
 		 */
 		C sortComparator(Comparator<T> comparator);

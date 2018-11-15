@@ -51,7 +51,6 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 
 	/**
 	 * Constructor using separate {@link HasValue} and {@link Component} field instances.
-	 * @param <E> ValueChangeEvent type
 	 * @param field {@link HasValue} field (not null)
 	 * @param component Field {@link Component} (not null)
 	 */

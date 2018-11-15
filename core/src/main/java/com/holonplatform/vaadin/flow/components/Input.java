@@ -349,7 +349,7 @@ public interface Input<T> extends ValueHolder<T>, ValueComponent<T>, MayHaveLabe
 	/**
 	 * Gets a builder to create a numeric type {@link Input}.
 	 * @param <T> Number type
-	 * @param numberType Number class (not null)
+	 * @param numberClass Number class (not null)
 	 * @return A new {@link NumberInputBuilder}
 	 */
 	static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {

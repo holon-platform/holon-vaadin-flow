@@ -474,20 +474,6 @@ public class TestPropertyInputGroup {
 		assertDoesNotThrow(() -> group2.getValue(false));
 		assertFalse(group2.getValueIfValid().isPresent());
 
-		final PropertyInputGroup group3 = PropertyInputGroup.builder(SET)
-				.withValidator(NAME,
-						com.vaadin.flow.data.binder.Validator.from(v -> (v == null || v.length() <= 2), "error"))
-				.build();
-		assertTrue(group3.isValid());
-		assertDoesNotThrow(() -> group3.validate());
-		group3.setValue(PropertyBox.builder(SET).set(ID, 1L).set(NAME, "abc").build());
-		assertFalse(group3.isValid());
-		assertThrows(ValidationException.class, () -> group3.validate());
-		assertThrows(ValidationException.class, () -> group3.getValue());
-		assertThrows(ValidationException.class, () -> group3.getValue(true));
-		assertDoesNotThrow(() -> group3.getValue(false));
-		assertFalse(group3.getValueIfValid().isPresent());
-
 		final PropertyInputGroup group4 = PropertyInputGroup.builder(SET)
 				.withValidator(
 						Validator.create(v -> (v == null || v.getValue(ID) == null || v.getValue(ID) > 0), "error"))

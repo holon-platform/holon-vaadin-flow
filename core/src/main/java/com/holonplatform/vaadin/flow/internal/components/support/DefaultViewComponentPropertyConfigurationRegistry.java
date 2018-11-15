@@ -22,7 +22,7 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 
 /**
- * Default {@link ValueComponentPropertyConfigurationRegistry} implementation.
+ * Default {@link ViewComponentPropertyConfigurationRegistry} implementation.
  * 
  * @since 5.2.0
  */

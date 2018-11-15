@@ -43,7 +43,7 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 
 	/**
 	 * Sets an alignment for individual element container inside the layout. This individual alignment for the element
-	 * container overrides any alignment set at the {@link #alignItems(Alignment)}.
+	 * container overrides any alignment set using <code>alignItems</code>.
 	 * <p>
 	 * The default alignment for individual components is {@link Alignment#AUTO}.
 	 * @param alignment the individual alignment for the children components. Setting <code>null</code> will reset the

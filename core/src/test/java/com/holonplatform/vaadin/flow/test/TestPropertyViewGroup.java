@@ -50,7 +50,7 @@ public class TestPropertyViewGroup {
 
 		PropertyViewGroupBuilder builder = PropertyViewGroup.builder(SET);
 		assertNotNull(builder);
-		
+
 		builder = Components.view.propertyGroup(SET);
 		assertNotNull(builder);
 

@@ -337,7 +337,8 @@ public interface Components {
 		 * Get a builder to create a message dialog with a <em>OK</em> button in the dialog toolbar which can be used to
 		 * close the dialog.
 		 * <p>
-		 * The default <em>OK</em> button message localization code is {@link #DEFAULT_OK_BUTTON_MESSAGE_CODE}.
+		 * The default <em>OK</em> button message localization code is
+		 * {@link DialogBuilder#DEFAULT_OK_BUTTON_MESSAGE_CODE}.
 		 * </p>
 		 * @return A new {@link ConfirmDialogBuilder}
 		 */
@@ -378,8 +379,8 @@ public interface Components {
 		 * dialog toolbar which will trigger the given <code>questionDialogCallback</code> to react to the user choice.
 		 * <p>
 		 * The default <em>confirm</em> button message localization code is
-		 * {@link #DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE}. The default <em>deny</em> button message localization code is
-		 * {@link #DEFAULT_DENY_BUTTON_MESSAGE_CODE}.
+		 * {@link DialogBuilder#DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE}. The default <em>deny</em> button message
+		 * localization code is {@link DialogBuilder#DEFAULT_DENY_BUTTON_MESSAGE_CODE}.
 		 * </p>
 		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
 		 * @return A new {@link QuestionDialogBuilder}
@@ -729,7 +730,7 @@ public interface Components {
 		/**
 		 * Gets a builder to create a numeric type {@link Input}.
 		 * @param <T> Number type
-		 * @param numberType Number class (not null)
+		 * @param numberClass Number class (not null)
 		 * @return A new {@link NumberInputBuilder}
 		 */
 		static <T extends Number> NumberInputBuilder<T> number(Class<T> numberClass) {
@@ -1114,7 +1115,7 @@ public interface Components {
 		/**
 		 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing} using given <code>beanType</code>.
 		 * @param <T> Bean type
-		 * @param properties The listing bean class, i.e. the item type (not null)
+		 * @param beanType The bean class, i.e. the item type (not null)
 		 * @return A new {@link BeanListingBuilder}
 		 */
 		static <T> BeanListingBuilder<T> items(Class<T> beanType) {

@@ -52,6 +52,7 @@ public interface ViewComponentPropertyRegistry {
 
 	/**
 	 * Get the registered bindings.
+	 * @param <T> Property type
 	 * @return the registered bindings
 	 */
 	<T> Stream<PropertyBinding<T, ViewComponent<T>>> stream();

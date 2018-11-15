@@ -106,8 +106,7 @@ public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 	}
 
 	/**
-	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} of type
-	 * {@link Notification#TYPE_ERROR_MESSAGE} to notify validation errors.
+	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} to notify validation errors.
 	 * <p>
 	 * This methods creates a notification validation status handler which displays only the first validation error.
 	 * </p>
@@ -121,8 +120,7 @@ public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 	}
 
 	/**
-	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} of type
-	 * {@link Notification#TYPE_ERROR_MESSAGE} to notify validation errors.
+	 * Create a {@link ValidationStatusHandler} which shows a {@link Notification} to notify validation errors.
 	 * @param <S> Validation source
 	 * @param <V> Validation value type
 	 * @param <C> Value component to which the validation event refers

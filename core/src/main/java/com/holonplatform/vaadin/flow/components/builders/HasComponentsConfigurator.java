@@ -25,7 +25,8 @@ import com.vaadin.flow.component.HasComponents;
  * 
  * @since 5.2.0
  */
-public interface HasComponentsConfigurator<C extends HasComponentsConfigurator<C>> extends HasElementConfigurator<C>, HasEnabledConfigurator<C> {
+public interface HasComponentsConfigurator<C extends HasComponentsConfigurator<C>>
+		extends HasElementConfigurator<C>, HasEnabledConfigurator<C> {
 
 	/**
 	 * Adds the given components as children of this component.

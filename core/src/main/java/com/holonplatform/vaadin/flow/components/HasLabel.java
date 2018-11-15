@@ -43,6 +43,7 @@ public interface HasLabel {
 	 * Create a new {@link HasLabel} using given callback functions to get and set the label text.
 	 * @param getter label text getter (not null)
 	 * @param setter label text setter (not null)
+	 * @return A new {@link HasLabel} using given callback functions
 	 */
 	static HasLabel create(Supplier<String> getter, Consumer<String> setter) {
 		return new CallbackHasLabel(getter, setter);

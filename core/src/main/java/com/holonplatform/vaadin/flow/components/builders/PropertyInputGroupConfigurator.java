@@ -30,7 +30,6 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
-import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -235,32 +234,12 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	<T> C withValidator(Property<T> property, Validator<T> validator);
 
 	/**
-	 * Adds a {@link com.vaadin.data.Validator} to the {@link Input} bound to given <code>property</code>.
-	 * @param <T> Property type
-	 * @param property Property (not null)
-	 * @param validator Validator to add (not null)
-	 * @return this
-	 */
-	default <T> C withValidator(Property<T> property, com.vaadin.flow.data.binder.Validator<T> validator) {
-		return withValidator(property, Validatable.adapt(validator));
-	}
-
-	/**
 	 * Adds a {@link Validator} to the {@link PropertyInputGroup}, using a {@link PropertyBox} to provide the property
 	 * values to validate.
 	 * @param validator Validator to add (not null)
 	 * @return this
 	 */
 	C withValidator(Validator<PropertyBox> validator);
-
-	/**
-	 * Adds a {@link com.vaadin.data.Validator} to the {@link PropertyInputGroup}.
-	 * @param validator Validator to add (not null)
-	 * @return this
-	 */
-	default C withValidator(com.vaadin.flow.data.binder.Validator<PropertyBox> validator) {
-		return withValidator(Validatable.adapt(validator));
-	}
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status changes.
@@ -292,6 +271,7 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 
 	/**
 	 * Use given label as status label to track overall validation status changes.
+	 * @param <L> Label type
 	 * @param statusLabel the status label to set (not null)
 	 * @return this
 	 */

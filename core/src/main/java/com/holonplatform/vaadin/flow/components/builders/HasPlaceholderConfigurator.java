@@ -43,6 +43,7 @@ public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator
 	/**
 	 * Set the component placeholder, i.e. a hint to the user of what can be entered in the control.
 	 * @param placeholder the value to set
+	 * @return this
 	 */
 	default C placeholder(String placeholder) {
 		return placeholder((placeholder == null) ? null : Localizable.builder().message(placeholder).build());

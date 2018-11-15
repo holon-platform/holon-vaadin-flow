@@ -131,7 +131,7 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 * @param <T> Property type
 	 * @param property The property for which to obtain the {@link ValidatableInput} (not null)
 	 * @return Optional property {@link ValidatableInput} component
-	 * @see {@link PropertyRendererRegistry#get()}
+	 * @see PropertyRendererRegistry#get()
 	 */
 	@SuppressWarnings("unchecked")
 	static <T> Optional<ValidatableInput<T>> forProperty(Property<T> property) {
@@ -149,7 +149,7 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 * @return The property {@link ValidatableInput} component
 	 * @throws NoSuitableRendererAvailableException If a suitable PropertyRenderer is not available to render given
 	 *         property as a ValidatableInput
-	 * @see {@link PropertyRendererRegistry#get()}
+	 * @see PropertyRendererRegistry#get()
 	 */
 	@SuppressWarnings("unchecked")
 	static <T> ValidatableInput<T> create(Property<T> property) {
