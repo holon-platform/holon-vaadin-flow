@@ -22,10 +22,11 @@ import static com.holonplatform.vaadin.flow.test.util.DatastoreTestUtils.TEST1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,58 +45,55 @@ import com.holonplatform.jdbc.BasicDataSource;
 import com.holonplatform.jdbc.DatabasePlatform;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
-import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.function.SerializablePredicate;
 
-public class TestOptionsInput {
+public class TestOptionsMultiSelectInput {
 
 	@Test
 	public void testBuilders() {
 
-		ItemOptionsModeSingleSelectInputBuilder<String, String> builder = OptionsModeSingleSelectInputBuilder
+		ItemOptionsModeMultiSelectInputBuilder<String, String> builder = OptionsModeMultiSelectInputBuilder
 				.create(String.class);
 		assertNotNull(builder);
-		Input<String> input = builder.build();
+		Input<Set<String>> input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.singleOptionSelect(String.class);
+		builder = Input.multiOptionSelect(String.class);
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.singleOptionSelect(String.class);
+		builder = Components.input.multiOptionSelect(String.class);
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		ItemOptionsModeSingleSelectInputBuilder<String, Integer> builder2 = OptionsModeSingleSelectInputBuilder.create(
+		ItemOptionsModeMultiSelectInputBuilder<String, Integer> builder2 = OptionsModeMultiSelectInputBuilder.create(
 				String.class, Integer.class,
 				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
-		builder2 = Input.singleOptionSelect(String.class, Integer.class,
+		builder2 = Input.multiOptionSelect(String.class, Integer.class,
 				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
 
-		builder2 = Components.input.singleOptionSelect(String.class, Integer.class,
+		builder2 = Components.input.multiOptionSelect(String.class, Integer.class,
 				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
@@ -107,33 +105,33 @@ public class TestOptionsInput {
 
 		final Property<String> PROPERTY = StringProperty.create("test");
 
-		PropertyOptionsModeSingleSelectInputBuilder<String> builder = OptionsModeSingleSelectInputBuilder
+		PropertyOptionsModeMultiSelectInputBuilder<String> builder = OptionsModeMultiSelectInputBuilder
 				.create(PROPERTY);
 		assertNotNull(builder);
-		Input<String> input = builder.build();
+		Input<Set<String>> input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.singleOptionSelect(PROPERTY);
+		builder = Input.multiOptionSelect(PROPERTY);
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.singleOptionSelect(PROPERTY);
+		builder = Components.input.multiOptionSelect(PROPERTY);
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = OptionsModeSingleSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
+		builder = OptionsModeMultiSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Input.singleOptionSelect(PROPERTY, value -> Optional.empty());
+		builder = Input.multiOptionSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = Components.input.singleOptionSelect(PROPERTY, value -> Optional.empty());
+		builder = Components.input.multiOptionSelect(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -143,27 +141,27 @@ public class TestOptionsInput {
 	@Test
 	public void testComponent() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).id("testid").build();
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).id("testid").build();
 		assertNotNull(input.getComponent());
 
 		assertTrue(input.getComponent().getId().isPresent());
 		assertEquals("testid", input.getComponent().getId().get());
 
-		input = Input.singleOptionSelect(String.class).build();
+		input = Input.multiOptionSelect(String.class).build();
 		assertTrue(input.isVisible());
 
-		input = Input.singleOptionSelect(String.class).visible(true).build();
+		input = Input.multiOptionSelect(String.class).visible(true).build();
 		assertTrue(input.isVisible());
 
-		input = Input.singleOptionSelect(String.class).visible(false).build();
+		input = Input.multiOptionSelect(String.class).visible(false).build();
 		assertFalse(input.isVisible());
 
-		input = Input.singleOptionSelect(String.class).hidden().build();
+		input = Input.multiOptionSelect(String.class).hidden().build();
 		assertFalse(input.isVisible());
 
 		final AtomicBoolean attached = new AtomicBoolean(false);
 
-		input = Input.singleOptionSelect(String.class).withAttachListener(e -> {
+		input = Input.multiOptionSelect(String.class).withAttachListener(e -> {
 			attached.set(true);
 		}).build();
 
@@ -172,7 +170,7 @@ public class TestOptionsInput {
 
 		final AtomicBoolean detached = new AtomicBoolean(false);
 
-		input = Input.singleOptionSelect(String.class).withDetachListener(e -> {
+		input = Input.multiOptionSelect(String.class).withDetachListener(e -> {
 			detached.set(true);
 		}).build();
 
@@ -183,11 +181,11 @@ public class TestOptionsInput {
 	@Test
 	public void testStyles() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).styleName("test").build();
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).styleName("test").build();
 		assertNotNull(input);
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test"));
 
-		input = Input.singleOptionSelect(String.class).styleNames("test1", "test2").build();
+		input = Input.multiOptionSelect(String.class).styleNames("test1", "test2").build();
 		assertNotNull(input);
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test1"));
 		assertTrue(ComponentTestUtils.getClassNames(input).contains("test2"));
@@ -197,16 +195,16 @@ public class TestOptionsInput {
 	@Test
 	public void testEnabled() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).build();
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).build();
 		assertTrue(ComponentTestUtils.isEnabled(input));
 
-		input = Input.singleOptionSelect(String.class).enabled(true).build();
+		input = Input.multiOptionSelect(String.class).enabled(true).build();
 		assertTrue(ComponentTestUtils.isEnabled(input));
 
-		input = Input.singleOptionSelect(String.class).enabled(false).build();
+		input = Input.multiOptionSelect(String.class).enabled(false).build();
 		assertFalse(ComponentTestUtils.isEnabled(input));
 
-		input = Input.singleOptionSelect(String.class).disabled().build();
+		input = Input.multiOptionSelect(String.class).disabled().build();
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
@@ -214,45 +212,45 @@ public class TestOptionsInput {
 	@Test
 	public void testLabel() {
 
-		Input<String> input = Input.singleOptionSelect(String.class)
+		Input<Set<String>> input = Input.multiOptionSelect(String.class)
 				.label(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).label("test").build();
+		input = Input.multiOptionSelect(String.class).label("test").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).label("test", "test.code").build();
+		input = Input.multiOptionSelect(String.class).label("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).label("test", "test.code", "arg").build();
+		input = Input.multiOptionSelect(String.class).label("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).caption(Localizable.builder().message("test").build()).build();
+		input = Input.multiOptionSelect(String.class).caption(Localizable.builder().message("test").build()).build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).caption("test").build();
+		input = Input.multiOptionSelect(String.class).caption("test").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).caption("test", "test.code").build();
+		input = Input.multiOptionSelect(String.class).caption("test", "test.code").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
-		input = Input.singleOptionSelect(String.class).caption("test", "test.code", "arg").build();
+		input = Input.multiOptionSelect(String.class).caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.singleOptionSelect(String.class)
+			Input<Set<String>> input2 = Input.multiOptionSelect(String.class)
 					.label(Localizable.builder().message("test").messageCode("test.code").build()).build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.singleOptionSelect(String.class).label("test", "test.code").build();
+			Input<Set<String>> input2 = Input.multiOptionSelect(String.class).label("test", "test.code").build();
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<String> input2 = Input.singleOptionSelect(String.class).deferLocalization().label("test", "test.code")
-					.build();
+			Input<Set<String>> input2 = Input.multiOptionSelect(String.class).deferLocalization()
+					.label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
@@ -263,16 +261,16 @@ public class TestOptionsInput {
 	@Test
 	public void testReadOnly() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).build();
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).build();
 		assertFalse(input.isReadOnly());
 
-		input = Input.singleOptionSelect(String.class).readOnly(true).build();
+		input = Input.multiOptionSelect(String.class).readOnly(true).build();
 		assertTrue(input.isReadOnly());
 
-		input = Input.singleOptionSelect(String.class).readOnly(false).build();
+		input = Input.multiOptionSelect(String.class).readOnly(false).build();
 		assertFalse(input.isReadOnly());
 
-		input = Input.singleOptionSelect(String.class).readOnly().build();
+		input = Input.multiOptionSelect(String.class).readOnly().build();
 		assertTrue(input.isReadOnly());
 
 	}
@@ -280,28 +278,17 @@ public class TestOptionsInput {
 	@Test
 	public void testRequired() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).build();
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).build();
 		assertFalse(input.isRequired());
 
-		input = Input.singleOptionSelect(String.class).required(true).build();
+		input = Input.multiOptionSelect(String.class).required(true).build();
 		assertTrue(input.isRequired());
 
-		input = Input.singleOptionSelect(String.class).required(false).build();
+		input = Input.multiOptionSelect(String.class).required(false).build();
 		assertFalse(input.isRequired());
 
-		input = Input.singleOptionSelect(String.class).required().build();
+		input = Input.multiOptionSelect(String.class).required().build();
 		assertTrue(input.isRequired());
-
-	}
-
-	@Test
-	public void testRenderer() {
-
-		final ComponentRenderer<? extends Component, String> renderer = new TextRenderer<>(item -> "TEST");
-
-		Input<String> input = Input.singleOptionSelect(String.class).renderer(renderer).build();
-		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
-		assertEquals(renderer, ((RadioButtonGroup<?>) input.getComponent()).getItemRenderer());
 
 	}
 
@@ -310,9 +297,9 @@ public class TestOptionsInput {
 
 		final SerializablePredicate<String> iep = item -> true;
 
-		Input<String> input = Input.singleOptionSelect(String.class).itemEnabledProvider(iep).build();
-		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
-		assertEquals(iep, ((RadioButtonGroup<?>) input.getComponent()).getItemEnabledProvider());
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).itemEnabledProvider(iep).build();
+		assertTrue(input.getComponent() instanceof CheckboxGroup<?>);
+		assertEquals(iep, ((CheckboxGroup<?>) input.getComponent()).getItemEnabledProvider());
 
 	}
 
@@ -321,27 +308,28 @@ public class TestOptionsInput {
 
 		final ItemCaptionGenerator<String> icg = value -> "X";
 
-		Input<String> input = Input.singleOptionSelect(String.class).itemCaptionGenerator(icg).build();
-		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).itemCaptionGenerator(icg).build();
+		assertTrue(input.getComponent() instanceof CheckboxGroup<?>);
 		assertEquals("X", getLabel(input, "aaa"));
 
 		final ItemCaptionGenerator<Integer> icg2 = value -> "N." + value;
 
 		final List<Integer> ints = Arrays.asList(1, 2, 3);
 
-		Input<Integer> input2 = Input.singleOptionSelect(Integer.class).items(ints).itemCaptionGenerator(icg2).build();
+		Input<Set<Integer>> input2 = Input.multiOptionSelect(Integer.class).items(ints).itemCaptionGenerator(icg2)
+				.build();
 		assertEquals("N.1", getLabel(input2, ints.get(0)));
 		assertEquals("N.2", getLabel(input2, ints.get(1)));
 		assertEquals("N.3", getLabel(input2, ints.get(2)));
 
-		input2 = Input.singleOptionSelect(Integer.class).items(ints).itemCaption(1, "N.1").itemCaption(2, "N.2")
+		input2 = Input.multiOptionSelect(Integer.class).items(ints).itemCaption(1, "N.1").itemCaption(2, "N.2")
 				.itemCaption(3, "N.3").build();
 		assertEquals("N.1", getLabel(input2, ints.get(0)));
 		assertEquals("N.2", getLabel(input2, ints.get(1)));
 		assertEquals("N.3", getLabel(input2, ints.get(2)));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Integer> input3 = Input.singleOptionSelect(Integer.class).items(ints)
+			Input<Set<Integer>> input3 = Input.multiOptionSelect(Integer.class).items(ints)
 					.itemCaption(2, Localizable.builder().message("test").messageCode("test.code").build()).build();
 			assertEquals("1", getLabel(input3, ints.get(0)));
 			assertEquals("TestUS", getLabel(input3, ints.get(1)));
@@ -349,13 +337,13 @@ public class TestOptionsInput {
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Integer> input3 = Input.singleOptionSelect(Integer.class).items(ints)
+			Input<Set<Integer>> input3 = Input.multiOptionSelect(Integer.class).items(ints)
 					.itemCaption(2, "test", "test.code").build();
 			assertEquals("TestUS", getLabel(input3, ints.get(1)));
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<Integer> input3 = Input.singleOptionSelect(Integer.class).items(ints).deferLocalization()
+			Input<Set<Integer>> input3 = Input.multiOptionSelect(Integer.class).items(ints).deferLocalization()
 					.itemCaption(2, "test", "test.code").build();
 			assertEquals("1", getLabel(input3, ints.get(0)));
 			assertEquals("test", getLabel(input3, ints.get(1)));
@@ -365,42 +353,36 @@ public class TestOptionsInput {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <ITEM> String getLabel(Input<?> input, ITEM item) {
-		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
-		ComponentRenderer<?, ?> renderer = ((RadioButtonGroup<?>) input.getComponent()).getItemRenderer();
-		if (renderer instanceof TextRenderer) {
-			TextRenderer<ITEM> tr = (TextRenderer<ITEM>) renderer;
-			Component c = tr.createComponent(item);
-			if (c != null) {
-				return c.getElement().getText();
-			}
-		}
-		return null;
+		assertTrue(input.getComponent() instanceof CheckboxGroup<?>);
+		assertNotNull(((CheckboxGroup<?>) input.getComponent()).getItemLabelGenerator());
+		return ((CheckboxGroup) input.getComponent()).getItemLabelGenerator().apply(item);
 	}
 
 	@Test
 	public void testHasValue() {
 
-		Input<String> input = Input.singleOptionSelect(String.class).build();
-		assertNull(input.getEmptyValue());
-
-		assertNull(input.getValue());
+		Input<Set<String>> input = Input.multiOptionSelect(String.class).build();
+		assertNotNull(input.getEmptyValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
+		assertTrue(input.getValue().isEmpty());
 
 		input.setValue(null);
-		assertNull(input.getValue());
+		assertNotNull(input.getValue());
+		assertTrue(input.getValue().isEmpty());
 		assertFalse(input.getValueIfPresent().isPresent());
 
-		input.setValue("test");
-		assertEquals("test", input.getValue());
+		input.setValue(Collections.singleton("test"));
+		assertFalse(input.getValue().isEmpty());
+		assertEquals("test", input.getValue().iterator().next());
 		assertTrue(input.getValueIfPresent().isPresent());
-		assertEquals("test", input.getValueIfPresent().orElse(null));
+		assertEquals("test", input.getValueIfPresent().orElse(null).iterator().next());
 
 		input.clear();
-		assertNull(input.getValue());
-		assertFalse(input.getValueIfPresent().isPresent());
+		assertNotNull(input.getValue());
+		assertTrue(input.getValue().isEmpty());
 		assertTrue(input.isEmpty());
 
 	}
@@ -408,76 +390,113 @@ public class TestOptionsInput {
 	@Test
 	public void testSelect() {
 
-		SingleSelect<String> input = Input.singleOptionSelect(String.class).addItem("a").addItem("b").build();
+		MultiSelect<String> input = Input.multiOptionSelect(String.class).addItem("a").addItem("b").build();
 		assertNotNull(input);
 
-		assertEquals(SelectionMode.SINGLE, input.getSelectionMode());
+		assertEquals(SelectionMode.MULTI, input.getSelectionMode());
 
-		assertNull(input.getValue());
-		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
+		assertNotNull(input.getValue());
+		assertTrue(input.getValue().isEmpty());
 
 		input.select("a");
 		assertFalse(input.isEmpty());
-		assertEquals("a", input.getValue());
+		assertEquals(Collections.singleton("a"), input.getValue());
 		assertTrue(input.getValueIfPresent().isPresent());
 
-		assertEquals("a", input.getSelectedItem().orElse(""));
-		assertEquals("a", input.getFirstSelectedItem().orElse(""));
+		assertNotNull(input.getSelectedItems());
+
+		assertEquals(Collections.singleton("a"), input.getSelectedItems());
+		assertEquals("a", input.getFirstSelectedItem().orElse(null));
 		assertEquals(1, input.getSelectedItems().size());
 		assertEquals("a", input.getSelectedItems().iterator().next());
 		assertTrue(input.isSelected("a"));
 		assertFalse(input.isSelected("b"));
 
 		input.deselect("a");
-		assertNull(input.getValue());
-		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		assertFalse(input.getSelectedItem().isPresent());
 		assertFalse(input.getFirstSelectedItem().isPresent());
 		assertEquals(0, input.getSelectedItems().size());
 
+		final Set<String> set = new HashSet<>();
+		set.add("a");
+		set.add("b");
+
 		input.select("a");
 		input.select("b");
-		assertEquals("b", input.getValue());
+		assertEquals(2, input.getSelectedItems().size());
+		assertEquals(set, input.getSelectedItems());
+		assertTrue(input.isSelected("a"));
 		assertTrue(input.isSelected("b"));
 
+		input.deselect("a");
+		assertEquals(Collections.singleton("b"), input.getSelectedItems());
+		assertEquals("b", input.getFirstSelectedItem().orElse(null));
+		assertEquals(1, input.getSelectedItems().size());
+		assertEquals("b", input.getSelectedItems().iterator().next());
+		assertTrue(input.isSelected("b"));
+		assertFalse(input.isSelected("a"));
+
 		input.deselectAll();
-		assertNull(input.getValue());
-		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		assertFalse(input.getSelectedItem().isPresent());
 		assertFalse(input.getFirstSelectedItem().isPresent());
 		assertEquals(0, input.getSelectedItems().size());
 		assertFalse(input.isSelected("a"));
 		assertFalse(input.isSelected("b"));
 
-		final StringValue sv = new StringValue();
+		input.select(set);
+		assertEquals(2, input.getSelectedItems().size());
+		assertEquals(set, input.getSelectedItems());
+		assertTrue(input.isSelected("a"));
+		assertTrue(input.isSelected("b"));
+
+		input.select("a", "b");
+		assertEquals(2, input.getSelectedItems().size());
+		assertEquals(set, input.getSelectedItems());
+		assertTrue(input.isSelected("a"));
+		assertTrue(input.isSelected("b"));
+
+		final SetValue sv = new SetValue();
 
 		input.addSelectionListener(e -> {
-			sv.value = e.getFirstSelectedItem().orElse(null);
+			sv.value = e.getAllSelectedItems();
 		});
 
-		assertNull(sv.value);
+		assertTrue(sv.value.isEmpty());
 
 		input.select("a");
-		assertEquals("a", sv.value);
+		assertFalse(sv.value.isEmpty());
+		assertEquals("a", sv.value.iterator().next());
 
 		input.deselectAll();
-		assertNull(sv.value);
+		assertTrue(sv.value.isEmpty());
 
-		sv.value = null;
+		input.select("a", "b");
+		assertFalse(sv.value.isEmpty());
+		assertTrue(sv.value.contains("a"));
+		assertTrue(sv.value.contains("b"));
 
-		input = Input.singleOptionSelect(String.class).addItem("a").addItem("b")
-				.withSelectionListener(e -> sv.value = e.getFirstSelectedItem().orElse(null)).build();
+		sv.value = new HashSet<>();
 
-		assertNull(sv.value);
+		input = Input.multiOptionSelect(String.class).addItem("a").addItem("b")
+				.withSelectionListener(e -> sv.value = e.getAllSelectedItems()).build();
+
+		assertTrue(sv.value.isEmpty());
 
 		input.select("b");
-		assertEquals("b", sv.value);
+		assertEquals("b", sv.value.iterator().next());
 
 		input.deselectAll();
-		assertNull(sv.value);
+		assertTrue(sv.value.isEmpty());
+
+		final Set<String> val = new HashSet<>();
+		val.add("a");
+		val.add("b");
+
+		input.setValue(val);
+		assertFalse(sv.value.isEmpty());
+		assertTrue(sv.value.contains("a"));
+		assertTrue(sv.value.contains("b"));
 
 	}
 
@@ -485,10 +504,10 @@ public class TestOptionsInput {
 	@Test
 	public void testEnumSelect() {
 
-		SingleSelect<TestEnum> input = Input.enumOptionSelect(TestEnum.class).build();
+		MultiSelect<TestEnum> input = Input.enumMultiSelect(TestEnum.class).build();
 		assertNotNull(input);
 
-		DataProvider<TestEnum, ?> dp = ((RadioButtonGroup<TestEnum>) input.getComponent()).getDataProvider();
+		DataProvider<TestEnum, ?> dp = ((CheckboxGroup<TestEnum>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 
 		assertEquals(3, dp.size(new Query<>()));
@@ -505,9 +524,9 @@ public class TestOptionsInput {
 	@Test
 	public void testItemsDataProvider() {
 
-		SingleSelect<String> input = Input.singleOptionSelect(String.class).items(Arrays.asList("one", "two")).build();
+		MultiSelect<String> input = Input.multiOptionSelect(String.class).items(Arrays.asList("one", "two")).build();
 
-		DataProvider<String, ?> dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		DataProvider<String, ?> dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 		assertEquals(2, dp.size(new Query<>()));
 
@@ -516,9 +535,9 @@ public class TestOptionsInput {
 		assertTrue(items.contains("one"));
 		assertTrue(items.contains("two"));
 
-		input = Input.singleOptionSelect(String.class).items("one", "two").build();
+		input = Input.multiOptionSelect(String.class).items("one", "two").build();
 
-		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 		assertEquals(2, dp.size(new Query<>()));
 
@@ -527,9 +546,9 @@ public class TestOptionsInput {
 		assertTrue(items.contains("one"));
 		assertTrue(items.contains("two"));
 
-		input = Input.singleOptionSelect(String.class).addItem("one").addItem("two").build();
+		input = Input.multiOptionSelect(String.class).addItem("one").addItem("two").build();
 
-		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 		assertEquals(2, dp.size(new Query<>()));
 
@@ -544,10 +563,10 @@ public class TestOptionsInput {
 	@Test
 	public void testDataProvider() {
 
-		SingleSelect<String> input = Input.singleOptionSelect(String.class)
+		MultiSelect<String> input = Input.multiOptionSelect(String.class)
 				.dataSource(DataProvider.ofCollection(Arrays.asList("a", "b", "c"))).build();
 
-		DataProvider<String, ?> dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		DataProvider<String, ?> dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 
 		assertEquals(3, dp.size(new Query<>()));
@@ -558,10 +577,10 @@ public class TestOptionsInput {
 		assertTrue(items.contains("b"));
 		assertTrue(items.contains("c"));
 
-		input = Input.singleOptionSelect(String.class)
+		input = Input.multiOptionSelect(String.class)
 				.dataSource(DataProvider.ofCollection(Arrays.asList("a", "aa", "b"))).build();
 
-		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 
 		assertEquals(3, dp.size(new Query<>()));
@@ -575,9 +594,9 @@ public class TestOptionsInput {
 		final DataProvider<String, ?> idp = DataProvider
 				.<String>fromCallbacks(q -> Arrays.asList("a", "b", "c").stream(), q -> 3);
 
-		input = Input.singleOptionSelect(String.class).dataSource(idp).build();
+		input = Input.multiOptionSelect(String.class).dataSource(idp).build();
 
-		dp = ((RadioButtonGroup<String>) input.getComponent()).getDataProvider();
+		dp = ((CheckboxGroup<String>) input.getComponent()).getDataProvider();
 		assertNotNull(dp);
 
 		assertEquals(3, dp.size(new Query<>()));
@@ -600,11 +619,10 @@ public class TestOptionsInput {
 								.username("sa").driverClassName(DatabasePlatform.H2.getDriverClassName()).build())
 				.traceEnabled(true).build();
 
-		SingleSelect<BeanTest1> input1 = Input.singleOptionSelect(BeanTest1.class).dataSource(datastore, TARGET1)
-				.build();
+		MultiSelect<BeanTest1> input1 = Input.multiOptionSelect(BeanTest1.class).dataSource(datastore, TARGET1).build();
 		assertNotNull(input1);
 
-		DataProvider<BeanTest1, ?> dp1 = ((RadioButtonGroup<BeanTest1>) input1.getComponent()).getDataProvider();
+		DataProvider<BeanTest1, ?> dp1 = ((CheckboxGroup<BeanTest1>) input1.getComponent()).getDataProvider();
 		assertNotNull(dp1);
 
 		assertEquals(2, dp1.size(new Query<>()));
@@ -614,13 +632,13 @@ public class TestOptionsInput {
 		assertTrue(items.contains(new BeanTest1("A")));
 		assertTrue(items.contains(new BeanTest1("B")));
 
-		SingleSelect<String> input2 = Input
-				.singleOptionSelect(String.class, BeanTest1.class,
+		MultiSelect<String> input2 = Input
+				.multiOptionSelect(String.class, BeanTest1.class,
 						ItemConverter.create(item -> item.getCode(), value -> Optional.of(new BeanTest1(value))))
 				.dataSource(datastore, TARGET1).build();
 		assertNotNull(input2);
 
-		DataProvider<String, String> dp3 = (DataProvider<String, String>) ((RadioButtonGroup<String>) input2
+		DataProvider<String, String> dp3 = (DataProvider<String, String>) ((CheckboxGroup<String>) input2
 				.getComponent()).getDataProvider();
 		assertNotNull(dp3);
 
@@ -631,10 +649,10 @@ public class TestOptionsInput {
 
 		// properties
 
-		SingleSelect<String> input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).build();
+		MultiSelect<String> input4 = Input.multiOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).build();
 		assertNotNull(input4);
 
-		DataProvider<PropertyBox, String> dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4
+		DataProvider<PropertyBox, String> dp4 = (DataProvider<PropertyBox, String>) ((CheckboxGroup<PropertyBox>) input4
 				.getComponent()).getDataProvider();
 		assertNotNull(dp4);
 
@@ -647,10 +665,10 @@ public class TestOptionsInput {
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, CODE, DESCRIPTION).build();
+		input4 = Input.multiOptionSelect(CODE).dataSource(datastore, TARGET1, CODE, DESCRIPTION).build();
 		assertNotNull(input4);
 
-		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
+		dp4 = (DataProvider<PropertyBox, String>) ((CheckboxGroup<PropertyBox>) input4.getComponent())
 				.getDataProvider();
 		assertNotNull(dp4);
 
@@ -663,11 +681,11 @@ public class TestOptionsInput {
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description B".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.eq("A"))
+		input4 = Input.multiOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.eq("A"))
 				.build();
 		assertNotNull(input4);
 
-		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
+		dp4 = (DataProvider<PropertyBox, String>) ((CheckboxGroup<PropertyBox>) input4.getComponent())
 				.getDataProvider();
 		assertNotNull(dp4);
 
@@ -678,11 +696,11 @@ public class TestOptionsInput {
 		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
 		assertEquals(1, pitems.stream().filter(i -> "Description A".equals(i.getValue(DESCRIPTION))).count());
 
-		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.isNotNull())
+		input4 = Input.multiOptionSelect(CODE).dataSource(datastore, TARGET1, TEST1).withQueryFilter(CODE.isNotNull())
 				.withQuerySort(DESCRIPTION.desc()).build();
 		assertNotNull(input4);
 
-		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
+		dp4 = (DataProvider<PropertyBox, String>) ((CheckboxGroup<PropertyBox>) input4.getComponent())
 				.getDataProvider();
 		assertNotNull(dp4);
 
@@ -694,9 +712,9 @@ public class TestOptionsInput {
 
 		// single property
 
-		input4 = Input.singleOptionSelect(CODE).dataSource(datastore, TARGET1).build();
+		input4 = Input.multiOptionSelect(CODE).dataSource(datastore, TARGET1).build();
 
-		dp4 = (DataProvider<PropertyBox, String>) ((RadioButtonGroup<PropertyBox>) input4.getComponent())
+		dp4 = (DataProvider<PropertyBox, String>) ((CheckboxGroup<PropertyBox>) input4.getComponent())
 				.getDataProvider();
 		assertNotNull(dp4);
 		assertEquals(2, dp4.size(new Query<>()));
@@ -707,8 +725,8 @@ public class TestOptionsInput {
 
 	}
 
-	private class StringValue {
-		String value;
+	private class SetValue {
+		Set<String> value = new HashSet<>();
 	}
 
 	private enum TestEnum {

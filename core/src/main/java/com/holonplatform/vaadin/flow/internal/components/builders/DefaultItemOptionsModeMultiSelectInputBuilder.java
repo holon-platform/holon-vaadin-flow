@@ -156,7 +156,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		final Input<Set<ITEM>> itemInput = Input.builder(component)
 				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).hasEnabledSupplier(f -> f)
-				.hasValidationSupplier(f -> f).build();
+				.hasValidationSupplier(f -> f).isEmptySupplier(f -> f.getValue() == null || f.getValue().isEmpty())
+				.build();
 
 		final MultiSelect<T> multiSelect = new MultiSelectInputAdapter<>(itemInput, itemConverter, component,
 				c -> c.getDataProvider().refreshAll(), c -> {

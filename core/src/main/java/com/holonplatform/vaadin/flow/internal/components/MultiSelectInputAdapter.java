@@ -88,8 +88,8 @@ public class MultiSelectInputAdapter<T, ITEM, C extends Component, M extends com
 		this.multiSelect = multiSelect;
 		this.refreshOperation = refreshOperation;
 		this.selectAllOperation = selectAllOperation;
-		// selection change on value change
-		input.addValueChangeListener(e -> fireSelectionListeners(e.getValue(), e.isUserOriginated()));
+		// selection change listener
+		multiSelect.addSelectionListener(e -> fireSelectionListeners(e.getAllSelectedItems(), e.isFromClient()));
 	}
 
 	protected Set<T> asValues(Set<ITEM> items) {
