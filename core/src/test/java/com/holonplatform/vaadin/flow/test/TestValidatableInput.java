@@ -112,7 +112,8 @@ public class TestValidatableInput {
 		final ValidatableInput<String> input = Input.string().validatable().withValidator(Validator.max(2)).build();
 		assertFalse(input.isValidateOnValueChange());
 		assertTrue(input.getComponent() instanceof HasValidation);
-		final HasValidation hv1 = (HasValidation) input.getComponent();
+		final HasValidation hv1 = input.hasValidation().orElse(null);
+		assertNotNull(hv1);
 
 		assertTrue(input.isValid());
 		Assertions.assertDoesNotThrow(() -> input.validate());

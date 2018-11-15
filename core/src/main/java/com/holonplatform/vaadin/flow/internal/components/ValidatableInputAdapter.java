@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -206,6 +207,15 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	@Override
 	public Optional<HasValidation> hasValidation() {
 		return input.hasValidation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Input#hasInvalidChangeEventNotifier()
+	 */
+	@Override
+	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
+		return input.hasInvalidChangeEventNotifier();
 	}
 
 	/*

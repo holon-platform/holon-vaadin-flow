@@ -49,6 +49,10 @@ public class DefaultValidationStatusEvent<S, V, C extends ValueComponent<V>> imp
 		this(source, null, null, status, errors);
 	}
 
+	public DefaultValidationStatusEvent(S source, C component, Status status, List<Localizable> errors) {
+		this(source, component, null, status, errors);
+	}
+
 	public DefaultValidationStatusEvent(S source, C component, Property<V> property, Status status,
 			List<Localizable> errors) {
 		super();
@@ -67,10 +71,6 @@ public class DefaultValidationStatusEvent<S, V, C extends ValueComponent<V>> imp
 		return source;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent#getComponent()
-	 */
 	@Override
 	public Optional<C> getComponent() {
 		return Optional.ofNullable(component);
