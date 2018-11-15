@@ -33,7 +33,15 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 
 	private static final long serialVersionUID = -3886097061085664626L;
 
-	private final Map<Integer, DeviceInfo> deviceInfos = new WeakHashMap<>(4);
+	private final Map<UI, DeviceInfo> deviceInfos = new WeakHashMap<>();
+
+	/**
+	 * Get the number of the registered device infos.
+	 * @return the number of the registered device infos
+	 */
+	public int getDeviceInfoCount() {
+		return deviceInfos.size();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -42,7 +50,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public boolean hasDeviceInfo(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		return deviceInfos.containsKey(ui.getUIId());
+		return deviceInfos.containsKey(ui);
 	}
 
 	/*
@@ -52,7 +60,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public Optional<DeviceInfo> getDeviceInfo(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		return Optional.ofNullable(deviceInfos.get(ui.getUIId()));
+		return Optional.ofNullable(deviceInfos.get(ui));
 	}
 
 	/*
@@ -63,7 +71,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public void setDeviceInfo(UI ui, DeviceInfo deviceInfo) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		deviceInfos.put(ui.getUIId(), deviceInfo);
+		deviceInfos.put(ui, deviceInfo);
 	}
 
 }

@@ -64,7 +64,7 @@ public class DeviceInfoServiceInitListener implements VaadinServiceInitListener 
 					if (request != null) {
 						registry.setDeviceInfo(e.getUI(), DeviceInfo.create(e.getUI(), request));
 						// log
-						LOGGER.info("A DeviceInfo was configured for UI with id [" + e.getUI().getUIId() + "]");
+						LOGGER.debug(() -> "A DeviceInfo was configured for UI with id [" + e.getUI().getUIId() + "]");
 					}
 				}
 			}
