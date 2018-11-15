@@ -159,11 +159,12 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 				.hasValidationSupplier(f -> f).isEmptySupplier(f -> f.getValue() == null || f.getValue().isEmpty())
 				.build();
 
-		final MultiSelect<T> multiSelect = new MultiSelectInputAdapter<>(itemInput, itemConverter, component,
-				c -> c.getDataProvider().refreshAll(), c -> {
-					if (c.getDataProvider() != null) {
-						itemInput.setValue(c.getDataProvider().fetch(new Query<>()).collect(Collectors.toSet()));
+		final MultiSelect<T> multiSelect = new MultiSelectInputAdapter<>(itemInput, itemConverter,
+				ms -> component.getDataProvider().refreshAll(), () -> {
+					if (component.getDataProvider() != null) {
+						return component.getDataProvider().fetch(new Query<>()).collect(Collectors.toSet());
 					}
+					return null;
 				});
 		selectionListeners.forEach(listener -> multiSelect.addSelectionListener(listener));
 		valueChangeListeners.forEach(listener -> multiSelect.addValueChangeListener(listener));
