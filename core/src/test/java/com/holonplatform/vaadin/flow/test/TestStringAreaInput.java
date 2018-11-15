@@ -186,7 +186,6 @@ public class TestStringAreaInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -200,18 +199,6 @@ public class TestStringAreaInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.stringArea().label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.stringArea().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.stringArea().caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.stringArea().caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.stringArea().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

@@ -156,12 +156,6 @@ public class TestViewComponent {
 		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test1"));
 		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test2"));
 
-		vc = ViewComponent.builder(String.class).styleNames("test1", "test2").removeStyleName("test2")
-				.replaceStyleName("test3").build();
-		assertFalse(ComponentTestUtils.getClassNames(vc).contains("test1"));
-		assertFalse(ComponentTestUtils.getClassNames(vc).contains("test2"));
-		assertTrue(ComponentTestUtils.getClassNames(vc).contains("test3"));
-
 	}
 
 	@Test
@@ -237,7 +231,6 @@ public class TestViewComponent {
 		assertFalse(ComponentTestUtils.isEnabled(vc));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -252,18 +245,6 @@ public class TestViewComponent {
 		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		vc = ViewComponent.builder(String.class).label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(vc));
-
-		vc = ViewComponent.builder(String.class).caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(vc));
-
-		vc = ViewComponent.builder(String.class).caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(vc));
-
-		vc = ViewComponent.builder(String.class).caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(vc));
-
-		vc = ViewComponent.builder(String.class).caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(vc));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

@@ -98,29 +98,6 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	C expand(Component... componentsToExpand);
 
 	/**
-	 * Expands the given component using given expand ratio.
-	 * @param component the component to expand
-	 * @param expandRatio The expand ratio
-	 * @return this
-	 * @deprecated Use {@link #flexGrow(double, HasElement...)}
-	 */
-	@Deprecated
-	default C expand(Component component, float expandRatio) {
-		return flexGrow(expandRatio, component);
-	}
-
-	/**
-	 * Sets the default alignment to be used by all components without individual alignments inside the layout.
-	 * @param alignment the Alignment to set
-	 * @return this
-	 * @deprecated Use {@link #alignItems(Alignment)}
-	 */
-	@Deprecated
-	default C defaultAlignment(Alignment alignment) {
-		return alignItems(alignment);
-	}
-
-	/**
 	 * Adds a component to the layout using given <code>alignment</code>.
 	 * @param component The component to add
 	 * @param alignment the Alignment to use for the component
@@ -129,47 +106,6 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	default C addAndAlign(Component component, Alignment alignment) {
 		add(component);
 		return alignSelf(alignment, component);
-	}
-
-	/**
-	 * Adds the given component to layout with given <code>expandRatio</code>
-	 * @param component The component to add
-	 * @param expandRatio The expand ratio to use
-	 * @return this
-	 * @deprecated Use {@link #add(Component...)} and {@link #flexGrow(double, HasElement...)}
-	 */
-	@Deprecated
-	default C addAndExpand(Component component, float expandRatio) {
-		add(component);
-		return flexGrow(expandRatio, component);
-	}
-
-	/**
-	 * Adds the given component to layout with applying full (<code>1</code>) expand ratio.
-	 * @param component The component to add
-	 * @return this
-	 * @deprecated Use {@link #add(Component...)} and {@link #flexGrow(double, HasElement...)}
-	 */
-	@Deprecated
-	default C addAndExpandFull(Component component) {
-		add(component);
-		return expand(component);
-	}
-
-	/**
-	 * Adds the given component to layout with given <code>expandRatio</code> and <code>alignment</code>
-	 * @param component The component to add
-	 * @param alignment the Alignment to use for the component
-	 * @param expandRatio The expand ration to use with for added component
-	 * @return this
-	 * @deprecated Use {@link #add(Component...)}, {@link #alignSelf(Alignment, HasElement...)} and
-	 *             {@link #flexGrow(double, HasElement...)}
-	 */
-	@Deprecated
-	default C addAlignAndExpand(Component component, Alignment alignment, float expandRatio) {
-		add(component);
-		alignSelf(alignment, component);
-		return flexGrow(expandRatio, component);
 	}
 
 }

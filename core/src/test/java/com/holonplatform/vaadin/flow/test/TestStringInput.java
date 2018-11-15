@@ -186,7 +186,6 @@ public class TestStringInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -200,18 +199,6 @@ public class TestStringInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.string().label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.string().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.string().caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.string().caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.string().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
@@ -451,15 +438,15 @@ public class TestStringInput {
 		assertEquals(77, ((TextField) input.getComponent()).getMaxLength());
 
 	}
-	
+
 	@Test
 	public void testTextInputValues() {
-		
+
 		Input<String> input = Input.string().emptyValuesAsNull(false).blankValuesAsNull(false).build();
 		assertEquals("", input.getValue());
 		input.setValue(null);
 		assertEquals("", input.getValue());
-		
+
 		input = Input.string().emptyValuesAsNull(true).blankValuesAsNull(false).build();
 		assertNull(input.getValue());
 		input.setValue(null);
@@ -468,7 +455,7 @@ public class TestStringInput {
 		assertNull(input.getValue());
 		input.setValue(" ");
 		assertNotNull(input.getValue());
-		
+
 		input = Input.string().blankValuesAsNull(true).build();
 		assertNull(input.getValue());
 		input.setValue(null);
@@ -477,33 +464,33 @@ public class TestStringInput {
 		assertNull(input.getValue());
 		input.setValue(" ");
 		assertNull(input.getValue());
-		
+
 	}
-	
+
 	@Test
 	public void testHasValue() {
-		
+
 		Input<String> input = Input.string().build();
 		assertEquals("", input.getEmptyValue());
-		
+
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		
+
 		input.setValue(null);
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
-		
+
 		input.setValue("test");
 		assertEquals("test", input.getValue());
 		assertTrue(input.getValueIfPresent().isPresent());
 		assertEquals("test", input.getValueIfPresent().orElse(null));
-		
+
 		input.clear();
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-		
+
 	}
 
 }

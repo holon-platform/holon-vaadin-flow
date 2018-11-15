@@ -349,26 +349,6 @@ public class DefaultDateInputBuilder implements DateInputBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public DateInputBuilder removeStyleName(String styleName) {
-		builder.removeStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public DateInputBuilder replaceStyleName(String styleName) {
-		builder.replaceStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override

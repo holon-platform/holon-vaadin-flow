@@ -319,26 +319,6 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeMultiSelectInputBuilder<T> removeStyleName(String styleName) {
-		builder.removeStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeMultiSelectInputBuilder<T> replaceStyleName(String styleName) {
-		builder.replaceStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
@@ -680,27 +660,6 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 		@Override
 		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> styleName(String styleName) {
 			builder.styleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> removeStyleName(String styleName) {
-			builder.removeStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> replaceStyleName(String styleName) {
-			builder.replaceStyleName(styleName);
 			return this;
 		}
 

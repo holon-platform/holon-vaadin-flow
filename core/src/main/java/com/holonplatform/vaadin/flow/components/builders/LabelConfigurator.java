@@ -15,9 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
-import com.holonplatform.vaadin.flow.components.support.ContentMode;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultLabelConfigurator;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.HtmlContainer;
@@ -36,62 +34,6 @@ import com.vaadin.flow.component.html.Span;
 public interface LabelConfigurator<L extends HtmlContainer & ClickNotifier, C extends LabelConfigurator<L, C>> extends
 		HtmlComponentConfigurator<C>, HasEnabledConfigurator<C>, HasTextConfigurator<C>, HasHtmlTextConfigurator<C>,
 		ClickNotifierConfigurator<L, ClickEvent<L>, C>, DeferrableLocalizationConfigurator<C> {
-
-	/**
-	 * Sets the label text content using a {@link Localizable} message.
-	 * @param content Localizable text content message
-	 * @return this
-	 * @deprecated Use {@link #text(Localizable)} or {@link #htmlText(Localizable)}
-	 */
-	@Deprecated
-	C content(Localizable content);
-
-	/**
-	 * Sets the label text content.
-	 * @param content The text content to set
-	 * @return this
-	 * @deprecated Use {@link #text(String)} or {@link #htmlText(String)}
-	 */
-	@Deprecated
-	default C content(String content) {
-		return content((content == null) ? null : Localizable.builder().message(content).build());
-	}
-
-	/**
-	 * Sets the label text content using a localizable <code>messageCode</code>.
-	 * @param defaultContent Default text content if no translation is available for given <code>messageCode</code> for
-	 *        current Locale.
-	 * @param messageCode Text translation message key
-	 * @param arguments Optional translation arguments
-	 * @return this
-	 * @deprecated Use {@link #text(String, String, Object...)} or {@link #htmlText(String, String, Object...)}
-	 */
-	@Deprecated
-	default C content(String defaultContent, String messageCode, Object... arguments) {
-		return content(Localizable.builder().message((defaultContent == null) ? "" : defaultContent)
-				.messageCode(messageCode).messageArguments(arguments).build());
-	}
-
-	/**
-	 * Sets the content mode of the Label.
-	 * @param contentMode The content mode to set
-	 * @return this
-	 * @deprecated Use <code>text(...)</code> or <code>htmlText(...)</code> methods to set the text content either as
-	 *             plain or HTML text
-	 */
-	@Deprecated
-	C contentMode(ContentMode contentMode);
-
-	/**
-	 * A shortcut to set the content mode to {@link ContentMode#HTML}
-	 * @return this
-	 * @deprecated Use <code>text(...)</code> or <code>htmlText(...)</code> methods to set the text content either as
-	 *             plain or HTML text
-	 */
-	@Deprecated
-	default C html() {
-		return contentMode(ContentMode.HTML);
-	}
 
 	/**
 	 * Base Label configurator.

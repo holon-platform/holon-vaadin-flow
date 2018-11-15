@@ -93,26 +93,6 @@ public class DefaultIconConfigurator<C extends HasIconConfigurator<C>> implement
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public IconConfigurator<C> removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public IconConfigurator<C> replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasIconConfigurator.IconConfigurator#add()
 	 */
 	@Override

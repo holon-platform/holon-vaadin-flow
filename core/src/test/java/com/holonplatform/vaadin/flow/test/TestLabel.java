@@ -30,7 +30,6 @@ import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
-import com.holonplatform.vaadin.flow.components.support.ContentMode;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
@@ -209,7 +208,6 @@ public class TestLabel {
 		assertTrue(detached.get());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testStyles() {
 
@@ -228,15 +226,6 @@ public class TestLabel {
 		label = LabelBuilder.div().styleNames("test1", "test2").build();
 		assertTrue(label.getClassNames().contains("test1"));
 		assertTrue(label.getClassNames().contains("test2"));
-
-		label = LabelBuilder.div().styleNames("test1", "test2").removeStyleName("test2").replaceStyleName("test3")
-				.build();
-		assertFalse(label.getClassNames().contains("test1"));
-		assertFalse(label.getClassNames().contains("test2"));
-		assertTrue(label.getClassNames().contains("test3"));
-
-		label = LabelBuilder.div().primaryStyleName("test").build();
-		assertTrue(label.getClassNames().contains("test"));
 
 	}
 
@@ -313,7 +302,6 @@ public class TestLabel {
 		assertFalse(label.isEnabled());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testText() {
 
@@ -327,18 +315,6 @@ public class TestLabel {
 		assertEquals("test", label.getText());
 
 		label = LabelBuilder.div().text("test", "test.code", "arg").build();
-		assertEquals("test", label.getText());
-
-		label = LabelBuilder.div().content(Localizable.builder().message("test").build()).build();
-		assertEquals("test", label.getText());
-
-		label = LabelBuilder.div().content("test").build();
-		assertEquals("test", label.getText());
-
-		label = LabelBuilder.div().content("test", "test.code").build();
-		assertEquals("test", label.getText());
-
-		label = LabelBuilder.div().content("test", "test.code", "arg").build();
 		assertEquals("test", label.getText());
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
@@ -418,7 +394,6 @@ public class TestLabel {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testHtmlText() {
 
@@ -451,12 +426,6 @@ public class TestLabel {
 			ComponentUtil.onComponentAttach(label2, true);
 			assertEquals("TestUS", label2.getElement().getProperty("innerHTML"));
 		});
-
-		label = LabelBuilder.div().text("test").contentMode(ContentMode.HTML).build();
-		assertEquals("test", label.getElement().getProperty("innerHTML"));
-
-		label = LabelBuilder.div().text("test").html().build();
-		assertEquals("test", label.getElement().getProperty("innerHTML"));
 
 	}
 

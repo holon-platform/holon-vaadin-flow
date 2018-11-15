@@ -113,7 +113,6 @@ public class TestButton {
 		assertTrue(detached.get());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testStyles() {
 
@@ -132,15 +131,6 @@ public class TestButton {
 		button = ButtonBuilder.create().styleNames("test1", "test2").build();
 		assertTrue(button.getClassNames().contains("test1"));
 		assertTrue(button.getClassNames().contains("test2"));
-
-		button = ButtonBuilder.create().styleNames("test1", "test2").removeStyleName("test2").replaceStyleName("test3")
-				.build();
-		assertFalse(button.getClassNames().contains("test1"));
-		assertFalse(button.getClassNames().contains("test2"));
-		assertTrue(button.getClassNames().contains("test3"));
-
-		button = ButtonBuilder.create().primaryStyleName("test").build();
-		assertTrue(button.getClassNames().contains("test"));
 
 	}
 
@@ -269,7 +259,6 @@ public class TestButton {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testText() {
 
@@ -283,18 +272,6 @@ public class TestButton {
 		assertEquals("test", button.getText());
 
 		button = ButtonBuilder.create().text("test", "test.code", "arg").build();
-		assertEquals("test", button.getText());
-
-		button = ButtonBuilder.create().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", button.getText());
-
-		button = ButtonBuilder.create().caption("test").build();
-		assertEquals("test", button.getText());
-
-		button = ButtonBuilder.create().caption("test", "test.code").build();
-		assertEquals("test", button.getText());
-
-		button = ButtonBuilder.create().caption("test", "test.code", "arg").build();
 		assertEquals("test", button.getText());
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

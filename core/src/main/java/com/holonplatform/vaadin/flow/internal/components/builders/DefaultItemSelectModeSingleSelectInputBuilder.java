@@ -423,26 +423,6 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
@@ -781,27 +761,6 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> removeStyleName(String styleName) {
-			builder.removeStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> replaceStyleName(String styleName) {
-			builder.replaceStyleName(styleName);
 			return this;
 		}
 

@@ -13,27 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components.support;
+package com.holonplatform.vaadin.flow.navigator.test.it;
 
-/**
- * Textual values representations.
- * <p>
- * Mainly intended as a replacement for the Vaadin 7/8 ContentMode class to ensure API backward compatibility.
- * </p>
- *
- * @since 5.2.0
- */
-public enum ContentMode {
+import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.chrome.ChromeDriver;
 
-	/**
-	 * Textual values are displayed as plain text.
-	 */
-	TEXT,
+import com.holonplatform.vaadin.flow.test.utils.JupiterTestBenchTestCase;
+import com.vaadin.testbench.IPAddress;
 
-	/**
-	 * Textual values are interpreted and displayed as HTML. Care should be taken when using this mode to avoid
-	 * Cross-site Scripting (XSS) issues.
-	 */
-	HTML;
+public class AbstractIntegrationTest extends JupiterTestBenchTestCase {
+
+	@BeforeEach
+	public void setUp() throws Exception {
+		setDriver(new ChromeDriver());
+		getDriver().get("http://" + IPAddress.findSiteLocalAddress() + ":8080");
+	}
 
 }

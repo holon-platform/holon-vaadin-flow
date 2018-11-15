@@ -105,12 +105,6 @@ public class TestContextMenu {
 		assertTrue(menu.getClassNames().contains("test1"));
 		assertTrue(menu.getClassNames().contains("test2"));
 
-		menu = ContextMenuBuilder.create().styleNames("test1", "test2").removeStyleName("test2")
-				.replaceStyleName("test3").build();
-		assertFalse(menu.getClassNames().contains("test1"));
-		assertFalse(menu.getClassNames().contains("test2"));
-		assertTrue(menu.getClassNames().contains("test3"));
-
 	}
 
 	@Test

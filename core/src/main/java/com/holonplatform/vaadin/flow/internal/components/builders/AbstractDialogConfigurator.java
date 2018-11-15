@@ -89,26 +89,6 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public C removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public C replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#message(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */

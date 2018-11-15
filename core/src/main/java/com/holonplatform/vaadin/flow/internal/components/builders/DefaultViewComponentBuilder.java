@@ -132,26 +132,6 @@ public class DefaultViewComponentBuilder<T>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public ViewComponentBuilder<T> removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public ViewComponentBuilder<T> replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */

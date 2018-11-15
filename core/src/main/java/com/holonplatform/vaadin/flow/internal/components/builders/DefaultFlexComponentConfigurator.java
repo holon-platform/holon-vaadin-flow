@@ -126,26 +126,6 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public DefaultFlexComponentConfigurator<C> removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public DefaultFlexComponentConfigurator<C> replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override

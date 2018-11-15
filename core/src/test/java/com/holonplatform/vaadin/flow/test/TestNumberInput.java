@@ -187,7 +187,6 @@ public class TestNumberInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -201,18 +200,6 @@ public class TestNumberInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.number(Integer.class).label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.number(Integer.class).caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.number(Integer.class).caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.number(Integer.class).caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.number(Integer.class).caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

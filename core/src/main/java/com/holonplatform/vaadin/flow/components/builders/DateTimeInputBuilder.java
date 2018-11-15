@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.TimeZone;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultDateTimeInputBuilder;
@@ -39,17 +38,6 @@ public interface DateTimeInputBuilder
 	 * @return this
 	 */
 	DateTimeInputBuilder timeZone(ZoneId zone);
-
-	/**
-	 * Set the time zone to use
-	 * @param timeZone the time zone to use
-	 * @return this
-	 * @deprecated Use {@link #timeZone(ZoneId)}
-	 */
-	@Deprecated
-	default DateTimeInputBuilder timeZone(TimeZone timeZone) {
-		return timeZone((timeZone != null) ? timeZone.toZoneId() : null);
-	}
 
 	/**
 	 * Create a new {@link DateTimeInputBuilder}.

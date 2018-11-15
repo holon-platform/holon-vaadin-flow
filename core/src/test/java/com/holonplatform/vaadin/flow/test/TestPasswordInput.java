@@ -191,7 +191,6 @@ public class TestPasswordInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -205,18 +204,6 @@ public class TestPasswordInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.password().label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.password().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.password().caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.password().caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.password().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

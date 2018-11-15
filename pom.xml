@@ -71,6 +71,8 @@
 
 		<!-- Test JDBC Datastore -->
 		<holon.jdbc.datastore.version>5.2.0-alpha2-SNAPSHOT</holon.jdbc.datastore.version>
+		<!-- Spring Boot for integration tests -->
+		<spring.boot.test.version>2.1.0.RELEASE</spring.boot.test.version>
 
 	</properties>
 
@@ -104,7 +106,8 @@
 	<modules>
 		<module>test</module>
 		<module>core</module>
-		<!-- <module>navigator</module> <module>spring</module> <module>spring-boot</module> 
+		<module>navigator</module>
+		<!--  <module>spring</module> <module>spring-boot</module> 
 			<module>starter</module> <module>starter-undertow</module> <module>bom</module> 
 			<module>documentation</module> -->
 	</modules>

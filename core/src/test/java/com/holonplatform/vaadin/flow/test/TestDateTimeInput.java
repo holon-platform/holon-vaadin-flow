@@ -220,7 +220,6 @@ public class TestDateTimeInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -234,18 +233,6 @@ public class TestDateTimeInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.dateTime().label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.dateTime().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.dateTime().caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.dateTime().caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.dateTime().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

@@ -334,26 +334,6 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> removeStyleName(String styleName) {
-		builder.removeStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> replaceStyleName(String styleName) {
-		builder.replaceStyleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 	 */
 	@Override
@@ -708,27 +688,6 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		@Override
 		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> styleName(String styleName) {
 			builder.styleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> removeStyleName(String styleName) {
-			builder.removeStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> replaceStyleName(String styleName) {
-			builder.replaceStyleName(styleName);
 			return this;
 		}
 

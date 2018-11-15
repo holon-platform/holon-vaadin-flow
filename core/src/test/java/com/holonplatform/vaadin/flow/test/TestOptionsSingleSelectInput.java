@@ -210,7 +210,6 @@ public class TestOptionsSingleSelectInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -225,18 +224,6 @@ public class TestOptionsSingleSelectInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.singleOptionSelect(String.class).label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.singleOptionSelect(String.class).caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.singleOptionSelect(String.class).caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.singleOptionSelect(String.class).caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.singleOptionSelect(String.class).caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {

@@ -1157,27 +1157,6 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyListingBuilder removeStyleName(String styleName) {
-			builder.removeStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public DatastorePropertyListingBuilder replaceStyleName(String styleName) {
-			builder.replaceStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override

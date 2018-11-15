@@ -43,32 +43,4 @@ public interface HasStyleConfigurator<C extends HasStyleConfigurator<C>> {
 	 */
 	C styleName(String styleName);
 
-	/**
-	 * Removes a CSS style class name from this component.
-	 * @param styleName the CSS style class name to remove (not null)
-	 * @return this
-	 */
-	C removeStyleName(String styleName);
-
-	/**
-	 * Sets a CSS style class names for this component, replacing any previous style class names.
-	 * <p>
-	 * Multiple styles can be specified as a space-separated list of style names.
-	 * </p>
-	 * @param styleName The new CSS style class name of the component
-	 * @return this
-	 */
-	C replaceStyleName(String styleName);
-
-	/**
-	 * Changes the CSS style class name of the component.
-	 * @param styleName The new CSS style class name
-	 * @return this
-	 * @deprecated Intented for backward API compatibility only. Use {@link #replaceStyleName(String)} instead.
-	 */
-	@Deprecated
-	default C primaryStyleName(String styleName) {
-		return replaceStyleName(styleName);
-	}
-
 }

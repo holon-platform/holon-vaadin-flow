@@ -19,7 +19,6 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
-import com.holonplatform.vaadin.flow.components.support.ContentMode;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.HtmlContainer;
@@ -42,9 +41,6 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	protected final DefaultHasTextConfigurator textConfigurator;
 	protected final DefaultHasHtmlTextConfigurator htmlTextConfigurator;
 	protected final DefaultHasTitleConfigurator<L> titleConfigurator;
-
-	private Localizable text;
-	private ContentMode contentMode = ContentMode.TEXT;
 
 	public AbstractLabelConfigurator(L component) {
 		super(component);
@@ -100,26 +96,6 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public C removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public C replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */
@@ -147,7 +123,6 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	 */
 	@Override
 	public C htmlText(Localizable text) {
-		this.text = text;
 		htmlTextConfigurator.htmlText(text);
 		return getConfigurator();
 	}
@@ -159,40 +134,7 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	 */
 	@Override
 	public C text(Localizable text) {
-		this.text = text;
 		textConfigurator.text(text);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.LabelConfigurator#content(com.holonplatform.core.i18n.
-	 * Localizable)
-	 */
-	@Override
-	public C content(Localizable content) {
-		this.text = content;
-		switch (contentMode) {
-		case HTML:
-			return htmlText(content);
-		case TEXT:
-		default:
-			return text(content);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.LabelConfigurator#contentMode(com.holonplatform.vaadin.flow.
-	 * components.support.ContentMode)
-	 */
-	@Override
-	public C contentMode(ContentMode contentMode) {
-		this.contentMode = (contentMode != null) ? contentMode : ContentMode.TEXT;
-		if (text != null) {
-			return content(text);
-		}
 		return getConfigurator();
 	}
 

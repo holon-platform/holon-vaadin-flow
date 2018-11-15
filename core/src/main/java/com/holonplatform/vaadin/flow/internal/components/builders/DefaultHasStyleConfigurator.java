@@ -64,33 +64,4 @@ public class DefaultHasStyleConfigurator implements HasStyleConfigurator<Default
 		return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public DefaultHasStyleConfigurator removeStyleName(String styleName) {
-		component.removeClassName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public DefaultHasStyleConfigurator replaceStyleName(String styleName) {
-		if (styleName != null) {
-			if (styleName.indexOf(' ') > 0) {
-				component.setClassName(null);
-				component.addClassNames(styleName.split("\\s+"));
-			} else {
-				component.setClassName(styleName);
-			}
-		} else {
-			component.setClassName(null);
-		}
-		return this;
-	}
-
 }

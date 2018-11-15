@@ -53,17 +53,6 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	C withValueChangeListener(ValueChangeListener<T> listener);
 
 	/**
-	 * Sets the <em>required indicator</em> visible or not.
-	 * @param requiredIndicatorVisible Whether to make the required indicator visible
-	 * @return this
-	 * @deprecated Use {@link #required(boolean)}
-	 */
-	@Deprecated
-	default C requiredIndicatorVisible(boolean requiredIndicatorVisible) {
-		return required(requiredIndicatorVisible);
-	}
-
-	/**
 	 * Set the input as <em>required</em> or not. When the input is required the user must fill in a value.
 	 * <p>
 	 * Depending on the actual input component implementation, setting the input as required may involve:

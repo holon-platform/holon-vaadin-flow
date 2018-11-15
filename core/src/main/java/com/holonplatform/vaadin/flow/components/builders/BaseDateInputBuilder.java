@@ -15,7 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -78,30 +77,6 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	B max(D max);
 
 	/**
-	 * Sets the minimum date that is allowed to be selected.
-	 * @param start the minimum date that is allowed to be selected, or <code>null</code> to remove any minimum
-	 *        constraints
-	 * @return this
-	 * @deprecated Use {@link #min(LocalDate)}
-	 */
-	@Deprecated
-	default B rangeStart(D start) {
-		return min(start);
-	}
-
-	/**
-	 * Sets the maximum date that is allowed to be selected.
-	 * @param end the maximum date that is allowed to be selected, or <code>null</code> to remove any maximum
-	 *        constraints
-	 * @return this
-	 * @deprecated Use {@link #max(LocalDate)}
-	 */
-	@Deprecated
-	default B rangeEnd(D end) {
-		return max(end);
-	}
-
-	/**
 	 * Set the date which should be visible when there is no value selected.
 	 * @param initialPosition the initial position to set
 	 * @return this
@@ -117,18 +92,6 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 * @return this
 	 */
 	B weekNumbersVisible(boolean weekNumbersVisible);
-
-	/**
-	 * Sets the visibility of ISO 8601 week numbers in the date selector. ISO 8601 defines that a week always starts
-	 * with a Monday so the week numbers are only shown if this is the case.
-	 * @param showWeekNumbers true if week numbers should be shown, false otherwise.
-	 * @return this
-	 * @deprecated Use {@link #weekNumbersVisible(boolean)}
-	 */
-	@Deprecated
-	default B showISOWeekNumbers(boolean showWeekNumbers) {
-		return weekNumbersVisible(showWeekNumbers);
-	}
 
 	/**
 	 * Set the Date Input calendar localization messages.

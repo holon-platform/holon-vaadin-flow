@@ -176,26 +176,6 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-	 */
-	@Override
-	public BooleanInputBuilder removeStyleName(String styleName) {
-		styleConfigurator.removeStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-	 */
-	@Override
-	public BooleanInputBuilder replaceStyleName(String styleName) {
-		styleConfigurator.replaceStyleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
@@ -263,9 +243,11 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 		return getConfigurator();
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.vaadin.flow.components.events.ClickEventListener)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
+	 * vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
 	public BooleanInputBuilder withClickListener(

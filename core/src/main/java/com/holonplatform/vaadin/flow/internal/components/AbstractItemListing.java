@@ -1299,27 +1299,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public C removeStyleName(String styleName) {
-			styleConfigurator.removeStyleName(styleName);
-			return getConfigurator();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public C replaceStyleName(String styleName) {
-			styleConfigurator.replaceStyleName(styleName);
-			return getConfigurator();
-		}
-
-		/*
-		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
@@ -2020,27 +1999,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public ItemListingContextMenuBuilder<T, P, L, C> styleName(String styleName) {
 			styleConfigurator.styleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#removeStyleName(java.lang.String)
-		 */
-		@Override
-		public ItemListingContextMenuBuilder<T, P, L, C> removeStyleName(String styleName) {
-			styleConfigurator.removeStyleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#replaceStyleName(java.lang.String)
-		 */
-		@Override
-		public ItemListingContextMenuBuilder<T, P, L, C> replaceStyleName(String styleName) {
-			styleConfigurator.replaceStyleName(styleName);
 			return this;
 		}
 

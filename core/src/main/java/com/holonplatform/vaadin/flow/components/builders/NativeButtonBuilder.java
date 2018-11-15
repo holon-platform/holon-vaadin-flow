@@ -15,9 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultNativeButtonBuilder;
 import com.vaadin.flow.component.html.NativeButton;
@@ -32,58 +29,6 @@ public interface NativeButtonBuilder extends HtmlComponentConfigurator<NativeBut
 		ClickNotifierConfigurator<NativeButton, ClickEvent<NativeButton>, NativeButtonBuilder>,
 		FocusableConfigurator<NativeButton, NativeButtonBuilder>,
 		DeferrableLocalizationConfigurator<NativeButtonBuilder>, ComponentBuilder<NativeButton, NativeButtonBuilder> {
-
-	/**
-	 * Sets the button caption using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
-	 * <p>
-	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
-	 * </p>
-	 * <p>
-	 * A <code>null</code> value is interpreted as an empty text.
-	 * </p>
-	 * @param text Localizable button caption message (may be null)
-	 * @return this
-	 * @deprecated Use {@link #text(Localizable)}
-	 */
-	@Deprecated
-	default NativeButtonBuilder caption(Localizable text) {
-		return text(text);
-	}
-
-	/**
-	 * Sets the button caption, replacing any previous content.
-	 * <p>
-	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
-	 * </p>
-	 * <p>
-	 * A <code>null</code> text value is interpreted as an empty text.
-	 * </p>
-	 * @param text The button caption to set
-	 * @return this
-	 * @deprecated Use {@link #text(String)}
-	 */
-	@Deprecated
-	default NativeButtonBuilder caption(String text) {
-		return text(text);
-	}
-
-	/**
-	 * Sets the button caption using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource.
-	 * <p>
-	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
-	 * </p>
-	 * @param defaultText Default button caption if no translation is available for given <code>messageCode</code>.
-	 * @param messageCode Caption translation message key
-	 * @param arguments Optional translation arguments
-	 * @return this
-	 * @deprecated Use {@link #text(String, String, Object...)}
-	 */
-	@Deprecated
-	default NativeButtonBuilder caption(String defaultText, String messageCode, Object... arguments) {
-		return text(defaultText, messageCode, arguments);
-	}
 
 	/**
 	 * Create a new {@link NativeButtonBuilder}.

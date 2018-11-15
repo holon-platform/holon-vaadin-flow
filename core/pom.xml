@@ -17,10 +17,6 @@
 
 	<url>https://holon-platform.com</url>
 
-	<properties>
-		<spring.boot.test.version>2.0.4.RELEASE</spring.boot.test.version>
-	</properties>
-
 	<dependencies>
 
 		<!-- Holon core -->

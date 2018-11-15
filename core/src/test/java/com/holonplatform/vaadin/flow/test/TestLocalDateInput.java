@@ -204,7 +204,6 @@ public class TestLocalDateInput {
 		assertFalse(ComponentTestUtils.isEnabled(input));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testLabel() {
 
@@ -218,18 +217,6 @@ public class TestLocalDateInput {
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		input = Input.localDate().label("test", "test.code", "arg").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.localDate().caption(Localizable.builder().message("test").build()).build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.localDate().caption("test").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.localDate().caption("test", "test.code").build();
-		assertEquals("test", ComponentTestUtils.getLabel(input));
-
-		input = Input.localDate().caption("test", "test.code", "arg").build();
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
@@ -348,7 +335,6 @@ public class TestLocalDateInput {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testConfiguration() {
 
@@ -373,18 +359,9 @@ public class TestLocalDateInput {
 		input = Input.localDate().initialPosition(LocalDate.of(2018, Month.OCTOBER, 22)).build();
 		assertEquals(LocalDate.of(2018, Month.OCTOBER, 22), ((DatePicker) input.getComponent()).getInitialPosition());
 
-		input = Input.localDate().rangeStart(LocalDate.of(2018, Month.OCTOBER, 22))
-				.rangeEnd(LocalDate.of(2018, Month.OCTOBER, 23)).build();
-		assertEquals(LocalDate.of(2018, Month.OCTOBER, 22), ((DatePicker) input.getComponent()).getMin());
-		assertEquals(LocalDate.of(2018, Month.OCTOBER, 23), ((DatePicker) input.getComponent()).getMax());
-
 		input = Input.localDate().weekNumbersVisible(true).build();
 		assertTrue(((DatePicker) input.getComponent()).isWeekNumbersVisible());
 		input = Input.localDate().weekNumbersVisible(false).build();
-		assertFalse(((DatePicker) input.getComponent()).isWeekNumbersVisible());
-		input = Input.localDate().showISOWeekNumbers(true).build();
-		assertTrue(((DatePicker) input.getComponent()).isWeekNumbersVisible());
-		input = Input.localDate().showISOWeekNumbers(false).build();
 		assertFalse(((DatePicker) input.getComponent()).isWeekNumbersVisible());
 
 		input = Input.localDate().localization().today("_today").set().build();

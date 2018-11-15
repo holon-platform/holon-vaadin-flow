@@ -81,17 +81,6 @@ public interface ValueHolder<V> extends Serializable {
 		setValue(getEmptyValue());
 	}
 
-	/**
-	 * Gets the current value of this value holder as an {@link Optional}, which will be empty if the value holder is
-	 * considered to be empty.
-	 * @return the current optional value
-	 * @deprecated Use {@link #getValueIfPresent()}
-	 */
-	@Deprecated
-	default Optional<V> getOptionalValue() {
-		return isEmpty() ? Optional.empty() : Optional.ofNullable(getValue());
-	}
-
 	// Value change handling
 
 	/**
