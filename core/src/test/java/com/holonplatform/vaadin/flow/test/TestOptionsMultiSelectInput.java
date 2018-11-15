@@ -442,6 +442,8 @@ public class TestOptionsMultiSelectInput {
 		assertEquals(set, input.getSelectedItems());
 		assertTrue(input.isSelected("a"));
 		assertTrue(input.isSelected("b"));
+		
+		input.clear();
 
 		final SetValue sv = new SetValue();
 
