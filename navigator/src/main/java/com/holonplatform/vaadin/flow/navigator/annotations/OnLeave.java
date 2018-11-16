@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator;
+package com.holonplatform.vaadin.flow.navigator.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,18 +22,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
 
 /**
  * Annotation which can be used on class methods when the class is a navigation (routing) target: the
- * <code>OnShow</code> annotated methods will be invoked just after the navigation towards this class, i.e. just after
- * the class component is shown (attached) in the UI.
+ * <code>OnLeave</code> annotated methods will be invoked just before the navigation starts from the navigation target
+ * class towards another navigation target class.
  * <p>
- * The <code>OnShow</code> annotated methods must be <code>public</code> and provide either no parameters or a single
- * parameter of type {@link AfterNavigationEvent}, to obtain the event which triggered the method invocation.
+ * The <code>OnLeave</code> annotated methods must be <code>public</code> and provide either no parameters or a single
+ * parameter of type {@link BeforeLeaveEvent}, to obtain the event which triggered the method invocation.
  * </p>
  * <p>
- * When more than one <code>OnShow</code> annotated method is present in the navigation target class, no specific
+ * NOTE: The {@link BeforeLeaveEvent} has a <code>postpone</code> method, which can be used to postpone the current
+ * navigational transition until a specific condition is met.
+ * </p>
+ * <p>
+ * When more than one <code>OnLeave</code> annotated method is present in the navigation target class, no specific
  * invocation order is guaranteed.
  * </p>
  * 
@@ -43,6 +47,6 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 @Target(ElementType.METHOD)
 @Inherited
 @Documented
-public @interface OnShow {
+public @interface OnLeave {
 
 }
