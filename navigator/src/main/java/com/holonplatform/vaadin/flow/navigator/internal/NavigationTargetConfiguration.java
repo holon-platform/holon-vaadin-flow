@@ -85,6 +85,28 @@ public interface NavigationTargetConfiguration extends Serializable {
 	 */
 	Optional<Authenticate> getAuthentication();
 
+	// ------- builders
+
+	/**
+	 * Create a new {@link NavigationTargetConfiguration} for given navigation target.
+	 * @param navigationTarget The navigation target class (not null)
+	 * @return A new {@link NavigationTargetConfiguration}
+	 */
+	static NavigationTargetConfiguration create(Class<?> navigationTarget) {
+		return new DefaultNavigationTargetConfiguration(navigationTarget);
+	}
+
+	/**
+	 * Create a new {@link NavigationTargetConfiguration} for given navigation target.
+	 * @param navigationTarget The navigation target class (not null)
+	 * @param navigationParameterSerializer The {@link NavigationParameterSerializer} to use (nt null)
+	 * @return A new {@link NavigationTargetConfiguration}
+	 */
+	static NavigationTargetConfiguration create(Class<?> navigationTarget,
+			NavigationParameterSerializer navigationParameterSerializer) {
+		return new DefaultNavigationTargetConfiguration(navigationTarget, navigationParameterSerializer);
+	}
+
 	// ------ parameter definitions
 
 	/**
