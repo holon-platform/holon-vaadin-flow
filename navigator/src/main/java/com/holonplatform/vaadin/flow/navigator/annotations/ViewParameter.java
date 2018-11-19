@@ -74,11 +74,11 @@ public @interface ViewParameter {
 	/**
 	 * Parameter type.
 	 * <p>
-	 * Default is {@link ViewParameterType#QUERY}, i.e. the parameter value is bound to an URL query parameter value.
+	 * Default is {@link URLParameterType#QUERY}, i.e. the parameter value is bound to an URL query parameter value.
 	 * </p>
 	 * @return the parameter type
 	 */
-	ViewParameterType type() default ViewParameterType.QUERY;
+	URLParameterType type() default URLParameterType.QUERY;
 
 	/**
 	 * Declares this parameter as required. If the parameter value is not available and no {@link #defaultValue()} is

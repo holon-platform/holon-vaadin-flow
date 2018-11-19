@@ -20,7 +20,7 @@ package com.holonplatform.vaadin.flow.navigator.annotations;
  *
  * @since 5.2.0
  */
-public enum ViewParameterType {
+public enum URLParameterType {
 
 	/**
 	 * URL query parameter

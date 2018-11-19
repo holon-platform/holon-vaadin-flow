@@ -15,6 +15,18 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.internal.utils.TypeUtils;
+import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
@@ -22,13 +34,31 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
 import com.vaadin.flow.router.Location;
-import com.vaadin.flow.router.QueryParameters;
 
 /**
  * TODO
  */
 public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavigationTargetListener
 		implements AfterNavigationListener {
+
+	private final NavigationParameterMapper navigationParameterMapper;
+
+	/**
+	 * Constructor using default navigation parameters mapper.
+	 */
+	public DefaultNavigationTargetAfterNavigationListener() {
+		this(NavigationParameterMapper.getDefault());
+	}
+
+	/**
+	 * Constructor.
+	 * @param navigationParameterMapper Navigation parameters mapper (not null)
+	 */
+	public DefaultNavigationTargetAfterNavigationListener(NavigationParameterMapper navigationParameterMapper) {
+		super();
+		ObjectUtils.argumentNotNull(navigationParameterMapper, "NavigationParameterMapper must be not null");
+		this.navigationParameterMapper = navigationParameterMapper;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -52,11 +82,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 					setPathParameterValue(parameter, event.getLocation());
 				});
 				// set query parameters
-				configuration.getQueryParameters().forEach(parameter -> {
-					LOGGER.debug(() -> "Process query parameter [" + parameter.getName() + "] for navigation target ["
-							+ view.getClass().getName() + "]");
-					setQueryParameterValue(parameter, event.getLocation());
-				});
+				setQueryParameterValues(view, configuration, event.getLocation());
 				// fire OnShow methods
 				configuration.getOnShowMethods().forEach(method -> {
 					LOGGER.debug(() -> "Invoke OnShow method [" + method.getName() + "] for navigation target ["
@@ -71,9 +97,93 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 		// TODO
 	}
 
-	private void setQueryParameterValue(NavigationParameterDefinition definition, Location location) {
-		// TODO
-		final QueryParameters queryParameters = location.getQueryParameters();
+	/**
+	 * Set the query parameter values for given navigation target instance.
+	 * @param navigationTargetInstance the navigation target instance
+	 * @param configuration the navigation target configuration
+	 * @param location The current URL location
+	 */
+	private void setQueryParameterValues(HasElement navigationTargetInstance,
+			NavigationTargetConfiguration configuration, Location location) {
+		final Map<String, List<String>> queryParameters = location.getQueryParameters().getParameters();
+		configuration.getQueryParameters().forEach((name, definition) -> {
+			LOGGER.debug(() -> "Process query parameter [" + name + "] for navigation target ["
+					+ navigationTargetInstance.getClass().getName() + "]");
+			final Collection<?> values = navigationParameterMapper.deserialize(definition.getType(),
+					queryParameters.get(name));
+			if (values.isEmpty()) {
+				setParameterValue(navigationTargetInstance, definition, getNullParameterValue(definition.getType()));
+			} else {
+				switch (definition.getParameterContainerType()) {
+				case LIST:
+					setParameterValue(navigationTargetInstance, definition, new ArrayList<>(values));
+					break;
+				case SET:
+					setParameterValue(navigationTargetInstance, definition, new HashSet<>(values));
+					break;
+				case NONE:
+				default:
+					setParameterValue(navigationTargetInstance, definition, values.iterator().next());
+					break;
+				}
+			}
+		});
+	}
+
+	/**
+	 * Set the parameter value which corresponds to given definition on the provided navigation target instance.
+	 * @param navigationTarget The navigation target instance
+	 * @param definition The parameter definition
+	 * @param value The parameter value
+	 * @throws InvalidNavigationParameterException If an error occurred
+	 */
+	private static void setParameterValue(Object navigationTarget, NavigationParameterDefinition definition,
+			Object value) throws InvalidNavigationParameterException {
+		if (definition.getWriteMethod().isPresent()) {
+			// use write method
+			try {
+				definition.getWriteMethod().get().invoke(navigationTarget, new Object[] { value });
+			} catch (Exception e) {
+				throw new InvalidNavigationParameterException(
+						"Failed to set navigation parameter [" + definition.getName() + "] value on navigation target ["
+								+ navigationTarget.getClass().getName() + "] using value [" + value + "]",
+						e);
+			}
+		} else {
+			// use field
+			try {
+				FieldUtils.writeField(definition.getField(), navigationTarget, value, true);
+			} catch (Exception e) {
+				throw new InvalidNavigationParameterException(
+						"Failed to set navigation parameter [" + definition.getName() + "] value on navigation target ["
+								+ navigationTarget.getClass().getName() + "] using value [" + value + "]",
+						e);
+			}
+		}
+	}
+
+	/**
+	 * Get the null parameter value according to type, taking into account primitive types.
+	 * @param type Parameter value type
+	 * @return the null parameter value
+	 */
+	private static Object getNullParameterValue(Class<?> type) {
+		if (TypeUtils.isPrimitiveBoolean(type)) {
+			return Boolean.FALSE;
+		}
+		if (TypeUtils.isPrimitiveInt(type)) {
+			return 0;
+		}
+		if (TypeUtils.isPrimitiveLong(type)) {
+			return 0L;
+		}
+		if (TypeUtils.isPrimitiveFloat(type)) {
+			return 0f;
+		}
+		if (TypeUtils.isPrimitiveDouble(type)) {
+			return 0d;
+		}
+		return null;
 	}
 
 }

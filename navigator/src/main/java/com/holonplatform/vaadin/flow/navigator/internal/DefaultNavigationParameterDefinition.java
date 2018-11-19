@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameterType;
+import com.holonplatform.vaadin.flow.navigator.annotations.URLParameterType;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.ParameterContainerType;
 
@@ -34,7 +34,7 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 	private static final long serialVersionUID = 4917120934888696477L;
 
 	private final String name;
-	private final ViewParameterType viewParameterType;
+	private final URLParameterType parameterType;
 	private final Class<?> type;
 	private final ParameterContainerType containerType;
 	private final Field field;
@@ -44,7 +44,7 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 	private Method readMethod = null;
 	private Method writeMethod = null;
 
-	public DefaultNavigationParameterDefinition(String name, ViewParameterType viewParameterType, Class<?> type,
+	public DefaultNavigationParameterDefinition(String name, URLParameterType parameterType, Class<?> type,
 			ParameterContainerType containerType, Field field) {
 		super();
 		ObjectUtils.argumentNotNull(name, "Parameter name must be not null");
@@ -52,7 +52,7 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 		ObjectUtils.argumentNotNull(containerType, "Parameter container type must be not null");
 		ObjectUtils.argumentNotNull(field, "Parameter field must be not null");
 		this.name = name;
-		this.viewParameterType = (viewParameterType == null) ? ViewParameterType.QUERY : viewParameterType;
+		this.parameterType = (parameterType == null) ? URLParameterType.QUERY : parameterType;
 		this.type = type;
 		this.containerType = containerType;
 		this.field = field;
@@ -76,8 +76,8 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 	 * getViewParameterType()
 	 */
 	@Override
-	public ViewParameterType getViewParameterType() {
-		return viewParameterType;
+	public URLParameterType getParameterType() {
+		return parameterType;
 	}
 
 	/*
@@ -208,7 +208,7 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((viewParameterType == null) ? 0 : viewParameterType.hashCode());
+		result = prime * result + ((parameterType == null) ? 0 : parameterType.hashCode());
 		return result;
 	}
 
@@ -230,7 +230,7 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (viewParameterType != other.viewParameterType)
+		if (parameterType != other.parameterType)
 			return false;
 		return true;
 	}

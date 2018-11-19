@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,8 +28,7 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameter;
-import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameterType;
+import com.holonplatform.vaadin.flow.navigator.annotations.URLParameterType;
 
 /**
  * Navigation target class (view) configuration.
@@ -56,15 +56,14 @@ public interface NavigationTargetConfiguration extends Serializable {
 	Optional<Localizable> getCaption();
 
 	/**
-	 * Get the navigation target class {@link ViewParameter} definitions of type {@link ViewParameterType#QUERY}, if
-	 * any.
-	 * @return the navigation target class {@link ViewParameter} definitions, or an empty collection if none
+	 * Get the navigation target class query parameters definitions of type {@link URLParameterType#QUERY}, if any.
+	 * @return the navigation target class query parameters definitions, or an empty map if none
 	 */
-	Collection<NavigationParameterDefinition> getQueryParameters();
+	Map<String, NavigationParameterDefinition> getQueryParameters();
 
 	/**
-	 * Get the navigation target class {@link ViewParameter} definitions of type {@link ViewParameterType#PATH}, if any.
-	 * @return the navigation target class {@link ViewParameter} definitions, or an empty collection if none
+	 * Get the navigation target class path parameters definitions of type {@link URLParameterType#PATH}, if any.
+	 * @return the navigation target class path parameters definitions, or an empty collection if none
 	 */
 	Collection<NavigationParameterDefinition> getPathParameters();
 
@@ -112,11 +111,11 @@ public interface NavigationTargetConfiguration extends Serializable {
 	/**
 	 * Create a new {@link NavigationTargetConfiguration} for given navigation target.
 	 * @param navigationTarget The navigation target class (not null)
-	 * @param navigationParameterSerializer The {@link NavigationParameterSerializer} to use (nt null)
+	 * @param navigationParameterSerializer The {@link NavigationParameterMapper} to use (nt null)
 	 * @return A new {@link NavigationTargetConfiguration}
 	 */
 	static NavigationTargetConfiguration create(Class<?> navigationTarget,
-			NavigationParameterSerializer navigationParameterSerializer) {
+			NavigationParameterMapper navigationParameterSerializer) {
 		return new DefaultNavigationTargetConfiguration(navigationTarget, navigationParameterSerializer);
 	}
 
@@ -137,7 +136,7 @@ public interface NavigationTargetConfiguration extends Serializable {
 		 * Get the view parameter type.
 		 * @return the view parameter type
 		 */
-		ViewParameterType getViewParameterType();
+		URLParameterType getParameterType();
 
 		/**
 		 * Get the parameter value type.

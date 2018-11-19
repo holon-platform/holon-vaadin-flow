@@ -25,7 +25,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,8 +52,8 @@ import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
+import com.holonplatform.vaadin.flow.navigator.annotations.URLParameterType;
 import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameter;
-import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameterType;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
@@ -78,7 +77,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	private final Localizable caption;
 
-	private final Collection<NavigationParameterDefinition> queryParameterDefinitions;
+	private final Map<String, NavigationParameterDefinition> queryParameterDefinitions;
 	private final Collection<NavigationParameterDefinition> pathParameterDefinitions;
 
 	private final List<Method> onShowMethods;
@@ -88,30 +87,30 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	private final Authenticate authenticate;
 	private final Set<String> authorization;
 
-	private final NavigationParameterSerializer navigationParameterSerializer;
+	private final NavigationParameterMapper navigationParameterMapper;
 
 	/**
-	 * Constructor using default {@link NavigationParameterSerializer}.
+	 * Constructor using default {@link NavigationParameterMapper}.
 	 * @param navigationTarget The navigation target class (not null)
 	 * @throws NavigationTargetConfigurationException If a configuration error occurred
 	 */
 	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget) {
-		this(navigationTarget, NavigationParameterSerializer.getDefault());
+		this(navigationTarget, NavigationParameterMapper.getDefault());
 	}
 
 	/**
 	 * Constructor.
 	 * @param navigationTarget The navigation target class (not null)
-	 * @param navigationParameterSerializer The {@link NavigationParameterSerializer} to use (nt null)
+	 * @param navigationParameterMapper The {@link NavigationParameterMapper} to use (nt null)
 	 * @throws NavigationTargetConfigurationException If a configuration error occurred
 	 */
 	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget,
-			NavigationParameterSerializer navigationParameterSerializer) {
+			NavigationParameterMapper navigationParameterMapper) {
 		super();
 		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
-		ObjectUtils.argumentNotNull(navigationParameterSerializer, "NavigationParameterSerializer must be not null");
+		ObjectUtils.argumentNotNull(navigationParameterMapper, "Navigation parameter mapper must be not null");
 		this.navigationTarget = navigationTarget;
-		this.navigationParameterSerializer = navigationParameterSerializer;
+		this.navigationParameterMapper = navigationParameterMapper;
 		this.authenticate = navigationTarget.getAnnotation(Authenticate.class);
 		final Optional<Set<String>> roles = getAuthorizationRoles(navigationTarget);
 		this.authorization = roles.orElse(Collections.emptySet());
@@ -130,10 +129,10 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		}
 		this.onShowMethods = detectAnnotatedMethods(navigationTarget, OnShow.class, AfterNavigationEvent.class);
 		this.onLeaveMethods = detectAnnotatedMethods(navigationTarget, OnLeave.class, BeforeLeaveEvent.class);
-		final Map<ViewParameterType, Collection<NavigationParameterDefinition>> parameters = detectURLParameters(
-				navigationTarget, navigationParameterSerializer);
-		this.queryParameterDefinitions = parameters.get(ViewParameterType.QUERY);
-		this.pathParameterDefinitions = parameters.get(ViewParameterType.PATH);
+		final Map<URLParameterType, Map<String, NavigationParameterDefinition>> parameters = detectURLParameters(
+				navigationTarget, navigationParameterMapper);
+		this.queryParameterDefinitions = parameters.get(URLParameterType.QUERY);
+		this.pathParameterDefinitions = parameters.get(URLParameterType.PATH).values();
 	}
 
 	/*
@@ -146,11 +145,11 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Get the {@link NavigationParameterSerializer} bound to this configuration.
-	 * @return the navigation parameter serializer
+	 * Get the {@link NavigationParameterMapper} bound to this configuration.
+	 * @return the navigation parameter mapper
 	 */
-	public NavigationParameterSerializer getNavigationParameterSerializer() {
-		return navigationParameterSerializer;
+	public NavigationParameterMapper getNavigationParameterMapper() {
+		return navigationParameterMapper;
 	}
 
 	/*
@@ -176,7 +175,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getURLParameters()
 	 */
 	@Override
-	public Collection<NavigationParameterDefinition> getQueryParameters() {
+	public Map<String, NavigationParameterDefinition> getQueryParameters() {
 		return queryParameterDefinitions;
 	}
 
@@ -307,16 +306,16 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	/**
 	 * Detect the {@link ViewParameter} annotated fields ong given navigation target class.
 	 * @param navigationTarget navigation target class
-	 * @param navigationParameterSerializer The {@link NavigationParameterSerializer} to use
+	 * @param navigationParameterMapper The {@link NavigationParameterMapper} to use
 	 * @return The detected navigation parameters definitions
 	 * @throws NavigationTargetConfigurationException If a parameter configuration error occurred
 	 */
-	private static Map<ViewParameterType, Collection<NavigationParameterDefinition>> detectURLParameters(
-			Class<?> navigationTarget, NavigationParameterSerializer navigationParameterSerializer)
+	private static Map<URLParameterType, Map<String, NavigationParameterDefinition>> detectURLParameters(
+			Class<?> navigationTarget, NavigationParameterMapper navigationParameterMapper)
 			throws NavigationTargetConfigurationException {
 		try {
-			final ArrayList<NavigationParameterDefinition> queryParameters = new ArrayList<>();
-			final List<NavigationParameterDefinition> pathParameters = new LinkedList<>();
+			final Map<String, NavigationParameterDefinition> queryParameters = new HashMap<>(8);
+			final Map<String, NavigationParameterDefinition> pathParameters = new HashMap<>(8);
 			// get property descriptors
 			final Map<String, PropertyDescriptor> propertyDescriptors = getPropertyDescriptors(navigationTarget);
 			// get annotated fields
@@ -340,10 +339,11 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 							name, annotation.type(), type, containerType, field);
 					definition.setRequired(annotation.required());
 					// default value
-					String defaultValue = AnnotationUtils.getStringValue(annotation.defaultValue());
-					if (defaultValue != null) {
-						definition.setDefaultValue(navigationParameterSerializer.deserialize(type, defaultValue));
-					}
+					navigationParameterMapper
+							.deserialize(type, AnnotationUtils.getStringValue(annotation.defaultValue()))
+							.ifPresent(value -> {
+								definition.setDefaultValue(value);
+							});
 					// getter and setter
 					PropertyDescriptor propertyDescriptor = propertyDescriptors.get(field.getName());
 					if (propertyDescriptor != null) {
@@ -363,34 +363,33 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 					switch (annotation.type()) {
 					case PATH: {
 						// avoid duplicates
-						if (pathParameters.contains(definition)) {
+						if (pathParameters.values().contains(definition)) {
 							throw new NavigationTargetConfigurationException(
 									"Duplicate " + annotation.type().name() + " parameter name: " + name
 											+ " in navigation target class [" + navigationTarget.getName() + "]");
 						}
 						// add definition
-						pathParameters.add(definition);
+						pathParameters.put(name, definition);
 					}
 						break;
 					case QUERY:
 					default: {
 						// avoid duplicates
-						if (queryParameters.contains(definition)) {
+						if (queryParameters.values().contains(definition)) {
 							throw new NavigationTargetConfigurationException(
 									"Duplicate " + annotation.type().name() + " parameter name: " + name
 											+ " in navigation target class [" + navigationTarget.getName() + "]");
 						}
 						// add definition
-						queryParameters.add(definition);
+						queryParameters.put(name, definition);
 					}
 						break;
 					}
 				}
 			});
-			queryParameters.trimToSize();
-			final Map<ViewParameterType, Collection<NavigationParameterDefinition>> parameters = new HashMap<>(2);
-			parameters.put(ViewParameterType.QUERY, queryParameters);
-			parameters.put(ViewParameterType.PATH, pathParameters);
+			final Map<URLParameterType, Map<String, NavigationParameterDefinition>> parameters = new HashMap<>(2);
+			parameters.put(URLParameterType.QUERY, queryParameters);
+			parameters.put(URLParameterType.PATH, pathParameters);
 			return parameters;
 		} catch (NavigationTargetConfigurationException e) {
 			throw e;
