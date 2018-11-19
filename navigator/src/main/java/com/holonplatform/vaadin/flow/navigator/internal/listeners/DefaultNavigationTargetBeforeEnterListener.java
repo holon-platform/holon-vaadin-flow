@@ -29,7 +29,7 @@ import com.holonplatform.vaadin.flow.VaadinHttpRequest;
 import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationRegistry;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.server.VaadinRequest;
@@ -53,8 +53,8 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 	public void beforeEnter(BeforeEnterEvent event) {
 		final Class<?> navigationTarget = event.getNavigationTarget();
 		if (navigationTarget != null) {
-			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationRegistry
-					.getNavigationTargetConfiguration(navigationTarget);
+			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
+					.get(navigationTarget.getClassLoader()).getConfiguration(navigationTarget);
 			// check authentication required
 			if (configuration.isAuthenticationRequired()) {
 				// get AuthContext

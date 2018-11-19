@@ -16,7 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationRegistry;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveListener;
 
@@ -35,8 +35,8 @@ public class DefaultNavigationTargetBeforeLeaveListener extends AbstractNavigati
 		// TODO
 		final Class<?> navigationTarget = event.getNavigationTarget();
 		if (navigationTarget != null) {
-			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationRegistry
-					.getNavigationTargetConfiguration(navigationTarget);
+			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
+					.get(navigationTarget.getClassLoader()).getConfiguration(navigationTarget);
 			// TODO fire @OnLeave methods
 		}
 	}

@@ -47,6 +47,18 @@ public class ViewNavigatorServiceInitListener implements VaadinServiceInitListen
 	 */
 	@Override
 	public void serviceInit(ServiceInitEvent event) {
+		// navigation target configuration provider
+		event.getSource().addUIInitListener(e -> {
+			final NavigationTargetConfigurationProvider provider = NavigationTargetConfigurationProviderRegistry
+					.getProvider((e.getSource().getClassLoader() != null) ? e.getSource().getClassLoader()
+							: e.getUI().getClass().getClassLoader());
+			e.getUI().getRouter().getRegistry().getRegisteredRoutes().forEach(route -> {
+				provider.getConfiguration(route.getNavigationTarget());
+				LOGGER.debug(
+						() -> "Navigation target configuration inited [" + route.getNavigationTarget().getName() + "]");
+			});
+		});
+		// UI navigation listeners
 		event.getSource().addUIInitListener(e -> {
 			e.getUI().addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
 			e.getUI().addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());

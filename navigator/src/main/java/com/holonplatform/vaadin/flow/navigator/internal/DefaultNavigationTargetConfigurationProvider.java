@@ -15,10 +15,11 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.holonplatform.core.internal.Logger;
+import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 
 /**
@@ -26,24 +27,33 @@ import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfig
  *
  * @since 5.2.0
  */
-public final class NavigationTargetConfigurationRegistry implements Serializable {
+public class DefaultNavigationTargetConfigurationProvider implements NavigationTargetConfigurationProvider {
 
 	private static final long serialVersionUID = -4473679591541295868L;
 
-	private final static Map<Class<?>, NavigationTargetConfiguration> configurations = new WeakHashMap<>();
-
-	private NavigationTargetConfigurationRegistry() {
-	}
+	/**
+	 * Logger
+	 */
+	private static final Logger LOGGER = VaadinLogger.create();
 
 	/**
-	 * Get the navigation target class configuration.
-	 * @param navigationTargetClass navigation target class (not null)
-	 * @return The {@link NavigationTargetConfigurationException} for given navigation target class
-	 * @throws NavigationTargetConfigurationException If an error occurred
+	 * Configurations
 	 */
-	public static NavigationTargetConfiguration getNavigationTargetConfiguration(Class<?> navigationTargetClass)
+	private final Map<Class<?>, NavigationTargetConfiguration> configurations = new WeakHashMap<>();
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider#getConfiguration(java.lang
+	 * .Class)
+	 */
+	@Override
+	public NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget)
 			throws NavigationTargetConfigurationException {
-		return configurations.computeIfAbsent(navigationTargetClass, ntc -> NavigationTargetConfiguration.create(ntc));
+		return configurations.computeIfAbsent(navigationTarget, ntc -> {
+			LOGGER.debug(() -> "Create NavigationTargetConfiguration for [" + navigationTarget.getName() + "]");
+			return NavigationTargetConfiguration.create(ntc);
+		});
 	}
 
 }

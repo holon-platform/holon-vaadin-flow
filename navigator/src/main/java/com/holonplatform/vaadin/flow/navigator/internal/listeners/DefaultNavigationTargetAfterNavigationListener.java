@@ -17,7 +17,7 @@ package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationRegistry;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
@@ -43,8 +43,8 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 			if (view != null) {
 				LOGGER.debug(() -> "Process navigation target [" + view.getClass().getName() + "] after navigation");
 				// configuration
-				final NavigationTargetConfiguration configuration = NavigationTargetConfigurationRegistry
-						.getNavigationTargetConfiguration(view.getClass());
+				final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
+						.get(view.getClass().getClassLoader()).getConfiguration(view.getClass());
 				// set path parameters
 				configuration.getPathParameters().forEach(parameter -> {
 					LOGGER.debug(() -> "Process path parameter [" + parameter.getName() + "] for navigation target ["
