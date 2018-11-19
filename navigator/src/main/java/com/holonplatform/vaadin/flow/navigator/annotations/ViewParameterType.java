@@ -13,27 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator.internal;
+package com.holonplatform.vaadin.flow.navigator.annotations;
 
 /**
- * Default {@link NavigationParameterSerializer} implementation.
+ * View parameter type.
  *
  * @since 5.2.0
  */
-public enum DefaultNavigationParameterSerializer implements NavigationParameterSerializer {
+public enum ViewParameterType {
 
-	INSTANCE;
-
-	@Override
-	public String serialize(Object value) {
-		// TODO
-		return null;
-	}
-
-	@Override
-	public <T> T deserialize(Class<T> type, String value) {
-		// TODO
-		return null;
-	}
-
+	/**
+	 * URL query parameter
+	 */
+	QUERY,
+	
+	/**
+	 * URL path parameter
+	 */
+	PATH;
+	
 }

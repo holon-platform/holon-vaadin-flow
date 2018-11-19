@@ -26,13 +26,11 @@ public interface NavigationParameterSerializer {
 
 	/**
 	 * Serialize given parameter <code>value</code>.
-	 * @param <T> Parameter type
-	 * @param type Parameter type (not null)
 	 * @param value Parameter value (may be null)
 	 * @return Serialized parameter value (may be null)
 	 * @throws InvalidNavigationParameterException If an error occurred
 	 */
-	<T> String serialize(Class<T> type, T value) throws InvalidNavigationParameterException;
+	String serialize(Object value) throws InvalidNavigationParameterException;
 
 	/**
 	 * Serialize given parameter <code>value</code>.

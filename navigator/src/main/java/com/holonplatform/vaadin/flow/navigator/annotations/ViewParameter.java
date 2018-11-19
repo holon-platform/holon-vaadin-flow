@@ -57,17 +57,28 @@ import java.util.Date;
 @Target(ElementType.FIELD)
 @Documented
 @Inherited
-public @interface URLParameter {
+public @interface ViewParameter {
 
 	/**
-	 * The name of the URL query parameter which value has to be injected into the annotated navigation target class
-	 * field.
+	 * The name of the URL parameter which value has to be injected into the annotated navigation target class field.
+	 * <p>
+	 * The URL part which has to be used to map the parameter value is declared through the {@link #type()} attribute.
+	 * </p>
 	 * <p>
 	 * If the parameter name is blank or empty, the annotated field name will be used as parameter name.
 	 * </p>
 	 * @return the parameter name, or empty to use the annotated field name
 	 */
 	String value() default "";
+
+	/**
+	 * Parameter type.
+	 * <p>
+	 * Default is {@link ViewParameterType#QUERY}, i.e. the parameter value is bound to an URL query parameter value.
+	 * </p>
+	 * @return the parameter type
+	 */
+	ViewParameterType type() default ViewParameterType.QUERY;
 
 	/**
 	 * Declares this parameter as required. If the parameter value is not available and no {@link #defaultValue()} is

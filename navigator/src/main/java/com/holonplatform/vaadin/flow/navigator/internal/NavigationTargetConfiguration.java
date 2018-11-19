@@ -25,10 +25,10 @@ import java.util.Set;
 
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.vaadin.flow.navigator.annotations.BeforeShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.annotations.URLParameter;
+import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameter;
+import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameterType;
 
 /**
  * Navigation target class (view) configuration.
@@ -56,16 +56,17 @@ public interface NavigationTargetConfiguration extends Serializable {
 	Optional<Localizable> getCaption();
 
 	/**
-	 * Get the navigation target class {@link URLParameter} definitions, if any.
-	 * @return the navigation target class {@link URLParameter} definitions, or an empty collection if none
+	 * Get the navigation target class {@link ViewParameter} definitions of type {@link ViewParameterType#QUERY}, if
+	 * any.
+	 * @return the navigation target class {@link ViewParameter} definitions, or an empty collection if none
 	 */
-	Collection<URLParameterDefinition> getURLParameters();
+	Collection<NavigationParameterDefinition> getQueryParameters();
 
 	/**
-	 * Get the navigation target class {@link BeforeShow} annotated methods, if any.
-	 * @return the navigation target class {@link BeforeShow} annotated methods, or an empty list if none
+	 * Get the navigation target class {@link ViewParameter} definitions of type {@link ViewParameterType#PATH}, if any.
+	 * @return the navigation target class {@link ViewParameter} definitions, or an empty collection if none
 	 */
-	List<Method> getBeforeShowMethods();
+	Collection<NavigationParameterDefinition> getPathParameters();
 
 	/**
 	 * Get the navigation target class {@link OnShow} annotated methods, if any.
@@ -80,10 +81,22 @@ public interface NavigationTargetConfiguration extends Serializable {
 	List<Method> getOnLeaveMethods();
 
 	/**
-	 * Get the navigation target class {@link Authenticate} annotation, if available
+	 * Check whether authentication is required to access this navigation target.
+	 * @return whether authentication is required to access this navigation targe
+	 */
+	boolean isAuthenticationRequired();
+
+	/**
+	 * Get the navigation target class {@link Authenticate} annotation, if available.
 	 * @return Optional navigation target class {@link Authenticate} annotation
 	 */
 	Optional<Authenticate> getAuthentication();
+
+	/**
+	 * Get the authorization roles required to access this navigation target, if any.
+	 * @return the authorization roles, an empty set if none
+	 */
+	Set<String> getAuthorization();
 
 	// ------- builders
 
@@ -110,13 +123,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 	// ------ parameter definitions
 
 	/**
-	 * URL query parameter definition.
-	 */
-	public interface URLParameterDefinition extends NavigationParameterDefinition {
-
-	}
-
-	/**
 	 * Base navigation parameter definition.
 	 */
 	public interface NavigationParameterDefinition extends Serializable {
@@ -126,6 +132,12 @@ public interface NavigationTargetConfiguration extends Serializable {
 		 * @return the parameter name.
 		 */
 		String getName();
+
+		/**
+		 * Get the view parameter type.
+		 * @return the view parameter type
+		 */
+		ViewParameterType getViewParameterType();
 
 		/**
 		 * Get the parameter value type.

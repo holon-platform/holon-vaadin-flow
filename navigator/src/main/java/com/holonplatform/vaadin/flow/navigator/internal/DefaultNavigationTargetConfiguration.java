@@ -26,6 +26,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,23 +35,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
+import com.holonplatform.core.internal.utils.ClassUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
-import com.holonplatform.vaadin.flow.navigator.annotations.BeforeShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.annotations.URLParameter;
+import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameter;
+import com.holonplatform.vaadin.flow.navigator.annotations.ViewParameterType;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
@@ -72,15 +78,17 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	private final Localizable caption;
 
-	private final Collection<URLParameterDefinition> urlParameterDefinitions;
-
-	private final List<Method> beforeShowMethods;
+	private final Collection<NavigationParameterDefinition> queryParameterDefinitions;
+	private final Collection<NavigationParameterDefinition> pathParameterDefinitions;
 
 	private final List<Method> onShowMethods;
-
 	private final List<Method> onLeaveMethods;
 
+	private final boolean authenticationRequired;
 	private final Authenticate authenticate;
+	private final Set<String> authorization;
+
+	private final NavigationParameterSerializer navigationParameterSerializer;
 
 	/**
 	 * Constructor using default {@link NavigationParameterSerializer}.
@@ -103,7 +111,11 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
 		ObjectUtils.argumentNotNull(navigationParameterSerializer, "NavigationParameterSerializer must be not null");
 		this.navigationTarget = navigationTarget;
+		this.navigationParameterSerializer = navigationParameterSerializer;
 		this.authenticate = navigationTarget.getAnnotation(Authenticate.class);
+		final Optional<Set<String>> roles = getAuthorizationRoles(navigationTarget);
+		this.authorization = roles.orElse(Collections.emptySet());
+		this.authenticationRequired = (this.authenticate != null) || roles.isPresent();
 		if (navigationTarget.isAnnotationPresent(Route.class)) {
 			this.routePath = Router.resolve(navigationTarget, navigationTarget.getAnnotation(Route.class));
 		} else {
@@ -116,10 +128,12 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		} else {
 			this.caption = null;
 		}
-		this.beforeShowMethods = detectAnnotatedMethods(navigationTarget, BeforeShow.class, BeforeEnterEvent.class);
 		this.onShowMethods = detectAnnotatedMethods(navigationTarget, OnShow.class, AfterNavigationEvent.class);
 		this.onLeaveMethods = detectAnnotatedMethods(navigationTarget, OnLeave.class, BeforeLeaveEvent.class);
-		this.urlParameterDefinitions = detectURLParameters(navigationTarget, navigationParameterSerializer);
+		final Map<ViewParameterType, Collection<NavigationParameterDefinition>> parameters = detectURLParameters(
+				navigationTarget, navigationParameterSerializer);
+		this.queryParameterDefinitions = parameters.get(ViewParameterType.QUERY);
+		this.pathParameterDefinitions = parameters.get(ViewParameterType.PATH);
 	}
 
 	/*
@@ -129,6 +143,14 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	@Override
 	public Class<?> getNavigationTarget() {
 		return navigationTarget;
+	}
+
+	/**
+	 * Get the {@link NavigationParameterSerializer} bound to this configuration.
+	 * @return the navigation parameter serializer
+	 */
+	public NavigationParameterSerializer getNavigationParameterSerializer() {
+		return navigationParameterSerializer;
 	}
 
 	/*
@@ -154,17 +176,17 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getURLParameters()
 	 */
 	@Override
-	public Collection<URLParameterDefinition> getURLParameters() {
-		return urlParameterDefinitions;
+	public Collection<NavigationParameterDefinition> getQueryParameters() {
+		return queryParameterDefinitions;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getBeforeShowMethods()
+	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getPathParameters()
 	 */
 	@Override
-	public List<Method> getBeforeShowMethods() {
-		return beforeShowMethods;
+	public Collection<NavigationParameterDefinition> getPathParameters() {
+		return pathParameterDefinitions;
 	}
 
 	/*
@@ -187,11 +209,47 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#isAuthenticationRequired()
+	 */
+	@Override
+	public boolean isAuthenticationRequired() {
+		return authenticationRequired;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthentication()
 	 */
 	@Override
 	public Optional<Authenticate> getAuthentication() {
 		return Optional.ofNullable(authenticate);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthorization()
+	 */
+	@Override
+	public Set<String> getAuthorization() {
+		return authorization;
+	}
+
+	/**
+	 * Get the authorization roles checking standard security annotations.
+	 * @param navigationTarget Navigation target class
+	 * @return Optional authorization roles
+	 */
+	private static Optional<Set<String>> getAuthorizationRoles(Class<?> navigationTarget) {
+		if (isSecurityAnnotationsPresent(navigationTarget.getClassLoader())) {
+			if (navigationTarget.isAnnotationPresent(PermitAll.class)) {
+				return Optional.ofNullable(Collections.emptySet());
+			}
+			if (navigationTarget.isAnnotationPresent(RolesAllowed.class)) {
+				return Optional.of(Arrays.asList(navigationTarget.getAnnotation(RolesAllowed.class).value()).stream()
+						.filter(r -> r != null).filter(r -> !r.trim().equals("")).collect(Collectors.toSet()));
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -247,22 +305,24 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Detect the {@link URLParameter} annotated fields ong given navigation target class.
+	 * Detect the {@link ViewParameter} annotated fields ong given navigation target class.
 	 * @param navigationTarget navigation target class
 	 * @param navigationParameterSerializer The {@link NavigationParameterSerializer} to use
-	 * @return The detected URL parameters definitions
+	 * @return The detected navigation parameters definitions
 	 * @throws NavigationTargetConfigurationException If a parameter configuration error occurred
 	 */
-	private static Collection<URLParameterDefinition> detectURLParameters(Class<?> navigationTarget,
-			NavigationParameterSerializer navigationParameterSerializer) throws NavigationTargetConfigurationException {
+	private static Map<ViewParameterType, Collection<NavigationParameterDefinition>> detectURLParameters(
+			Class<?> navigationTarget, NavigationParameterSerializer navigationParameterSerializer)
+			throws NavigationTargetConfigurationException {
 		try {
-			ArrayList<URLParameterDefinition> parameters = new ArrayList<>();
+			final ArrayList<NavigationParameterDefinition> queryParameters = new ArrayList<>();
+			final List<NavigationParameterDefinition> pathParameters = new LinkedList<>();
 			// get property descriptors
 			final Map<String, PropertyDescriptor> propertyDescriptors = getPropertyDescriptors(navigationTarget);
 			// get annotated fields
-			getAnnotatedFields(navigationTarget, URLParameter.class).forEach(field -> {
+			getAnnotatedFields(navigationTarget, ViewParameter.class).forEach(field -> {
 				// get annotation
-				final URLParameter annotation = field.getAnnotation(URLParameter.class);
+				final ViewParameter annotation = field.getAnnotation(ViewParameter.class);
 				if (annotation != null) {
 					// check not final
 					if (Modifier.isFinal(field.getModifiers())) {
@@ -276,8 +336,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 					final Class<?> type = getNavigationParameterType(navigationTarget, field);
 					final ParameterContainerType containerType = getNavigationParameterContainerType(field);
 					// definition
-					final DefaultURLParameterDefinition definition = new DefaultURLParameterDefinition(name, type,
-							containerType, field);
+					final DefaultNavigationParameterDefinition definition = new DefaultNavigationParameterDefinition(
+							name, annotation.type(), type, containerType, field);
 					definition.setRequired(annotation.required());
 					// default value
 					String defaultValue = AnnotationUtils.getStringValue(annotation.defaultValue());
@@ -299,16 +359,38 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 							definition.setWriteMethod(propertyDescriptor.getWriteMethod());
 						}
 					}
-					// avoid duplicates
-					if (parameters.contains(definition)) {
-						throw new NavigationTargetConfigurationException("Duplicate parameter name: " + name
-								+ " in navigation target class [" + navigationTarget.getName() + "]");
+					// check type
+					switch (annotation.type()) {
+					case PATH: {
+						// avoid duplicates
+						if (pathParameters.contains(definition)) {
+							throw new NavigationTargetConfigurationException(
+									"Duplicate " + annotation.type().name() + " parameter name: " + name
+											+ " in navigation target class [" + navigationTarget.getName() + "]");
+						}
+						// add definition
+						pathParameters.add(definition);
 					}
-					// add definition
-					parameters.add(definition);
+						break;
+					case QUERY:
+					default: {
+						// avoid duplicates
+						if (queryParameters.contains(definition)) {
+							throw new NavigationTargetConfigurationException(
+									"Duplicate " + annotation.type().name() + " parameter name: " + name
+											+ " in navigation target class [" + navigationTarget.getName() + "]");
+						}
+						// add definition
+						queryParameters.add(definition);
+					}
+						break;
+					}
 				}
 			});
-			parameters.trimToSize();
+			queryParameters.trimToSize();
+			final Map<ViewParameterType, Collection<NavigationParameterDefinition>> parameters = new HashMap<>(2);
+			parameters.put(ViewParameterType.QUERY, queryParameters);
+			parameters.put(ViewParameterType.PATH, pathParameters);
 			return parameters;
 		} catch (NavigationTargetConfigurationException e) {
 			throw e;
@@ -460,6 +542,26 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 			return map;
 		}
 		return Collections.emptyMap();
+	}
+
+	/**
+	 * Security annotations presence in classpath for classloader
+	 */
+	private static final Map<ClassLoader, Boolean> SECURITY_ANNOTATIONS_PRESENT = new WeakHashMap<>();
+
+	/**
+	 * Checks whether security annotations are available from classpath.
+	 * @param classLoader ClassLoader to use
+	 * @return <code>true</code> if present
+	 */
+	private static boolean isSecurityAnnotationsPresent(ClassLoader classLoader) {
+		if (SECURITY_ANNOTATIONS_PRESENT.containsKey(classLoader)) {
+			Boolean present = SECURITY_ANNOTATIONS_PRESENT.get(classLoader);
+			return (present != null && present.booleanValue());
+		}
+		boolean present = ClassUtils.isPresent("javax.annotation.security.RolesAllowed", classLoader);
+		SECURITY_ANNOTATIONS_PRESENT.put(classLoader, present);
+		return present;
 	}
 
 }
