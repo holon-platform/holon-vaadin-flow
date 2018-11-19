@@ -25,13 +25,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Annotation which can be used on a navigation target class field to inject the URL query parameter value which
- * corresponds to the parameter name declared using the annotation {@link #value()}.
+ * Annotation which can be used on a navigation target class field to inject the URL path parameter values.
  * <p>
- * The the parameter name (i.e. the annotation {@link #value()}) is blank or empty, the annotated field name will be
- * used as parameter name.
+ * The path parameter value
  * </p>
  * <p>
  * This annotation supports a {@link #required()} attribute to require a parameter value and the {@link #defaultValue()}
@@ -50,6 +50,10 @@ import java.util.Date;
  * <li>{@link LocalTime}. The ISO-8601 standard format must be used as parameter value representation.</li>
  * <li>{@link LocalDateTime}. The ISO-8601 standard format must be used as parameter value representation.</li>
  * </ul>
+ * <p>
+ * The {@link Set} and {@link List} collection types are also supported as parameter value type, in order to obtain the
+ * full path parameter value.
+ * </p>
  * 
  * @since 5.2.0
  */
@@ -57,28 +61,17 @@ import java.util.Date;
 @Target(ElementType.FIELD)
 @Documented
 @Inherited
-public @interface ViewParameter {
+public @interface PathParameter {
 
 	/**
-	 * The name of the URL parameter which value has to be injected into the annotated navigation target class field.
+	 * The path segment index to use as parameter value.
 	 * <p>
-	 * The URL part which has to be used to map the parameter value is declared through the {@link #type()} attribute.
+	 * If the segment index is <code>-1</code>, the full path value (excluding the route name) will be use as parameter
+	 * value.
 	 * </p>
-	 * <p>
-	 * If the parameter name is blank or empty, the annotated field name will be used as parameter name.
-	 * </p>
-	 * @return the parameter name, or empty to use the annotated field name
+	 * @return the parameter segment index, 0-based, or <code>-1</code> for none
 	 */
-	String value() default "";
-
-	/**
-	 * Parameter type.
-	 * <p>
-	 * Default is {@link URLParameterType#QUERY}, i.e. the parameter value is bound to an URL query parameter value.
-	 * </p>
-	 * @return the parameter type
-	 */
-	URLParameterType type() default URLParameterType.QUERY;
+	int value() default -1;
 
 	/**
 	 * Declares this parameter as required. If the parameter value is not available and no {@link #defaultValue()} is

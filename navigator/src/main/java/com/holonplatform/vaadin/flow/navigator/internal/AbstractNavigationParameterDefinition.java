@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.navigator.annotations.URLParameterType;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.ParameterContainerType;
 
@@ -29,12 +28,10 @@ import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigur
  *
  * @since 5.2.0
  */
-public class DefaultNavigationParameterDefinition implements NavigationParameterDefinition {
+public abstract class AbstractNavigationParameterDefinition implements NavigationParameterDefinition {
 
 	private static final long serialVersionUID = 4917120934888696477L;
 
-	private final String name;
-	private final URLParameterType parameterType;
 	private final Class<?> type;
 	private final ParameterContainerType containerType;
 	private final Field field;
@@ -44,40 +41,14 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 	private Method readMethod = null;
 	private Method writeMethod = null;
 
-	public DefaultNavigationParameterDefinition(String name, URLParameterType parameterType, Class<?> type,
-			ParameterContainerType containerType, Field field) {
+	public AbstractNavigationParameterDefinition(Class<?> type, ParameterContainerType containerType, Field field) {
 		super();
-		ObjectUtils.argumentNotNull(name, "Parameter name must be not null");
 		ObjectUtils.argumentNotNull(type, "Parameter type must be not null");
 		ObjectUtils.argumentNotNull(containerType, "Parameter container type must be not null");
 		ObjectUtils.argumentNotNull(field, "Parameter field must be not null");
-		this.name = name;
-		this.parameterType = (parameterType == null) ? URLParameterType.QUERY : parameterType;
 		this.type = type;
 		this.containerType = containerType;
 		this.field = field;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition#
-	 * getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition#
-	 * getViewParameterType()
-	 */
-	@Override
-	public URLParameterType getParameterType() {
-		return parameterType;
 	}
 
 	/*
@@ -187,52 +158,6 @@ public class DefaultNavigationParameterDefinition implements NavigationParameter
 	 */
 	public void setWriteMethod(Method writeMethod) {
 		this.writeMethod = writeMethod;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "NavigationParameterDefinition [name=" + name + ", type=" + type + ", containerType=" + containerType
-				+ ", required=" + required + ", defaultValue=" + defaultValue + "]";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((parameterType == null) ? 0 : parameterType.hashCode());
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DefaultNavigationParameterDefinition other = (DefaultNavigationParameterDefinition) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (parameterType != other.parameterType)
-			return false;
-		return true;
 	}
 
 }

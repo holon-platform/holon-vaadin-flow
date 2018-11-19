@@ -25,6 +25,13 @@ public class InvalidNavigationParameterException extends RuntimeException {
 	private static final long serialVersionUID = -6645496038897867290L;
 
 	/**
+	 * Constructor.
+	 */
+	public InvalidNavigationParameterException() {
+		super();
+	}
+
+	/**
 	 * Constructor with error message.
 	 * @param message Error message
 	 */

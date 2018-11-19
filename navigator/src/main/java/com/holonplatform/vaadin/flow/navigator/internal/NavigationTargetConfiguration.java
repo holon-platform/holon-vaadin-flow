@@ -28,7 +28,6 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.annotations.URLParameterType;
 
 /**
  * Navigation target class (view) configuration.
@@ -56,16 +55,16 @@ public interface NavigationTargetConfiguration extends Serializable {
 	Optional<Localizable> getCaption();
 
 	/**
-	 * Get the navigation target class query parameters definitions of type {@link URLParameterType#QUERY}, if any.
+	 * Get the navigation target class query parameters definitions, if any.
 	 * @return the navigation target class query parameters definitions, or an empty map if none
 	 */
-	Map<String, NavigationParameterDefinition> getQueryParameters();
+	Map<String, QueryParameterDefinition> getQueryParameters();
 
 	/**
-	 * Get the navigation target class path parameters definitions of type {@link URLParameterType#PATH}, if any.
+	 * Get the navigation target class path parameters definitions, if any.
 	 * @return the navigation target class path parameters definitions, or an empty collection if none
 	 */
-	Collection<NavigationParameterDefinition> getPathParameters();
+	Collection<PathParameterDefinition> getPathParameters();
 
 	/**
 	 * Get the navigation target class {@link OnShow} annotated methods, if any.
@@ -122,21 +121,35 @@ public interface NavigationTargetConfiguration extends Serializable {
 	// ------ parameter definitions
 
 	/**
-	 * Base navigation parameter definition.
+	 * URL query navigation parameter definition.
 	 */
-	public interface NavigationParameterDefinition extends Serializable {
+	public interface QueryParameterDefinition extends NavigationParameterDefinition {
 
 		/**
-		 * Get the parameter name.
-		 * @return the parameter name.
+		 * Get the query parameter name.
+		 * @return the query parameter name.
 		 */
 		String getName();
 
+	}
+
+	/**
+	 * URL path navigation parameter definition.
+	 */
+	public interface PathParameterDefinition extends NavigationParameterDefinition {
+
 		/**
-		 * Get the view parameter type.
-		 * @return the view parameter type
+		 * Get the path segment to which the parameter is bound.
+		 * @return the path segment index, <code>0</code> based, or <code>-1</code> to map the whole path
 		 */
-		URLParameterType getParameterType();
+		int getPathSegment();
+
+	}
+
+	/**
+	 * Base navigation parameter definition.
+	 */
+	public interface NavigationParameterDefinition extends Serializable {
 
 		/**
 		 * Get the parameter value type.

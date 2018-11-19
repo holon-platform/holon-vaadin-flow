@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,10 +28,14 @@ import com.holonplatform.auth.exceptions.AuthenticationException;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.VaadinHttpRequest;
 import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
+import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.QueryParameterDefinition;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
@@ -45,6 +52,25 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 
 	private static final long serialVersionUID = 4407342989579425922L;
 
+	private final NavigationParameterMapper navigationParameterMapper;
+
+	/**
+	 * Constructor using default navigation parameters mapper.
+	 */
+	public DefaultNavigationTargetBeforeEnterListener() {
+		this(NavigationParameterMapper.getDefault());
+	}
+
+	/**
+	 * Constructor.
+	 * @param navigationParameterMapper Navigation parameters mapper (not null)
+	 */
+	public DefaultNavigationTargetBeforeEnterListener(NavigationParameterMapper navigationParameterMapper) {
+		super();
+		ObjectUtils.argumentNotNull(navigationParameterMapper, "NavigationParameterMapper must be not null");
+		this.navigationParameterMapper = navigationParameterMapper;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.vaadin.flow.router.internal.BeforeEnterHandler#beforeEnter(com.vaadin.flow.router.BeforeEnterEvent)
@@ -55,45 +81,86 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 		if (navigationTarget != null) {
 			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
 					.get(navigationTarget.getClassLoader()).getConfiguration(navigationTarget);
-			// check authentication required
-			if (configuration.isAuthenticationRequired()) {
-				// get AuthContext
-				final AuthContext authContext;
-				try {
-					authContext = AuthContext.require();
-				} catch (IllegalStateException e) {
-					event.rerouteToError(e, "Authentication/authorization check failed: no "
-							+ AuthContext.class.getName() + " available as a context resource");
-					return;
-				}
-				// check authentication
-				final Authentication authentication = getAuthentication(configuration, authContext);
-				if (authentication == null) {
-					final String redirect = configuration.getAuthentication()
-							.map(a -> AnnotationUtils.getStringValue(a.redirectURI())).orElse(null);
-					if (redirect != null) {
-						// redirect to path
-						event.rerouteTo(redirect);
-					} else {
-						// redirect to error
-						event.rerouteToError(UnauthorizedNavigationException.class,
-								LocalizationContext
-										.translate(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
-												UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE), true));
-					}
-				} else {
-					// check authorization
-					final Set<String> roles = configuration.getAuthorization();
-					if (!roles.isEmpty() && !authContext.isPermittedAny(roles.toArray(new String[roles.size()]))) {
-						// redirect to error
-						event.rerouteToError(ForbiddenNavigationException.class,
-								LocalizationContext
-										.translate(Localizable.of(ForbiddenNavigationException.DEFAULT_MESSAGE,
-												ForbiddenNavigationException.DEFAULT_MESSAGE_CODE), true));
-					}
+			// check authentication
+			if (checkAuthentication(event, configuration)) {
+				// check parameters
+				checkNavigationParameters(event, configuration, navigationParameterMapper);
+			}
+		}
+	}
+
+	/**
+	 * Check the navigation parameters.
+	 * @param event The navigation event
+	 * @param configuration The navigation target configuration
+	 * @param navigationParameterMapper Navigation parameter mapper
+	 * @return <code>true</code> if the navigation should proceed, <code>false</code> otherwise
+	 */
+	private static boolean checkNavigationParameters(BeforeEnterEvent event,
+			NavigationTargetConfiguration configuration, NavigationParameterMapper navigationParameterMapper) {
+		final Map<String, List<String>> queryParameters = event.getLocation().getQueryParameters().getParameters();
+		for (Entry<String, QueryParameterDefinition> entry : configuration.getQueryParameters().entrySet()) {
+			final String name = entry.getKey();
+			final QueryParameterDefinition definition = entry.getValue();
+			// check required
+			if (definition.isRequired() && !definition.getDefaultValue().isPresent()) {
+				if (!queryParameters.containsKey(name) || queryParameters.get(name) == null
+						|| queryParameters.get(name).isEmpty()) {
+					event.rerouteToError(InvalidNavigationParameterException.class,
+							"Missing required query parameter: " + name);
+					return false;
 				}
 			}
 		}
+		return true;
+	}
+
+	/**
+	 * Check navigation target authentication and authorization.
+	 * @param event The navigation event
+	 * @param configuration The navigation target configuration
+	 * @return <code>true</code> if the navigation should proceed, <code>false</code> otherwise
+	 */
+	private static boolean checkAuthentication(BeforeEnterEvent event, NavigationTargetConfiguration configuration) {
+		// check authentication required
+		if (configuration.isAuthenticationRequired()) {
+			// get AuthContext
+			final AuthContext authContext;
+			try {
+				authContext = AuthContext.require();
+			} catch (IllegalStateException e) {
+				event.rerouteToError(e, "Authentication/authorization check failed: no " + AuthContext.class.getName()
+						+ " available as a context resource");
+				return false;
+			}
+			// check authentication
+			final Authentication authentication = getAuthentication(configuration, authContext);
+			if (authentication == null) {
+				final String redirect = configuration.getAuthentication()
+						.map(a -> AnnotationUtils.getStringValue(a.redirectURI())).orElse(null);
+				if (redirect != null) {
+					// redirect to path
+					event.rerouteTo(redirect);
+				} else {
+					// redirect to error
+					event.rerouteToError(UnauthorizedNavigationException.class,
+							LocalizationContext
+									.translate(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
+											UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE), true));
+				}
+				return false;
+			}
+			// check authorization
+			final Set<String> roles = configuration.getAuthorization();
+			if (!roles.isEmpty() && !authContext.isPermittedAny(roles.toArray(new String[roles.size()]))) {
+				// redirect to error
+				event.rerouteToError(ForbiddenNavigationException.class,
+						LocalizationContext.translate(Localizable.of(ForbiddenNavigationException.DEFAULT_MESSAGE,
+								ForbiddenNavigationException.DEFAULT_MESSAGE_CODE), true));
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

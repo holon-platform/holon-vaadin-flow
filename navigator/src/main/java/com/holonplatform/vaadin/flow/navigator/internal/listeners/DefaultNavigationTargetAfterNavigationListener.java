@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -77,12 +78,17 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 						.get(view.getClass().getClassLoader()).getConfiguration(view.getClass());
 				// set path parameters
 				configuration.getPathParameters().forEach(parameter -> {
-					LOGGER.debug(() -> "Process path parameter [" + parameter.getName() + "] for navigation target ["
-							+ view.getClass().getName() + "]");
+					// LOGGER.debug(() -> "Process path parameter [" + parameter.getName() + "] for navigation target ["
+					// + view.getClass().getName() + "]");
 					setPathParameterValue(parameter, event.getLocation());
 				});
 				// set query parameters
-				setQueryParameterValues(view, configuration, event.getLocation());
+				try {
+					setQueryParameterValues(view, configuration, event.getLocation());
+				} catch (InvalidNavigationParameterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				// fire OnShow methods
 				configuration.getOnShowMethods().forEach(method -> {
 					LOGGER.debug(() -> "Invoke OnShow method [" + method.getName() + "] for navigation target ["
@@ -91,10 +97,6 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 				});
 			}
 		}
-	}
-
-	private void setPathParameterValue(NavigationParameterDefinition definition, Location location) {
-		// TODO
 	}
 
 	/**
@@ -109,11 +111,18 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 		configuration.getQueryParameters().forEach((name, definition) -> {
 			LOGGER.debug(() -> "Process query parameter [" + name + "] for navigation target ["
 					+ navigationTargetInstance.getClass().getName() + "]");
-			final Collection<?> values = navigationParameterMapper.deserialize(definition.getType(),
-					queryParameters.get(name));
+			final Collection<?> values = getParameterValue(definition,
+					navigationParameterMapper.deserialize(definition.getType(), queryParameters.get(name)));
 			if (values.isEmpty()) {
+				// check required
+				if (definition.isRequired()) {
+					throw new InvalidNavigationParameterException(
+							"The value of the query parameter [" + name + "] is required");
+				}
+				// set as null
 				setParameterValue(navigationTargetInstance, definition, getNullParameterValue(definition.getType()));
 			} else {
+				// check container type
 				switch (definition.getParameterContainerType()) {
 				case LIST:
 					setParameterValue(navigationTargetInstance, definition, new ArrayList<>(values));
@@ -131,6 +140,24 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	}
 
 	/**
+	 * Get the parameter value, checking default value if given value is empty.
+	 * @param definition The parameter definition
+	 * @param values The parameter values
+	 * @return the parameter values
+	 */
+	private static Collection<?> getParameterValue(NavigationParameterDefinition definition, Collection<?> values) {
+		if (values.isEmpty()) {
+			return definition.getDefaultValue().map(v -> {
+				if (Collection.class.isAssignableFrom(v.getClass())) {
+					return (Collection<?>) v;
+				}
+				return Collections.singleton(v);
+			}).orElse(Collections.emptySet());
+		}
+		return values;
+	}
+
+	/**
 	 * Set the parameter value which corresponds to given definition on the provided navigation target instance.
 	 * @param navigationTarget The navigation target instance
 	 * @param definition The parameter definition
@@ -144,22 +171,24 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 			try {
 				definition.getWriteMethod().get().invoke(navigationTarget, new Object[] { value });
 			} catch (Exception e) {
-				throw new InvalidNavigationParameterException(
-						"Failed to set navigation parameter [" + definition.getName() + "] value on navigation target ["
-								+ navigationTarget.getClass().getName() + "] using value [" + value + "]",
-						e);
+				throw new InvalidNavigationParameterException("Failed to set navigation parameter ["
+						+ definition.toString() + "] value on navigation target ["
+						+ navigationTarget.getClass().getName() + "] using value [" + value + "]", e);
 			}
 		} else {
 			// use field
 			try {
 				FieldUtils.writeField(definition.getField(), navigationTarget, value, true);
 			} catch (Exception e) {
-				throw new InvalidNavigationParameterException(
-						"Failed to set navigation parameter [" + definition.getName() + "] value on navigation target ["
-								+ navigationTarget.getClass().getName() + "] using value [" + value + "]",
-						e);
+				throw new InvalidNavigationParameterException("Failed to set navigation parameter ["
+						+ definition.toString() + "] value on navigation target ["
+						+ navigationTarget.getClass().getName() + "] using value [" + value + "]", e);
 			}
 		}
+	}
+
+	private void setPathParameterValue(NavigationParameterDefinition definition, Location location) {
+		// TODO
 	}
 
 	/**
