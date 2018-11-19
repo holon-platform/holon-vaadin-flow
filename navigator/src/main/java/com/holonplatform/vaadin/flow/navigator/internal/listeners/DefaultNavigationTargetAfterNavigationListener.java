@@ -26,6 +26,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
+import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
+import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
@@ -37,10 +39,15 @@ import com.vaadin.flow.router.AfterNavigationListener;
 import com.vaadin.flow.router.Location;
 
 /**
- * TODO
+ * An {@link AfterNavigationListener} to process navigation targets, setting {@link QueryParameter} values and firing
+ * {@link OnShow} annotated methods.
+ * 
+ * @since 5.2.0
  */
 public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavigationTargetListener
 		implements AfterNavigationListener {
+
+	private static final long serialVersionUID = 3389997906125447359L;
 
 	private final NavigationParameterMapper navigationParameterMapper;
 
@@ -76,19 +83,8 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 				// configuration
 				final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
 						.get(view.getClass().getClassLoader()).getConfiguration(view.getClass());
-				// set path parameters
-				configuration.getPathParameters().forEach(parameter -> {
-					// LOGGER.debug(() -> "Process path parameter [" + parameter.getName() + "] for navigation target ["
-					// + view.getClass().getName() + "]");
-					setPathParameterValue(parameter, event.getLocation());
-				});
 				// set query parameters
-				try {
-					setQueryParameterValues(view, configuration, event.getLocation());
-				} catch (InvalidNavigationParameterException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				setQueryParameterValues(view, configuration, event.getLocation());
 				// fire OnShow methods
 				configuration.getOnShowMethods().forEach(method -> {
 					LOGGER.debug(() -> "Invoke OnShow method [" + method.getName() + "] for navigation target ["
@@ -185,10 +181,6 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 						+ navigationTarget.getClass().getName() + "] using value [" + value + "]", e);
 			}
 		}
-	}
-
-	private void setPathParameterValue(NavigationParameterDefinition definition, Location location) {
-		// TODO
 	}
 
 	/**

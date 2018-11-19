@@ -25,9 +25,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,7 +52,6 @@ import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.annotations.PathParameter;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -80,7 +77,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	private final Localizable caption;
 
 	private final Map<String, QueryParameterDefinition> queryParameterDefinitions;
-	private final Collection<PathParameterDefinition> pathParameterDefinitions;
 
 	private final List<Method> onShowMethods;
 	private final List<Method> onLeaveMethods;
@@ -131,9 +127,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		}
 		this.onShowMethods = detectAnnotatedMethods(navigationTarget, OnShow.class, AfterNavigationEvent.class);
 		this.onLeaveMethods = detectAnnotatedMethods(navigationTarget, OnLeave.class, BeforeLeaveEvent.class);
-		final ParameterDetectionResult parameters = detectURLParameters(navigationTarget, navigationParameterMapper);
-		this.queryParameterDefinitions = parameters.getQueryParameterDefinitions();
-		this.pathParameterDefinitions = parameters.getPathParameterDefinitions();
+		this.queryParameterDefinitions = detectURLParameters(navigationTarget, navigationParameterMapper);
 	}
 
 	/*
@@ -178,15 +172,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	@Override
 	public Map<String, QueryParameterDefinition> getQueryParameters() {
 		return queryParameterDefinitions;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getPathParameters()
-	 */
-	@Override
-	public Collection<PathParameterDefinition> getPathParameters() {
-		return pathParameterDefinitions;
 	}
 
 	/*
@@ -311,11 +296,10 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	 * @return The detected navigation parameters definitions
 	 * @throws NavigationTargetConfigurationException If a parameter configuration error occurred
 	 */
-	private static ParameterDetectionResult detectURLParameters(Class<?> navigationTarget,
+	private static Map<String, QueryParameterDefinition> detectURLParameters(Class<?> navigationTarget,
 			NavigationParameterMapper navigationParameterMapper) throws NavigationTargetConfigurationException {
 		try {
 			final Map<String, QueryParameterDefinition> queryParameters = new LinkedHashMap<>(8);
-			final ArrayList<PathParameterDefinition> pathParameters = new ArrayList<>();
 			// get property descriptors
 			final Map<String, PropertyDescriptor> propertyDescriptors = getPropertyDescriptors(navigationTarget);
 			// query parameters
@@ -345,29 +329,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 					queryParameters.put(name, definition);
 				}
 			});
-			// path parameters
-			getAnnotatedFields(navigationTarget, PathParameter.class).forEach(field -> {
-				// get annotation
-				final PathParameter annotation = field.getAnnotation(PathParameter.class);
-				if (annotation != null) {
-					// validate
-					validateNavigationParameterField(navigationTarget, field);
-					// parameter type
-					final Class<?> type = getNavigationParameterType(navigationTarget, field);
-					// definition
-					final DefaultPathParameterDefinition definition = new DefaultPathParameterDefinition(
-							annotation.value(), type, getNavigationParameterContainerType(field), field);
-					definition.setRequired(annotation.required());
-					// configure
-					configureNavigationParameter(navigationParameterMapper, definition, field,
-							propertyDescriptors.get(field.getName()), annotation.defaultValue());
-					// add definition
-					pathParameters.add(definition);
-				}
-			});
-			// done
-			pathParameters.trimToSize();
-			return new ParameterDetectionResult(queryParameters, pathParameters);
+			return queryParameters;
 		} catch (NavigationTargetConfigurationException e) {
 			throw e;
 		} catch (Exception e) {
@@ -582,28 +544,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		boolean present = ClassUtils.isPresent("javax.annotation.security.RolesAllowed", classLoader);
 		SECURITY_ANNOTATIONS_PRESENT.put(classLoader, present);
 		return present;
-	}
-
-	private static class ParameterDetectionResult {
-
-		private final Map<String, QueryParameterDefinition> queryParameterDefinitions;
-		private final Collection<PathParameterDefinition> pathParameterDefinitions;
-
-		public ParameterDetectionResult(Map<String, QueryParameterDefinition> queryParameterDefinitions,
-				Collection<PathParameterDefinition> pathParameterDefinitions) {
-			super();
-			this.queryParameterDefinitions = queryParameterDefinitions;
-			this.pathParameterDefinitions = pathParameterDefinitions;
-		}
-
-		public Map<String, QueryParameterDefinition> getQueryParameterDefinitions() {
-			return queryParameterDefinitions;
-		}
-
-		public Collection<PathParameterDefinition> getPathParameterDefinitions() {
-			return pathParameterDefinitions;
-		}
-
 	}
 
 }

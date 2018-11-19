@@ -98,6 +98,7 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 	 */
 	private static boolean checkNavigationParameters(BeforeEnterEvent event,
 			NavigationTargetConfiguration configuration, NavigationParameterMapper navigationParameterMapper) {
+		// query parameters
 		final Map<String, List<String>> queryParameters = event.getLocation().getQueryParameters().getParameters();
 		for (Entry<String, QueryParameterDefinition> entry : configuration.getQueryParameters().entrySet()) {
 			final String name = entry.getKey();

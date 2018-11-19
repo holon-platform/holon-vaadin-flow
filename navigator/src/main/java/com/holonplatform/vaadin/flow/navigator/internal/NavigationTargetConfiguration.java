@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.navigator.internal;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,12 +58,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 	 * @return the navigation target class query parameters definitions, or an empty map if none
 	 */
 	Map<String, QueryParameterDefinition> getQueryParameters();
-
-	/**
-	 * Get the navigation target class path parameters definitions, if any.
-	 * @return the navigation target class path parameters definitions, or an empty collection if none
-	 */
-	Collection<PathParameterDefinition> getPathParameters();
 
 	/**
 	 * Get the navigation target class {@link OnShow} annotated methods, if any.
