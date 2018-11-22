@@ -61,7 +61,7 @@
 		<bintray.package>holon-vaadin-flow</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.2.0-alpha2-SNAPSHOT</holon.core.version>
+		<holon.core.version>5.2.0-alpha2</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>12.0.0.beta2</vaadin.version>
@@ -70,7 +70,7 @@
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test JDBC Datastore -->
-		<holon.jdbc.datastore.version>5.2.0-alpha2-SNAPSHOT</holon.jdbc.datastore.version>
+		<holon.jdbc.datastore.version>5.2.0-alpha2</holon.jdbc.datastore.version>
 		<!-- Spring Boot for integration tests -->
 		<spring.boot.test.version>2.1.0.RELEASE</spring.boot.test.version>
 
