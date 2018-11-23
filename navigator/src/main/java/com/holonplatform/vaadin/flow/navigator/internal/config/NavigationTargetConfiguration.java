@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator.internal;
+package com.holonplatform.vaadin.flow.navigator.internal.config;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -27,6 +27,7 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
+import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
 
 /**
  * Navigation target class (view) configuration.

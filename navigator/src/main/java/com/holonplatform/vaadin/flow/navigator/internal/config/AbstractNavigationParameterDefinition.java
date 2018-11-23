@@ -13,15 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator.internal;
+package com.holonplatform.vaadin.flow.navigator.internal.config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.ParameterContainerType;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.NavigationParameterDefinition;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.ParameterContainerType;
 
 /**
  * Abstract {@link NavigationParameterDefinition} implementation.

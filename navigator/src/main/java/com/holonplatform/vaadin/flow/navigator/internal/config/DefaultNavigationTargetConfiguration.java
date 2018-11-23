@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator.internal;
+package com.holonplatform.vaadin.flow.navigator.internal.config;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -54,6 +54,7 @@ import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
+import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.Route;

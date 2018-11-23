@@ -15,8 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration;
-import com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveListener;
 
