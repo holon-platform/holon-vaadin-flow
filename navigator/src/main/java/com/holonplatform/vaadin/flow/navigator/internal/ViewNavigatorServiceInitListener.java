@@ -58,7 +58,7 @@ public class ViewNavigatorServiceInitListener implements VaadinServiceInitListen
 		});
 		// UI navigator initialization
 		event.getSource().addUIInitListener(e -> {
-			ViewNavigatorRegistry.getCurrent().bind(e.getUI(), ViewNavigator.create(e.getUI().getRouter()));
+			ViewNavigatorRegistry.getCurrent().bind(e.getUI(), ViewNavigator.create(e.getUI()));
 		});
 		// UI navigation listeners
 		event.getSource().addUIInitListener(e -> {

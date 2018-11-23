@@ -16,17 +16,58 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultViewNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.router.Router;
 
 /**
  * TODO
  */
 public interface ViewNavigator extends Serializable {
+
+	/**
+	 * Navigate to the given location.
+	 * <p>
+	 * The location may include a set of query path parameters, using the default <code>?</code> separator.
+	 * </p>
+	 * <p>
+	 * Besides the navigation to the given <code>location</code> (updating the UI to show the corresponding view), this
+	 * method also updates the browser location (and page history).
+	 * </p>
+	 * @param location The location to navigate to. If <code>null</code>, the default (<code>""</code>) location will be
+	 *        used
+	 */
+	void navigateToLocation(String location);
+
+	/**
+	 * Navigate to the given path, using the provided URL query parameters.
+	 * <p>
+	 * Besides the navigation to the given location (updating the UI to show the corresponding view), this method also
+	 * updates the browser location (and page history).
+	 * </p>
+	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
+	 * @param queryParameters the query parameters to use for navigation
+	 */
+	void navigateToLocation(String path, Map<String, List<String>> queryParameters);
+
+	/**
+	 * Navigates to the default view, i.e. navigates to the empty <code>""</code> route path.
+	 */
+	void navigateToDefault();
+
+	/**
+	 * Navigates back.
+	 * <p>
+	 * This has the same effect as if the user would press the back button in the browser.
+	 * </p>
+	 */
+	void navigateBack();
+
+	// ------- getters
 
 	/**
 	 * Get the {@link ViewNavigator} bound to the current UI, if available.
@@ -69,12 +110,68 @@ public interface ViewNavigator extends Serializable {
 	// ------- builders
 
 	/**
-	 * Create a new {@link ViewNavigator} using given router.
-	 * @param router The {@link Router} to use (not null)
+	 * Create a new {@link ViewNavigator} bound to given UI.
+	 * @param ui The {@link UI} to which the navigator is bound (not null)
 	 * @return A new {@link ViewNavigator} instance
 	 */
-	static ViewNavigator create(Router router) {
-		return new DefaultViewNavigator(router);
+	static ViewNavigator create(UI ui) {
+		return new DefaultViewNavigator(ui);
+	}
+
+	// ------- exceptions
+
+	/**
+	 * Exception related to navigation errors.
+	 */
+	public class ViewNavigationException extends RuntimeException {
+
+		private static final long serialVersionUID = -5449225408415110424L;
+
+		/**
+		 * The navigation location to which this exception is related.
+		 */
+		private final String location;
+
+		/**
+		 * Constructor with location and error message.
+		 * @param location Navigation location
+		 * @param message Error message
+		 */
+		public ViewNavigationException(String location, String message) {
+			super(message);
+			this.location = location;
+		}
+
+		/**
+		 * Constructor with location and nested exception.
+		 * @param location Navigation location
+		 * @param cause Nested exception
+		 */
+		public ViewNavigationException(String location, Throwable cause) {
+			this(location,
+					(location != null) ? "Failed to navigate to location [" + location + "]" : "Navigation failed",
+					cause);
+		}
+
+		/**
+		 * Constructor with location, error message and nested exception.
+		 * @param location Navigation location
+		 * @param message Error message
+		 * @param cause Nested exception
+		 */
+		public ViewNavigationException(String location, String message, Throwable cause) {
+			super(message, cause);
+			this.location = location;
+		}
+
+		/**
+		 * Get the navigation location to which this exception is related, if available.
+		 * @return Optional navigation location
+		 */
+		public Optional<String> getLocation() {
+			return Optional.ofNullable(location);
+		}
+
 	}
 
 }
