@@ -21,7 +21,9 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyValueProvider;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -64,5 +66,16 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 	 * @return this
 	 */
 	<V> C editor(Property<V> property, Input<V> editor);
+
+	/**
+	 * Set the {@link ValidationStatusHandler} to use to handle the validation status of the given property when an item
+	 * is in editing mode.
+	 * @param <V> Property value type
+	 * @param property The property for which to set the ValidationStatusHandler (not null)
+	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
+	 * @return this
+	 */
+	<V> C validationStatusHandler(Property<V> property,
+			ValidationStatusHandler<ItemListing<PropertyBox, Property<?>>, V, Input<V>> validationStatusHandler);
 
 }

@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.Validator;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 
 /**
  * {@link BeanListing} configurator.
@@ -45,5 +47,15 @@ public interface BeanListingConfigurator<T, C extends BeanListingConfigurator<T,
 	 * @return this
 	 */
 	C editor(String property, Input<?> editor);
+
+	/**
+	 * Set the {@link ValidationStatusHandler} to use to handle the validation status of the given property when an item
+	 * is in editing mode.
+	 * @param property The property for which to set the ValidationStatusHandler (not null)
+	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
+	 * @return this
+	 */
+	C validationStatusHandler(String property,
+			ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler);
 
 }

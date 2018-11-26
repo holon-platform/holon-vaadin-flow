@@ -39,7 +39,10 @@ import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
@@ -64,6 +67,7 @@ import com.vaadin.flow.component.grid.editor.EditorOpenListener;
 import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.ValueProvider;
@@ -108,10 +112,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isAlwaysReadOnly(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isReadOnlyByDefault(java.lang.Object)
 	 */
 	@Override
-	protected boolean isAlwaysReadOnly(Property<?> property) {
+	protected boolean isReadOnlyByDefault(Property<?> property) {
 		return property.isReadOnly();
 	}
 
@@ -351,7 +355,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
 				VirtualProperty<Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
-			getInstance().addPropertyColumn(property);
+			final ItemListingColumn<Property<?>, PropertyBox, ?> column = getInstance().addPropertyColumn(property);
+			column.setRenderer(new ComponentRenderer<>(item -> property.getValueProvider().getPropertyValue(item)));
 			return new DefaultItemListingColumnBuilder<>(property, getInstance(), getConfigurator());
 		}
 
@@ -380,7 +385,23 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public <V> PropertyListingBuilder editor(Property<V> property, Input<V> editor) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
+			getInstance().getColumnConfiguration(property).setEditorInput((Input) editor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#validationStatusHandler(com.
+		 * holonplatform.core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
+		public <V> PropertyListingBuilder validationStatusHandler(Property<V> property,
+				ValidationStatusHandler<ItemListing<PropertyBox, Property<?>>, V, Input<V>> validationStatusHandler) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property)
+					.setValidationStatusHandler((ValidationStatusHandler) validationStatusHandler);
 			return getConfigurator();
 		}
 
@@ -473,6 +494,19 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#validationStatusHandler(com.
+		 * holonplatform.core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public <V> DatastorePropertyListingBuilder validationStatusHandler(Property<V> property,
+				ValidationStatusHandler<ItemListing<PropertyBox, Property<?>>, V, Input<V>> validationStatusHandler) {
+			builder.validationStatusHandler(property, validationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
@@ -518,6 +552,19 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		public DatastorePropertyListingBuilder querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorComponent(java.lang.Object,
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder editorComponent(Property<?> property,
+				Function<PropertyBox, ? extends Component> editorComponentProvider) {
+			builder.editorComponent(property, editorComponentProvider);
 			return this;
 		}
 
@@ -1033,6 +1080,18 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public DatastorePropertyListingBuilder withValidator(Validator<PropertyBox> validator) {
 			builder.withValidator(validator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#validationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder validationStatusHandler(
+				ValidationStatusHandler<ItemListing<PropertyBox, Property<?>>, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler) {
+			builder.validationStatusHandler(validationStatusHandler);
 			return this;
 		}
 

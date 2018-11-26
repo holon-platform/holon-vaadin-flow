@@ -364,7 +364,15 @@ public class TestBeanListing {
 
 		final Input<Long> edt = Input.number(Long.class).build();
 		listing = BeanListing.builder(TestBean.class).editor(ID, edt).build();
-		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditor().orElse(null));
+		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditorInput().orElse(null));
+
+		final Button ebtn = new Button("test");
+		listing = BeanListing.builder(TestBean.class).editorComponent(ID, i -> ebtn).build();
+		assertEquals(ebtn,
+				getImpl(listing).getColumnConfiguration(ID).getEditorComponent().map(e -> e.apply(null)).orElse(null));
+		listing = BeanListing.builder(TestBean.class).editorComponent(ID, ebtn).build();
+		assertEquals(ebtn,
+				getImpl(listing).getColumnConfiguration(ID).getEditorComponent().map(e -> e.apply(null)).orElse(null));
 
 		final Validator<Long> vdt = Validator.max(3);
 		listing = BeanListing.builder(TestBean.class).withValidator(ID, vdt).build();

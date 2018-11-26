@@ -16,10 +16,12 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultViewNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry;
 import com.vaadin.flow.component.UI;
@@ -34,10 +36,6 @@ public interface ViewNavigator extends Serializable {
 	 * <p>
 	 * The location may include a set of query path parameters, using the default <code>?</code> separator.
 	 * </p>
-	 * <p>
-	 * Besides the navigation to the given <code>location</code> (updating the UI to show the corresponding view), this
-	 * method also updates the browser location (and page history).
-	 * </p>
 	 * @param location The location to navigate to. If <code>null</code>, the default (<code>""</code>) location will be
 	 *        used
 	 */
@@ -45,14 +43,28 @@ public interface ViewNavigator extends Serializable {
 
 	/**
 	 * Navigate to the given path, using the provided URL query parameters.
+	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
+	 * @param parameters the query parameters to use for navigation
+	 */
+	void navigateToLocation(String path, Map<String, List<String>> parameters);
+	
+	/**
+	 * Navigate to the given path.
+	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
+	 */
+	default void navigateTo(String path) {
+		navigateTo(path, Collections.emptyMap());
+	}
+
+	/**
+	 * Navigate to the given path, using the provided view parameters.
 	 * <p>
-	 * Besides the navigation to the given location (updating the UI to show the corresponding view), this method also
-	 * updates the browser location (and page history).
+	 * See the {@link QueryParameter} annotation to learn about the supported query parameter value types.
 	 * </p>
 	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
-	 * @param queryParameters the query parameters to use for navigation
+	 * @param parameters The view parameters to be serialized into the location query parameters
 	 */
-	void navigateToLocation(String path, Map<String, List<String>> queryParameters);
+	void navigateTo(String path, Map<String, Object> parameters);
 
 	/**
 	 * Navigates to the default view, i.e. navigates to the empty <code>""</code> route path.

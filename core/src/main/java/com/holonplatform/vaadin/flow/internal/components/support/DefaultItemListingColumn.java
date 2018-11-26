@@ -20,11 +20,14 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
@@ -46,7 +49,6 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 
 	private final P property;
 	private final String columnKey;
-	private final boolean alwaysReadOnly;
 
 	private boolean readOnly = false;
 	private boolean visible = true;
@@ -66,21 +68,23 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private SortOrderProvider sortOrderProvider;
 	private List<P> sortProperties;
 	private List<Validator<V>> validators;
-	private Input<V> editor;
+	private Input<V> editorInput;
+	private Function<T, ? extends Component> editorComponent;
+	private ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler;
 
 	/**
 	 * Constructor.
 	 * @param property Item property id (not null)
 	 * @param columnKey Column key (not null)
-	 * @param alwaysReadOnly Whether the column is always read-only
+	 * @param readOnly Whether the column is read-only by default
 	 */
-	public DefaultItemListingColumn(P property, String columnKey, boolean alwaysReadOnly) {
+	public DefaultItemListingColumn(P property, String columnKey, boolean readOnly) {
 		super();
 		ObjectUtils.argumentNotNull(property, "Item property id must be not null");
 		ObjectUtils.argumentNotNull(columnKey, "Column keymust be not null");
 		this.property = property;
 		this.columnKey = columnKey;
-		this.alwaysReadOnly = alwaysReadOnly;
+		this.readOnly = readOnly;
 	}
 
 	/*
@@ -98,9 +102,6 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	 */
 	@Override
 	public boolean isReadOnly() {
-		if (alwaysReadOnly) {
-			return true;
-		}
 		return readOnly;
 	}
 
@@ -442,21 +443,47 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditor(com.holonplatform.vaadin.
-	 * flow.components.Input)
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditorInput(com.holonplatform.
+	 * vaadin. flow.components.Input)
 	 */
 	@Override
-	public void setEditor(Input<V> editor) {
-		this.editor = editor;
+	public void setEditorInput(Input<V> editor) {
+		this.editorInput = editor;
+		if (editor != null && isReadOnly()) {
+			setReadOnly(false);
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditor()
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditorInput()
 	 */
 	@Override
-	public Optional<Input<V>> getEditor() {
-		return Optional.ofNullable(editor);
+	public Optional<Input<V>> getEditorInput() {
+		return Optional.ofNullable(editorInput);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditorComponent(java.util.function
+	 * .Function)
+	 */
+	@Override
+	public void setEditorComponent(Function<T, ? extends Component> editorComponent) {
+		this.editorComponent = editorComponent;
+		if (editorComponent != null && isReadOnly()) {
+			setReadOnly(false);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditorComponent()
+	 */
+	@Override
+	public Optional<Function<T, ? extends Component>> getEditorComponent() {
+		return Optional.ofNullable(editorComponent);
 	}
 
 	/*
@@ -481,6 +508,26 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public List<Validator<V>> getValidators() {
 		return (validators != null) ? validators : Collections.emptyList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setValidationStatusHandler(com.
+	 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
+	 */
+	@Override
+	public void setValidationStatusHandler(
+			ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler) {
+		this.validationStatusHandler = validationStatusHandler;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getValidationStatusHandler()
+	 */
+	@Override
+	public Optional<ValidationStatusHandler<ItemListing<T, P>, V, Input<V>>> getValidationStatusHandler() {
+		return Optional.ofNullable(validationStatusHandler);
 	}
 
 }

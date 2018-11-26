@@ -73,6 +73,29 @@ public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 	}
 
 	/**
+	 * Create and return the default {@link ValidationStatusHandler}.
+	 * <p>
+	 * The default validation status handler uses {{@link HasValidation#setErrorMessage(String)} to notify the
+	 * validation status on the value component against whom the validation is performed, if the component implements
+	 * {@link HasValidation}.
+	 * </p>
+	 * <p>
+	 * If the component against whom the validation is performed does not implement {@link HasValidation}, a warning is
+	 * logged.
+	 * </p>
+	 * @param <S> Validation source
+	 * @param <V> Validation value type
+	 * @param <C> Value component to which the validation event refers
+	 * @param fallback The {@link ValidationStatusHandler} to use when the component on which the validation failed has
+	 *        not validation support
+	 * @return A new default {@link ValidationStatusHandler} instance
+	 */
+	static <S, V, C extends ValueComponent<V>> ValidationStatusHandler<S, V, C> getDefault(
+			ValidationStatusHandler<S, V, C> fallback) {
+		return new DefaultValidationStatusHandler<>(fallback);
+	}
+
+	/**
 	 * Create a {@link ValidationStatusHandler} which uses a {@link HasText} component to notify validation errors.
 	 * <p>
 	 * By default, the status label is set to visible only when the validation status is invalid, i.e. a validation

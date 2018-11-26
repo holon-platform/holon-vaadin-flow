@@ -113,6 +113,12 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	boolean isEditable();
 
 	/**
+	 * Checks whether the listing is in edit mode.
+	 * @return If the listing is in edit mode, returns the currently item in editing. An empty Optional otherwise.
+	 */
+	Optional<T> isEditing();
+
+	/**
 	 * If the listing {@link #isEditable()}, opens the editor interface for the provided item.
 	 * @param item the item to edit (not null) if already editing a different item in buffered mode
 	 * @throws IllegalArgumentException if the <code>item</code> is not in the backing data provider
@@ -125,6 +131,35 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void cancelEditing();
+
+	/**
+	 * If the listing {@link #isEditable()}, saves the item which is currently in editing, if any.
+	 * <p>
+	 * When the listing editor is in buffered mode, this method will validate the item and will save any changes made to
+	 * the editor fields to the edited item if all validators pass. If the write fails then there will be no events and
+	 * the editor will stay open.
+	 * </p>
+	 * <p>
+	 * A successful write will fire an editor <code>save</code> event and close the editor that will fire an editor
+	 * <code>close</code> event .
+	 * </p>
+	 * <p>
+	 * NOTE: When the listing editor is not in buffered mode, calling save will have no effect and always return
+	 * <code>false</code>.
+	 * </p>
+	 * @return <code>true</code> if save succeeded, <code>false</code> otherwise
+	 * @throws IllegalStateException If the listing is not editable
+	 */
+	boolean saveEditingItem();
+
+	/**
+	 * If the listing {@link #isEditable()}, refreshes the editor components for the current item being edited, if any.
+	 * <p>
+	 * This is useful when the state of the item is changed while the editor is open.
+	 * </p>
+	 * @throws IllegalStateException If the listing is not editable
+	 */
+	void refreshEditingItem();
 
 	// ------- listing sections handlers
 

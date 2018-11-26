@@ -38,9 +38,14 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.Validatable;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator;
@@ -96,9 +101,12 @@ import com.vaadin.flow.component.grid.editor.EditorOpenListener;
 import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.binder.BinderValidationStatus;
+import com.vaadin.flow.data.binder.BindingValidationStatus;
 import com.vaadin.flow.data.binder.PropertyDefinition;
 import com.vaadin.flow.data.binder.PropertySet;
 import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.provider.DataChangeEvent.DataRefreshEvent;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -163,6 +171,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * Item validators
 	 */
 	private final List<Validator<T>> validators = new LinkedList<>();
+
+	/**
+	 * Listing item validation status handler
+	 */
+	private ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler;
 
 	/**
 	 * Constructor.
@@ -284,7 +297,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 */
 	public ItemListingColumn<P, T, ?> getColumnConfiguration(P property) {
 		return propertyColumns.computeIfAbsent(property, p -> new DefaultItemListingColumn<>(property,
-				ensureUniqueColumnKey(generateColumnKey(p)), isAlwaysReadOnly(p)));
+				ensureUniqueColumnKey(generateColumnKey(p)), isReadOnlyByDefault(p)));
 	}
 
 	/**
@@ -295,11 +308,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	protected abstract String generateColumnKey(P property);
 
 	/**
-	 * Gets whether the given property is always read-only.
+	 * Gets whether the given property is read-only by default.
 	 * @param property The property
-	 * @return whether the given property is always read-only
+	 * @return whether the given property is read-only by default
 	 */
-	protected abstract boolean isAlwaysReadOnly(P property);
+	protected abstract boolean isReadOnlyByDefault(P property);
 
 	/**
 	 * Get the listing property set.
@@ -850,6 +863,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isEditing()
+	 */
+	@Override
+	public Optional<T> isEditing() {
+		if (isEditable()) {
+			return Optional.ofNullable(getEditor().getItem());
+		}
+		return Optional.empty();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#editItem(java.lang.Object)
 	 */
 	@Override
@@ -875,6 +900,30 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#saveEditingItem()
+	 */
+	@Override
+	public boolean saveEditingItem() {
+		if (!isEditable()) {
+			throw new IllegalStateException("The item listing is not editable");
+		}
+		return getEditor().save();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#refreshEditingItem()
+	 */
+	@Override
+	public void refreshEditingItem() {
+		if (!isEditable()) {
+			throw new IllegalStateException("The item listing is not editable");
+		}
+		getEditor().refresh();
+	}
+
 	/**
 	 * Get the listing editor.
 	 * @return The listing editor
@@ -894,10 +943,27 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	}
 
 	/**
+	 * Get the listing {@link ValidationStatusHandler}, if available.
+	 * @return Optional listing {@link ValidationStatusHandler}
+	 */
+	protected Optional<ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>>> getValidationStatusHandler() {
+		return Optional.ofNullable(validationStatusHandler);
+	}
+
+	/**
+	 * Set the listing {@link ValidationStatusHandler}.
+	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
+	 */
+	protected void setValidationStatusHandler(
+			ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler) {
+		this.validationStatusHandler = validationStatusHandler;
+	}
+
+	/**
 	 * Init the grid editor
 	 * @param properties Visible properties
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	protected void initEditor(List<P> properties) {
 		// property set
 		final Map<String, PropertyDefinition<T, ?>> definitions = new HashMap<>(properties.size());
@@ -913,30 +979,75 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			}
 		}
 		// binder
-		final Binder<T> binder = Binder.withPropertySet(new ItemListingPropertySet<>(definitions));
+		final Binder<T> binder = new DefaultItemListingBinder<>(new ItemListingPropertySet<>(definitions));
+		// validation status handler
+		binder.setValidationStatusHandler(e -> {
+			// field validation status
+			e.getFieldValidationStatuses().forEach(s -> s.getBinding().getValidationStatusHandler().statusChange(s));
+			// item validation status
+			Status status = Status.VALID;
+			List<Localizable> errors = Collections.emptyList();
+			if (e.getFieldValidationErrors().stream().noneMatch(BindingValidationStatus::isError)) {
+				// item validation errors
+				if (e.getBeanValidationErrors().stream().anyMatch(ValidationResult::isError)) {
+					status = Status.INVALID;
+					errors = e.getBeanValidationErrors().stream().filter(ValidationResult::isError)
+							.map(r -> r.getErrorMessage()).filter(m -> m != null && !m.trim().equals(""))
+							.map(m -> Localizable.of(m)).collect(Collectors.toList());
+				}
+			}
+			getValidationStatusHandler().orElseGet(() -> new DialogValidationStatusHandler())
+					.validationStatusChange(ValidationStatusEvent.create(this, new ValueComponent<T>() {
+
+						@Override
+						public Component getComponent() {
+							return getGrid();
+						}
+
+						@Override
+						public T getValue() {
+							return e.getBinder().getBean();
+						}
+					}, null, status, errors));
+		});
 		// item validators
 		validators.forEach(validator -> binder.withValidator(Validatable.adapt(validator)));
 		// property editors and validators
 		for (P property : properties) {
 			final ItemListingColumn<P, T, ?> configuration = getColumnConfiguration(property);
 			if (!configuration.isReadOnly()) {
-				getColumn(property).ifPresent(column -> {
-					getPropertyEditor(configuration).ifPresent(editor -> {
-						// editor
-						column.setEditorComponent(editor.getComponent());
-						// validation
-						final BindingBuilder<T, ?> builder = binder.forField(editor.asHasValue());
-						// property validators
-						getDefaultPropertyValidators(property)
-								.forEach(validator -> builder.withValidator(Validatable.adapt(validator)));
-						// additional validators
-						configuration.getValidators()
-								.forEach(validator -> builder.withValidator(Validatable.adapt((Validator) validator)));
-						// bind to column
-						builder.bind(configuration.getColumnKey());
+				// editor component
+				if (configuration.getEditorComponent().isPresent()) {
+					getColumn(property).ifPresent(column -> {
+						column.setEditorComponent(i -> configuration.getEditorComponent().get().apply(i));
 					});
-				});
-
+				} else {
+					// editor input
+					getColumn(property).ifPresent(column -> {
+						getPropertyEditor(configuration).ifPresent(editor -> {
+							// editor
+							column.setEditorComponent(editor.getComponent());
+							// validation
+							final BindingBuilder<T, ?> builder = binder.forField(editor.asHasValue());
+							// property validators
+							getDefaultPropertyValidators(property)
+									.forEach(validator -> builder.withValidator(Validatable.adapt(validator)));
+							// additional validators
+							configuration.getValidators().forEach(
+									validator -> builder.withValidator(Validatable.adapt((Validator) validator)));
+							// validation status handler
+							builder.withValidationStatusHandler(e -> {
+								configuration.getValidationStatusHandler().orElseGet(
+										() -> ValidationStatusHandler.getDefault(new DialogValidationStatusHandler<>()))
+										.validationStatusChange(ValidationStatusEvent.create(this, (Input) editor, null,
+												convertValidationStatus(e.getStatus()),
+												Localizable.of(e.getMessage().orElse("Validation failed"))));
+							});
+							// bind to column
+							builder.bind(configuration.getColumnKey());
+						});
+					});
+				}
 			}
 		}
 		getEditor().setBinder(binder);
@@ -948,8 +1059,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @return Optional property editor
 	 */
 	protected Optional<Input<?>> getPropertyEditor(ItemListingColumn<P, T, ?> configuration) {
-		if (configuration.getEditor().isPresent()) {
-			return configuration.getEditor().map(i -> i);
+		if (configuration.getEditorInput().isPresent()) {
+			return configuration.getEditorInput().map(i -> i);
 		}
 		return getDefaultPropertyEditor(configuration.getProperty());
 	}
@@ -1163,6 +1274,69 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		default:
 			return com.holonplatform.core.query.QuerySort.SortDirection.ASCENDING;
 		}
+	}
+
+	/**
+	 * Convert given {@link BindingValidationStatus.Status} into a {@link ValidationStatusHandler.Status}.
+	 * @param status The status to convert
+	 * @return The converted status
+	 */
+	private static ValidationStatusHandler.Status convertValidationStatus(BindingValidationStatus.Status status) {
+		switch (status) {
+		case ERROR:
+			return ValidationStatusHandler.Status.INVALID;
+		case OK:
+			return ValidationStatusHandler.Status.VALID;
+		case UNRESOLVED:
+		default:
+			return ValidationStatusHandler.Status.UNRESOLVED;
+		}
+	}
+
+	/**
+	 * A {@link ValidationStatusHandler} which opens a dialog when validation fails.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * @param <V> Value type
+	 * @param <C> Component type
+	 */
+	private static class DialogValidationStatusHandler<T, P, V, C extends ValueComponent<V>>
+			implements ValidationStatusHandler<ItemListing<T, P>, V, C> {
+
+		@Override
+		public void validationStatusChange(ValidationStatusEvent<ItemListing<T, P>, V, C> statusChangeEvent) {
+			if (statusChangeEvent.isInvalid()) {
+				Components.dialog.confirm().styleName("default-listing-validation-error")
+						.message(statusChangeEvent.getError().orElse(Localizable.of("Validation failed"))).open();
+			}
+		}
+
+	}
+
+	/**
+	 * Binder extension to avoid item validation failure in buffered editor mode.
+	 * 
+	 * @param <T> Item type
+	 */
+	private static class DefaultItemListingBinder<T> extends Binder<T> {
+
+		private static final long serialVersionUID = -5155452231265408090L;
+
+		public DefaultItemListingBinder(PropertySet<T> propertySet) {
+			super(propertySet);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.vaadin.flow.data.binder.Binder#validate()
+		 */
+		@Override
+		public com.vaadin.flow.data.binder.BinderValidationStatus<T> validate() {
+			// noop
+			return new BinderValidationStatus<>(this, Collections.emptyList(), Collections.emptyList());
+		}
+
 	}
 
 	// --------- configurator
@@ -1685,6 +1859,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorComponent(java.lang.Object,
+		 * java.util.function.Function)
+		 */
+		@Override
+		public C editorComponent(P property, Function<T, ? extends Component> editorComponentProvider) {
+			instance.getColumnConfiguration(property).setEditorComponent(editorComponentProvider);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
 		 */
 		@Override
@@ -1937,6 +2123,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public C withValidator(Validator<T> validator) {
 			instance.addValidator(validator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#validationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public C validationStatusHandler(
+				ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler) {
+			instance.setValidationStatusHandler(validationStatusHandler);
 			return getConfigurator();
 		}
 
@@ -2291,6 +2489,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> headerComponent(Component header) {
 			listing.getColumnConfiguration(property).setHeaderComponent(header);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * editorComponent(java.util.function.Function)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, L, B> editorComponent(
+				Function<T, ? extends Component> editorComponentProvider) {
+			listing.getColumnConfiguration(property).setEditorComponent(editorComponentProvider);
 			return this;
 		}
 

@@ -41,6 +41,9 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder.DatastoreBeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
@@ -65,6 +68,7 @@ import com.vaadin.flow.component.grid.editor.EditorOpenListener;
 import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.ValueProvider;
@@ -130,10 +134,10 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isAlwaysReadOnly(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isReadOnlyByDefault(java.lang.Object)
 	 */
 	@Override
-	protected boolean isAlwaysReadOnly(String property) {
+	protected boolean isReadOnlyByDefault(String property) {
 		return property != null && componentColumnProperties.contains(property);
 	}
 
@@ -300,7 +304,23 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public BeanListingBuilder<T> editor(String property, Input<?> editor) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property).setEditor((Input) editor);
+			getInstance().getColumnConfiguration(property).setEditorInput((Input) editor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#validationStatusHandler(java.lang.
+		 * String, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
+		public BeanListingBuilder<T> validationStatusHandler(String property,
+				ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property)
+					.setValidationStatusHandler((ValidationStatusHandler) validationStatusHandler);
 			return getConfigurator();
 		}
 
@@ -314,8 +334,9 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		public ItemListingColumnBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> withComponentColumn(
 				ValueProvider<T, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
-			return new DefaultItemListingColumnBuilder<>(getInstance().addComponentColumnProperty(), getInstance(),
-					this);
+			final String columnId = getInstance().addComponentColumnProperty();
+			getInstance().getColumnConfiguration(columnId).setRenderer(new ComponentRenderer<>(valueProvider));
+			return new DefaultItemListingColumnBuilder<>(columnId, getInstance(), this);
 		}
 
 		/*
@@ -405,6 +426,19 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#validationStatusHandler(java.lang.
+		 * String, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> validationStatusHandler(String property,
+				ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler) {
+			builder.validationStatusHandler(property, validationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
@@ -449,6 +483,19 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		public DatastoreBeanListingBuilder<T> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorComponent(java.lang.Object,
+		 * java.util.function.Function)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> editorComponent(String property,
+				Function<T, ? extends Component> editorComponentProvider) {
+			builder.editorComponent(property, editorComponentProvider);
 			return this;
 		}
 
@@ -936,6 +983,18 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public DatastoreBeanListingBuilder<T> withValidator(Validator<T> validator) {
 			builder.withValidator(validator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#validationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> validationStatusHandler(
+				ValidationStatusHandler<ItemListing<T, String>, T, ValueComponent<T>> validationStatusHandler) {
+			builder.validationStatusHandler(validationStatusHandler);
 			return this;
 		}
 

@@ -33,6 +33,8 @@ import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingRow;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingSection;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
@@ -554,6 +556,24 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
+	 * Set the {@link Component} to display when the column bound to given <code>property</code> is in editing mode.
+	 * @param property The property for which to set the editor component (not null)
+	 * @param editorComponentProvider The editor component provider (not null)
+	 * @return this
+	 */
+	C editorComponent(P property, Function<T, ? extends Component> editorComponentProvider);
+
+	/**
+	 * Set the {@link Component} to display when the column bound to given <code>property</code> is in editing mode.
+	 * @param property The property for which to set the editor component (not null)
+	 * @param editorComponent The editor component (not null)
+	 * @return this
+	 */
+	default C editorComponent(P property, Component editorComponent) {
+		return editorComponent(property, item -> editorComponent);
+	}
+
+	/**
 	 * Set whether the editor is in buffered mode. Default is <code>true</code>.
 	 * <p>
 	 * When the editor is in buffered mode, edits are only committed when the user clicks the save button. In unbuffered
@@ -598,6 +618,12 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C withValidator(Validator<T> validator);
+
+	/**
+	 * Set the {@link ValidationStatusHandler} to use when the listing is in edit mode to notify item validation errors.
+	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
+	 */
+	C validationStatusHandler(ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler);
 
 	// -------
 
@@ -735,6 +761,22 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * @return this
 		 */
 		C headerComponent(Component header);
+
+		/**
+		 * Set the {@link Component} to display when the column is in editing mode.
+		 * @param editorComponentProvider The editor component provider (not null)
+		 * @return this
+		 */
+		C editorComponent(Function<T, ? extends Component> editorComponentProvider);
+
+		/**
+		 * Set the {@link Component} to display when the column is in editing mode.
+		 * @param editorComponent The editor component (not null)
+		 * @return this
+		 */
+		default C editorComponent(Component editorComponent) {
+			return editorComponent(item -> editorComponent);
+		}
 
 		/**
 		 * Configure the column to be displayed before any other listing column.

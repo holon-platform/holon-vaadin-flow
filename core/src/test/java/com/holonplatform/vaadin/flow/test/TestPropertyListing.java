@@ -354,7 +354,15 @@ public class TestPropertyListing {
 
 		final Input<Long> edt = Input.number(Long.class).build();
 		listing = PropertyListing.builder(SET).editor(ID, edt).build();
-		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditor().orElse(null));
+		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditorInput().orElse(null));
+
+		final Button ebtn = new Button("test");
+		listing = PropertyListing.builder(SET).editorComponent(ID, i -> ebtn).build();
+		assertEquals(ebtn,
+				getImpl(listing).getColumnConfiguration(ID).getEditorComponent().map(e -> e.apply(null)).orElse(null));
+		listing = PropertyListing.builder(SET).editorComponent(ID, ebtn).build();
+		assertEquals(ebtn,
+				getImpl(listing).getColumnConfiguration(ID).getEditorComponent().map(e -> e.apply(null)).orElse(null));
 
 		final Validator<Long> vdt = Validator.max(3);
 		listing = PropertyListing.builder(SET).withValidator(ID, vdt).build();

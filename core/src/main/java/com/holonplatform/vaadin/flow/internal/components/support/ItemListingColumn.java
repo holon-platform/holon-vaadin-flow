@@ -20,12 +20,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
@@ -270,16 +272,28 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	void setSortProperties(List<P> sortProperties);
 
 	/**
-	 * Set the column editor.
-	 * @param editor the column editor to set
+	 * Set the column editor input.
+	 * @param editor the column editor input to set
 	 */
-	void setEditor(Input<V> editor);
+	void setEditorInput(Input<V> editor);
 
 	/**
-	 * Get the column editor, if available.
-	 * @return Optional column editor
+	 * Get the column editor input, if available.
+	 * @return Optional column editor input
 	 */
-	Optional<Input<V>> getEditor();
+	Optional<Input<V>> getEditorInput();
+
+	/**
+	 * Set the column editor component.
+	 * @param editorComponent the column editor component to set
+	 */
+	void setEditorComponent(Function<T, ? extends Component> editorComponent);
+
+	/**
+	 * Get the column editor component, if available.
+	 * @return Optional column editor component
+	 */
+	Optional<Function<T, ? extends Component>> getEditorComponent();
 
 	/**
 	 * Add a property editor validator.
@@ -292,6 +306,18 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	 * @return The property editor validators, empty if none
 	 */
 	List<Validator<V>> getValidators();
+
+	/**
+	 * Set the {@link ValidationStatusHandler} to use when the column validation fails in editing mode.
+	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
+	 */
+	void setValidationStatusHandler(ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler);
+
+	/**
+	 * Get the {@link ValidationStatusHandler} to use when the column validation fails in editing mode.
+	 * @return Optional {@link ValidationStatusHandler} bound to this column
+	 */
+	Optional<ValidationStatusHandler<ItemListing<T, P>, V, Input<V>>> getValidationStatusHandler();
 
 	/**
 	 * Column sort mode

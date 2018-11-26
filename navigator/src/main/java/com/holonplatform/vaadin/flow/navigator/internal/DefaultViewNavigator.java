@@ -81,9 +81,18 @@ public class DefaultViewNavigator implements ViewNavigator {
 	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateToLocation(java.lang.String, java.util.Map)
 	 */
 	@Override
-	public void navigateToLocation(String location, Map<String, List<String>> queryParameters) {
+	public void navigateToLocation(String location, Map<String, List<String>> parameters) {
 		getUI().navigate((location != null) ? location : "",
-				(queryParameters != null) ? new QueryParameters(queryParameters) : QueryParameters.empty());
+				(parameters != null) ? new QueryParameters(parameters) : QueryParameters.empty());
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateTo(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public void navigateTo(String path, Map<String, Object> parameters) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/*
