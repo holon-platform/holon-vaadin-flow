@@ -15,36 +15,24 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.property.Property;
-import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
 import com.holonplatform.vaadin.flow.components.HasComponent;
-import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 
 /**
- * Property group configurator.
- * 
- * @param <E> Group elements type
+ * Component group configurator.
+ *
+ * @param <P> Property type
+ * @param <T> Group item type
+ * @param <E> Group element type
  * @param <G> Group type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface PropertyGroupConfigurator<E extends HasComponent, G extends BoundComponentGroup<Property<?>, E>, C extends PropertyGroupConfigurator<E, G, C>> {
-
-	/**
-	 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property will
-	 * never be generated, but its value will be written to a {@link PropertyBox} using
-	 * {@link PropertyViewGroup#getValue()}.
-	 * @param <T> Property type
-	 * @param property Property to set as hidden (not null)
-	 * @return this
-	 */
-	<T> C hidden(Property<T> property);
+public interface ComponentGroupConfigurator<P, T, E extends HasComponent, G extends BoundComponentGroup<P, E>, C extends ComponentGroupConfigurator<P, T, E, G, C>> {
 
 	/**
 	 * Set to use the provided {@link PropertyRendererRegistry} to render the group components.
@@ -58,11 +46,10 @@ public interface PropertyGroupConfigurator<E extends HasComponent, G extends Bou
 	C usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry);
 
 	/**
-	 * Add a {@link ValueChangeListener} to the group.
-	 * @param listener The ValueChangeListener to add
+	 * Add a group value change listener.
+	 * @param listener The {@link ValueChangeListener} to add (not null)
 	 * @return this
 	 */
-	C withValueChangeListener(
-			ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, E, G>> listener);
+	C withValueChangeListener(ValueChangeListener<T, GroupValueChangeEvent<T, P, E, G>> listener);
 
 }

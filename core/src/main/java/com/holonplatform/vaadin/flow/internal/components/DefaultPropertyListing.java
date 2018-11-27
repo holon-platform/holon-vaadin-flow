@@ -33,6 +33,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
@@ -252,12 +253,25 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyEditor(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#buildPropertyEditor(com.holonplatform.
+	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Optional<Input<?>> getDefaultPropertyEditor(Property<?> property) {
-		return property.renderIfAvailable(Input.class).map(i -> i);
+	protected <V> Optional<Input<V>> buildPropertyEditor(ItemListingColumn<Property<?>, PropertyBox, V> configuration) {
+		final Property<V> property = (Property<V>) configuration.getProperty();
+		// check custom renderer
+		Optional<Input<V>> component = configuration.getEditorInputRenderer().map(r -> r.render(property));
+		if (component.isPresent()) {
+			return component;
+		}
+		// check specific registry
+		if (getPropertyRendererRegistry().isPresent()) {
+			return getPropertyRendererRegistry().get().getRenderer(Input.class, property).map(r -> r.render(property));
+		} else {
+			// use default
+			return property.renderIfAvailable(Input.class).map(c -> (Input<V>) c);
+		}
 	}
 
 	/*
@@ -360,13 +374,13 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
-		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
+		 * property.Property, com.holonplatform.core.property.PropertyRenderer)
 		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public <V> PropertyListingBuilder editor(Property<V> property, Input<V> editor) {
+		public <T> PropertyListingBuilder editor(Property<T> property, PropertyRenderer<Input<T>, T> renderer) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property).setEditorInput((Input) editor);
+			((ItemListingColumn) getInstance().getColumnConfiguration(property)).setEditorInputRenderer(renderer);
 			return getConfigurator();
 		}
 
@@ -465,11 +479,12 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
-		 * property.Property, com.holonplatform.vaadin.flow.components.Input)
+		 * property.Property, com.holonplatform.core.property.PropertyRenderer)
 		 */
 		@Override
-		public <V> DatastorePropertyListingBuilder editor(Property<V> property, Input<V> editor) {
-			builder.editor(property, editor);
+		public <T> DatastorePropertyListingBuilder editor(Property<T> property,
+				PropertyRenderer<Input<T>, T> renderer) {
+			builder.editor(property, renderer);
 			return this;
 		}
 

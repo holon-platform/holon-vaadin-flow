@@ -25,6 +25,7 @@ import java.util.function.Function;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
@@ -272,16 +273,16 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	void setSortProperties(List<P> sortProperties);
 
 	/**
-	 * Set the column editor input.
+	 * Set the column editor input renderer.
 	 * @param editor the column editor input to set
 	 */
-	void setEditorInput(Input<V> editor);
+	void setEditorInputRenderer(PropertyRenderer<Input<V>, V> editor);
 
 	/**
-	 * Get the column editor input, if available.
-	 * @return Optional column editor input
+	 * Get the column editor input renderer, if available.
+	 * @return Optional column editor input renderer
 	 */
-	Optional<Input<V>> getEditorInput();
+	Optional<PropertyRenderer<Input<V>, V>> getEditorInputRenderer();
 
 	/**
 	 * Set the column editor component.

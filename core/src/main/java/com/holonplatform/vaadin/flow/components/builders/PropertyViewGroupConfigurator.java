@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
@@ -33,7 +34,17 @@ import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPrope
  * @since 5.2.0
  */
 public interface PropertyViewGroupConfigurator<C extends PropertyViewGroupConfigurator<C>>
-		extends PropertyGroupConfigurator<ViewComponent<?>, PropertyViewGroup, C> {
+		extends ComponentGroupConfigurator<Property<?>, PropertyBox, ViewComponent<?>, PropertyViewGroup, C> {
+
+	/**
+	 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property will
+	 * never be generated, but its value will be written to a {@link PropertyBox} using
+	 * {@link PropertyViewGroup#getValue()}.
+	 * @param <T> Property type
+	 * @param property Property to set as hidden (not null)
+	 * @return this
+	 */
+	<T> C hidden(Property<T> property);
 
 	/**
 	 * Set the {@link PropertyRenderer} to use to render the {@link ViewComponent} bound to given <code>property</code>.

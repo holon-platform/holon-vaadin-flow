@@ -206,12 +206,12 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#readOnly(com.holonplatform.core.property.
-		 * Property)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#readOnly(com.holonplatform.
+		 * core.property.Property, boolean)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> readOnly(Property<T> property) {
-			inputGroupBuilder.readOnly(property);
+		public <T> PropertyInputFormBuilder<C> readOnly(Property<T> property, boolean readOnly) {
+			inputGroupBuilder.readOnly(property, readOnly);
 			return this;
 		}
 

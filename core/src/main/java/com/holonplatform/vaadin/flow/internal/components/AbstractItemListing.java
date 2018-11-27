@@ -38,6 +38,7 @@ import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
@@ -151,6 +152,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * A list of the item properties which correspond to a listing column, in the display order
 	 */
 	private final LinkedList<P> properties = new LinkedList<>();
+
+	/**
+	 * Optional {@link PropertyRendererRegistry} to use
+	 */
+	private PropertyRendererRegistry propertyRendererRegistry;
 
 	/**
 	 * Item property column definitions
@@ -288,6 +294,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	@Override
 	public Optional<ItemListingSection<P, ? extends ItemListingRow<P>>> getFooter() {
 		return Optional.of(getFooterSection());
+	}
+
+	/**
+	 * Get the specific {@link PropertyRendererRegistry} to use to render the editors.
+	 * @return Optional property renderer registry
+	 */
+	protected Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
+		return Optional.ofNullable(propertyRendererRegistry);
+	}
+
+	/**
+	 * Set the specific {@link PropertyRendererRegistry} to use to render the editors.
+	 * @param propertyRendererRegistry the property renderer registry to set
+	 */
+	protected void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
+		this.propertyRendererRegistry = propertyRendererRegistry;
 	}
 
 	/**
@@ -1024,7 +1046,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 				} else {
 					// editor input
 					getColumn(property).ifPresent(column -> {
-						getPropertyEditor(configuration).ifPresent(editor -> {
+						buildPropertyEditor(configuration).ifPresent(editor -> {
 							// editor
 							column.setEditorComponent(editor.getComponent());
 							// validation
@@ -1054,23 +1076,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	}
 
 	/**
-	 * Get the property editor to use with given property configuration, if available.
-	 * @param configuration The property configuration
+	 * Build and obtain the property editor to use with given property, if available.
+	 * @param <V> Property value type
+	 * @param configuration The property column configuration
 	 * @return Optional property editor
 	 */
-	protected Optional<Input<?>> getPropertyEditor(ItemListingColumn<P, T, ?> configuration) {
-		if (configuration.getEditorInput().isPresent()) {
-			return configuration.getEditorInput().map(i -> i);
-		}
-		return getDefaultPropertyEditor(configuration.getProperty());
-	}
-
-	/**
-	 * Get the default property editor to use with given property, if available.
-	 * @param property The property
-	 * @return Optional default property editor
-	 */
-	protected abstract Optional<Input<?>> getDefaultPropertyEditor(P property);
+	protected abstract <V> Optional<Input<V>> buildPropertyEditor(ItemListingColumn<P, T, V> configuration);
 
 	/**
 	 * Get the default property validators, if available.

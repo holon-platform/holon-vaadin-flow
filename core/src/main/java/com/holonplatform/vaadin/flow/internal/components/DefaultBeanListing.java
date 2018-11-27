@@ -41,6 +41,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
@@ -237,12 +238,28 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyEditor(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#buildPropertyEditor(com.holonplatform.
+	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Optional<Input<?>> getDefaultPropertyEditor(String property) {
-		return propertySet.getProperty(property).flatMap(p -> p.renderIfAvailable(Input.class)).map(i -> i);
+	protected <V> Optional<Input<V>> buildPropertyEditor(ItemListingColumn<String, T, V> configuration) {
+		return propertySet.getProperty(configuration.getProperty()).flatMap(p -> {
+			final Property<V> property = (Property<V>) p;
+			// check custom renderer
+			Optional<Input<V>> component = configuration.getEditorInputRenderer().map(r -> r.render(property));
+			if (component.isPresent()) {
+				return component;
+			}
+			// check specific registry
+			if (getPropertyRendererRegistry().isPresent()) {
+				return getPropertyRendererRegistry().get().getRenderer(Input.class, property)
+						.map(r -> r.render(property));
+			} else {
+				// use default
+				return property.renderIfAvailable(Input.class).map(c -> (Input<V>) c);
+			}
+		});
 	}
 
 	/*
@@ -304,7 +321,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public BeanListingBuilder<T> editor(String property, Input<?> editor) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property).setEditorInput((Input) editor);
+			getInstance().getColumnConfiguration(property)
+					.setEditorInputRenderer(InputPropertyRenderer.create(p -> (Input) editor));
 			return getConfigurator();
 		}
 

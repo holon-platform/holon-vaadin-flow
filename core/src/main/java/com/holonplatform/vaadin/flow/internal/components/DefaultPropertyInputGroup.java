@@ -901,13 +901,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#readOnly(com.holonplatform.core.property.
-		 * Property)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#readOnly(com.holonplatform.
+		 * core.property.Property, boolean)
 		 */
 		@Override
-		public <T> B readOnly(Property<T> property) {
+		public <T> B readOnly(Property<T> property, boolean readOnly) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			instance.getPropertyConfiguration(property).setReadOnly(true);
+			instance.getPropertyConfiguration(property).setReadOnly(readOnly);
 			return builder();
 		}
 

@@ -15,26 +15,22 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
-import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
+import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -46,70 +42,44 @@ import com.vaadin.flow.data.converter.Converter;
  * @since 5.2.0
  */
 public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConfigurator<C>>
-		extends PropertyGroupConfigurator<Input<?>, PropertyInputGroup, C> {
+		extends PropertySetInputGroupConfigurator<PropertyInputGroup, C> {
 
 	/**
-	 * Set the given property as read-only. If a property is read-only, the {@link Input} bound to the property will be
-	 * setted as read-only too, and its value cannot be changed by the user.
+	 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property will
+	 * never be generated, but its value will be written to a {@link PropertyBox} using
+	 * {@link PropertyViewGroup#getValue()}.
+	 * @param <T> Property type
+	 * @param property Property to set as hidden (not null)
+	 * @return this
+	 */
+	<T> C hidden(Property<T> property);
+
+	/**
+	 * Set whether the given property is read-only. If a property is read-only, the {@link Input} bound to the property
+	 * will be setted as read-only, and its value cannot be changed by the user.
 	 * <p>
 	 * Any validator bound to the given property will be ignored.
 	 * </p>
 	 * @param <T> Property type
-	 * @param property Property to set as read-only (not null)
+	 * @param property The property to set as read-only (not null)
+	 * @param readOnly <code>true</code> to set the property as read-only, <code>false</code> otherwise
 	 * @return this
 	 */
-	<T> C readOnly(Property<T> property);
+	<T> C readOnly(Property<T> property, boolean readOnly);
 
 	/**
-	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
-	 * setted as required, and its validation will fail when empty.
-	 * @param property Property to set as required (not null)
-	 * @return this
-	 */
-	C required(Property<?> property);
-
-	/**
-	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
-	 * setted as required, and its validation will fail when empty.
-	 * @param property Property to set as required (not null)
-	 * @param message The required validation error message to use
-	 * @return this
-	 */
-	C required(Property<?> property, Localizable message);
-
-	/**
-	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
-	 * setted as required, and its validation will fail when empty.
-	 * @param property Property to set as required (not null)
-	 * @param message The required validation error message to use
-	 * @return this
-	 */
-	default C required(Property<?> property, String message) {
-		return required(property, Localizable.builder().message(message).build());
-	}
-
-	/**
-	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
-	 * setted as required, and its validation will fail when empty.
-	 * @param property Property to set as required (not null)
-	 * @param defaultMessage Default required validation error message
-	 * @param messageCode Required validation error message translation key
-	 * @param arguments Optional translation arguments
-	 * @return this
-	 */
-	default C required(Property<?> property, String defaultMessage, String messageCode, Object... arguments) {
-		return required(property, Localizable.builder().message((defaultMessage == null) ? "" : defaultMessage)
-				.messageCode(messageCode).messageArguments(arguments).build());
-	}
-
-	/**
-	 * Set the default value provider for given <code>property</code>.
+	 * Set the given property as read-only. If a property is read-only, the {@link Input} bound to the property will be
+	 * setted as read-only, and its value cannot be changed by the user.
+	 * <p>
+	 * Any validator bound to the given property will be ignored.
+	 * </p>
 	 * @param <T> Property type
-	 * @param property Property (not null)
-	 * @param defaultValueProvider The function to provide the property default value (not null)
+	 * @param property The property to set as read-only (not null)
 	 * @return this
 	 */
-	<T> C defaultValue(Property<T> property, Function<Property<T>, T> defaultValueProvider);
+	default <T> C readOnly(Property<T> property) {
+		return readOnly(property, true);
+	}
 
 	/**
 	 * Set the specific {@link PropertyRenderer} to use to render the {@link Input} to bind to given
@@ -157,7 +127,7 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 	 * This method also adds property validators to given {@link Input} when applicable.
 	 * </p>
 	 * @param <T> Property type
-	 * @param <V> Input value type type
+	 * @param <V> Input value type
 	 * @param property Property (not null)
 	 * @param input Input to bind (not null)
 	 * @param converter Value converter (not null)
@@ -203,60 +173,6 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 	}
 
 	/**
-	 * Add a {@link BiConsumer} to allow further {@link Input} configuration before the input is actually bound to a
-	 * property.
-	 * @param postProcessor the post processor to add (not null)
-	 * @return this
-	 */
-	C withPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor);
-
-	/**
-	 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
-	 * @param <T> Property type
-	 * @param property Property (not null)
-	 * @param listener The ValueChangeListener to add (not null)
-	 * @return this
-	 */
-	<T> C withValueChangeListener(Property<T> property,
-			ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> listener);
-
-	/**
-	 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.
-	 * @param <T> Property type
-	 * @param property Property (not null)
-	 * @param validator Validator to add (not null)
-	 * @return this
-	 */
-	<T> C withValidator(Property<T> property, Validator<T> validator);
-
-	/**
-	 * Adds a {@link Validator} to the {@link PropertyInputGroup}, using a {@link PropertyBox} to provide the property
-	 * values to validate.
-	 * @param validator Validator to add (not null)
-	 * @return this
-	 */
-	C withValidator(Validator<PropertyBox> validator);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status changes.
-	 * @param <T> Property type
-	 * @param property Property for which to set the validation status handler
-	 * @param validationStatusHandler the {@link ValidationStatusHandler} to associate to given <code>property</code>
-	 *        (not null)
-	 * @return this
-	 */
-	<T> C validationStatusHandler(Property<T> property,
-			ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use to track overall validation status changes.
-	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set (not null)
-	 * @return this
-	 */
-	C validationStatusHandler(
-			ValidationStatusHandler<PropertyInputGroup, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler);
-
-	/**
 	 * By default, a default {@link ValidationStatusHandler} is associated to each group property {@link Input}. This
 	 * method can be used to avoid the default {@link ValidationStatusHandler} configuration.
 	 * @return this
@@ -264,16 +180,6 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 	 * @see #validationStatusHandler(Property, ValidationStatusHandler)
 	 */
 	C disableDefaultPropertyValidationStatusHandler();
-
-	/**
-	 * Use given label as status label to track overall validation status changes.
-	 * @param <L> Label type
-	 * @param statusLabel the status label to set (not null)
-	 * @return this
-	 */
-	default <L extends Component & HasText> C validationStatusLabel(L statusLabel) {
-		return validationStatusHandler(ValidationStatusHandler.label(statusLabel));
-	}
 
 	/**
 	 * Sets whether to validate the available {@link Input}s value every time the {@link Input} value changes.
@@ -307,20 +213,5 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 	 * @return this
 	 */
 	C stopGroupValidationAtFirstFailure(boolean stopValidationAtFirstFailure);
-
-	/**
-	 * Set whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
-	 * <p>
-	 * Default is <code>false</code>.
-	 * </p>
-	 * <p>
-	 * The {@link PropertyInputGroup#refresh()} and {@link PropertyInputGroup#refresh(Property)} to explicitly trigger
-	 * the {@link VirtualProperty} inputs value refresh.
-	 * </p>
-	 * @param enableRefreshOnValueChange Whether to enable {@link VirtualProperty} input value refresh when any group
-	 *        input value changes
-	 * @return this
-	 */
-	C enableRefreshOnValueChange(boolean enableRefreshOnValueChange);
 
 }

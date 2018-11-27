@@ -25,6 +25,7 @@ import java.util.function.Function;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
@@ -68,7 +69,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private SortOrderProvider sortOrderProvider;
 	private List<P> sortProperties;
 	private List<Validator<V>> validators;
-	private Input<V> editorInput;
+	private PropertyRenderer<Input<V>, V> editorInputRenderer;
 	private Function<T, ? extends Component> editorComponent;
 	private ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler;
 
@@ -442,25 +443,24 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditorInput(com.holonplatform.
-	 * vaadin. flow.components.Input)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setEditorInputRenderer(com.
+	 * holonplatform.vaadin.flow.components.Input.InputPropertyRenderer)
 	 */
 	@Override
-	public void setEditorInput(Input<V> editor) {
-		this.editorInput = editor;
-		if (editor != null && isReadOnly()) {
+	public void setEditorInputRenderer(PropertyRenderer<Input<V>, V> editorInputRenderer) {
+		this.editorInputRenderer = editorInputRenderer;
+		if (editorInputRenderer != null && isReadOnly()) {
 			setReadOnly(false);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditorInput()
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getEditorInputRenderer()
 	 */
 	@Override
-	public Optional<Input<V>> getEditorInput() {
-		return Optional.ofNullable(editorInput);
+	public Optional<PropertyRenderer<Input<V>, V>> getEditorInputRenderer() {
+		return Optional.ofNullable(editorInputRenderer);
 	}
 
 	/*

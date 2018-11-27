@@ -362,9 +362,12 @@ public class TestBeanListing {
 		listing = BeanListing.builder(TestBean.class).sortUsing(NAME, ID).build();
 		assertEquals(ID, getImpl(listing).getColumnConfiguration(NAME).getSortProperties().get(0));
 
+		final BeanPropertySet<TestBean> beanPropertySet = BeanPropertySet.create(TestBean.class);
+
 		final Input<Long> edt = Input.number(Long.class).build();
 		listing = BeanListing.builder(TestBean.class).editor(ID, edt).build();
-		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditorInput().orElse(null));
+		assertEquals(edt, getImpl(listing).getColumnConfiguration(ID).getEditorInputRenderer()
+				.map(r -> r.render(beanPropertySet.property(ID))).orElse(null));
 
 		final Button ebtn = new Button("test");
 		listing = BeanListing.builder(TestBean.class).editorComponent(ID, i -> ebtn).build();
