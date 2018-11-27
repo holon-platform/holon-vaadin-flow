@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.function.Function;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultLocalTimeInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -29,15 +30,17 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
  * 
  * @since 5.2.0
  */
-public interface LocalTimeInputBuilder extends InputBuilder<LocalTime, Input<LocalTime>, LocalTimeInputBuilder>,
-		InputValueConfigurator<LocalTime, LocalTimeInputBuilder>, HasEnabledConfigurator<LocalTimeInputBuilder>,
-		InputNotifierConfigurator<LocalTimeInputBuilder>, KeyNotifierConfigurator<LocalTimeInputBuilder>,
-		HasValueChangeModeConfigurator<LocalTimeInputBuilder>, HasAutocompleteConfigurator<LocalTimeInputBuilder>,
-		HasSizeConfigurator<LocalTimeInputBuilder>, HasStyleConfigurator<LocalTimeInputBuilder>,
-		HasAutofocusConfigurator<LocalTimeInputBuilder>, FocusableConfigurator<Component, LocalTimeInputBuilder>,
-		HasPrefixAndSuffixConfigurator<LocalTimeInputBuilder>, CompositionNotifierConfigurator<LocalTimeInputBuilder>,
-		HasPlaceholderConfigurator<LocalTimeInputBuilder>, HasLabelConfigurator<LocalTimeInputBuilder>,
-		HasTitleConfigurator<LocalTimeInputBuilder>, HasPatternConfigurator<LocalTimeInputBuilder>,
+public interface LocalTimeInputBuilder
+		extends InputBuilder<LocalTime, ValueChangeEvent<LocalTime>, Input<LocalTime>, LocalTimeInputBuilder>,
+		InputValueConfigurator<LocalTime, ValueChangeEvent<LocalTime>, LocalTimeInputBuilder>,
+		HasEnabledConfigurator<LocalTimeInputBuilder>, InputNotifierConfigurator<LocalTimeInputBuilder>,
+		KeyNotifierConfigurator<LocalTimeInputBuilder>, HasValueChangeModeConfigurator<LocalTimeInputBuilder>,
+		HasAutocompleteConfigurator<LocalTimeInputBuilder>, HasSizeConfigurator<LocalTimeInputBuilder>,
+		HasStyleConfigurator<LocalTimeInputBuilder>, HasAutofocusConfigurator<LocalTimeInputBuilder>,
+		FocusableConfigurator<Component, LocalTimeInputBuilder>, HasPrefixAndSuffixConfigurator<LocalTimeInputBuilder>,
+		CompositionNotifierConfigurator<LocalTimeInputBuilder>, HasPlaceholderConfigurator<LocalTimeInputBuilder>,
+		HasLabelConfigurator<LocalTimeInputBuilder>, HasTitleConfigurator<LocalTimeInputBuilder>,
+		HasPatternConfigurator<LocalTimeInputBuilder>,
 		HasThemeVariantConfigurator<TextFieldVariant, LocalTimeInputBuilder>,
 		DeferrableLocalizationConfigurator<LocalTimeInputBuilder> {
 

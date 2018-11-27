@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Selectable;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
  * Configurator for {@link Selectable} input components.
@@ -28,7 +29,7 @@ import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
  * @since 5.2.0
  */
 public interface SelectableInputConfigurator<T, S, C extends SelectableInputConfigurator<T, S, C>>
-		extends InputConfigurator<T, C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
+		extends InputConfigurator<T, ValueChangeEvent<T>, C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
 		DeferrableLocalizationConfigurator<C> {
 
 	/**

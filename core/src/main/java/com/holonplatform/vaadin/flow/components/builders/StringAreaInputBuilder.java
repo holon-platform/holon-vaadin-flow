@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultStringAreaInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextAreaVariant;
@@ -25,10 +26,12 @@ import com.vaadin.flow.component.textfield.TextAreaVariant;
  * 
  * @since 5.2.0
  */
-public interface StringAreaInputBuilder extends InputBuilder<String, Input<String>, StringAreaInputBuilder>,
-		InputValueConfigurator<String, StringAreaInputBuilder>, TextInputConfigurator<StringAreaInputBuilder>,
-		HasSizeConfigurator<StringAreaInputBuilder>, HasStyleConfigurator<StringAreaInputBuilder>,
-		HasAutofocusConfigurator<StringAreaInputBuilder>, FocusableConfigurator<Component, StringAreaInputBuilder>,
+public interface StringAreaInputBuilder
+		extends InputBuilder<String, ValueChangeEvent<String>, Input<String>, StringAreaInputBuilder>,
+		InputValueConfigurator<String, ValueChangeEvent<String>, StringAreaInputBuilder>,
+		TextInputConfigurator<StringAreaInputBuilder>, HasSizeConfigurator<StringAreaInputBuilder>,
+		HasStyleConfigurator<StringAreaInputBuilder>, HasAutofocusConfigurator<StringAreaInputBuilder>,
+		FocusableConfigurator<Component, StringAreaInputBuilder>,
 		HasPrefixAndSuffixConfigurator<StringAreaInputBuilder>, CompositionNotifierConfigurator<StringAreaInputBuilder>,
 		HasPlaceholderConfigurator<StringAreaInputBuilder>, HasLabelConfigurator<StringAreaInputBuilder>,
 		HasThemeVariantConfigurator<TextAreaVariant, StringAreaInputBuilder>,

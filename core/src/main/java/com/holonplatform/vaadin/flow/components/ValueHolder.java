@@ -19,16 +19,18 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.vaadin.flow.shared.Registration;
 
 /**
  * Represents an object which holds a value and provide methods to handle such value.
  * 
  * @param <V> Value type
+ * @param <E> Value change event type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
-public interface ValueHolder<V> extends Serializable {
+public interface ValueHolder<V, E extends ValueChangeEvent<V>> extends Serializable {
 
 	/**
 	 * Sets the <code>value</code> of this value holder.
@@ -81,33 +83,35 @@ public interface ValueHolder<V> extends Serializable {
 		setValue(getEmptyValue());
 	}
 
-	// Value change handling
-
 	/**
 	 * Adds a value change listener, called when the value changes.
 	 * @param listener the value change listener to add (not null)
 	 * @return a registration for the listener, which provides the <em>remove</em> operation
 	 */
-	public Registration addValueChangeListener(ValueChangeListener<V> listener);
+	public Registration addValueChangeListener(ValueChangeListener<V, E> listener);
+	
+	// ------- value change handling
 
 	/**
 	 * A listener for {@link ValueHolder} value change events.
+	 * 
 	 * @param <V> Value type
+	 * @param <E> Value change event type
 	 */
 	@FunctionalInterface
-	public interface ValueChangeListener<V> extends Serializable {
+	public interface ValueChangeListener<V, E extends ValueChangeEvent<V>> extends Serializable {
 
 		/**
-		 * Invoked when this listener receives a value change event from an {@link ValueHolder} source to which it has
-		 * been added.
+		 * Invoked when a {@link ValueChangeEvent} is triggered.
 		 * @param event the value change event
 		 */
-		void valueChange(ValueChangeEvent<V> event);
+		void valueChange(E event);
 
 	}
 
 	/**
 	 * A {@link ValueChangeListener} event.
+	 * 
 	 * @param <V> Value type
 	 */
 	public interface ValueChangeEvent<V> extends Serializable {
@@ -116,15 +120,14 @@ public interface ValueHolder<V> extends Serializable {
 		 * Returns whether this event was triggered by user interaction, on the client side, or programmatically, on the
 		 * server side.
 		 * @return <code>true</code> if this event originates from the client, <code>false</code> otherwise.
-		 * @since 5.0.5
 		 */
 		boolean isUserOriginated();
 
 		/**
 		 * Get the source of this value change event.
-		 * @return the {@link ValueHolder} source
+		 * @return the {@link ValueHolder} type source
 		 */
-		ValueHolder<V> getSource();
+		ValueHolder<V, ?> getSource();
 
 		/**
 		 * Returns the value of the source before this value change event occurred.

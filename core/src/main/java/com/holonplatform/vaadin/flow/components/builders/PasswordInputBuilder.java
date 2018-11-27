@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPasswordInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -25,13 +26,15 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
  * 
  * @since 5.2.0
  */
-public interface PasswordInputBuilder extends InputBuilder<String, Input<String>, PasswordInputBuilder>,
-		InputValueConfigurator<String, PasswordInputBuilder>, TextInputConfigurator<PasswordInputBuilder>,
-		HasSizeConfigurator<PasswordInputBuilder>, HasStyleConfigurator<PasswordInputBuilder>,
-		HasAutofocusConfigurator<PasswordInputBuilder>, FocusableConfigurator<Component, PasswordInputBuilder>,
-		HasPrefixAndSuffixConfigurator<PasswordInputBuilder>, CompositionNotifierConfigurator<PasswordInputBuilder>,
-		HasPlaceholderConfigurator<PasswordInputBuilder>, HasLabelConfigurator<PasswordInputBuilder>,
-		HasTitleConfigurator<PasswordInputBuilder>, HasPatternConfigurator<PasswordInputBuilder>,
+public interface PasswordInputBuilder
+		extends InputBuilder<String, ValueChangeEvent<String>, Input<String>, PasswordInputBuilder>,
+		InputValueConfigurator<String, ValueChangeEvent<String>, PasswordInputBuilder>,
+		TextInputConfigurator<PasswordInputBuilder>, HasSizeConfigurator<PasswordInputBuilder>,
+		HasStyleConfigurator<PasswordInputBuilder>, HasAutofocusConfigurator<PasswordInputBuilder>,
+		FocusableConfigurator<Component, PasswordInputBuilder>, HasPrefixAndSuffixConfigurator<PasswordInputBuilder>,
+		CompositionNotifierConfigurator<PasswordInputBuilder>, HasPlaceholderConfigurator<PasswordInputBuilder>,
+		HasLabelConfigurator<PasswordInputBuilder>, HasTitleConfigurator<PasswordInputBuilder>,
+		HasPatternConfigurator<PasswordInputBuilder>,
 		HasThemeVariantConfigurator<TextFieldVariant, PasswordInputBuilder>,
 		DeferrableLocalizationConfigurator<PasswordInputBuilder> {
 

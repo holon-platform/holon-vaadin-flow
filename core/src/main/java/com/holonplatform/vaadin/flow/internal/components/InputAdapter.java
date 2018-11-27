@@ -596,7 +596,7 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	 * ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(Input.ValueChangeListener<T> listener) {
+	public Registration addValueChangeListener(Input.ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return field
 				.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this, e.getOldValue(),

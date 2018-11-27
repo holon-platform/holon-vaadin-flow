@@ -16,16 +16,19 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
  * Interface to configure an {@link Input} with value configuration support.
  * 
  * @param <T> Value type
+ * @param <E> Value change event type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface InputValueConfigurator<T, C extends InputValueConfigurator<T, C>> extends InputConfigurator<T, C> {
+public interface InputValueConfigurator<T, E extends ValueChangeEvent<T>, C extends InputValueConfigurator<T, E, C>>
+		extends InputConfigurator<T, E, C> {
 
 	/**
 	 * Sets the initial value.

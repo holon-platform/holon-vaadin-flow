@@ -221,7 +221,7 @@ public class SingleSelectInputAdapter<T> implements SingleSelect<T> {
 	 * components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
+	public Registration addValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		return input.addValueChangeListener(listener);
 	}
 

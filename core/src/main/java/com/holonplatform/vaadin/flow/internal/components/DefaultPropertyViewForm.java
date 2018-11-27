@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.PropertyViewForm;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -63,7 +64,6 @@ public class DefaultPropertyViewForm<C extends Component>
 	public <T> Optional<ViewComponent<T>> getViewComponent(Property<T> property) {
 		return getComponentGroup().getViewComponent(property);
 	}
-
 
 	// Builder
 
@@ -120,8 +120,14 @@ public class DefaultPropertyViewForm<C extends Component>
 			return this;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
 		@Override
-		public PropertyViewFormBuilder<C> withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
+		public PropertyViewFormBuilder<C> withValueChangeListener(
+				ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, ViewComponent<?>, PropertyViewGroup>> listener) {
 			viewGroupBuilder.withValueChangeListener(listener);
 			return this;
 		}

@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,12 +40,13 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
-import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
@@ -55,7 +57,8 @@ import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRe
  *
  * @since 5.2.0
  */
-public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>> implements PropertyInputGroup {
+public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>, PropertyInputGroup>
+		implements PropertyInputGroup {
 
 	private static final long serialVersionUID = -5441417959315472240L;
 
@@ -112,6 +115,15 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 */
 	public DefaultPropertyInputGroup(PropertySet<?> propertySet) {
 		super(propertySet);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractPropertySetGroup#getComponentGroup()
+	 */
+	@Override
+	protected PropertyInputGroup getComponentGroup() {
+		return this;
 	}
 
 	/*
@@ -304,7 +316,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	protected <T> T getDefaultValue(Property<T> property) {
 		if (!property.isReadOnly()) {
 			return configuration.get(property).getDefaultValueProvider()
-					.map(defaultValueProvider -> defaultValueProvider.getDefaultValue(property)).orElse(null);
+					.map(defaultValueProvider -> defaultValueProvider.apply(property)).orElse(null);
 		}
 		return null;
 	}
@@ -596,7 +608,10 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 */
 	protected <T> Input<T> configureInput(final InputPropertyConfiguration<T> configuration, final Input<T> input) {
 		// value change listeners
-		configuration.getValueChangeListeners().forEach(vcl -> input.addValueChangeListener(vcl));
+		configuration.getValueChangeListeners().forEach(vcl -> input.addValueChangeListener(e -> {
+			vcl.valueChange(new DefaultGroupValueChangeEvent<>(getComponentGroup(), e.getSource(), e.getOldValue(),
+					e.getValue(), e.isUserOriginated(), configuration.getProperty(), input));
+		}));
 		// Read-only
 		if (configuration.getProperty().isReadOnly() || configuration.isReadOnly()) {
 			input.setReadOnly(true);
@@ -820,7 +835,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * {@link PropertyInputGroup} builder.
 	 */
-	static class InternalBuilder extends AbstractBuilder<DefaultPropertyInputGroup, InternalBuilder> {
+	static class InternalBuilder extends AbstractBuilder<InternalBuilder> {
 
 		public <P extends Property<?>> InternalBuilder(Iterable<P> properties) {
 			super(properties);
@@ -841,7 +856,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * Default {@link PropertyInputGroupBuilder} implementation.
 	 */
-	public static class DefaultBuilder extends AbstractBuilder<PropertyInputGroup, PropertyInputGroupBuilder>
+	public static class DefaultBuilder extends AbstractBuilder<PropertyInputGroupBuilder>
 			implements PropertyInputGroupBuilder {
 
 		public <P extends Property<?>> DefaultBuilder(Iterable<P> properties) {
@@ -863,11 +878,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/**
 	 * Abstract configurator.
-	 * @param <G> Actual {@link PropertyInputGroup} type
+	 * 
 	 * @param <B> Concrete builder type
 	 */
-	public abstract static class AbstractBuilder<G extends PropertyInputGroup, B extends PropertyInputGroupConfigurator<G, B>>
-			implements PropertyInputGroupConfigurator<G, B> {
+	public abstract static class AbstractBuilder<B extends PropertyInputGroupConfigurator<B>>
+			implements PropertyInputGroupConfigurator<B> {
 
 		protected final DefaultPropertyInputGroup instance;
 
@@ -902,7 +917,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		 * Property)
 		 */
 		@Override
-		public <T> B required(Property<T> property) {
+		public B required(Property<?> property) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			instance.getPropertyConfiguration(property).setRequired(true);
 			return builder();
@@ -915,7 +930,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		 * Property, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public <T> B required(Property<T> property, Localizable message) {
+		public B required(Property<?> property, Localizable message) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			instance.getPropertyConfiguration(property).setRequired(true);
 			instance.getPropertyConfiguration(property).setRequiredMessage(message);
@@ -955,9 +970,9 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		 * .Property, com.holonplatform.vaadin.components.PropertyInputGroup.DefaultValueProvider)
 		 */
 		@Override
-		public <T> B defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider) {
+		public <T> B defaultValue(Property<T> property, Function<Property<T>, T> defaultValueProvider) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			ObjectUtils.argumentNotNull(defaultValueProvider, "DefaultValueProvider must be not null");
+			ObjectUtils.argumentNotNull(defaultValueProvider, "The default value provider function must be not null");
 			instance.getPropertyConfiguration(property).setDefaultValueProvider(defaultValueProvider);
 			return builder();
 		}
@@ -1029,7 +1044,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		 * @see com.holonplatform.vaadin.components.PropertyInputGroup.Builder#stopValidationAtFirstFailure(boolean)
 		 */
 		@Override
-		public B stopValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
+		public B stopInputsValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
 			instance.setStopValidationAtFirstFailure(stopValidationAtFirstFailure);
 			return builder();
 		}
@@ -1040,7 +1055,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		 * boolean)
 		 */
 		@Override
-		public B stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
+		public B stopGroupValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
 			instance.setStopOverallValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
 			return builder();
 		}
@@ -1071,12 +1086,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.
-		 * vaadin.components.ValueHolder.ValueChangeListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public B withValueChangeListener(ValueHolder.ValueChangeListener<PropertyBox> listener) {
+		public B withValueChangeListener(
+				ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, Input<?>, PropertyInputGroup>> listener) {
 			ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 			instance.addValueChangeListener(listener);
 			return builder();
@@ -1085,11 +1100,13 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform.core
-		 * .property.Property, com.holonplatform.vaadin.components.ValueHolder.ValueChangeListener)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.core.property.Property,
+		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public <T> B withValueChangeListener(Property<T> property, ValueHolder.ValueChangeListener<T> listener) {
+		public <T> B withValueChangeListener(Property<T> property,
+				ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> listener) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
 			ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 			instance.getPropertyConfiguration(property).addValueChangeListener(listener);

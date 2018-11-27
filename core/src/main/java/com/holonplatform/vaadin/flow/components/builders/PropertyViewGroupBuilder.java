@@ -22,8 +22,7 @@ import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
  *
  * @since 5.2.0
  */
-public interface PropertyViewGroupBuilder
-		extends PropertyViewGroupConfigurator<PropertyViewGroup, PropertyViewGroupBuilder> {
+public interface PropertyViewGroupBuilder extends PropertyViewGroupConfigurator<PropertyViewGroupBuilder> {
 
 	/**
 	 * Build the {@link PropertyViewGroup}.

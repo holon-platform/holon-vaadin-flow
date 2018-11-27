@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
  * {@link SingleSelect} inputs builder.
@@ -27,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.SingleSelect;
  * @since 5.2.0
  */
 public interface SingleSelectInputBuilder<T, ITEM, B extends SingleSelectInputBuilder<T, ITEM, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<T, SingleSelect<T>, B>, SelectableInputConfigurator<T, T, B> {
+		extends ItemSetConfigurator<B>, InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, B>,
+		SelectableInputConfigurator<T, T, B> {
 
 }

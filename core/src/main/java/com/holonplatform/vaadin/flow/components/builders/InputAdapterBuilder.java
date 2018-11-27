@@ -27,6 +27,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.vaadin.flow.component.Component;
@@ -49,7 +50,7 @@ import com.vaadin.flow.data.value.HasValueChangeMode;
  * @since 5.2.0
  */
 public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends Component, B extends InputAdapterBuilder<T, V, H, C, B>>
-		extends InputBuilder<T, Input<T>, B> {
+		extends InputBuilder<T, ValueChangeEvent<T>, Input<T>, B> {
 
 	/**
 	 * Set the empty value supplier.
@@ -228,6 +229,6 @@ public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends C
 	 * @param listeners The {@link ValueChangeListener}s to add (not null)
 	 * @return this
 	 */
-	B withValueChangeListeners(Collection<ValueChangeListener<T>> listeners);
+	B withValueChangeListeners(Collection<ValueChangeListener<T, ValueChangeEvent<T>>> listeners);
 
 }

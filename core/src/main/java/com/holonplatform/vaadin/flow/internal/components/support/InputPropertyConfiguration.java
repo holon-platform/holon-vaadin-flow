@@ -17,15 +17,16 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 
 /**
  * Configuration for a {@link Property} bound to a {@link Input}.
@@ -76,13 +77,13 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Get the default value provider, if available.
 	 * @return Optional default value provider
 	 */
-	Optional<DefaultValueProvider<T>> getDefaultValueProvider();
+	Optional<Function<Property<T>, T>> getDefaultValueProvider();
 
 	/**
 	 * Set the default value provider
 	 * @param defaultValueProvider The default value provider to set
 	 */
-	void setDefaultValueProvider(DefaultValueProvider<T> defaultValueProvider);
+	void setDefaultValueProvider(Function<Property<T>, T> defaultValueProvider);
 
 	/**
 	 * Get the property {@link Validator}s.
@@ -124,13 +125,14 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Get the property {@link ValueChangeListener}s.
 	 * @return the property value change listeners
 	 */
-	List<ValueChangeListener<T>> getValueChangeListeners();
+	List<ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>>> getValueChangeListeners();
 
 	/**
 	 * Add a property {@link ValueChangeListener}.
 	 * @param valueChangeListener property value change listener (not null)
 	 */
-	void addValueChangeListener(ValueChangeListener<T> valueChangeListener);
+	void addValueChangeListener(
+			ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> valueChangeListener);
 
 	/**
 	 * Create a new {@link InputPropertyConfiguration} for given property.

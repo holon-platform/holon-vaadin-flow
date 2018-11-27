@@ -17,17 +17,20 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
 /**
  * Builder to create {@link Input} instances.
  * 
  * @param <T> Value type
+ * @param <E> Value change event type
  * @param <C> Input type
  * @param <B> Concrete builder type
  * 
  * @since 5.2.0
  */
-public interface InputBuilder<T, C extends Input<T>, B extends InputBuilder<T, C, B>> extends InputConfigurator<T, B> {
+public interface InputBuilder<T, E extends ValueChangeEvent<T>, C extends Input<T>, B extends InputBuilder<T, E, C, B>>
+		extends InputConfigurator<T, E, B> {
 
 	/**
 	 * Build and returns the {@link Input} instance.

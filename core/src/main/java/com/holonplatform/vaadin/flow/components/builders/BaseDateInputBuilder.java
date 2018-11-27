@@ -25,6 +25,7 @@ import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -36,8 +37,8 @@ import com.vaadin.flow.component.Component;
  * @since 5.2.0
  */
 public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
-		extends InputBuilder<D, Input<D>, B>, InputValueConfigurator<D, B>, HasSizeConfigurator<B>,
-		HasStyleConfigurator<B>, HasEnabledConfigurator<B>, FocusableConfigurator<Component, B>,
+		extends InputBuilder<D, ValueChangeEvent<D>, Input<D>, B>, InputValueConfigurator<D, ValueChangeEvent<D>, B>,
+		HasSizeConfigurator<B>, HasStyleConfigurator<B>, HasEnabledConfigurator<B>, FocusableConfigurator<Component, B>,
 		HasPlaceholderConfigurator<B>, HasLabelConfigurator<B>, DeferrableLocalizationConfigurator<B> {
 
 	/**

@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
@@ -47,7 +48,7 @@ public interface ViewComponentBuilder<T> extends HtmlComponentConfigurator<ViewC
 	 * @param listener The ValueChangeListener to add
 	 * @return this
 	 */
-	ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T> listener);
+	ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener);
 
 	/**
 	 * Build the {@link ViewComponent} instance.

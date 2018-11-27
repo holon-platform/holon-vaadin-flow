@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultStringInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -25,14 +26,15 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
  * 
  * @since 5.2.0
  */
-public interface StringInputBuilder extends InputBuilder<String, Input<String>, StringInputBuilder>,
-		InputValueConfigurator<String, StringInputBuilder>, TextInputConfigurator<StringInputBuilder>,
-		HasSizeConfigurator<StringInputBuilder>, HasStyleConfigurator<StringInputBuilder>,
-		HasAutofocusConfigurator<StringInputBuilder>, FocusableConfigurator<Component, StringInputBuilder>,
-		HasPrefixAndSuffixConfigurator<StringInputBuilder>, CompositionNotifierConfigurator<StringInputBuilder>,
-		HasPlaceholderConfigurator<StringInputBuilder>, HasLabelConfigurator<StringInputBuilder>,
-		HasTitleConfigurator<StringInputBuilder>, HasPatternConfigurator<StringInputBuilder>,
-		HasThemeVariantConfigurator<TextFieldVariant, StringInputBuilder>,
+public interface StringInputBuilder
+		extends InputBuilder<String, ValueChangeEvent<String>, Input<String>, StringInputBuilder>,
+		InputValueConfigurator<String, ValueChangeEvent<String>, StringInputBuilder>,
+		TextInputConfigurator<StringInputBuilder>, HasSizeConfigurator<StringInputBuilder>,
+		HasStyleConfigurator<StringInputBuilder>, HasAutofocusConfigurator<StringInputBuilder>,
+		FocusableConfigurator<Component, StringInputBuilder>, HasPrefixAndSuffixConfigurator<StringInputBuilder>,
+		CompositionNotifierConfigurator<StringInputBuilder>, HasPlaceholderConfigurator<StringInputBuilder>,
+		HasLabelConfigurator<StringInputBuilder>, HasTitleConfigurator<StringInputBuilder>,
+		HasPatternConfigurator<StringInputBuilder>, HasThemeVariantConfigurator<TextFieldVariant, StringInputBuilder>,
 		DeferrableLocalizationConfigurator<StringInputBuilder> {
 
 	/**

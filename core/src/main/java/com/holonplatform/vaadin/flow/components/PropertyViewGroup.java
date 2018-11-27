@@ -24,6 +24,7 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 
 /**
@@ -42,8 +43,8 @@ import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGrou
  * 
  * @since 5.2.0
  */
-public interface PropertyViewGroup
-		extends BoundComponentGroup<Property<?>, ViewComponent<?>>, ValueHolder<PropertyBox> {
+public interface PropertyViewGroup extends BoundComponentGroup<Property<?>, ViewComponent<?>>,
+		ValueHolder<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, ViewComponent<?>, PropertyViewGroup>> {
 
 	/**
 	 * Get the {@link ViewComponent} bound to the given <code>property</code>, if available.

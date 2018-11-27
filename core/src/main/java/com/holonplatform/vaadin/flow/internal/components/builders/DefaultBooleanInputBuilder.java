@@ -22,6 +22,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -44,7 +45,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConfigurator<Checkbox, BooleanInputBuilder>
 		implements BooleanInputBuilder {
 
-	private final List<ValueChangeListener<Boolean>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners = new LinkedList<>();
 
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
@@ -118,7 +119,8 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public BooleanInputBuilder withValueChangeListener(ValueChangeListener<Boolean> listener) {
+	public BooleanInputBuilder withValueChangeListener(
+			ValueChangeListener<Boolean, ValueChangeEvent<Boolean>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();

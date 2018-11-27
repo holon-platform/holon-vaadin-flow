@@ -26,6 +26,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -49,7 +50,7 @@ public class DefaultDateInputBuilder implements DateInputBuilder {
 
 	private final DefaultLocalDateInputBuilder builder = new DefaultLocalDateInputBuilder();
 
-	private final List<ValueChangeListener<Date>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<Date, ValueChangeEvent<Date>>> valueChangeListeners = new LinkedList<>();
 
 	private ZoneId timeZone;
 
@@ -217,7 +218,7 @@ public class DefaultDateInputBuilder implements DateInputBuilder {
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public DateInputBuilder withValueChangeListener(ValueChangeListener<Date> listener) {
+	public DateInputBuilder withValueChangeListener(ValueChangeListener<Date, ValueChangeEvent<Date>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return this;

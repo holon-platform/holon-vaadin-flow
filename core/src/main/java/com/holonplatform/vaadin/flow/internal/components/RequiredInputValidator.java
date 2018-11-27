@@ -37,14 +37,14 @@ public class RequiredInputValidator<T> implements Validator<T> {
 	public static final Localizable DEFAULT_REQUIRED_ERROR = Localizable.builder().message("Value is required")
 			.messageCode(com.holonplatform.core.Validator.DEFAULT_MESSAGE_CODE_PREFIX + "required").build();
 
-	private final ValueHolder<T> valueHolder;
+	private final ValueHolder<T, ?> valueHolder;
 	private final Localizable message;
 
 	/**
 	 * Constructor with default error message
 	 * @param valueHolder the {@link ValueHolder} to which the validation refers (not null)
 	 */
-	public RequiredInputValidator(ValueHolder<T> valueHolder) {
+	public RequiredInputValidator(ValueHolder<T, ?> valueHolder) {
 		this(valueHolder, DEFAULT_REQUIRED_ERROR);
 	}
 
@@ -54,7 +54,7 @@ public class RequiredInputValidator<T> implements Validator<T> {
 	 * @param message Optional validation failed message. If <code>null</code>, the {@link #DEFAULT_REQUIRED_ERROR}
 	 *        message will be used.
 	 */
-	public RequiredInputValidator(ValueHolder<T> valueHolder, Localizable message) {
+	public RequiredInputValidator(ValueHolder<T, ?> valueHolder, Localizable message) {
 		super();
 		ObjectUtils.argumentNotNull(valueHolder, "ValueHolder must be not null");
 		this.valueHolder = valueHolder;
@@ -78,7 +78,7 @@ public class RequiredInputValidator<T> implements Validator<T> {
 	 * @param valueHolder Value holder (not null)
 	 * @return A new {@link RequiredInputValidator}
 	 */
-	public static <T> RequiredInputValidator<T> create(ValueHolder<T> valueHolder) {
+	public static <T> RequiredInputValidator<T> create(ValueHolder<T, ?> valueHolder) {
 		return new RequiredInputValidator<>(valueHolder);
 	}
 
@@ -89,7 +89,7 @@ public class RequiredInputValidator<T> implements Validator<T> {
 	 * @param message Optional validation error message
 	 * @return A new {@link RequiredInputValidator}
 	 */
-	public static <T> RequiredInputValidator<T> create(ValueHolder<T> valueHolder, Localizable message) {
+	public static <T> RequiredInputValidator<T> create(ValueHolder<T, ?> valueHolder, Localizable message) {
 		return new RequiredInputValidator<>(valueHolder, message);
 	}
 

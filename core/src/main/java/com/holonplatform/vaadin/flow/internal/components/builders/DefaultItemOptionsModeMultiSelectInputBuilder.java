@@ -39,6 +39,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -74,7 +75,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<CheckboxGroup<ITEM>> labelConfigurator;
 
-	protected final List<ValueChangeListener<Set<T>>> valueChangeListeners = new LinkedList<>();
+	protected final List<ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>>> valueChangeListeners = new LinkedList<>();
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
@@ -341,7 +342,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 */
 	@Override
 	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
-			ValueChangeListener<Set<T>> listener) {
+			ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -490,7 +491,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 */
 		@Override
 		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
-				ValueChangeListener<Set<T>> listener) {
+				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}

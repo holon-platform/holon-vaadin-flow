@@ -22,8 +22,7 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
  *
  * @since 5.2.0
  */
-public interface PropertyInputGroupBuilder
-		extends PropertyInputGroupConfigurator<PropertyInputGroup, PropertyInputGroupBuilder> {
+public interface PropertyInputGroupBuilder extends PropertyInputGroupConfigurator<PropertyInputGroupBuilder> {
 
 	/**
 	 * Build the {@link PropertyInputGroup}.

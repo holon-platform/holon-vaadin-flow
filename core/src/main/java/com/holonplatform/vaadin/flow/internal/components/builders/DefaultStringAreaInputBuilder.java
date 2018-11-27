@@ -22,6 +22,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -56,7 +57,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 public class DefaultStringAreaInputBuilder extends
 		AbstractLocalizableComponentConfigurator<TextArea, StringAreaInputBuilder> implements StringAreaInputBuilder {
 
-	private final List<ValueChangeListener<String>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners = new LinkedList<>();
 
 	private boolean emptyValuesAsNull = true;
 
@@ -171,7 +172,8 @@ public class DefaultStringAreaInputBuilder extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public StringAreaInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
+	public StringAreaInputBuilder withValueChangeListener(
+			ValueChangeListener<String, ValueChangeEvent<String>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();

@@ -18,17 +18,23 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRendererRegistry;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 
 /**
  * Property group configurator.
+ * 
+ * @param <E> Group elements type
+ * @param <G> Group type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface PropertyGroupConfigurator<C extends PropertyGroupConfigurator<C>> {
+public interface PropertyGroupConfigurator<E extends HasComponent, G extends BoundComponentGroup<Property<?>, E>, C extends PropertyGroupConfigurator<E, G, C>> {
 
 	/**
 	 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property will
@@ -56,6 +62,7 @@ public interface PropertyGroupConfigurator<C extends PropertyGroupConfigurator<C
 	 * @param listener The ValueChangeListener to add
 	 * @return this
 	 */
-	C withValueChangeListener(ValueChangeListener<PropertyBox> listener);
+	C withValueChangeListener(
+			ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, E, G>> listener);
 
 }

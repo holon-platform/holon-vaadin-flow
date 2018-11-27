@@ -25,6 +25,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -58,7 +59,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 public class DefaultLocalTimeInputBuilder extends
 		AbstractLocalizableComponentConfigurator<TextField, LocalTimeInputBuilder> implements LocalTimeInputBuilder {
 
-	private final List<ValueChangeListener<LocalTime>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners = new LinkedList<>();
 
 	private LocalTime initialValue;
 
@@ -270,7 +271,8 @@ public class DefaultLocalTimeInputBuilder extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public LocalTimeInputBuilder withValueChangeListener(ValueChangeListener<LocalTime> listener) {
+	public LocalTimeInputBuilder withValueChangeListener(
+			ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();

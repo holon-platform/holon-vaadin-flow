@@ -22,6 +22,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -56,7 +57,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 public class DefaultPasswordInputBuilder extends
 		AbstractLocalizableComponentConfigurator<PasswordField, PasswordInputBuilder> implements PasswordInputBuilder {
 
-	private final List<ValueChangeListener<String>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners = new LinkedList<>();
 
 	private boolean emptyValuesAsNull = true;
 
@@ -176,7 +177,8 @@ public class DefaultPasswordInputBuilder extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public PasswordInputBuilder withValueChangeListener(ValueChangeListener<String> listener) {
+	public PasswordInputBuilder withValueChangeListener(
+			ValueChangeListener<String, ValueChangeEvent<String>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();

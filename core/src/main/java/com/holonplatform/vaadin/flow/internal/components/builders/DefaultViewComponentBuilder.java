@@ -21,6 +21,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.presentation.StringValuePresenter;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
@@ -193,7 +194,7 @@ public class DefaultViewComponentBuilder<T>
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T> listener) {
+	public ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		getComponent().addValueChangeListener(listener);
 		return getConfigurator();
 	}

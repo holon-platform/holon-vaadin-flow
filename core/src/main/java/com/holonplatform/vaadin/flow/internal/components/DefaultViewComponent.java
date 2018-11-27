@@ -60,7 +60,7 @@ public class DefaultViewComponent<T> extends Composite<Div>
 
 	private T value;
 
-	private final List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
 
 	/**
 	 * Constructor which uses a {@link StringValuePresenter} as value converter.
@@ -210,7 +210,7 @@ public class DefaultViewComponent<T> extends Composite<Div>
 	 * components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
+	public Registration addValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		valueChangeListeners.add(listener);
 		return () -> valueChangeListeners.remove(listener);

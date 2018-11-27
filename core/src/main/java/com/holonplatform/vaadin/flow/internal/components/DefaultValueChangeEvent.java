@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 
@@ -29,20 +30,21 @@ public class DefaultValueChangeEvent<V> implements ValueChangeEvent<V> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final ValueHolder<V> source;
+	private final ValueHolder<V, ?> source;
 	private final V oldValue;
 	private final V value;
 	private final boolean userOriginated;
 
 	/**
-	 * Constructor
-	 * @param source Source
+	 * Constructor.
+	 * @param source Source (not null)
 	 * @param oldValue Old value
 	 * @param value New value
 	 * @param userOriginated Whether is a client-side (user originated) change event or server side
 	 */
-	public DefaultValueChangeEvent(ValueHolder<V> source, V oldValue, V value, boolean userOriginated) {
+	public DefaultValueChangeEvent(ValueHolder<V, ?> source, V oldValue, V value, boolean userOriginated) {
 		super();
+		ObjectUtils.argumentNotNull(source, "Source must be not null");
 		this.source = source;
 		this.oldValue = oldValue;
 		this.value = value;
@@ -63,7 +65,7 @@ public class DefaultValueChangeEvent<V> implements ValueChangeEvent<V> {
 	 * @see com.holonplatform.vaadin.components.ValueHolder.ValueChangeEvent#getSource()
 	 */
 	@Override
-	public ValueHolder<V> getSource() {
+	public ValueHolder<V, ?> getSource() {
 		return source;
 	}
 

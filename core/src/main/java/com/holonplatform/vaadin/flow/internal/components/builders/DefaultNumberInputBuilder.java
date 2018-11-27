@@ -24,6 +24,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -59,7 +60,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 public class DefaultNumberInputBuilder<T extends Number> extends
 		AbstractLocalizableComponentConfigurator<TextField, NumberInputBuilder<T>> implements NumberInputBuilder<T> {
 
-	private final List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
+	private final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
 
 	private final Class<T> numberType;
 
@@ -265,7 +266,7 @@ public class DefaultNumberInputBuilder<T extends Number> extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public NumberInputBuilder<T> withValueChangeListener(ValueChangeListener<T> listener) {
+	public NumberInputBuilder<T> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();

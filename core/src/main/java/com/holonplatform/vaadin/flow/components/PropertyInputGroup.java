@@ -26,6 +26,7 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
 
@@ -53,14 +54,15 @@ import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGro
  * property.
  * </p>
  * <p>
- * The convenience methods {@link #setEnabled(boolean)} and {@link #setReadOnly(boolean)} can be used to change the enabled
- * / read-only state for all the property bound {@link Input}s.
+ * The convenience methods {@link #setEnabled(boolean)} and {@link #setReadOnly(boolean)} can be used to change the
+ * enabled / read-only state for all the property bound {@link Input}s.
  * </p>
  * 
  * @since 5.2.0
  */
-public interface PropertyInputGroup
-		extends BoundComponentGroup<Property<?>, Input<?>>, ValueHolder<PropertyBox>, Validatable {
+public interface PropertyInputGroup extends BoundComponentGroup<Property<?>, Input<?>>,
+		ValueHolder<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, Input<?>, PropertyInputGroup>>,
+		Validatable {
 
 	/**
 	 * Get the {@link Input} bound to the given <code>property</code>, if available.
@@ -239,24 +241,6 @@ public interface PropertyInputGroup
 	 */
 	static PropertyInputGroupBuilder builder(Property<?>... properties) {
 		return builder(PropertySet.of(properties));
-	}
-
-	// -------
-
-	/**
-	 * Interface to provide the default value for a {@link Property}.
-	 * @param <T> Property type
-	 */
-	@FunctionalInterface
-	public interface DefaultValueProvider<T> {
-
-		/**
-		 * Get the property default value
-		 * @param property Property (never null)
-		 * @return Default value
-		 */
-		T getDefaultValue(Property<T> property);
-
 	}
 
 }

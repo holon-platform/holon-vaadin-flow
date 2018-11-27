@@ -34,6 +34,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -205,7 +206,8 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public PropertyOptionsModeMultiSelectInputBuilder<T> withValueChangeListener(ValueChangeListener<Set<T>> listener) {
+	public PropertyOptionsModeMultiSelectInputBuilder<T> withValueChangeListener(
+			ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 		builder.withValueChangeListener(listener);
 		return this;
 	}
@@ -535,7 +537,7 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 		 */
 		@Override
 		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> withValueChangeListener(
-				ValueChangeListener<Set<T>> listener) {
+				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}

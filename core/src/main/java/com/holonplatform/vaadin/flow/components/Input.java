@@ -31,6 +31,7 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.PropertyValueConverter;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
@@ -73,7 +74,7 @@ import com.vaadin.flow.data.converter.Converter;
  * 
  * @since 5.2.0
  */
-public interface Input<T> extends ValueHolder<T>, ValueComponent<T> {
+public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComponent<T> {
 
 	/**
 	 * Sets the read-only mode of this input component. The user can't change the value when in read-only mode.

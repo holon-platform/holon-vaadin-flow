@@ -87,7 +87,7 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 * ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueHolder.ValueChangeListener<V> listener) {
+	public Registration addValueChangeListener(ValueHolder.ValueChangeListener<V, ValueChangeEvent<V>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		return input.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this,
 				convertToModel(e.getOldValue()), convertToModel(e.getValue()), e.isUserOriginated())));

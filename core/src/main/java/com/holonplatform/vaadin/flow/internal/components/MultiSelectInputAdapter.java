@@ -295,7 +295,7 @@ public class MultiSelectInputAdapter<T, ITEM, C extends Component> implements Mu
 	 * components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueChangeListener<Set<T>> listener) {
+	public Registration addValueChangeListener(ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 		return input.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this,
 				asValues(e.getOldValue()), asValues(e.getValue()), e.isUserOriginated())));
 	}

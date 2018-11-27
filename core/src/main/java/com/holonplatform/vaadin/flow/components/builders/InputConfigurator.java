@@ -16,17 +16,20 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 
 /**
  * Interface to configure an {@link Input}.
  * 
  * @param <T> Value type
+ * @param <E> Value change event type
  * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends ComponentConfigurator<C> {
+public interface InputConfigurator<T, E extends ValueChangeEvent<T>, C extends InputConfigurator<T, E, C>>
+		extends ComponentConfigurator<C> {
 
 	/**
 	 * Set whether the input component is read-only.
@@ -51,7 +54,7 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	 * @param listener The {@link ValueChangeListener} to add (not null)
 	 * @return this
 	 */
-	C withValueChangeListener(ValueChangeListener<T> listener);
+	C withValueChangeListener(ValueChangeListener<T, E> listener);
 
 	/**
 	 * Set the input as <em>required</em> or not. When the input is required the user must fill in a value.
@@ -89,7 +92,8 @@ public interface InputConfigurator<T, C extends InputConfigurator<T, C>> extends
 	 * 
 	 * @param <T> Value type
 	 */
-	public interface BaseInputConfigurator<T> extends InputConfigurator<T, BaseInputConfigurator<T>> {
+	public interface BaseInputConfigurator<T>
+			extends InputConfigurator<T, ValueChangeEvent<T>, BaseInputConfigurator<T>> {
 
 	}
 

@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 
@@ -44,9 +45,9 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.2.0
  */
-public abstract class AbstractComposablePropertyForm<C extends Component, E extends HasComponent, G extends BoundComponentGroup<Property<?>, E> & ValueHolder<PropertyBox>>
-		extends AbstractComposable<C, E, G>
-		implements BoundComponentGroup<Property<?>, E>, ValueHolder<PropertyBox>, ValueComponent<PropertyBox> {
+public abstract class AbstractComposablePropertyForm<C extends Component, E extends HasComponent, G extends BoundComponentGroup<Property<?>, E> & ValueHolder<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, E, G>>>
+		extends AbstractComposable<C, E, G> implements BoundComponentGroup<Property<?>, E>,
+		ValueHolder<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, E, G>>, ValueComponent<PropertyBox> {
 
 	private static final long serialVersionUID = -2331872101418117289L;
 
@@ -196,7 +197,8 @@ public abstract class AbstractComposablePropertyForm<C extends Component, E exte
 	 * components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(ValueChangeListener<PropertyBox> listener) {
+	public Registration addValueChangeListener(
+			ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, E, G>> listener) {
 		return getComponentGroup().addValueChangeListener(listener);
 	}
 

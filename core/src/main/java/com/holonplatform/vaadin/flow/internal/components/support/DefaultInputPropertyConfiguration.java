@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -25,9 +26,9 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 
 /**
  * Default {@link InputPropertyConfiguration} implementation.
@@ -42,11 +43,11 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	private boolean readOnly;
 	private boolean required;
 	private Localizable requiredMessage;
-	private DefaultValueProvider<T> defaultValueProvider;
+	private Function<Property<T>, T> defaultValueProvider;
 	private List<Validator<T>> validators = new LinkedList<>();
 	private Validator<T> userInputValidator;
 	private ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler;
-	private List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
+	private List<ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>>> valueChangeListeners = new LinkedList<>();
 
 	public DefaultInputPropertyConfiguration(Property<T> property) {
 		super(property);
@@ -113,7 +114,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getDefaultValueProvider()
 	 */
 	@Override
-	public Optional<DefaultValueProvider<T>> getDefaultValueProvider() {
+	public Optional<Function<Property<T>, T>> getDefaultValueProvider() {
 		return Optional.ofNullable(defaultValueProvider);
 	}
 
@@ -124,7 +125,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider)
 	 */
 	@Override
-	public void setDefaultValueProvider(DefaultValueProvider<T> defaultValueProvider) {
+	public void setDefaultValueProvider(Function<Property<T>, T> defaultValueProvider) {
 		this.defaultValueProvider = defaultValueProvider;
 	}
 
@@ -196,7 +197,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getValueChangeListeners()
 	 */
 	@Override
-	public List<ValueChangeListener<T>> getValueChangeListeners() {
+	public List<ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>>> getValueChangeListeners() {
 		return valueChangeListeners;
 	}
 
@@ -207,7 +208,8 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public void addValueChangeListener(ValueChangeListener<T> valueChangeListener) {
+	public void addValueChangeListener(
+			ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> valueChangeListener) {
 		ObjectUtils.argumentNotNull(valueChangeListener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(valueChangeListener);
 	}

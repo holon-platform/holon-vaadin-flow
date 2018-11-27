@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupConfigurator;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry;
@@ -41,7 +42,8 @@ import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPr
  *
  * @since 5.2.0
  */
-public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewComponent<?>> implements PropertyViewGroup {
+public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewComponent<?>, PropertyViewGroup>
+		implements PropertyViewGroup {
 
 	private static final long serialVersionUID = -2110591918893531742L;
 
@@ -62,6 +64,15 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 	 */
 	public DefaultPropertyViewGroup(PropertySet<?> propertySet) {
 		super(propertySet);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractPropertySetGroup#getComponentGroup()
+	 */
+	@Override
+	protected PropertyViewGroup getComponentGroup() {
+		return this;
 	}
 
 	/*
@@ -235,7 +246,7 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	// Builders
 
-	static class InternalBuilder extends AbstractBuilder<DefaultPropertyViewGroup, InternalBuilder> {
+	static class InternalBuilder extends AbstractBuilder<InternalBuilder> {
 
 		public <P extends Property<?>> InternalBuilder(Iterable<P> properties) {
 			super(properties);
@@ -257,7 +268,7 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	}
 
-	public static class DefaultBuilder extends AbstractBuilder<PropertyViewGroup, PropertyViewGroupBuilder>
+	public static class DefaultBuilder extends AbstractBuilder<PropertyViewGroupBuilder>
 			implements PropertyViewGroupBuilder {
 
 		public <P extends Property<?>> DefaultBuilder(Iterable<P> properties) {
@@ -285,8 +296,8 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	}
 
-	public static abstract class AbstractBuilder<G extends PropertyViewGroup, B extends PropertyViewGroupConfigurator<G, B>>
-			implements PropertyViewGroupConfigurator<G, B> {
+	public static abstract class AbstractBuilder<B extends PropertyViewGroupConfigurator<B>>
+			implements PropertyViewGroupConfigurator<B> {
 
 		protected final DefaultPropertyViewGroup instance;
 
@@ -354,12 +365,12 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyViewGroup.Builder#withValueChangeListener(com.holonplatform.
-		 * vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public B withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
+		public B withValueChangeListener(
+				ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, ViewComponent<?>, PropertyViewGroup>> listener) {
 			ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 			instance.addValueChangeListener(listener);
 			return builder();

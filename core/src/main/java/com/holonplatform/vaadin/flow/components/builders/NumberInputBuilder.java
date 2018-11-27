@@ -20,6 +20,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultNumberInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -29,15 +30,17 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
  * 
  * @since 5.2.0
  */
-public interface NumberInputBuilder<T extends Number> extends InputBuilder<T, Input<T>, NumberInputBuilder<T>>,
-		InputValueConfigurator<T, NumberInputBuilder<T>>, HasEnabledConfigurator<NumberInputBuilder<T>>,
-		InputNotifierConfigurator<NumberInputBuilder<T>>, KeyNotifierConfigurator<NumberInputBuilder<T>>,
-		HasValueChangeModeConfigurator<NumberInputBuilder<T>>, HasAutocompleteConfigurator<NumberInputBuilder<T>>,
-		HasSizeConfigurator<NumberInputBuilder<T>>, HasStyleConfigurator<NumberInputBuilder<T>>,
-		HasAutofocusConfigurator<NumberInputBuilder<T>>, FocusableConfigurator<Component, NumberInputBuilder<T>>,
-		HasPrefixAndSuffixConfigurator<NumberInputBuilder<T>>, CompositionNotifierConfigurator<NumberInputBuilder<T>>,
-		HasPlaceholderConfigurator<NumberInputBuilder<T>>, HasLabelConfigurator<NumberInputBuilder<T>>,
-		HasTitleConfigurator<NumberInputBuilder<T>>, HasPatternConfigurator<NumberInputBuilder<T>>,
+public interface NumberInputBuilder<T extends Number>
+		extends InputBuilder<T, ValueChangeEvent<T>, Input<T>, NumberInputBuilder<T>>,
+		InputValueConfigurator<T, ValueChangeEvent<T>, NumberInputBuilder<T>>,
+		HasEnabledConfigurator<NumberInputBuilder<T>>, InputNotifierConfigurator<NumberInputBuilder<T>>,
+		KeyNotifierConfigurator<NumberInputBuilder<T>>, HasValueChangeModeConfigurator<NumberInputBuilder<T>>,
+		HasAutocompleteConfigurator<NumberInputBuilder<T>>, HasSizeConfigurator<NumberInputBuilder<T>>,
+		HasStyleConfigurator<NumberInputBuilder<T>>, HasAutofocusConfigurator<NumberInputBuilder<T>>,
+		FocusableConfigurator<Component, NumberInputBuilder<T>>, HasPrefixAndSuffixConfigurator<NumberInputBuilder<T>>,
+		CompositionNotifierConfigurator<NumberInputBuilder<T>>, HasPlaceholderConfigurator<NumberInputBuilder<T>>,
+		HasLabelConfigurator<NumberInputBuilder<T>>, HasTitleConfigurator<NumberInputBuilder<T>>,
+		HasPatternConfigurator<NumberInputBuilder<T>>,
 		HasThemeVariantConfigurator<TextFieldVariant, NumberInputBuilder<T>>,
 		DeferrableLocalizationConfigurator<NumberInputBuilder<T>> {
 

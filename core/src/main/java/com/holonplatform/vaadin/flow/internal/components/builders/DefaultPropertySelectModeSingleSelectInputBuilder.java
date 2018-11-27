@@ -34,6 +34,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -281,7 +282,8 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public PropertySelectModeSingleSelectInputBuilder<T> withValueChangeListener(ValueChangeListener<T> listener) {
+	public PropertySelectModeSingleSelectInputBuilder<T> withValueChangeListener(
+			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		builder.withValueChangeListener(listener);
 		return this;
 	}
@@ -691,7 +693,7 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		 */
 		@Override
 		public DatastorePropertySelectModeSingleSelectInputBuilder<T> withValueChangeListener(
-				ValueChangeListener<T> listener) {
+				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}

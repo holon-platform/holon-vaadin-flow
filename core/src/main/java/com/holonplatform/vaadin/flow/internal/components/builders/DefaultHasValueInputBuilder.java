@@ -22,6 +22,7 @@ import java.util.function.Function;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -111,7 +112,7 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public HasValueInputBuilder<T, H, C> withValueChangeListener(ValueChangeListener<T> listener) {
+	public HasValueInputBuilder<T, H, C> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		getInstance().addValueChangeListener(listener);
 		return getConfigurator();
 	}
@@ -297,7 +298,8 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	 * Collection)
 	 */
 	@Override
-	public HasValueInputBuilder<T, H, C> withValueChangeListeners(Collection<ValueChangeListener<T>> listeners) {
+	public HasValueInputBuilder<T, H, C> withValueChangeListeners(
+			Collection<ValueChangeListener<T, ValueChangeEvent<T>>> listeners) {
 		if (listeners != null) {
 			listeners.forEach(listener -> getInstance().addValueChangeListener(listener));
 		}

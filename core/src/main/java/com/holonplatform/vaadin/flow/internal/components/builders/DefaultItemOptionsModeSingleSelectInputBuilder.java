@@ -38,6 +38,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
@@ -77,7 +78,7 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<RadioButtonGroup<ITEM>> labelConfigurator;
 
-	protected final List<ValueChangeListener<T>> valueChangeListeners = new LinkedList<>();
+	protected final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
@@ -353,7 +354,8 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> withValueChangeListener(ValueChangeListener<T> listener) {
+	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
+			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
 		return getConfigurator();
@@ -515,7 +517,7 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 		 */
 		@Override
 		public DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-				ValueChangeListener<T> listener) {
+				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}

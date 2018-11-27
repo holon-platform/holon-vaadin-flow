@@ -21,6 +21,7 @@ import java.util.function.Function;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 
 /**
@@ -30,7 +31,7 @@ import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
  *
  * @since 5.2.0
  */
-public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V> {
+public interface ViewComponent<V> extends ValueHolder<V, ValueChangeEvent<V>>, ValueComponent<V> {
 
 	/**
 	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.

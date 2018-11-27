@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
@@ -34,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -204,18 +206,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
-		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> withValueChangeListener(ValueChangeListener<PropertyBox> listener) {
-			inputGroupBuilder.withValueChangeListener(listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#readOnly(com.holonplatform.core.property.
 		 * Property)
 		 */
@@ -232,7 +222,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * Property)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> required(Property<T> property) {
+		public PropertyInputFormBuilder<C> required(Property<?> property) {
 			inputGroupBuilder.required(property);
 			return this;
 		}
@@ -244,7 +234,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * Property, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> required(Property<T> property, Localizable message) {
+		public PropertyInputFormBuilder<C> required(Property<?> property, Localizable message) {
 			inputGroupBuilder.required(property, message);
 			return this;
 		}
@@ -256,7 +246,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 */
 		@Override
 		public <T> PropertyInputFormBuilder<C> defaultValue(Property<T> property,
-				DefaultValueProvider<T> defaultValueProvider) {
+				Function<Property<T>, T> defaultValueProvider) {
 			inputGroupBuilder.defaultValue(property, defaultValueProvider);
 			return this;
 		}
@@ -327,8 +317,8 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#stopValidationAtFirstFailure(boolean)
 		 */
 		@Override
-		public PropertyInputFormBuilder<C> stopValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
-			inputGroupBuilder.stopValidationAtFirstFailure(stopValidationAtFirstFailure);
+		public PropertyInputFormBuilder<C> stopInputsValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
+			inputGroupBuilder.stopInputsValidationAtFirstFailure(stopValidationAtFirstFailure);
 			return this;
 		}
 
@@ -338,9 +328,9 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * boolean)
 		 */
 		@Override
-		public PropertyInputFormBuilder<C> stopOverallValidationAtFirstFailure(
+		public PropertyInputFormBuilder<C> stopGroupValidationAtFirstFailure(
 				boolean stopOverallValidationAtFirstFailure) {
-			inputGroupBuilder.stopOverallValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
+			inputGroupBuilder.stopGroupValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
 			return this;
 		}
 
@@ -358,13 +348,26 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.PropertyInputGroup.Builder#withValueChangeListener(com.holonplatform
-		 * .core.property.Property, com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.core.property.Property,
+		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
 		public <T> PropertyInputFormBuilder<C> withValueChangeListener(Property<T> property,
-				ValueChangeListener<T> listener) {
+				ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> listener) {
 			inputGroupBuilder.withValueChangeListener(property, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> withValueChangeListener(
+				ValueChangeListener<PropertyBox, GroupValueChangeEvent<PropertyBox, Property<?>, Input<?>, PropertyInputGroup>> listener) {
+			inputGroupBuilder.withValueChangeListener(listener);
 			return this;
 		}
 

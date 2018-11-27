@@ -28,13 +28,12 @@ import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPrope
 /**
  * {@link PropertyViewGroup} configurator.
  *
- * @param <G> Actual {@link PropertyViewGroup} type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface PropertyViewGroupConfigurator<G extends PropertyViewGroup, C extends PropertyViewGroupConfigurator<G, C>>
-		extends PropertyGroupConfigurator<C> {
+public interface PropertyViewGroupConfigurator<C extends PropertyViewGroupConfigurator<C>>
+		extends PropertyGroupConfigurator<ViewComponent<?>, PropertyViewGroup, C> {
 
 	/**
 	 * Set the {@link PropertyRenderer} to use to render the {@link ViewComponent} bound to given <code>property</code>.

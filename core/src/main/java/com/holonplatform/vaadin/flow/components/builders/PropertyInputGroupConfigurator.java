@@ -29,10 +29,10 @@ import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
@@ -41,13 +41,12 @@ import com.vaadin.flow.data.converter.Converter;
 /**
  * {@link PropertyInputGroup} configurator.
  *
- * @param <G> Actual {@link PropertyInputGroup} type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C extends PropertyInputGroupConfigurator<G, C>>
-		extends PropertyGroupConfigurator<C> {
+public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConfigurator<C>>
+		extends PropertyGroupConfigurator<Input<?>, PropertyInputGroup, C> {
 
 	/**
 	 * Set the given property as read-only. If a property is read-only, the {@link Input} bound to the property will be
@@ -64,45 +63,41 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	/**
 	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
 	 * setted as required, and its validation will fail when empty.
-	 * @param <T> Property type
 	 * @param property Property to set as required (not null)
 	 * @return this
 	 */
-	<T> C required(Property<T> property);
+	C required(Property<?> property);
 
 	/**
 	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
 	 * setted as required, and its validation will fail when empty.
-	 * @param <T> Property type
 	 * @param property Property to set as required (not null)
 	 * @param message The required validation error message to use
 	 * @return this
 	 */
-	<T> C required(Property<T> property, Localizable message);
+	C required(Property<?> property, Localizable message);
 
 	/**
 	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
 	 * setted as required, and its validation will fail when empty.
-	 * @param <T> Property type
 	 * @param property Property to set as required (not null)
 	 * @param message The required validation error message to use
 	 * @return this
 	 */
-	default <T> C required(Property<T> property, String message) {
+	default C required(Property<?> property, String message) {
 		return required(property, Localizable.builder().message(message).build());
 	}
 
 	/**
 	 * Set the given property as required. If a property is required, the {@link Input} bound to the property will be
 	 * setted as required, and its validation will fail when empty.
-	 * @param <T> Property type
 	 * @param property Property to set as required (not null)
 	 * @param defaultMessage Default required validation error message
 	 * @param messageCode Required validation error message translation key
 	 * @param arguments Optional translation arguments
 	 * @return this
 	 */
-	default <T> C required(Property<T> property, String defaultMessage, String messageCode, Object... arguments) {
+	default C required(Property<?> property, String defaultMessage, String messageCode, Object... arguments) {
 		return required(property, Localizable.builder().message((defaultMessage == null) ? "" : defaultMessage)
 				.messageCode(messageCode).messageArguments(arguments).build());
 	}
@@ -111,10 +106,10 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	 * Set the default value provider for given <code>property</code>.
 	 * @param <T> Property type
 	 * @param property Property (not null)
-	 * @param defaultValueProvider DefaultValueProvider (not null)
+	 * @param defaultValueProvider The function to provide the property default value (not null)
 	 * @return this
 	 */
-	<T> C defaultValue(Property<T> property, DefaultValueProvider<T> defaultValueProvider);
+	<T> C defaultValue(Property<T> property, Function<Property<T>, T> defaultValueProvider);
 
 	/**
 	 * Set the specific {@link PropertyRenderer} to use to render the {@link Input} to bind to given
@@ -222,7 +217,8 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	 * @param listener The ValueChangeListener to add (not null)
 	 * @return this
 	 */
-	<T> C withValueChangeListener(Property<T> property, ValueChangeListener<T> listener);
+	<T> C withValueChangeListener(Property<T> property,
+			ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>> listener);
 
 	/**
 	 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.
@@ -291,27 +287,26 @@ public interface PropertyInputGroupConfigurator<G extends PropertyInputGroup, C 
 	C validateOnValueChange(boolean validateOnValueChange);
 
 	/**
-	 * Set whether to stop validation at first validation failure. If <code>true</code>, only the first
-	 * {@link ValidationException} is thrown at validation, otherwise a {@link ValidationException} containing all the
-	 * occurred validation exception is thrown.
-	 * @param stopValidationAtFirstFailure <code>true</code> to stop validation at first validation failure
+	 * Set whether to stop inputs validation at first validation failure. If <code>true</code>, only the first
+	 * {@link ValidationException} is thrown at inputs validation, otherwise a {@link ValidationException} containing
+	 * all the occurred validation exception is thrown.
+	 * @param stopValidationAtFirstFailure <code>true</code> to stop inputs validation at first validation failure
 	 * @return this
 	 */
-	C stopValidationAtFirstFailure(boolean stopValidationAtFirstFailure);
+	C stopInputsValidationAtFirstFailure(boolean stopValidationAtFirstFailure);
 
 	/**
-	 * Set whether to stop overall validation at first validation failure. If <code>true</code>, only the first
+	 * Set whether to stop group validation at first validation failure. If <code>true</code>, only the first
 	 * {@link ValidationException} is thrown at validation, otherwise a {@link ValidationException} containing all the
 	 * occurred validation exception is thrown.
 	 * <p>
-	 * The overall validation is the one which is performed using validators added with
-	 * {@link #withValidator(Validator)} method.
+	 * The group validation is the one which is performed using validators added with {@link #withValidator(Validator)}
+	 * method.
 	 * </p>
-	 * @param stopOverallValidationAtFirstFailure <code>true</code> to stop overall validation at first validation
-	 *        failure
+	 * @param stopValidationAtFirstFailure <code>true</code> to stop overall validation at first validation failure
 	 * @return this
 	 */
-	C stopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure);
+	C stopGroupValidationAtFirstFailure(boolean stopValidationAtFirstFailure);
 
 	/**
 	 * Set whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
