@@ -293,12 +293,12 @@ public class TestPropertyInputGroup {
 		PropertyInputGroup group = PropertyInputGroup.builder(SET).build();
 		assertNotNull(group);
 
-		assertEquals(3, group.propertyStream().count());
+		assertEquals(3, group.getProperties().size());
 		assertTrue(group.hasProperty(ID));
 		assertTrue(group.hasProperty(NAME));
 		assertTrue(group.hasProperty(VIRTUAL));
 
-		assertEquals(3, group.stream().filter(b -> b.getComponent() != null).count());
+		assertEquals(3, group.getBindings().filter(b -> b.getComponent() != null).count());
 
 		assertTrue(group.getInput(ID).isPresent());
 		assertTrue(group.getInput(NAME).isPresent());

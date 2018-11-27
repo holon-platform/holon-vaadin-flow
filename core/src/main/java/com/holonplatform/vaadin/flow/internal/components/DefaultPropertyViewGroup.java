@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -28,10 +27,7 @@ import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
-import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent.ViewComponentPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
@@ -39,15 +35,13 @@ import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupConfig
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry;
-import com.vaadin.flow.component.Component;
 
 /**
  * Default {@link PropertyViewGroup} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewComponent<?>>
-		implements PropertyViewGroup, PropertyValueComponentSource {
+public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewComponent<?>> implements PropertyViewGroup {
 
 	private static final long serialVersionUID = -2110591918893531742L;
 
@@ -72,29 +66,29 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
 	 */
 	@Override
-	public Stream<Component> getComponents() {
-		return components.stream().map(b -> b.getComponent().getComponent());
+	public Stream<Binding<Property<?>, ViewComponent<?>>> getBindings() {
+		return components.stream();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyComponentSource#streamOfComponents()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java.lang.Object)
 	 */
 	@Override
-	public Stream<PropertyBinding<?, Component>> streamOfComponents() {
-		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent().getComponent()));
+	public Optional<ViewComponent<?>> getElement(Property<?> property) {
+		return components.get(property).map(i -> i);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getViewComponents()
+	 * @see com.holonplatform.vaadin.flow.components.ComponentGroup#getElements()
 	 */
 	@Override
-	public Iterable<ViewComponent<?>> getViewComponents() {
-		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
+	public Stream<ViewComponent<?>> getElements() {
+		return components.stream().map(b -> b.getElement());
 	}
 
 	/*
@@ -105,43 +99,6 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 	@Override
 	public <T> Optional<ViewComponent<T>> getViewComponent(Property<T> property) {
 		return components.get(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#stream()
-	 */
-	@Override
-	public <T> Stream<PropertyBinding<T, ViewComponent<T>>> stream() {
-		return components.stream();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponents()
-	 */
-	@Override
-	public Iterable<ValueComponent<?>> getValueComponents() {
-		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponent(com.holonplatform.core.
-	 * property.Property)
-	 */
-	@Override
-	public <T> Optional<ValueComponent<T>> getValueComponent(Property<T> property) {
-		return components.get(property).map(c -> c);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#streamOfValueComponents()
-	 */
-	@Override
-	public Stream<PropertyBinding<?, ValueComponent<?>>> streamOfValueComponents() {
-		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent()));
 	}
 
 	/*
@@ -163,9 +120,9 @@ public class DefaultPropertyViewGroup extends AbstractPropertySetGroup<ViewCompo
 		setCurrentValue(value);
 		if (value == null) {
 			// reset all values
-			components.stream().map(b -> b.getComponent()).forEach(c -> c.clear());
+			components.bindings().map(b -> b.getElement()).forEach(c -> c.clear());
 		} else {
-			components.stream().forEach(b -> b.getComponent().setValue(getPropertyValue(value, b.getProperty())));
+			components.bindings().forEach(b -> b.getElement().setValue(getPropertyValue(value, b.getProperty())));
 		}
 		// fire value change
 		fireValueChange(oldValue);

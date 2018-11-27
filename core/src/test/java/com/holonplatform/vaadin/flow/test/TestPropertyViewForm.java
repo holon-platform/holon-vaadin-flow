@@ -102,7 +102,7 @@ public class TestPropertyViewForm {
 		assertTrue(form.getViewComponent(NAME).isPresent());
 		assertTrue(form.getViewComponent(VIRTUAL).isPresent());
 
-		assertEquals(3, StreamSupport.stream(form.getViewComponents().spliterator(), false).count());
+		assertEquals(3, form.getBindings().count());
 
 		final ViewComponent<String> vc1 = ViewComponent.create(NAME);
 		final ViewComponent<Long> vc2 = ViewComponent.create(ID);
@@ -254,7 +254,7 @@ public class TestPropertyViewForm {
 		layout = new VerticalLayout();
 
 		form = PropertyViewForm.builder(layout, SET).composer((content, source) -> {
-			source.getValueComponents().forEach(c -> content.add(c.getComponent()));
+			source.getComponents().forEach(c -> content.add(c));
 		}).initializer(content -> {
 			content.setAlignItems(Alignment.STRETCH);
 		}).build();
@@ -266,8 +266,8 @@ public class TestPropertyViewForm {
 		layout = new VerticalLayout();
 
 		form = PropertyViewForm.builder(layout, SET).composer((content, source) -> {
-			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
-			source.getValueComponent(NAME).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(ID).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(NAME).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
 
 		form.compose();
@@ -278,7 +278,7 @@ public class TestPropertyViewForm {
 		final ViewComponent<Long> vc1 = ViewComponent.create(ID);
 
 		form = PropertyViewForm.builder(layout, SET).bind(ID, vc1).composer((content, source) -> {
-			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(ID).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
 
 		form.compose();

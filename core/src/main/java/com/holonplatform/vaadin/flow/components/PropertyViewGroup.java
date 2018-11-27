@@ -16,41 +16,55 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.Property.PropertyNotFoundException;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyViewGroup;
 
 /**
- * Provides functionalities to build and manage a group of {@link ViewComponent}s bound to a {@link Property} set.
+ * A {@link BoundComponentGroup} which handles {@link ViewComponent} elements type and uses a {@link Property} set to
+ * bind and identify the elements within the group.
+ * <p>
+ * As a {@link ValueHolder}, allows to manage the overall group elements value, represented by a {@link PropertyBox}
+ * instance.
+ * </p>
+ * <p>
+ * By default, the {@link ViewComponent} components to bind to each property are obtained using the
+ * {@link PropertyRenderer}s registered in the context {@link PropertyRendererRegistry}, if available. The
+ * <code>bind(...)</code> methods of the {@link PropertyViewGroupBuilder} can be used to provided a specific renderer or
+ * {@link ViewComponent} of one or more group property.
+ * </p>
  * 
  * @since 5.2.0
  */
-public interface PropertyViewGroup extends PropertySetBound, ValueHolder<PropertyBox> {
+public interface PropertyViewGroup
+		extends BoundComponentGroup<Property<?>, ViewComponent<?>>, ValueHolder<PropertyBox> {
 
 	/**
-	 * Gets all the {@link ViewComponent}s that have been bound to a property.
-	 * @return An {@link Iterable} on all bound ViewComponents
-	 */
-	Iterable<ViewComponent<?>> getViewComponents();
-
-	/**
-	 * Get the {@link ViewComponent} bound to given <code>property</code>, if any.
+	 * Get the {@link ViewComponent} bound to the given <code>property</code>, if available.
 	 * @param <T> Property type
-	 * @param property Property (not null)
-	 * @return Optional {@link ViewComponent} bound to given <code>property</code>
+	 * @param property The property which identifies the {@link ViewComponent} within the group (not null)
+	 * @return Optional {@link ViewComponent} bound to the given <code>property</code>
 	 */
 	<T> Optional<ViewComponent<T>> getViewComponent(Property<T> property);
 
 	/**
-	 * Return a {@link Stream} of the properties and their bound {@link ViewComponent}s of this view group.
+	 * Get the {@link ViewComponent} bound to the given <code>property</code>, throwing a
+	 * {@link PropertyNotFoundException} if not available.
 	 * @param <T> Property type
-	 * @return Property-ViewComponent {@link PropertyBinding} stream
+	 * @param property The property which identifies the {@link ViewComponent} within the group (not null)
+	 * @return The {@link ViewComponent} bound to the given <code>property</code>
+	 * @throws PropertyNotFoundException If no {@link ViewComponent} is bound to given property
 	 */
-	<T> Stream<PropertyBinding<T, ViewComponent<T>>> stream();
+	default <T> ViewComponent<T> requireViewComponent(Property<T> property) {
+		return getViewComponent(property).orElseThrow(() -> new PropertyNotFoundException(property,
+				"No ViewComponent available for property [" + property + "]"));
+	}
 
 	/**
 	 * Clear the value of all the available {@link ViewComponent}s.

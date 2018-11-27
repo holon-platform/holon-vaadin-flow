@@ -15,35 +15,34 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
-import java.util.stream.Stream;
+import java.util.Collection;
 
-import com.holonplatform.core.property.Property;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 
 /**
- * Represents an object bound to a {@link Property} set.
+ * Represents an object bound to a property set.
+ * 
+ * @param <P> Property type
  *
  * @since 5.2.0
  */
-public interface PropertySetBound {
+public interface HasPropertySet<P> {
 
 	/**
-	 * Gets the set of {@link Property}s to which this object is bound.
-	 * @return An {@link Iterable} on the property set (never null)
+	 * Gets the available properties.
+	 * @return The property set, empty if no property is available
 	 */
-	Iterable<Property<?>> getProperties();
+	Collection<P> getProperties();
 
 	/**
-	 * Gets whether given <code>property</code> is part of the property set to which this object is bound.
-	 * @param property Property to check (not null)
-	 * @return <code>true</code> if given <code>property</code> is part of the property set to which this object is
-	 *         bound, <code>false</code> otherwise
+	 * Gets whether the property set contains the given <code>property</code>.
+	 * @param property The property to check (not null)
+	 * @return <code>true</code> if the property set contains the given <code>property</code>, <code>false</code>
+	 *         otherwise
 	 */
-	boolean hasProperty(Property<?> property);
-
-	/**
-	 * Get a {@link Stream} of the properties to which this object is bound.
-	 * @return the property set {@link Stream}
-	 */
-	Stream<Property<?>> propertyStream();
+	default boolean hasProperty(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return getProperties().contains(property);
+	}
 
 }

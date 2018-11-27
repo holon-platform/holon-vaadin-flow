@@ -15,29 +15,31 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import com.holonplatform.vaadin.flow.components.ComponentGroup;
 import com.holonplatform.vaadin.flow.components.Composable.Composer;
-import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.HasComponents;
 
 /**
- * Default {@link Composer} using a {@link HasComponents} as composition root and adding the componens to the layout in
- * the order they are returned from the a {@link PropertyComponentSource}.
+ * Default {@link Composer} which uses a {@link HasComponents} component as composition layout and adds the group
+ * elements components to the layout in the order they are returned from the group.
  * 
- * @param <C> Actual HasComponents type
- * @param <S> Component source
+ * @param <C> HasComponents type
+ * @param <E> Elements type
+ * @param <G> Elements group type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
-public class DefaultComponentContainerComposer<C extends HasComponents, S extends PropertyComponentSource>
-		implements Composer<C, S> {
+public class DefaultComponentContainerComposer<C extends HasComponents, E extends HasComponent, G extends ComponentGroup<E>>
+		implements Composer<C, E, G> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ComposableComponent.Composer#compose(com.vaadin.ui.Component,
-	 * java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.Composable.Composer#compose(com.vaadin.flow.component.HasElement,
+	 * com.holonplatform.vaadin.flow.components.ComponentGroup)
 	 */
 	@Override
-	public void compose(C content, S source) {
+	public void compose(C content, G source) {
 		// remove all components
 		content.removeAll();
 		// add components

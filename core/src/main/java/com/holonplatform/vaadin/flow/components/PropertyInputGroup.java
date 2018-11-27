@@ -20,6 +20,7 @@ import java.util.Optional;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.Property.PropertyNotFoundException;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
@@ -29,28 +30,79 @@ import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
 
 /**
- * A class to manage a group of {@link Input}s bound to a {@link Property} set, loading and obtaining property values in
- * and from {@link Input}s using the {@link PropertyBox} data container type.
+ * A {@link BoundComponentGroup} which handles {@link Input} elements type and uses a {@link Property} set to bind and
+ * identify the elements within the group.
  * <p>
- * Supports overall {@link Validator}s registration to validate all the {@link Input} values, allowing cross input
- * validation, using a {@link PropertyBox} to represent the inputs value set.
+ * As a {@link ValueHolder}, allows to manage the overall group elements value, represented by a {@link PropertyBox}
+ * instance.
  * </p>
  * <p>
- * By default, property {@link Input} components are obtained from the {@link PropertyRenderer}s registered in the
- * context {@link PropertyRendererRegistry}, if available. Custom {@link PropertyRenderer} registration is supported to
- * provide custom input components for specific properties.
+ * The {@link #refresh()} and {@link #refresh(Property)} methods can be used to refresh the group elements values, for
+ * example to recalculate any <em>virtual</em> group element value which depends on other elements value.
  * </p>
  * <p>
- * Default property values are supported using a {@link DefaultValueProvider}.
+ * The {@link PropertyInputGroup} is {@link Validatable} and supports {@link Validator} registration both for the single
+ * group element and for the overall group value. See the
+ * {@link PropertyInputGroupBuilder#withValidator(Property, Validator)} and
+ * {@link PropertyInputGroupBuilder#withValidator(Validator)} methods.
  * </p>
  * <p>
- * Convenience methods {@link #setEnabled(boolean)} and {@link #setReadOnly(boolean)} can be used to change the enabled
+ * By default, the {@link Input} components to bind to each property are obtained using the {@link PropertyRenderer}s
+ * registered in the context {@link PropertyRendererRegistry}, if available. The <code>bind(...)</code> methods of the
+ * {@link PropertyInputGroupBuilder} can be used to provided a specific renderer or {@link Input} of one or more group
+ * property.
+ * </p>
+ * <p>
+ * The convenience methods {@link #setEnabled(boolean)} and {@link #setReadOnly(boolean)} can be used to change the enabled
  * / read-only state for all the property bound {@link Input}s.
  * </p>
  * 
  * @since 5.2.0
  */
-public interface PropertyInputGroup extends PropertyInputBinder, ValueHolder<PropertyBox>, Validatable {
+public interface PropertyInputGroup
+		extends BoundComponentGroup<Property<?>, Input<?>>, ValueHolder<PropertyBox>, Validatable {
+
+	/**
+	 * Get the {@link Input} bound to the given <code>property</code>, if available.
+	 * @param <T> Property type
+	 * @param property The property which identifies the {@link Input} within the group (not null)
+	 * @return Optional {@link Input} bound to the given <code>property</code>
+	 */
+	<T> Optional<Input<T>> getInput(Property<T> property);
+
+	/**
+	 * Get the {@link Input} bound to the given <code>property</code>, throwing a {@link PropertyNotFoundException} if
+	 * not available.
+	 * @param <T> Property type
+	 * @param property The property which identifies the {@link Input} within the group (not null)
+	 * @return The {@link Input} bound to the given <code>property</code>
+	 * @throws PropertyNotFoundException If no {@link Input} is bound to given property
+	 */
+	default <T> Input<T> requireInput(Property<T> property) {
+		return getInput(property).orElseThrow(
+				() -> new PropertyNotFoundException(property, "No Input available for property [" + property + "]"));
+	}
+
+	/**
+	 * Refresh the value of all available {@link Input}s, using current value.
+	 * <p>
+	 * Each input value will be replaced by the value of the {@link Property} to which the input is bound, obtained from
+	 * the current {@link PropertyBox} value.
+	 * </p>
+	 */
+	void refresh();
+
+	/**
+	 * Refresh the value of the {@link Input} bound to given <code>property</code>, using current value.
+	 * <p>
+	 * The input value will be replaced by the value of the {@link Property} to which the input is bound, obtained from
+	 * the current {@link PropertyBox} value.
+	 * </p>
+	 * @param <T> Property type
+	 * @param property The property for which to refresh the bound {@link Input} (not null)
+	 * @return <code>true</code> if an {@link Input} bound to given property is available, <code>false</code> otherwise
+	 */
+	<T> boolean refresh(Property<T> property);
 
 	/**
 	 * Get the current property values collected into a {@link PropertyBox}, using the group configured properties as

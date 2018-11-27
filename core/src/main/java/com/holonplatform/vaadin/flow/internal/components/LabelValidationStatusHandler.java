@@ -34,6 +34,8 @@ import com.vaadin.flow.component.HasText;
 public class LabelValidationStatusHandler<S, V, C extends ValueComponent<V>, L extends Component & HasText>
 		implements ValidationStatusHandler<S, V, C> {
 
+	private static final long serialVersionUID = 8471606832318073873L;
+
 	private final L label;
 	private final boolean hideWhenValid;
 

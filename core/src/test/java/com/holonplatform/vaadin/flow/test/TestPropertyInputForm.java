@@ -101,7 +101,7 @@ public class TestPropertyInputForm {
 		assertTrue(form.getInput(NAME).isPresent());
 		assertTrue(form.getInput(VIRTUAL).isPresent());
 
-		assertEquals(3, StreamSupport.stream(form.getInputs().spliterator(), false).count());
+		assertEquals(3, form.getBindings().count());
 
 		final Input<String> input1 = Input.create(NAME);
 		final Input<Long> input2 = Input.create(ID);
@@ -249,7 +249,7 @@ public class TestPropertyInputForm {
 		layout = new VerticalLayout();
 
 		form = PropertyInputForm.builder(layout, SET).composer((content, source) -> {
-			source.getValueComponents().forEach(c -> content.add(c.getComponent()));
+			source.getComponents().forEach(c -> content.add(c));
 		}).initializer(content -> {
 			content.setAlignItems(Alignment.STRETCH);
 		}).build();
@@ -261,8 +261,8 @@ public class TestPropertyInputForm {
 		layout = new VerticalLayout();
 
 		form = PropertyInputForm.builder(layout, SET).composer((content, source) -> {
-			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
-			source.getValueComponent(NAME).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(ID).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(NAME).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
 
 		form.compose();
@@ -273,7 +273,7 @@ public class TestPropertyInputForm {
 		final Input<Long> input = Input.create(ID);
 
 		form = PropertyInputForm.builder(layout, SET).bind(ID, input).composer((content, source) -> {
-			source.getValueComponent(ID).ifPresent(c -> content.add(c.getComponent()));
+			source.getElement(ID).ifPresent(c -> content.add(c.getComponent()));
 		}).build();
 
 		form.compose();

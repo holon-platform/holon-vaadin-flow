@@ -20,7 +20,6 @@ import java.util.Set;
 
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.MayHaveLabel;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 
 public final class ComponentTestUtils {
@@ -45,7 +44,7 @@ public final class ComponentTestUtils {
 		return component.hasSize().map(c -> c.getHeight()).orElse(null);
 	}
 
-	public static String getLabel(MayHaveLabel component) {
+	public static String getLabel(HasComponent component) {
 		return component.hasLabel().map(c -> c.getLabel()).orElse(null);
 	}
 

@@ -13,24 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components;
-
-import java.util.Optional;
+package com.holonplatform.vaadin.flow.components.builders;
 
 /**
- * Represents a component which may support a label through the {@link HasLabel} interface.
+ * @author BODSI08
  *
- * @since 5.2.0
  */
-public interface MayHaveLabel {
-
-	/**
-	 * Checks whether this component supports a label, which text can be handled using the {@link HasLabel} interface.
-	 * @return If this component supports a label, return the {@link HasLabel} reference. An empty Optional is returned
-	 *         otherwise.
-	 */
-	default Optional<HasLabel> hasLabel() {
-		return Optional.empty();
-	}
+public interface InputGroupConfigurator {
 
 }

@@ -19,27 +19,41 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
+import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.HasComponent;
-import com.holonplatform.vaadin.flow.components.MayHaveLabel;
-import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
+import com.holonplatform.vaadin.flow.components.ValueComponent;
+import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * Base {@link Composable} property form component.
  * 
  * @param <C> Content component type
- * @param <PC> Property component type
- * @param <S> Components source type
+ * @param <E> Elements type
+ * @param <G> Elements group type
  * 
  * @since 5.2.0
  */
-public abstract class AbstractComposablePropertyForm<C extends Component, PC extends HasComponent & MayHaveLabel, S extends PropertyComponentSource>
-		extends AbstractComposable<C, S> {
+public abstract class AbstractComposablePropertyForm<C extends Component, E extends HasComponent, G extends BoundComponentGroup<Property<?>, E> & ValueHolder<PropertyBox>>
+		extends AbstractComposable<C, E, G>
+		implements BoundComponentGroup<Property<?>, E>, ValueHolder<PropertyBox>, ValueComponent<PropertyBox> {
+
+	private static final long serialVersionUID = -2331872101418117289L;
+
+	/**
+	 * Backing group
+	 */
+	private G componentGroup;
 
 	/**
 	 * Custom property captions
@@ -57,6 +71,133 @@ public abstract class AbstractComposablePropertyForm<C extends Component, PC ext
 	 */
 	public AbstractComposablePropertyForm(C content) {
 		super(content);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#getComponent()
+	 */
+	@Override
+	public Component getComponent() {
+		return getContent();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractComposable#getComponentGroup()
+	 */
+	@Override
+	protected G getComponentGroup() {
+		return componentGroup;
+	}
+
+	/**
+	 * Set the backing group.
+	 * @param componentGroup the component group to set (not null)
+	 */
+	protected void setComponentGroup(G componentGroup) {
+		ObjectUtils.argumentNotNull(componentGroup, "Component group must be not null");
+		this.componentGroup = componentGroup;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ComponentGroup#getElements()
+	 */
+	@Override
+	public Stream<E> getElements() {
+		return getComponentGroup().getElements();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
+	 */
+	@Override
+	public Stream<Binding<Property<?>, E>> getBindings() {
+		return getComponentGroup().getBindings();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java.lang.Object)
+	 */
+	@Override
+	public Optional<E> getElement(Property<?> property) {
+		return getComponentGroup().getElement(property);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
+	 */
+	@Override
+	public Collection<Property<?>> getProperties() {
+		return getComponentGroup().getProperties();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#setValue(java.lang.Object)
+	 */
+	@Override
+	public void setValue(PropertyBox value) {
+		getComponentGroup().setValue(value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValue()
+	 */
+	@Override
+	public PropertyBox getValue() {
+		return getComponentGroup().getValue();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValueIfPresent()
+	 */
+	@Override
+	public Optional<PropertyBox> getValueIfPresent() {
+		return getComponentGroup().getValueIfPresent();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getEmptyValue()
+	 */
+	@Override
+	public PropertyBox getEmptyValue() {
+		return getComponentGroup().getEmptyValue();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#isEmpty()
+	 */
+	@Override
+	public boolean isEmpty() {
+		return getComponentGroup().isEmpty();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#clear()
+	 */
+	@Override
+	public void clear() {
+		getComponentGroup().clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
+	 * components.ValueHolder.ValueChangeListener)
+	 */
+	@Override
+	public Registration addValueChangeListener(ValueChangeListener<PropertyBox> listener) {
+		return getComponentGroup().addValueChangeListener(listener);
 	}
 
 	/**
@@ -85,7 +226,7 @@ public abstract class AbstractComposablePropertyForm<C extends Component, PC ext
 	 * @param property Property to which the component refers
 	 * @param component Component to configure
 	 */
-	protected void configurePropertyComponent(Property<?> property, PC component) {
+	protected void configurePropertyComponent(Property<?> property, E component) {
 		if (component != null) {
 			component.hasLabel().ifPresent(hasLabel -> {
 				if (hiddenPropertyCaptions.contains(property)) {

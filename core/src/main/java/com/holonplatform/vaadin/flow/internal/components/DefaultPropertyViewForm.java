@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -27,8 +26,6 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Composable;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
-import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.PropertyViewForm;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
@@ -36,7 +33,6 @@ import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Default {@link PropertyViewForm} implementation.
@@ -45,20 +41,10 @@ import com.vaadin.flow.shared.Registration;
  *
  * @since 5.2.0
  */
-public class DefaultPropertyViewForm<C extends Component> extends
-		AbstractComposablePropertyForm<C, ViewComponent<?>, PropertyValueComponentSource> implements PropertyViewForm {
+public class DefaultPropertyViewForm<C extends Component>
+		extends AbstractComposablePropertyForm<C, ViewComponent<?>, PropertyViewGroup> implements PropertyViewForm {
 
 	private static final long serialVersionUID = -4202049108110710744L;
-
-	/**
-	 * Backing view group
-	 */
-	private PropertyViewGroup viewGroup;
-
-	/**
-	 * Value components source
-	 */
-	private PropertyValueComponentSource valueComponentSource;
 
 	/**
 	 * Constructor.
@@ -70,141 +56,14 @@ public class DefaultPropertyViewForm<C extends Component> extends
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.AbstractComposableForm#getComponentSource()
-	 */
-	@Override
-	protected PropertyValueComponentSource getComponentSource() {
-		return valueComponentSource;
-	}
-
-	/**
-	 * Sets the backing view group.
-	 * @param <G> PropertyViewGroup type
-	 * @param viewGroup the view group to set
-	 */
-	protected <G extends PropertyViewGroup & PropertyValueComponentSource> void setViewGroup(G viewGroup) {
-		ObjectUtils.argumentNotNull(viewGroup, "PropertyViewGroup must be not null");
-		this.viewGroup = viewGroup;
-		this.valueComponentSource = viewGroup;
-	}
-
-	/**
-	 * Get the backing view group.
-	 * @return the backing view group
-	 */
-	protected PropertyViewGroup getViewGroup() {
-		return viewGroup;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueComponent#getComponent()
-	 */
-	@Override
-	public Component getComponent() {
-		return getContent();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#clear()
-	 */
-	@Override
-	public void clear() {
-		getViewGroup().clear();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getValue()
-	 */
-	@Override
-	public PropertyBox getValue() {
-		return getViewGroup().getValue();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#setValue(com.holonplatform.core.property.PropertyBox)
-	 */
-	@Override
-	public void setValue(PropertyBox propertyBox) {
-		getViewGroup().setValue(propertyBox);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getProperties()
-	 */
-	@Override
-	public Iterable<Property<?>> getProperties() {
-		return getViewGroup().getProperties();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
-	 */
-	@Override
-	public boolean hasProperty(Property<?> property) {
-		return getViewGroup().hasProperty(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
-	 */
-	@Override
-	public Stream<Property<?>> propertyStream() {
-		return getViewGroup().propertyStream();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#isEmpty()
-	 */
-	@Override
-	public boolean isEmpty() {
-		return getViewGroup().isEmpty();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.components.
-	 * ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<PropertyBox> listener) {
-		return getViewGroup().addValueChangeListener(listener);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getViewComponents()
-	 */
-	@Override
-	public Iterable<ViewComponent<?>> getViewComponents() {
-		return getViewGroup().getViewComponents();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.components.PropertyViewSource#getViewComponent(com.holonplatform.core.property.Property)
 	 */
 	@Override
 	public <T> Optional<ViewComponent<T>> getViewComponent(Property<T> property) {
-		return getViewGroup().getViewComponent(property);
+		return getComponentGroup().getViewComponent(property);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#stream()
-	 */
-	@Override
-	public <T> Stream<PropertyBinding<T, ViewComponent<T>>> stream() {
-		return getViewGroup().stream();
-	}
 
 	// Builder
 
@@ -224,9 +83,8 @@ public class DefaultPropertyViewForm<C extends Component> extends
 			super(content);
 			this.instance = new DefaultPropertyViewForm<>(content);
 			this.viewGroupBuilder = new DefaultPropertyViewGroup.InternalBuilder(properties);
-
 			// setup default composer
-			if (instance.getComposer() == null && content instanceof HasComponents) {
+			if (content instanceof HasComponents) {
 				instance.setComposer((Composer) Composable.componentContainerComposer());
 			}
 		}
@@ -276,7 +134,7 @@ public class DefaultPropertyViewForm<C extends Component> extends
 		}
 
 		@Override
-		public PropertyViewFormBuilder<C> composer(Composer<? super C, PropertyValueComponentSource> composer) {
+		public PropertyViewFormBuilder<C> composer(Composer<? super C, ViewComponent<?>, PropertyViewGroup> composer) {
 			ObjectUtils.argumentNotNull(composer, "Composer must be not null");
 			instance.setComposer(composer);
 			return this;
@@ -321,7 +179,7 @@ public class DefaultPropertyViewForm<C extends Component> extends
 
 		@Override
 		public PropertyViewForm build() {
-			instance.setViewGroup(viewGroupBuilder.withPostProcessor((property, component) -> {
+			instance.setComponentGroup(viewGroupBuilder.withPostProcessor((property, component) -> {
 				instance.configurePropertyComponent(property, component);
 			}).build());
 			return instance;

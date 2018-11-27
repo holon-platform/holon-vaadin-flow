@@ -19,19 +19,22 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.ComponentGroup;
 import com.holonplatform.vaadin.flow.components.Composable;
-import com.holonplatform.vaadin.flow.components.PropertyComponentSource;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.Component;
 
 /**
  * Base {@link Composable} form component.
  * 
  * @param <C> Content component type
- * @param <S> Components source type
+ * @param <E> Elements type
+ * @param <G> Elements group type
  * 
  * @since 5.2.0
  */
-public abstract class AbstractComposable<C extends Component, S extends PropertyComponentSource> implements Composable {
+public abstract class AbstractComposable<C extends Component, E extends HasComponent, G extends ComponentGroup<E>>
+		implements Composable {
 
 	/**
 	 * Form content initializer
@@ -41,7 +44,7 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	/**
 	 * Composer
 	 */
-	private Composer<? super C, S> composer;
+	private Composer<? super C, E, G> composer;
 
 	/**
 	 * Compose on attach behaviour
@@ -73,7 +76,7 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 		this.content = content;
 		// compose on attach
 		content.addAttachListener(e -> {
-			// check compose on attach
+			// check compose on attach if not already composed
 			if (!isComposed() && isComposeOnAttach()) {
 				compose();
 			}
@@ -81,10 +84,10 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	}
 
 	/**
-	 * Get the actual {@link PropertyComponentSource} to use.
-	 * @return the form {@link PropertyComponentSource}
+	 * Get the bound component group.
+	 * @return the bound component group
 	 */
-	protected abstract S getComponentSource();
+	protected abstract G getComponentGroup();
 
 	/**
 	 * Get the form content component.
@@ -119,18 +122,18 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	}
 
 	/**
-	 * Get the composer
-	 * @return the composer
+	 * Get the composer, if available.
+	 * @return Optional composer
 	 */
-	public Composer<? super C, S> getComposer() {
-		return composer;
+	public Optional<Composer<? super C, E, G>> getComposer() {
+		return Optional.ofNullable(composer);
 	}
 
 	/**
 	 * Set the composer
 	 * @param composer the composer to set
 	 */
-	public void setComposer(Composer<? super C, S> composer) {
+	public void setComposer(Composer<? super C, E, G> composer) {
 		this.composer = composer;
 	}
 
@@ -158,25 +161,18 @@ public abstract class AbstractComposable<C extends Component, S extends Property
 	 */
 	@Override
 	public void compose() {
-		if (getComposer() == null) {
-			throw new IllegalStateException("Missing form composer");
-		}
 
-		final C content = getContent();
-		if (content == null) {
-			throw new IllegalStateException("Missing form content");
-		}
-
-		// init form content
+		// content initializer
 		getInitializer().ifPresent(i -> {
 			if (!contentInitialized) {
-				i.accept(content);
+				i.accept(getContent());
 				contentInitialized = true;
 			}
 		});
 
 		// compose
-		getComposer().compose(content, getComponentSource());
+		getComposer().orElseThrow(() -> new IllegalStateException("No composer available")).compose(getContent(),
+				getComponentGroup());
 
 		this.composed = true;
 	}

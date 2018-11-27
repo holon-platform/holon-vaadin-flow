@@ -30,7 +30,7 @@ import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
  *
  * @since 5.2.0
  */
-public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V>, MayHaveLabel {
+public interface ViewComponent<V> extends ValueHolder<V>, ValueComponent<V> {
 
 	/**
 	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.

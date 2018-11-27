@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -857,13 +858,13 @@ public class TestPropertyListing {
 		assertTrue(listing.hasProperty(NAME));
 		assertTrue(listing.hasProperty(VIRTUAL));
 
-		List<Property<?>> properties = ConversionUtils.iterableAsList(listing.getProperties());
+		Collection<Property<?>> properties = listing.getProperties();
 		assertEquals(3, properties.size());
 		assertTrue(properties.contains(ID));
 		assertTrue(properties.contains(NAME));
 		assertTrue(properties.contains(VIRTUAL));
 
-		properties = listing.propertyStream().collect(Collectors.toList());
+		properties = listing.getProperties();
 		assertEquals(3, properties.size());
 		assertTrue(properties.contains(ID));
 		assertTrue(properties.contains(NAME));

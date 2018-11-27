@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 
 /**
@@ -52,10 +52,15 @@ public interface ViewComponentPropertyRegistry {
 
 	/**
 	 * Get the registered bindings.
-	 * @param <T> Property type
 	 * @return the registered bindings
 	 */
-	<T> Stream<PropertyBinding<T, ViewComponent<T>>> stream();
+	Stream<Binding<Property<?>, ViewComponent<?>>> stream();
+
+	/**
+	 * Get the registered bindings.
+	 * @return the registered bindings
+	 */
+	Stream<Binding<Property<Object>, ViewComponent<Object>>> bindings();
 
 	/**
 	 * Create a new {@link ViewComponentPropertyRegistry}.

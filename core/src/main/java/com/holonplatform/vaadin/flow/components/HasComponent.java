@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
 
+import com.holonplatform.vaadin.flow.internal.components.HasComponentAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.HasEnabled;
@@ -30,6 +31,7 @@ import com.vaadin.flow.dom.Element;
  *
  * @since 5.2.0
  */
+@FunctionalInterface
 public interface HasComponent extends HasElement {
 
 	/**
@@ -95,6 +97,26 @@ public interface HasComponent extends HasElement {
 	 */
 	default Optional<HasSize> hasSize() {
 		return (getComponent() instanceof HasSize) ? Optional.of((HasSize) getComponent()) : Optional.empty();
+	}
+
+	/**
+	 * Checks whether this component supports a label, which text can be handled using the {@link HasLabel} interface.
+	 * @return If this component supports a label, return the {@link HasLabel} reference. An empty Optional is returned
+	 *         otherwise.
+	 */
+	default Optional<HasLabel> hasLabel() {
+		return Optional.empty();
+	}
+
+	// ------- builders
+
+	/**
+	 * Create a {@link HasComponent} using given <code>component</code>.
+	 * @param component The component to provide from the {@link HasComponent#getComponent()} method (not null)
+	 * @return A new {@link HasComponent} bound to given <code>component</code>
+	 */
+	static HasComponent create(Component component) {
+		return new HasComponentAdapter(component);
 	}
 
 }

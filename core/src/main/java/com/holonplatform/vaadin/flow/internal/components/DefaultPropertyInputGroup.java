@@ -35,9 +35,7 @@ import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRender
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
@@ -51,15 +49,13 @@ import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInpu
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry;
-import com.vaadin.flow.component.Component;
 
 /**
  * Default {@link PropertyInputGroup} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>>
-		implements PropertyInputGroup, PropertyValueComponentSource {
+public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>> implements PropertyInputGroup {
 
 	private static final long serialVersionUID = -5441417959315472240L;
 
@@ -120,11 +116,29 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyInputContainer#getInputs()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
 	 */
 	@Override
-	public Iterable<Input<?>> getInputs() {
-		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
+	public Stream<Binding<Property<?>, Input<?>>> getBindings() {
+		return components.stream();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java.lang.Object)
+	 */
+	@Override
+	public Optional<Input<?>> getElement(Property<?> property) {
+		return components.get(property).map(i -> i);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ComponentGroup#getElements()
+	 */
+	@Override
+	public Stream<Input<?>> getElements() {
+		return components.stream().map(b -> b.getElement());
 	}
 
 	/*
@@ -135,61 +149,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	@Override
 	public <T> Optional<Input<T>> getInput(Property<T> property) {
 		return components.get(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyInputContainer#stream()
-	 */
-	@Override
-	public <T> Stream<PropertyBinding<T, Input<T>>> stream() {
-		return components.stream();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ComponentSource#getComponents()
-	 */
-	@Override
-	public Stream<Component> getComponents() {
-		return components.stream().map(b -> b.getComponent().getComponent());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyComponentSource#streamOfComponents()
-	 */
-	@Override
-	public Stream<PropertyBinding<?, Component>> streamOfComponents() {
-		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent().getComponent()));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponents()
-	 */
-	@Override
-	public Iterable<ValueComponent<?>> getValueComponents() {
-		return components.stream().map(b -> b.getComponent()).collect(Collectors.toSet());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#getValueComponent(com.holonplatform.core.
-	 * property.Property)
-	 */
-	@Override
-	public <T> Optional<ValueComponent<T>> getValueComponent(Property<T> property) {
-		return getInput(property).map(i -> i);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyValueComponentSource#streamOfValueComponents()
-	 */
-	@Override
-	public Stream<PropertyBinding<?, ValueComponent<?>>> streamOfValueComponents() {
-		return components.stream().map(b -> PropertyBinding.create(b.getProperty(), b.getComponent()));
 	}
 
 	/**
@@ -264,6 +223,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param validate whether to perform inputs and overall validation
 	 * @throws ValidationException If <code>validate</code> is <code>true</code> and validation fails
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void flush(PropertyBox propertyBox, boolean validate) {
 		ObjectUtils.argumentNotNull(propertyBox, "PropertyBox must be not null");
 
@@ -276,8 +236,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		propertyBox.setInvalidAllowed(true);
 		// flush the Input values
 		components.stream().forEach(b -> {
-			if (!b.getProperty().isReadOnly() && !b.getComponent().isReadOnly()) { // exclude read-only properties
-				propertyBox.setValue(b.getProperty(), b.getComponent().getValue());
+			if (!b.getProperty().isReadOnly() && !b.getElement().isReadOnly()) { // exclude read-only properties
+				propertyBox.setValue((Property) b.getProperty(), b.getElement().getValue());
 			}
 		});
 		if (!wasInvalidAllowed) {
@@ -316,13 +276,13 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		resetValidationStatus(null);
 
 		// load values
-		components.stream().forEach(b -> {
+		components.bindings().forEach(b -> {
 			final Object value = getPropertyValue(propertyBox, b.getProperty())
 					.orElseGet(() -> getDefaultValue(b.getProperty()));
 			if (value == null) {
-				b.getComponent().clear();
+				b.getElement().clear();
 			} else {
-				b.getComponent().setValue(value);
+				b.getElement().setValue(value);
 			}
 		});
 
@@ -414,7 +374,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 */
 	@Override
 	public void setEnabled(boolean enabled) {
-		getInputs().forEach(i -> {
+		components.stream().map(b -> b.getElement()).forEach(i -> {
 			if (i.hasEnabled().isPresent()) {
 				i.hasEnabled().get().setEnabled(enabled);
 			} else {
@@ -431,7 +391,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	public void setReadOnly(boolean readOnly) {
 		components.stream()
 				.filter(b -> !b.getProperty().isReadOnly() && !configuration.get(b.getProperty()).isReadOnly())
-				.map(b -> b.getComponent()).forEach(c -> c.setReadOnly(readOnly));
+				.map(b -> b.getElement()).forEach(c -> c.setReadOnly(readOnly));
 	}
 
 	/**
@@ -542,8 +502,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	@Override
 	public void refresh() {
 		final PropertyBox value = getValue(false);
-		components.stream().forEach(b -> {
-			b.getComponent().setValue((value != null) ? value.getValue(b.getProperty()) : null);
+		components.bindings().forEach(b -> {
+			b.getElement().setValue((value != null) ? value.getValue(b.getProperty()) : null);
 		});
 	}
 
@@ -566,8 +526,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 */
 	public void refreshVirtualProperties() {
 		final PropertyBox value = getValue(false);
-		components.stream().filter(b -> b.getProperty() instanceof VirtualProperty).forEach(b -> {
-			b.getComponent().setValue((value != null) ? value.getValue(b.getProperty()) : null);
+		components.bindings().filter(b -> b.getProperty() instanceof VirtualProperty).forEach(b -> {
+			b.getElement().setValue((value != null) ? value.getValue(b.getProperty()) : null);
 		});
 	}
 
@@ -717,12 +677,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
 
-		List<PropertyBinding<Object, Input<Object>>> bindings = components.stream().collect(Collectors.toList());
-		for (PropertyBinding<Object, Input<Object>> b : bindings) {
-			if (!b.getComponent().isReadOnly()) {
-				final Optional<ValidationException> ve = validateProperty(b.getProperty(), b.getComponent().getValue());
-				ve.ifPresent(
-						v -> failures.add(new InputGroupValidationException(b.getProperty(), b.getComponent(), v)));
+		List<Binding<Property<Object>, Input<Object>>> bindings = components.bindings().collect(Collectors.toList());
+		for (Binding<Property<Object>, Input<Object>> b : bindings) {
+			if (!b.getElement().isReadOnly()) {
+				final Optional<ValidationException> ve = validateProperty(b.getProperty(), b.getElement().getValue());
+				ve.ifPresent(v -> failures.add(new InputGroupValidationException(b.getProperty(), b.getElement(), v)));
 				if (isStopValidationAtFirstFailure() && ve.isPresent()) {
 					// break if stop validation at first failure
 					break;

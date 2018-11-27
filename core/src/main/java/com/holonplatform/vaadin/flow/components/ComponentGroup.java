@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Axioma srl.
+ * Copyright 2016-2018 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,28 +15,36 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.io.Serializable;
 import java.util.stream.Stream;
 
-import com.holonplatform.core.property.Property;
 import com.vaadin.flow.component.Component;
 
 /**
- * Represents a source of {@link Component}s associated with a {@link Property}.
+ * A group of {@link HasComponent} type elements, which provides the actual {@link Component} through the
+ * {@link HasComponent#getComponent()} method.
+ * <p>
+ * The elements of the group can be obtained using {@link #getElements()}.
+ * </p>
+ * 
+ * @param <C> Group element type
  *
  * @since 5.2.0
  */
-public interface PropertyComponentSource {
+public interface ComponentGroup<C extends HasComponent> extends Serializable {
 
 	/**
-	 * Get the stream of available components.
-	 * @return Components stream
+	 * Get the stream of the available group elements.
+	 * @return the group elements stream
 	 */
-	Stream<Component> getComponents();
+	Stream<C> getElements();
 
 	/**
-	 * Return a {@link Stream} of the available {@link Property} and {@link Component}s bindings.
-	 * @return Property-Component {@link PropertyBinding} stream
+	 * Get the stream of the available group components.
+	 * @return the group components stream
 	 */
-	Stream<PropertyBinding<?, Component>> streamOfComponents();
+	default Stream<Component> getComponents() {
+		return getElements().map(e -> e.getComponent());
+	}
 
 }

@@ -34,6 +34,8 @@ import com.vaadin.flow.component.HasValidation;
 public class DefaultValidationStatusHandler<S, V, C extends ValueComponent<V>>
 		implements ValidationStatusHandler<S, V, C> {
 
+	private static final long serialVersionUID = 7495988011545023652L;
+
 	private final static Logger LOGGER = VaadinLogger.create();
 
 	private final ValidationStatusHandler<S, V, C> fallback;

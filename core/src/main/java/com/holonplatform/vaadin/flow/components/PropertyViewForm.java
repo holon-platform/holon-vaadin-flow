@@ -29,15 +29,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
- * A {@link PropertyViewGroup} component to display the property {@link ViewComponent}s on a layout, using the
- * {@link Composable} composition strategy.
+ * A {@link PropertyViewGroup} which provides an UI component to display the group elements, which can be composed using
+ * a {@link Composer}.
  * <p>
- * A {@link Composer} can be configured to control how and where each {@link ViewComponent} is displayed in UI.
+ * The group elements {@link Composer} can be configured using the
+ * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} builder
+ * method.
  * </p>
  * 
  * @since 5.2.0
+ * @see PropertyViewGroup
  */
-public interface PropertyViewForm extends Composable, ValueComponent<PropertyBox>, PropertyViewGroup {
+public interface PropertyViewForm extends PropertyViewGroup, ValueComponent<PropertyBox>, Composable {
 
 	/**
 	 * Get a builder to create a {@link PropertyViewForm} using given property set.

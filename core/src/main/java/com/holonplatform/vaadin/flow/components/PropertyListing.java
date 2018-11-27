@@ -27,7 +27,7 @@ import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyListing;
  * 
  * @since 5.2.0
  */
-public interface PropertyListing extends ItemListing<PropertyBox, Property<?>>, PropertySetBound {
+public interface PropertyListing extends ItemListing<PropertyBox, Property<?>>, HasPropertySet<Property<?>> {
 
 	/**
 	 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.

@@ -15,30 +15,30 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
-import com.holonplatform.vaadin.flow.components.PropertySetBound;
+import com.holonplatform.vaadin.flow.components.HasPropertySet;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * Base {@link PropertySetBound} property components group implementation.
+ * Base {@link HasPropertySet} property components group implementation.
  *
  * @since 5.2.0
  */
 public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
-		implements PropertySetBound, ValueHolder<PropertyBox> {
+		implements HasPropertySet<Property<?>>, ValueHolder<PropertyBox> {
 
 	private static final long serialVersionUID = 5966779573345769968L;
 
@@ -111,31 +111,11 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#getProperties()
+	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
 	 */
 	@Override
-	public Iterable<Property<?>> getProperties() {
-		List<Property<?>> properties = getPropertySet().stream().map(p -> (Property<?>) p).collect(Collectors.toList());
-		return properties;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
-	 */
-	@Override
-	public boolean hasProperty(Property<?> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return getPropertySet().contains(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
-	 */
-	@Override
-	public Stream<Property<?>> propertyStream() {
-		return getPropertySet().stream().map(p -> (Property<?>) p);
+	public Collection<Property<?>> getProperties() {
+		return getPropertySet().stream().map(p -> (Property<?>) p).collect(Collectors.toList());
 	}
 
 	/*

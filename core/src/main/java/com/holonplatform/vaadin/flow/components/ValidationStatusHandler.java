@@ -36,19 +36,18 @@ import com.vaadin.flow.component.notification.Notification;
 /**
  * Handler for validation status change events, typically bound to a {@link ValueComponent} source object.
  * 
- * @param <S> Validation source
+ * @param <S> Validation source type
  * @param <V> Validation value type
  * @param <C> Value component to which the validation event refers
  * 
  * @since 5.2.0
  */
 @FunctionalInterface
-public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
+public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> extends Serializable {
 
 	/**
 	 * Invoked when the validation status has changed.
-	 * @param statusChangeEvent the changed status event, providing validation status, error message and the optional
-	 *        source component
+	 * @param statusChangeEvent the changed status event, providing validation status and error messages
 	 */
 	void validationStatusChange(ValidationStatusEvent<S, V, C> statusChangeEvent);
 
@@ -218,6 +217,12 @@ public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 	public interface ValidationStatusEvent<S, V, C extends ValueComponent<V>> extends Serializable {
 
 		/**
+		 * Get the validation status.
+		 * @return the validation status (never null)
+		 */
+		Status getStatus();
+
+		/**
 		 * Ge the validation event source
 		 * @return the validation event source.
 		 */
@@ -230,16 +235,10 @@ public interface ValidationStatusHandler<S, V, C extends ValueComponent<V>> {
 		Optional<Property<V>> getProperty();
 
 		/**
-		 * Get the component against whom the validation was performed, if available.
+		 * Get the {@link ValueComponent} against whom the validation was performed, if available.
 		 * @return Optional validation event component
 		 */
 		Optional<C> getComponent();
-
-		/**
-		 * Get the validation status.
-		 * @return the validation status (never null)
-		 */
-		Status getStatus();
 
 		/**
 		 * Gets whether the validation failed or not.

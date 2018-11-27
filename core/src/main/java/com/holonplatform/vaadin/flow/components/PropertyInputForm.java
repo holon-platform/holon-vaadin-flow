@@ -29,15 +29,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
- * A {@link PropertyInputGroup} component to display the property {@link Input}s on a layout, using the
- * {@link Composable} composition strategy.
+ * A {@link PropertyInputGroup} which provides an UI component to display the group elements, which can be composed
+ * using a {@link Composer}.
  * <p>
- * A {@link Composer} can be configured to control how and where each {@link Input} is displayed in UI.
+ * The group elements {@link Composer} can be configured using the
+ * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} builder
+ * method.
  * </p>
  * 
  * @since 5.2.0
+ * @see PropertyInputGroup
  */
-public interface PropertyInputForm extends Composable, ValueComponent<PropertyBox>, PropertyInputGroup {
+public interface PropertyInputForm extends PropertyInputGroup, ValueComponent<PropertyBox>, Composable {
 
 	/**
 	 * Get a builder to create a {@link PropertyInputForm} using given property set.

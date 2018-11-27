@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 
 /**
@@ -73,12 +73,21 @@ public class DefaultViewComponentPropertyRegistry implements ViewComponentProper
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry#stream()
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <T> Stream<PropertyBinding<T, ViewComponent<T>>> stream() {
+	public Stream<Binding<Property<?>, ViewComponent<?>>> stream() {
 		return components.entrySet().stream().filter(e -> e.getValue() != null)
-				.map(e -> (PropertyBinding) PropertyBinding.create(e.getKey(), e.getValue()))
-				.map(b -> (PropertyBinding<T, ViewComponent<T>>) b);
+				.map(e -> Binding.create(e.getKey(), e.getValue()));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ViewComponentPropertyRegistry#bindings()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Stream<Binding<Property<Object>, ViewComponent<Object>>> bindings() {
+		return components.entrySet().stream().filter(e -> e.getValue() != null)
+				.map(e -> Binding.create((Property<Object>) e.getKey(), (ViewComponent<Object>) e.getValue()));
 	}
 
 }

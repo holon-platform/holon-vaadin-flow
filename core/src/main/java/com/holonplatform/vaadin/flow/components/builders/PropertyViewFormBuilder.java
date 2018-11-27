@@ -16,6 +16,8 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.PropertyViewForm;
+import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -26,7 +28,7 @@ import com.vaadin.flow.component.Component;
  * @since 5.2.0
  */
 public interface PropertyViewFormBuilder<C extends Component>
-		extends PropertyFormConfigurator<C, PropertyViewFormBuilder<C>>,
+		extends PropertyFormConfigurator<C, ViewComponent<?>, PropertyViewGroup, PropertyViewFormBuilder<C>>,
 		PropertyViewGroupConfigurator<PropertyViewForm, PropertyViewFormBuilder<C>> {
 
 	/**

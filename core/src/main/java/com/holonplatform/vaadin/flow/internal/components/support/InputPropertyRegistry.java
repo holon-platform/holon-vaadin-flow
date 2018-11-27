@@ -15,19 +15,20 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.support;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.property.Property;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
 
 /**
  * {@link Property} and {@link Input} binding registry.
  *
  * @since 5.2.0
  */
-public interface InputPropertyRegistry {
+public interface InputPropertyRegistry extends Serializable {
 
 	/**
 	 * Clear all bindings.
@@ -52,10 +53,15 @@ public interface InputPropertyRegistry {
 
 	/**
 	 * Get the registered bindings.
-	 * @param <T> Property type
 	 * @return the registered bindings
 	 */
-	<T> Stream<PropertyBinding<T, Input<T>>> stream();
+	Stream<Binding<Property<?>, Input<?>>> stream();
+
+	/**
+	 * Get the registered bindings.
+	 * @return the registered bindings
+	 */
+	Stream<Binding<Property<Object>, Input<Object>>> bindings();
 
 	/**
 	 * Create a new {@link InputPropertyRegistry}.

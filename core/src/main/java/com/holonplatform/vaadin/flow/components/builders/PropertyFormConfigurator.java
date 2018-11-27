@@ -18,19 +18,22 @@ package com.holonplatform.vaadin.flow.components.builders;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
+import com.holonplatform.vaadin.flow.components.ComponentGroup;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.HasElement;
 
 /**
  * Property form configurator.
  * 
- * @param <E> Content type
- * @param <C> Concrete configurator type
+ * @param <L> Composition layout type
+ * @param <E> Group elements type
+ * @param <G> Component group type
+ * @param <C> Concrete builder type
  *
  * @since 5.2.0
  */
-public interface PropertyFormConfigurator<E extends HasElement, C extends PropertyFormConfigurator<E, C>>
-		extends ComposableConfigurator<PropertyValueComponentSource, E, C>, ComponentConfigurator<C> {
+public interface PropertyFormConfigurator<L extends HasElement, E extends HasComponent, G extends ComponentGroup<E>, C extends PropertyFormConfigurator<L, E, G, C>>
+		extends ComposableConfigurator<L, E, G, C>, ComponentConfigurator<C> {
 
 	/**
 	 * Set the caption for the component bound to given property. By default, the caption is obtained from

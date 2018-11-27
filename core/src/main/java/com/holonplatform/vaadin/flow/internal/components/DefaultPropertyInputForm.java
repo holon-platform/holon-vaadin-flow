@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
@@ -30,17 +29,14 @@ import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
 import com.holonplatform.vaadin.flow.components.PropertyInputForm;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
-import com.holonplatform.vaadin.flow.components.PropertyValueComponentSource;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Default {@link PropertyInputForm} implementation.
@@ -50,19 +46,9 @@ import com.vaadin.flow.shared.Registration;
  * @since 5.2.0
  */
 public class DefaultPropertyInputForm<C extends Component>
-		extends AbstractComposablePropertyForm<C, Input<?>, PropertyValueComponentSource> implements PropertyInputForm {
+		extends AbstractComposablePropertyForm<C, Input<?>, PropertyInputGroup> implements PropertyInputForm {
 
 	private static final long serialVersionUID = -4202049108110710744L;
-
-	/**
-	 * Backing input group
-	 */
-	private PropertyInputGroup inputGroup;
-
-	/**
-	 * Value components source
-	 */
-	private PropertyValueComponentSource valueComponentSource;
 
 	/**
 	 * Constructor.
@@ -74,75 +60,11 @@ public class DefaultPropertyInputForm<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.internal.components.AbstractComposableForm#getComponentSource()
-	 */
-	@Override
-	protected PropertyValueComponentSource getComponentSource() {
-		return valueComponentSource;
-	}
-
-	/**
-	 * Sets the backing input group.
-	 * @param <G> PropertyInputGroup type
-	 * @param inputGroup the input group to set
-	 */
-	protected <G extends PropertyInputGroup & PropertyValueComponentSource> void setInputGroup(G inputGroup) {
-		ObjectUtils.argumentNotNull(inputGroup, "PropertyViewGroup must be not null");
-		this.inputGroup = inputGroup;
-		this.valueComponentSource = inputGroup;
-	}
-
-	/**
-	 * Get the backing input group.
-	 * @return the backing input group
-	 */
-	protected PropertyInputGroup getInputGroup() {
-		return inputGroup;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueComponent#getComponent()
-	 */
-	@Override
-	public Component getComponent() {
-		return getContent();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#clear()
-	 */
-	@Override
-	public void clear() {
-		getInputGroup().clear();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#getValue()
-	 */
-	@Override
-	public PropertyBox getValue() {
-		return getInputGroup().getValue();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#setValue(com.holonplatform.core.property.PropertyBox)
-	 */
-	@Override
-	public void setValue(PropertyBox propertyBox) {
-		getInputGroup().setValue(propertyBox);
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.PropertyInputBinder#refresh()
 	 */
 	@Override
 	public void refresh() {
-		getInputGroup().refresh();
+		getComponentGroup().refresh();
 	}
 
 	/*
@@ -152,7 +74,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public <T> boolean refresh(Property<T> property) {
-		return getInputGroup().refresh(property);
+		return getComponentGroup().refresh(property);
 	}
 
 	/*
@@ -161,7 +83,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public PropertyBox getValue(boolean validate) {
-		return getInputGroup().getValue(validate);
+		return getComponentGroup().getValue(validate);
 	}
 
 	/*
@@ -170,7 +92,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public Optional<PropertyBox> getValueIfValid() {
-		return getInputGroup().getValueIfValid();
+		return getComponentGroup().getValueIfValid();
 	}
 
 	/*
@@ -181,7 +103,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public void setValue(PropertyBox propertyBox, boolean validate) {
-		getInputGroup().setValue(propertyBox, validate);
+		getComponentGroup().setValue(propertyBox, validate);
 	}
 
 	/*
@@ -190,7 +112,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public void setReadOnly(boolean readOnly) {
-		getInputGroup().setReadOnly(readOnly);
+		getComponentGroup().setReadOnly(readOnly);
 	}
 
 	/*
@@ -199,7 +121,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public void setEnabled(boolean enabled) {
-		getInputGroup().setEnabled(enabled);
+		getComponentGroup().setEnabled(enabled);
 	}
 
 	/*
@@ -208,62 +130,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public void validate() throws ValidationException {
-		getInputGroup().validate();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getProperties()
-	 */
-	@Override
-	public Iterable<Property<?>> getProperties() {
-		return getInputGroup().getProperties();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
-	 */
-	@Override
-	public boolean hasProperty(Property<?> property) {
-		return getInputGroup().hasProperty(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertySetBound#propertyStream()
-	 */
-	@Override
-	public Stream<Property<?>> propertyStream() {
-		return getInputGroup().propertyStream();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#isEmpty()
-	 */
-	@Override
-	public boolean isEmpty() {
-		return getInputGroup().isEmpty();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.components.
-	 * ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<PropertyBox> listener) {
-		return getInputGroup().addValueChangeListener(listener);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#getViewComponents()
-	 */
-	@Override
-	public Iterable<Input<?>> getInputs() {
-		return getInputGroup().getInputs();
+		getComponentGroup().validate();
 	}
 
 	/*
@@ -273,16 +140,7 @@ public class DefaultPropertyInputForm<C extends Component>
 	 */
 	@Override
 	public <T> Optional<Input<T>> getInput(Property<T> property) {
-		return getInputGroup().getInput(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyViewSource#stream()
-	 */
-	@Override
-	public <T> Stream<PropertyBinding<T, Input<T>>> stream() {
-		return getInputGroup().stream();
+		return getComponentGroup().getInput(property);
 	}
 
 	// Builder
@@ -303,9 +161,8 @@ public class DefaultPropertyInputForm<C extends Component>
 			super(content);
 			this.instance = new DefaultPropertyInputForm<>(content);
 			this.inputGroupBuilder = new DefaultPropertyInputGroup.InternalBuilder(properties);
-
 			// setup default composer
-			if (instance.getComposer() == null && content instanceof HasComponents) {
+			if (content instanceof HasComponents) {
 				instance.setComposer((Composer) Composable.componentContainerComposer());
 			}
 		}
@@ -548,8 +405,14 @@ public class DefaultPropertyInputForm<C extends Component>
 			return this;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComposableConfigurator#composer(com.holonplatform.vaadin.
+		 * flow.components.Composable.Composer)
+		 */
 		@Override
-		public PropertyInputFormBuilder<C> composer(Composer<? super C, PropertyValueComponentSource> composer) {
+		public PropertyInputFormBuilder<C> composer(Composer<? super C, Input<?>, PropertyInputGroup> composer) {
 			ObjectUtils.argumentNotNull(composer, "Composer must be not null");
 			instance.setComposer(composer);
 			return this;
@@ -598,7 +461,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 */
 		@Override
 		public PropertyInputForm build() {
-			instance.setInputGroup(inputGroupBuilder.withPostProcessor((property, component) -> {
+			instance.setComponentGroup(inputGroupBuilder.withPostProcessor((property, component) -> {
 				instance.configurePropertyComponent(property, component);
 			}).build());
 			return instance;

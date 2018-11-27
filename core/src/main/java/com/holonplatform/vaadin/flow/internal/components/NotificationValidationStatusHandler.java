@@ -33,6 +33,8 @@ import com.vaadin.flow.component.notification.Notification;
 public class NotificationValidationStatusHandler<S, V, C extends ValueComponent<V>>
 		implements ValidationStatusHandler<S, V, C> {
 
+	private static final long serialVersionUID = -6101472534441005878L;
+
 	private final Notification notification;
 	private final boolean showAllErrors;
 

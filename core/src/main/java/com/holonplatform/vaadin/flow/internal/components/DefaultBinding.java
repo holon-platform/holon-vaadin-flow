@@ -15,51 +15,54 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.PropertyBinding;
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 
 /**
- * Default {@link PropertyBinding} implementation.
+ * Default {@link Binding} implementation.
  * 
- * @param <T> Property value type
- * @param <B> Bound component type
+ * @param <P> The property type
+ * @param <C> The element type
  *
  * @since 5.2.0
  */
-public class DefaultPropertyBinding<T, B> implements PropertyBinding<T, B> {
+public class DefaultBinding<P, C extends HasComponent> implements Binding<P, C> {
 
 	private static final long serialVersionUID = -6134557608912391745L;
 
-	private final Property<T> property;
-	private final B component;
+	private final P property;
+	private final C element;
 
 	/**
 	 * Constructor
-	 * @param property Property
-	 * @param component Bound component
+	 * @param property Property (not null)
+	 * @param element Bound element (not null)
 	 */
-	public DefaultPropertyBinding(Property<T> property, B component) {
+	public DefaultBinding(P property, C element) {
 		super();
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		ObjectUtils.argumentNotNull(element, "Element must be not null");
 		this.property = property;
-		this.component = component;
+		this.element = element;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyBinding#getProperty()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding#getProperty()
 	 */
 	@Override
-	public Property<T> getProperty() {
+	public P getProperty() {
 		return property;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.PropertyBinding#getComponent()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup.Binding#getElement()
 	 */
 	@Override
-	public B getComponent() {
-		return component;
+	public C getElement() {
+		return element;
 	}
 
 }

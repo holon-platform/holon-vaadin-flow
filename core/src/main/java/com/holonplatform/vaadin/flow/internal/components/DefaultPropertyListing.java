@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.Path;
@@ -273,31 +274,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.PropertySetBound#getProperties()
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Iterable<Property<?>> getProperties() {
-		return (Iterable<Property<?>>) propertySet;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.PropertySetBound#hasProperty(com.holonplatform.core.property.Property)
+	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
 	 */
 	@Override
-	public boolean hasProperty(Property<?> property) {
-		return propertySet.contains(property);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.PropertySetBound#propertyStream()
-	 */
-	@Override
-	public Stream<Property<?>> propertyStream() {
-		return propertySet.stream().map(p -> (Property<?>) p);
+	public Collection<Property<?>> getProperties() {
+		return getPropertySet().stream().map(p -> (Property<?>) p).collect(Collectors.toList());
 	}
 
 	// ------- Builder
