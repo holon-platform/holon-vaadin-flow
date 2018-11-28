@@ -1279,7 +1279,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		// group
 		final Status groupStatus;
 		final List<Localizable> errors;
-		if (binderStatus.hasErrors()) {
+		if (!binderStatus.getBeanValidationErrors().isEmpty()) {
 			groupStatus = Status.INVALID;
 			errors = binderStatus.getBeanValidationErrors().stream().map(r -> r.getErrorMessage())
 					.filter(m -> m != null && !m.trim().equals("")).map(m -> Localizable.of(m))
