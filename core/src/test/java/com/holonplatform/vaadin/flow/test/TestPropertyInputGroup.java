@@ -241,7 +241,7 @@ public class TestPropertyInputGroup {
 	@Test
 	public void testDefaultValue() {
 
-		PropertyInputGroup group = PropertyInputGroup.builder(ID, NAME).defaultValue(NAME, property -> "DFT").build();
+		PropertyInputGroup group = PropertyInputGroup.builder(ID, NAME).defaultValue(NAME, () -> "DFT").build();
 		assertTrue(group.hasProperty(ID));
 		assertTrue(group.hasProperty(NAME));
 		assertTrue(group.getInput(ID).isPresent());

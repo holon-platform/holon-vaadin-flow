@@ -74,7 +74,7 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 */
 	@Override
 	public ValidatableInputBuilder<T, ValidatableInput<T>> validationStatusHandler(
-			ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler) {
+			ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
 		ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
 		instance.setValidationStatusHandler(validationStatusHandler);
 		return this;

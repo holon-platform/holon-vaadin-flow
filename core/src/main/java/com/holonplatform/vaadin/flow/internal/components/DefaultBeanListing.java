@@ -22,8 +22,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.Validator;
@@ -35,19 +38,21 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.BeanListing;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
-import com.holonplatform.vaadin.flow.components.ItemListing;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder.DatastoreBeanListingBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
@@ -121,6 +126,15 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 */
 	protected Class<T> getBeanType() {
 		return beanType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
+	 */
+	@Override
+	public Collection<String> getProperties() {
+		return propertySet.stream().map(p -> p.relativeName()).collect(Collectors.toList());
 	}
 
 	/**
@@ -273,6 +287,15 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		return propertySet.getProperty(property).map(p -> p.getValidators()).orElse(Collections.emptyList());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#refreshVirtualProperties()
+	 */
+	@Override
+	protected void refreshVirtualProperties() {
+		// noop
+	}
+
 	// ------- Builder
 
 	/**
@@ -328,17 +351,29 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#validationStatusHandler(java.lang.
-		 * String, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.BeanInputGroupConfigurator#
+		 * defaultValue(java.lang.String, java.util.function.Function)
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public BeanListingBuilder<T> validationStatusHandler(String property,
-				ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler) {
+		public BeanListingBuilder<T> defaultValue(String property, Supplier<Object> defaultValueProvider) {
 			ObjectUtils.argumentNotNull(property, "Property must be not null");
-			getInstance().getColumnConfiguration(property)
-					.setValidationStatusHandler((ValidationStatusHandler) validationStatusHandler);
+			getInstance().getColumnConfiguration(property).setDefaultValueProvider((Supplier) defaultValueProvider);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.BeanInputGroupConfigurator#
+		 * withValueChangeListener(java.lang.String,
+		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
+		public BeanListingBuilder<T> withValueChangeListener(String property,
+				ValueChangeListener<?, GroupValueChangeEvent<?, String, Input<?>, EditorComponentGroup<String, T>>> listener) {
+			ObjectUtils.argumentNotNull(property, "Property must be not null");
+			getInstance().getColumnConfiguration(property).addValueChangeListener((ValueChangeListener) listener);
 			return getConfigurator();
 		}
 
@@ -439,19 +474,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public DatastoreBeanListingBuilder<T> editor(String property, Input<?> editor) {
 			builder.editor(property, editor);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#validationStatusHandler(java.lang.
-		 * String, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
-		 */
-		@Override
-		public DatastoreBeanListingBuilder<T> validationStatusHandler(String property,
-				ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler) {
-			builder.validationStatusHandler(property, validationStatusHandler);
 			return this;
 		}
 
@@ -1006,13 +1028,133 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#validationStatusHandler(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.BeanInputGroupConfigurator#
+		 * defaultValue(java.lang.String, java.util.function.Function)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> defaultValue(String property, Supplier<Object> defaultValueProvider) {
+			builder.defaultValue(property, defaultValueProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.BeanInputGroupConfigurator#
+		 * withValueChangeListener(java.lang.String,
+		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> withValueChangeListener(String property,
+				ValueChangeListener<?, GroupValueChangeEvent<?, String, Input<?>, EditorComponentGroup<String, T>>> listener) {
+			builder.withValueChangeListener(property, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> required(String property) {
+			builder.required(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> required(String property, Localizable message) {
+			builder.required(property, message);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#withPostProcessor(java.util.function
+		 * .BiConsumer)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> withPostProcessor(BiConsumer<String, Input<?>> postProcessor) {
+			builder.withPostProcessor(postProcessor);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> validationStatusHandler(
-				ValidationStatusHandler<ItemListing<T, String>, T, ValueComponent<T>> validationStatusHandler) {
+				ValidationStatusHandler<EditorComponentGroup<String, T>> validationStatusHandler) {
 			builder.validationStatusHandler(validationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#groupValidationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> groupValidationStatusHandler(
+				GroupValidationStatusHandler<EditorComponentGroup<String, T>, String, Input<?>> groupValidationStatusHandler) {
+			builder.groupValidationStatusHandler(groupValidationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(java.lang.
+		 * Object, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> validationStatusHandler(String property,
+				ValidationStatusHandler<Input<?>> validationStatusHandler) {
+			builder.validationStatusHandler(property, validationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#enableRefreshOnValueChange(boolean)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> enableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+			builder.enableRefreshOnValueChange(enableRefreshOnValueChange);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#usePropertyRendererRegistry(com.
+		 * holonplatform.core.property.PropertyRendererRegistry)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> usePropertyRendererRegistry(
+				PropertyRendererRegistry propertyRendererRegistry) {
+			builder.usePropertyRendererRegistry(propertyRendererRegistry);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> withValueChangeListener(
+				ValueChangeListener<T, GroupValueChangeEvent<T, String, Input<?>, EditorComponentGroup<String, T>>> listener) {
+			builder.withValueChangeListener(listener);
 			return this;
 		}
 

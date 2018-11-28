@@ -78,13 +78,13 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 * Set the {@link ValidationStatusHandler} to use to track validation status changes.
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
 	 */
-	void setValidationStatusHandler(ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler);
+	void setValidationStatusHandler(ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler);
 
 	/**
 	 * Get the {@link ValidationStatusHandler} to use to track validation status changes, if available.
 	 * @return the optional {@link ValidationStatusHandler}
 	 */
-	Optional<ValidationStatusHandler<ValidatableInput<T>, T, Input<T>>> getValidationStatusHandler();
+	Optional<ValidationStatusHandler<ValidatableInput<T>>> getValidationStatusHandler();
 
 	// Builders
 

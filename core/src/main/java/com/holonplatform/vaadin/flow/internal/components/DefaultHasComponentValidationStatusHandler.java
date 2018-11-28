@@ -16,8 +16,8 @@
 package com.holonplatform.vaadin.flow.internal.components;
 
 import com.holonplatform.core.internal.Logger;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.HasValidation;
 
@@ -26,24 +26,21 @@ import com.vaadin.flow.component.HasValidation;
  * the validation status when supported by the component.
  * 
  * @param <S> Validation source
- * @param <V> Validation value type
- * @param <C> Value component to which the validation event refers
  * 
  * @since 5.2.0
  */
-public class DefaultValidationStatusHandler<S, V, C extends ValueComponent<V>>
-		implements ValidationStatusHandler<S, V, C> {
+public class DefaultHasComponentValidationStatusHandler<S extends HasComponent> implements ValidationStatusHandler<S> {
 
 	private static final long serialVersionUID = 7495988011545023652L;
 
 	private final static Logger LOGGER = VaadinLogger.create();
 
-	private final ValidationStatusHandler<S, V, C> fallback;
+	private final ValidationStatusHandler<S> fallback;
 
 	/**
 	 * Default constructor.
 	 */
-	public DefaultValidationStatusHandler() {
+	public DefaultHasComponentValidationStatusHandler() {
 		this(null);
 	}
 
@@ -51,37 +48,35 @@ public class DefaultValidationStatusHandler<S, V, C extends ValueComponent<V>>
 	 * Constructor with fallback {@link ValidationStatusHandler}.
 	 * @param fallback The ValidationStatusHandler to use when the component has not validation support
 	 */
-	public DefaultValidationStatusHandler(ValidationStatusHandler<S, V, C> fallback) {
+	public DefaultHasComponentValidationStatusHandler(ValidationStatusHandler<S> fallback) {
 		super();
 		this.fallback = fallback;
 	}
 
 	@Override
-	public void validationStatusChange(final ValidationStatusEvent<S, V, C> statusChangeEvent) {
-		statusChangeEvent.getComponent().ifPresent(c -> {
-			if (statusChangeEvent.isInvalid()) {
-				if (!c.hasValidation().isPresent()) {
-					if (fallback != null) {
-						fallback.validationStatusChange(statusChangeEvent);
-					} else {
-						LOGGER.warn("Cannot notify validation error [" + statusChangeEvent.getErrorMessage()
-								+ "] on component [" + c
-								+ "]: the component does not implement com.vaadin.flow.component.HasValidation. "
-								+ "Provide a suitable ValidationStatusHandler to handle the validation error notification.");
-					}
+	public void validationStatusChange(final ValidationStatusEvent<S> statusChangeEvent) {
+		if (statusChangeEvent.isInvalid()) {
+			if (!statusChangeEvent.getSource().hasValidation().isPresent()) {
+				if (fallback != null) {
+					fallback.validationStatusChange(statusChangeEvent);
 				} else {
-					c.hasValidation().ifPresent(v -> {
-						v.setInvalid(true);
-						v.setErrorMessage(statusChangeEvent.getErrorMessage());
-					});
+					LOGGER.warn("Cannot notify validation error [" + statusChangeEvent.getErrorMessage()
+							+ "] on component [" + statusChangeEvent.getSource()
+							+ "]: the component does not implement com.vaadin.flow.component.HasValidation. "
+							+ "Provide a suitable ValidationStatusHandler to handle the validation error notification.");
 				}
 			} else {
-				c.hasValidation().ifPresent(v -> {
-					v.setInvalid(false);
-					v.setErrorMessage(null);
+				statusChangeEvent.getSource().hasValidation().ifPresent(v -> {
+					v.setInvalid(true);
+					v.setErrorMessage(statusChangeEvent.getErrorMessage());
 				});
 			}
-		});
+		} else {
+			statusChangeEvent.getSource().hasValidation().ifPresent(v -> {
+				v.setInvalid(false);
+				v.setErrorMessage(null);
+			});
+		}
 	}
 
 }

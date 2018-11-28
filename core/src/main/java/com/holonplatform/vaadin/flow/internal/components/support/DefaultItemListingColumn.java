@@ -21,15 +21,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -71,7 +74,11 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private List<Validator<V>> validators;
 	private PropertyRenderer<Input<V>, V> editorInputRenderer;
 	private Function<T, ? extends Component> editorComponent;
-	private ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler;
+	private ValidationStatusHandler<Input<V>> validationStatusHandler;
+	private boolean required;
+	private Localizable requiredMessage;
+	private Supplier<V> defaultValueProvider;
+	private List<ValueChangeListener<V, GroupValueChangeEvent<V, P, Input<?>, EditorComponentGroup<P, T>>>> valueChangeListeners = new LinkedList<>();
 
 	/**
 	 * Constructor.
@@ -517,7 +524,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	 */
 	@Override
 	public void setValidationStatusHandler(
-			ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler) {
+			ValidationStatusHandler<Input<V>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 
@@ -526,8 +533,87 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler<ItemListing<T, P>, V, Input<V>>> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<Input<V>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#isRequired()
+	 */
+	@Override
+	public boolean isRequired() {
+		return required;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setRequired(boolean)
+	 */
+	@Override
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getRequiredMessage()
+	 */
+	@Override
+	public Optional<Localizable> getRequiredMessage() {
+		return Optional.ofNullable(requiredMessage);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setRequiredMessage(com.holonplatform.
+	 * core.i18n.Localizable)
+	 */
+	@Override
+	public void setRequiredMessage(Localizable requiredMessage) {
+		this.requiredMessage = requiredMessage;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getDefaultValueProvider()
+	 */
+	@Override
+	public Optional<Supplier<V>> getDefaultValueProvider() {
+		return Optional.ofNullable(defaultValueProvider);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setDefaultValueProvider(java.util.
+	 * function.Supplier)
+	 */
+	@Override
+	public void setDefaultValueProvider(Supplier<V> defaultValueProvider) {
+		this.defaultValueProvider = defaultValueProvider;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getValueChangeListeners()
+	 */
+	@Override
+	public List<ValueChangeListener<V, GroupValueChangeEvent<V, P, Input<?>, EditorComponentGroup<P, T>>>> getValueChangeListeners() {
+		return valueChangeListeners;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#addValueChangeListener(com.
+	 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+	 */
+	@Override
+	public void addValueChangeListener(
+			ValueChangeListener<V, GroupValueChangeEvent<V, P, Input<?>, EditorComponentGroup<P, T>>> valueChangeListener) {
+		ObjectUtils.argumentNotNull(valueChangeListener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(valueChangeListener);
 	}
 
 }

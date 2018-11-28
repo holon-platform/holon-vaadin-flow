@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,29 +25,34 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupElementValidationStatusEvent;
 
 /**
  * Handler for validation status change events for a group of input fields.
  *
  * @param <S> Validation source type
+ * @param <P> Property type
+ * @param <E> Group element type
  *
  * @since 5.2.0
  */
 @FunctionalInterface
-public interface GroupValidationStatusHandler<S> extends Serializable {
+public interface GroupValidationStatusHandler<S, P, E extends HasComponent> extends Serializable {
 
 	/**
 	 * Invoked when the group validation status has changed.
 	 * @param statusChangeEvent the changed status event, providing validation status and error messages
 	 */
-	void validationStatusChange(GroupValidationStatusEvent<S> statusChangeEvent);
+	void validationStatusChange(GroupValidationStatusEvent<S, P, E> statusChangeEvent);
 
 	/**
 	 * A group validation status event.
 	 * 
 	 * @param <S> Validation source type
+	 * @param <P> Property type
+	 * @param <E> Group element type
 	 */
-	public interface GroupValidationStatusEvent<S> extends Serializable {
+	public interface GroupValidationStatusEvent<S, P, E extends HasComponent> extends Serializable {
 
 		/**
 		 * Get the validation source.
@@ -143,7 +149,7 @@ public interface GroupValidationStatusHandler<S> extends Serializable {
 		 * Get the group inputs validation status events.
 		 * @return the group inputs validation status events, an empty list if nine
 		 */
-		List<ValidationStatusEvent<S, ?, ?>> getInputsValidationStatus();
+		List<GroupElementValidationStatusEvent<S, P, E>> getInputsValidationStatus();
 
 		/**
 		 * Gets whether any of the group input is in an invalid status.
@@ -152,6 +158,96 @@ public interface GroupValidationStatusHandler<S> extends Serializable {
 		 */
 		default boolean isAnyInputInvalid() {
 			return getInputsValidationStatus().stream().anyMatch(s -> s.getStatus() == Status.INVALID);
+		}
+
+	}
+
+	/**
+	 * A group element validation status event.
+	 * 
+	 * @param <S> Validation source
+	 * @param <P> Property type
+	 * @param <E> Group element type
+	 */
+	public interface GroupElementValidationStatusEvent<S, P, E extends HasComponent> extends ValidationStatusEvent<S> {
+
+		/**
+		 * Get the property which identifies the element within the group.
+		 * @return the property which identifies the element within the group
+		 */
+		P getProperty();
+
+		/**
+		 * Get the group element source of the validation event.
+		 * @return the validated group element
+		 */
+		E getElement();
+
+		// ------- builders by status
+
+		/**
+		 * Create a new {@link GroupElementValidationStatusEvent} for {@link Status#UNRESOLVED}.
+		 * @param <S> Validation source
+		 * @param <P> Property type
+		 * @param <E> Group element type
+		 * @param source Event source (not null)
+		 * @param property Property which identifies the group element (not null)
+		 * @param element The group element (not null)
+		 * @return A new {@link GroupElementValidationStatusEvent}
+		 */
+		static <S, P, E extends HasComponent> GroupElementValidationStatusEvent<S, P, E> unresolved(S source,
+				P property, E element) {
+			return new DefaultGroupElementValidationStatusEvent<>(source, property, element, Status.UNRESOLVED,
+					Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link GroupElementValidationStatusEvent} for {@link Status#VALID}.
+		 * @param <S> Validation source
+		 * @param <P> Property type
+		 * @param <E> Group element type
+		 * @param source Event source (not null)
+		 * @param property Property which identifies the group element (not null)
+		 * @param element The group element (not null)
+		 * @return A new {@link GroupElementValidationStatusEvent}
+		 */
+		static <S, P, E extends HasComponent> GroupElementValidationStatusEvent<S, P, E> valid(S source, P property,
+				E element) {
+			return new DefaultGroupElementValidationStatusEvent<>(source, property, element, Status.VALID,
+					Collections.emptyList());
+		}
+
+		/**
+		 * Create a new {@link GroupElementValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <P> Property type
+		 * @param <E> Group element type
+		 * @param source Event source (not null)
+		 * @param property Property which identifies the group element (not null)
+		 * @param element The group element (not null)
+		 * @param errors Validation errors
+		 * @return A new {@link GroupElementValidationStatusEvent}
+		 */
+		static <S, P, E extends HasComponent> GroupElementValidationStatusEvent<S, P, E> invalid(S source, P property,
+				E element, List<Localizable> errors) {
+			return new DefaultGroupElementValidationStatusEvent<>(source, property, element, Status.INVALID, errors);
+		}
+
+		/**
+		 * Create a new {@link GroupElementValidationStatusEvent} for {@link Status#INVALID}.
+		 * @param <S> Validation source
+		 * @param <P> Property type
+		 * @param <E> Group element type
+		 * @param source Event source (not null)
+		 * @param property Property which identifies the group element (not null)
+		 * @param element The group element (not null)
+		 * @param error Validation error
+		 * @return A new {@link GroupElementValidationStatusEvent}
+		 */
+		static <S, P, E extends HasComponent> GroupElementValidationStatusEvent<S, P, E> invalid(S source, P property,
+				E element, Localizable error) {
+			return new DefaultGroupElementValidationStatusEvent<>(source, property, element, Status.INVALID,
+					(error != null) ? Collections.singletonList(error) : Collections.emptyList());
 		}
 
 	}

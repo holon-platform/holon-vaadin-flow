@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.components;
 import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
@@ -44,16 +43,6 @@ public interface ValueComponent<V> extends HasComponent {
 	 */
 	default Optional<HasValueChangeMode> hasValueChangeMode() {
 		return (getComponent() instanceof HasValueChangeMode) ? Optional.of((HasValueChangeMode) getComponent())
-				: Optional.empty();
-	}
-
-	/**
-	 * Checks whether the {@link Component} supports input validation, using the {@link HasValidation} interface.
-	 * @return If the component supports input validation, return the {@link HasValidation} reference. An empty Optional
-	 *         otherwise.
-	 */
-	default Optional<HasValidation> hasValidation() {
-		return (getComponent() instanceof HasValidation) ? Optional.of((HasValidation) getComponent())
 				: Optional.empty();
 	}
 

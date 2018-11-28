@@ -17,7 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -77,25 +77,25 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Get the default value provider, if available.
 	 * @return Optional default value provider
 	 */
-	Optional<Function<Property<T>, T>> getDefaultValueProvider();
+	Optional<Supplier<T>> getDefaultValueProvider();
 
 	/**
 	 * Set the default value provider
 	 * @param defaultValueProvider The default value provider to set
 	 */
-	void setDefaultValueProvider(Function<Property<T>, T> defaultValueProvider);
+	void setDefaultValueProvider(Supplier<T> defaultValueProvider);
 
 	/**
 	 * Get the property {@link Validator}s.
 	 * @return the property validators
 	 */
-	List<Validator<T>> getValidators();
+	List<Validator<? super T>> getValidators();
 
 	/**
 	 * Add a property validator.
 	 * @param validator property validator (not null)
 	 */
-	void addValidator(Validator<T> validator);
+	void addValidator(Validator<? super T> validator);
 
 	/**
 	 * Get the user input validator, if available.
@@ -113,13 +113,13 @@ public interface InputPropertyConfiguration<T> extends ValueComponentPropertyCon
 	 * Get the {@link ValidationStatusHandler} to use.
 	 * @return Optional {@link ValidationStatusHandler}
 	 */
-	Optional<ValidationStatusHandler<PropertyInputGroup, T, Input<T>>> getValidationStatusHandler();
+	Optional<ValidationStatusHandler<Input<?>>> getValidationStatusHandler();
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use.
 	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
 	 */
-	void setValidationStatusHandler(ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler);
+	void setValidationStatusHandler(ValidationStatusHandler<Input<?>> validationStatusHandler);
 
 	/**
 	 * Get the property {@link ValueChangeListener}s.

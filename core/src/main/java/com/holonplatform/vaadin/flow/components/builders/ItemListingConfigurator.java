@@ -23,18 +23,16 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingRow;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingSection;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
@@ -67,7 +65,8 @@ import com.vaadin.flow.function.ValueProvider;
  */
 public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C>>
 		extends ComponentConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasEnabledConfigurator<C>,
-		FocusableConfigurator<Component, C>, HasThemeVariantConfigurator<GridVariant, C> {
+		FocusableConfigurator<Component, C>, HasThemeVariantConfigurator<GridVariant, C>,
+		InputGroupConfigurator<P, T, EditorComponentGroup<P, T>, C> {
 
 	/**
 	 * Configure the column represented by given <code>property</code> to be displayed before any other listing column
@@ -611,19 +610,6 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C withEditorCloseListener(EditorCloseListener<T> listener);
-
-	/**
-	 * Add a item {@link Validator} to be used with the item editor.
-	 * @param validator The validator to add (not null)
-	 * @return this
-	 */
-	C withValidator(Validator<T> validator);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use when the listing is in edit mode to notify item validation errors.
-	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
-	 */
-	C validationStatusHandler(ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler);
 
 	// -------
 

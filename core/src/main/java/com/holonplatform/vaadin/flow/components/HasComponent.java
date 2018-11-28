@@ -23,6 +23,7 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.dom.Element;
 
 /**
@@ -106,6 +107,16 @@ public interface HasComponent extends HasElement {
 	 */
 	default Optional<HasLabel> hasLabel() {
 		return Optional.empty();
+	}
+
+	/**
+	 * Checks whether the {@link Component} supports input validation, using the {@link HasValidation} interface.
+	 * @return If the component supports input validation, return the {@link HasValidation} reference. An empty Optional
+	 *         otherwise.
+	 */
+	default Optional<HasValidation> hasValidation() {
+		return (getComponent() instanceof HasValidation) ? Optional.of((HasValidation) getComponent())
+				: Optional.empty();
 	}
 
 	// ------- builders

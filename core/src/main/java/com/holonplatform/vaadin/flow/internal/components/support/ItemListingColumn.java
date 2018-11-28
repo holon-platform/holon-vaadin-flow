@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -28,8 +29,11 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.SortOrderProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -297,6 +301,42 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	Optional<Function<T, ? extends Component>> getEditorComponent();
 
 	/**
+	 * Get whether the property editor value is required.
+	 * @return whether the property is required
+	 */
+	boolean isRequired();
+
+	/**
+	 * Set whether the property editor value is required.
+	 * @param required whether the property is required
+	 */
+	void setRequired(boolean required);
+
+	/**
+	 * Get the required validation error message.
+	 * @return Optional required validation error message
+	 */
+	Optional<Localizable> getRequiredMessage();
+
+	/**
+	 * Get the default value provider, if available.
+	 * @return Optional default value provider
+	 */
+	Optional<Supplier<V>> getDefaultValueProvider();
+
+	/**
+	 * Set the default value provider
+	 * @param defaultValueProvider The default value provider to set
+	 */
+	void setDefaultValueProvider(Supplier<V> defaultValueProvider);
+
+	/**
+	 * Set the required validation error message.
+	 * @param requiredMessage the required validation error message
+	 */
+	void setRequiredMessage(Localizable requiredMessage);
+
+	/**
 	 * Add a property editor validator.
 	 * @param validator The validator to add (not null)
 	 */
@@ -312,24 +352,37 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	 * Set the {@link ValidationStatusHandler} to use when the column validation fails in editing mode.
 	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
 	 */
-	void setValidationStatusHandler(ValidationStatusHandler<ItemListing<T, P>, V, Input<V>> validationStatusHandler);
+	void setValidationStatusHandler(ValidationStatusHandler<Input<V>> validationStatusHandler);
 
 	/**
 	 * Get the {@link ValidationStatusHandler} to use when the column validation fails in editing mode.
 	 * @return Optional {@link ValidationStatusHandler} bound to this column
 	 */
-	Optional<ValidationStatusHandler<ItemListing<T, P>, V, Input<V>>> getValidationStatusHandler();
+	Optional<ValidationStatusHandler<Input<V>>> getValidationStatusHandler();
+
+	/**
+	 * Get the property editor {@link ValueChangeListener}s.
+	 * @return the property value change listeners
+	 */
+	List<ValueChangeListener<V, GroupValueChangeEvent<V, P, Input<?>, EditorComponentGroup<P, T>>>> getValueChangeListeners();
+
+	/**
+	 * Add a property editor {@link ValueChangeListener}.
+	 * @param valueChangeListener property value change listener (not null)
+	 */
+	void addValueChangeListener(
+			ValueChangeListener<V, GroupValueChangeEvent<V, P, Input<?>, EditorComponentGroup<P, T>>> valueChangeListener);
 
 	/**
 	 * Column sort mode
 	 */
 	public enum SortMode {
 
-		DEFAULT,
+				DEFAULT,
 
-		ENABLED,
+				ENABLED,
 
-		DISABLED
+				DISABLED
 
 	}
 

@@ -22,7 +22,6 @@ import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
-import com.holonplatform.vaadin.flow.internal.components.DefaultValueChangeEvent;
 
 /**
  * Default {@link GroupValueChangeEvent} implementation.

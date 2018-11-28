@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.function.Function;
 
-import com.holonplatform.core.Validator;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -26,9 +25,9 @@ import com.holonplatform.core.property.PropertyValueProvider;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
-import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.data.converter.Converter;
@@ -41,7 +40,8 @@ import com.vaadin.flow.data.converter.Converter;
  * @since 5.2.0
  */
 public interface PropertyListingConfigurator<C extends PropertyListingConfigurator<C>>
-		extends ItemListingConfigurator<PropertyBox, Property<?>, PropertyListing, C> {
+		extends ItemListingConfigurator<PropertyBox, Property<?>, PropertyListing, C>,
+		PropertySetInputGroupConfigurator<EditorComponentGroup<Property<?>, PropertyBox>, C> {
 
 	/**
 	 * Add a column which contents will be rendered as a {@link Component} using given {@link VirtualProperty}.
@@ -138,25 +138,5 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 			Converter<V, T> converter) {
 		return editor(property, Input.from(field, converter));
 	}
-
-	/**
-	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.
-	 * @param <V> Property value type
-	 * @param property The property for which to add the validator (not null)
-	 * @param validator The validator to add (not null)
-	 * @return this
-	 */
-	<V> C withValidator(Property<V> property, Validator<? super V> validator);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use to handle the validation status of the given property when an item
-	 * is in editing mode.
-	 * @param <V> Property value type
-	 * @param property The property for which to set the ValidationStatusHandler (not null)
-	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
-	 * @return this
-	 */
-	<V> C validationStatusHandler(Property<V> property,
-			ValidationStatusHandler<ItemListing<PropertyBox, Property<?>>, V, Input<V>> validationStatusHandler);
 
 }

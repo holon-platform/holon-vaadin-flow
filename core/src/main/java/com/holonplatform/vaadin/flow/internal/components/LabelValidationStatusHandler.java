@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 
@@ -25,14 +24,11 @@ import com.vaadin.flow.component.HasText;
  * A {@link ValidationStatusHandler} which uses a {@link HasText} component to notify validation errors.
  *
  * @param <S> Validation source
- * @param <V> Validation value type
- * @param <C> Value component to which the validation event refers
  * @param <L> Label component type
  *
  * @since 5.2.0
  */
-public class LabelValidationStatusHandler<S, V, C extends ValueComponent<V>, L extends Component & HasText>
-		implements ValidationStatusHandler<S, V, C> {
+public class LabelValidationStatusHandler<S, L extends Component & HasText> implements ValidationStatusHandler<S> {
 
 	private static final long serialVersionUID = 8471606832318073873L;
 
@@ -61,7 +57,7 @@ public class LabelValidationStatusHandler<S, V, C extends ValueComponent<V>, L e
 	 * components.ValidationStatusHandler.ValidationStatusEvent)
 	 */
 	@Override
-	public void validationStatusChange(ValidationStatusEvent<S, V, C> statusChangeEvent) {
+	public void validationStatusChange(ValidationStatusEvent<S> statusChangeEvent) {
 		label.setText(statusChangeEvent.getErrorMessage());
 		if (hideWhenValid) {
 			// Only show the label when validation has failed

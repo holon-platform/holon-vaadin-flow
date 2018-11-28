@@ -15,12 +15,11 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Validator;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ItemListing;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
+import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.BeanInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 
@@ -33,7 +32,8 @@ import com.vaadin.flow.component.HasValue;
  * @since 5.2.0
  */
 public interface BeanListingConfigurator<T, C extends BeanListingConfigurator<T, C>>
-		extends ItemListingConfigurator<T, String, BeanListing<T>, C> {
+		extends ItemListingConfigurator<T, String, BeanListing<T>, C>,
+		BeanInputGroupConfigurator<T, EditorComponentGroup<String, T>, C> {
 
 	/**
 	 * Set the {@link Input} to use as given <code>property</code> column editor, when a listing row is in edit mode.
@@ -57,23 +57,5 @@ public interface BeanListingConfigurator<T, C extends BeanListingConfigurator<T,
 		ObjectUtils.argumentNotNull(field, "Field must be not null");
 		return editor(property, Input.from(field));
 	}
-
-	/**
-	 * Add a property {@link Validator} to be used when the property value is edited using the item editor.
-	 * @param property The property for which to add the validator (not null)
-	 * @param validator The validator to add (not null)
-	 * @return this
-	 */
-	C withValidator(String property, Validator<?> validator);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use to handle the validation status of the given property when an item
-	 * is in editing mode.
-	 * @param property The property for which to set the ValidationStatusHandler (not null)
-	 * @param validationStatusHandler The {@link ValidationStatusHandler} to set
-	 * @return this
-	 */
-	C validationStatusHandler(String property,
-			ValidationStatusHandler<ItemListing<T, String>, ?, Input<?>> validationStatusHandler);
 
 }

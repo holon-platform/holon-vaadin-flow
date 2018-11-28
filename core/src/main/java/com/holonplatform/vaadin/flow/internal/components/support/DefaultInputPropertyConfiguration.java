@@ -18,7 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -43,10 +43,10 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	private boolean readOnly;
 	private boolean required;
 	private Localizable requiredMessage;
-	private Function<Property<T>, T> defaultValueProvider;
-	private List<Validator<T>> validators = new LinkedList<>();
+	private Supplier<T> defaultValueProvider;
+	private List<Validator<? super T>> validators = new LinkedList<>();
 	private Validator<T> userInputValidator;
-	private ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler;
+	private ValidationStatusHandler<Input<?>> validationStatusHandler;
 	private List<ValueChangeListener<T, GroupValueChangeEvent<T, Property<?>, Input<?>, PropertyInputGroup>>> valueChangeListeners = new LinkedList<>();
 
 	public DefaultInputPropertyConfiguration(Property<T> property) {
@@ -114,7 +114,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getDefaultValueProvider()
 	 */
 	@Override
-	public Optional<Function<Property<T>, T>> getDefaultValueProvider() {
+	public Optional<Supplier<T>> getDefaultValueProvider() {
 		return Optional.ofNullable(defaultValueProvider);
 	}
 
@@ -125,7 +125,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider)
 	 */
 	@Override
-	public void setDefaultValueProvider(Function<Property<T>, T> defaultValueProvider) {
+	public void setDefaultValueProvider(Supplier<T> defaultValueProvider) {
 		this.defaultValueProvider = defaultValueProvider;
 	}
 
@@ -134,7 +134,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * @see com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getValidators()
 	 */
 	@Override
-	public List<Validator<T>> getValidators() {
+	public List<Validator<? super T>> getValidators() {
 		return validators;
 	}
 
@@ -144,7 +144,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * holonplatform.core.Validator)
 	 */
 	@Override
-	public void addValidator(Validator<T> validator) {
+	public void addValidator(Validator<? super T> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		this.validators.add(validator);
 	}
@@ -175,7 +175,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler<PropertyInputGroup, T, Input<T>>> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<Input<?>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
 	}
 
@@ -186,8 +186,7 @@ public class DefaultInputPropertyConfiguration<T> extends DefaultValueComponentP
 	 * com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(
-			ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler) {
+	public void setValidationStatusHandler(ValidationStatusHandler<Input<?>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 

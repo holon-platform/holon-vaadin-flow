@@ -63,8 +63,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	/**
 	 * Validation status handler
 	 */
-	private ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler = ValidationStatusHandler
-			.getDefault();
+	private ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler = ValidationStatusHandler.getDefault();
 
 	/**
 	 * Whether to validate the input when value changes
@@ -273,7 +272,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 		ValidatableInput.super.clear();
 		// reset validation status
 		getValidationStatusHandler()
-				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this, this, null)));
+				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this)));
 	}
 
 	/*
@@ -303,7 +302,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	public void validate() throws ValidationException {
 		// reset validation status
 		getValidationStatusHandler()
-				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this, this, null)));
+				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this)));
 		// validate using validators
 		validate(input.getValue());
 	}
@@ -358,8 +357,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 * components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(
-			ValidationStatusHandler<ValidatableInput<T>, T, Input<T>> validationStatusHandler) {
+	public void setValidationStatusHandler(ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 
@@ -368,7 +366,7 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 	 * @see com.holonplatform.vaadin.components.ValidatableInput#getValidationStatusHandler()
 	 */
 	@Override
-	public Optional<ValidationStatusHandler<ValidatableInput<T>, T, Input<T>>> getValidationStatusHandler() {
+	public Optional<ValidationStatusHandler<ValidatableInput<T>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
 	}
 
@@ -404,14 +402,13 @@ public class ValidatableInputAdapter<T> implements ValidatableInput<T> {
 
 			// INVALID: notify ValidationStatusHandler
 			getValidationStatusHandler().ifPresent(vsh -> vsh.validationStatusChange(
-					ValidationStatusEvent.invalid(this, this, null, validationException.getValidationMessages())));
+					ValidationStatusEvent.invalid(this, validationException.getValidationMessages())));
 
 			throw validationException;
 		}
 
 		// VALID: notify ValidationStatusHandler
-		getValidationStatusHandler()
-				.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.valid(this, this, null)));
+		getValidationStatusHandler().ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.valid(this)));
 	}
 
 }

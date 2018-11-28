@@ -269,4 +269,25 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 	}
 
+	// ------- ItemListing editor component group
+
+	/**
+	 * A {@link BoundComponentGroup} which represents the listing item editor {@link Input}s and their property
+	 * bindings.
+	 * 
+	 * @param <P> Property type
+	 * @param <T> Item type
+	 * 
+	 * @since 5.2.0
+	 */
+	public interface EditorComponentGroup<P, T> extends BoundComponentGroup<P, Input<?>> {
+
+		/**
+		 * Get the current editor item.
+		 * @return the editor item
+		 */
+		T getItem();
+
+	}
+
 }

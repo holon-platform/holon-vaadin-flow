@@ -16,7 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -27,7 +27,6 @@ import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
 import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
@@ -108,7 +107,7 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 	 * @param validationStatusHandler the group {@link ValidationStatusHandler} to set (not null)
 	 * @return this
 	 */
-	C validationStatusHandler(ValidationStatusHandler<G, T, ValueComponent<T>> validationStatusHandler);
+	C validationStatusHandler(ValidationStatusHandler<G> validationStatusHandler);
 
 	/**
 	 * Use given label as status label to track group validation status changes.
@@ -130,7 +129,17 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 	 * @param groupValidationStatusHandler The {@link GroupValidationStatusHandler} to set (not null)
 	 * @return this
 	 */
-	C groupValidationStatusHandler(GroupValidationStatusHandler<G> groupValidationStatusHandler);
+	C groupValidationStatusHandler(GroupValidationStatusHandler<G, P, Input<?>> groupValidationStatusHandler);
+
+	/**
+	 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status changes.
+	 * @param <V> Property type
+	 * @param property The property for which to set the validation status handler (not null)
+	 * @param validationStatusHandler the {@link ValidationStatusHandler} to associate to given <code>property</code>
+	 *        (not null)
+	 * @return this
+	 */
+	C validationStatusHandler(P property, ValidationStatusHandler<Input<?>> validationStatusHandler);
 
 	/**
 	 * Set whether to enable {@link VirtualProperty} input values refresh when any group input value changes.
@@ -158,10 +167,10 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 		 * Set the default value provider for given <code>property</code>.
 		 * @param <V> Property type
 		 * @param property Property (not null)
-		 * @param defaultValueProvider The function to provide the property default value (not null)
+		 * @param defaultValueProvider The property default value supplier (not null)
 		 * @return this
 		 */
-		<V> C defaultValue(Property<V> property, Function<Property<V>, V> defaultValueProvider);
+		<V> C defaultValue(Property<V> property, Supplier<V> defaultValueProvider);
 
 		/**
 		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
@@ -180,19 +189,7 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 		 * @param validator The validator to add (not null)
 		 * @return this
 		 */
-		<V> C withValidator(Property<V> property, Validator<V> validator);
-
-		/**
-		 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status
-		 * changes.
-		 * @param <V> Property type
-		 * @param property The property for which to set the validation status handler (not null)
-		 * @param validationStatusHandler the {@link ValidationStatusHandler} to associate to given
-		 *        <code>property</code> (not null)
-		 * @return this
-		 */
-		<V> C validationStatusHandler(Property<V> property,
-				ValidationStatusHandler<G, V, Input<V>> validationStatusHandler);
+		<V> C withValidator(Property<V> property, Validator<? super V> validator);
 
 	}
 
@@ -211,10 +208,10 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 		/**
 		 * Set the default value provider for given <code>property</code>.
 		 * @param property Property (not null)
-		 * @param defaultValueProvider The function to provide the property default value (not null)
+		 * @param defaultValueProvider The supplier to provide the property default value (not null)
 		 * @return this
 		 */
-		C defaultValue(String property, Function<String, Object> defaultValueProvider);
+		C defaultValue(String property, Supplier<Object> defaultValueProvider);
 
 		/**
 		 * Add a {@link ValueChangeListener} to the {@link Input} bound to given <code>property</code>.
@@ -232,16 +229,6 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 		 * @return this
 		 */
 		C withValidator(String property, Validator<?> validator);
-
-		/**
-		 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status
-		 * changes.
-		 * @param property The property for which to set the validation status handler (not null)
-		 * @param validationStatusHandler the {@link ValidationStatusHandler} to associate to given
-		 *        <code>property</code> (not null)
-		 * @return this
-		 */
-		C validationStatusHandler(String property, ValidationStatusHandler<G, ?, Input<?>> validationStatusHandler);
 
 	}
 

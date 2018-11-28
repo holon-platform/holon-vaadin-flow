@@ -13,35 +13,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.internal.components;
+package com.holonplatform.vaadin.flow.internal.components.events;
 
 import java.util.Collections;
 import java.util.List;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler.GroupElementValidationStatusEvent;
 import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler.GroupValidationStatusEvent;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 
 /**
  * Default {@link GroupValidationStatusEvent} implementation.
  * 
  * @param <S> Validation source type
+ * @param <P> Property type
+ * @param <E> Group element type
  *
  * @since 5.2.0
  */
-public class DefaultGroupValidationStatusEvent<S> implements GroupValidationStatusEvent<S> {
+public class DefaultGroupValidationStatusEvent<S, P, E extends HasComponent>
+		implements GroupValidationStatusEvent<S, P, E> {
 
 	private static final long serialVersionUID = -2220090071463737481L;
 
 	private final S source;
 	private final Status groupStatus;
 	private final List<Localizable> errors;
-	private final List<ValidationStatusEvent<S, ?, ?>> inputsValidationStatus;
+	private final List<GroupElementValidationStatusEvent<S, P, E>> inputsValidationStatus;
 
 	public DefaultGroupValidationStatusEvent(S source, Status groupStatus, List<Localizable> errors,
-			List<ValidationStatusEvent<S, ?, ?>> inputsValidationStatus) {
+			List<GroupElementValidationStatusEvent<S, P, E>> inputsValidationStatus) {
 		super();
 		ObjectUtils.argumentNotNull(source, "Source must be not null");
 		ObjectUtils.argumentNotNull(groupStatus, "Group status must be not null");
@@ -87,7 +91,7 @@ public class DefaultGroupValidationStatusEvent<S> implements GroupValidationStat
 	 * getInputsValidationStatus()
 	 */
 	@Override
-	public List<ValidationStatusEvent<S, ?, ?>> getInputsValidationStatus() {
+	public List<GroupElementValidationStatusEvent<S, P, E>> getInputsValidationStatus() {
 		return inputsValidationStatus;
 	}
 

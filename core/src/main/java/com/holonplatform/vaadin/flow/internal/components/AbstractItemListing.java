@@ -21,12 +21,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,14 +41,17 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyRendererRegistry;
-import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.Validatable;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
+import com.holonplatform.vaadin.flow.components.ValueHolder;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator;
@@ -56,6 +61,7 @@ import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
@@ -66,6 +72,8 @@ import com.holonplatform.vaadin.flow.internal.components.builders.AbstractCompon
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValidationStatusEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
@@ -73,6 +81,7 @@ import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelection
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingFooterSection;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingHeaderSection;
+import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.BlurNotifier;
@@ -102,7 +111,6 @@ import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
-import com.vaadin.flow.data.binder.BindingValidationStatus;
 import com.vaadin.flow.data.binder.PropertyDefinition;
 import com.vaadin.flow.data.binder.PropertySet;
 import com.vaadin.flow.data.binder.Setter;
@@ -123,7 +131,8 @@ import com.vaadin.flow.shared.Registration;
  * 
  * @since 5.2.0
  */
-public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
+public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, EditorComponentGroup<P, T>,
+		GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>> {
 
 	private static final long serialVersionUID = 6298536849762717384L;
 
@@ -173,14 +182,45 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	private boolean editable = false;
 
 	/**
+	 * Property editors
+	 */
+	private final Map<P, Input<?>> editors = new LinkedHashMap<>();
+	private final Map<com.vaadin.flow.data.binder.Binder.Binding<T, ?>, P> editorBindings = new HashMap<>();
+
+	/**
+	 * Property editor post-processors
+	 */
+	private final List<BiConsumer<P, Input<?>>> postProcessors = new LinkedList<>();
+
+	/**
+	 * Value change listeners
+	 */
+	private final List<ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>>> valueChangeListeners = new LinkedList<>();
+
+	/**
 	 * Item validators
 	 */
 	private final List<Validator<T>> validators = new LinkedList<>();
 
 	/**
-	 * Listing item validation status handler
+	 * Group validation status handler
 	 */
-	private ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler;
+	private GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>> groupValidationStatusHandler;
+
+	/**
+	 * Group value validation status handler
+	 */
+	private ValidationStatusHandler<EditorComponentGroup<P, T>> validationStatusHandler;
+
+	/**
+	 * Refresh property editors on value change
+	 */
+	private boolean enableRefreshOnValueChange = false;
+
+	/**
+	 * The previous editor value
+	 */
+	private T oldEditorValue;
 
 	/**
 	 * Constructor.
@@ -960,10 +1000,47 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	}
 
 	/**
+	 * Add a editor post processor.
+	 * @param postProcessor The editor post processor to add (not null)
+	 */
+	protected void addEditorPostProcessor(BiConsumer<P, Input<?>> postProcessor) {
+		ObjectUtils.argumentNotNull(postProcessor, "Editor post-processor must be not null");
+		this.postProcessors.add(postProcessor);
+	}
+
+	/**
+	 * Get the editors post processors.
+	 * @return the editors post processors
+	 */
+	protected List<BiConsumer<P, Input<?>>> getEditorPostProcessors() {
+		return postProcessors;
+	}
+
+	/**
+	 * Add a editor value change listener.
+	 * @param valueChangeListener the value change listener to add (not null)
+	 * @return The listener registration
+	 */
+	protected Registration addValueChangeListener(
+			ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>> valueChangeListener) {
+		ObjectUtils.argumentNotNull(valueChangeListener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(valueChangeListener);
+		return () -> valueChangeListeners.remove(valueChangeListener);
+	}
+
+	/**
+	 * Get the editor value change listeners.
+	 * @return the editor value change listeners
+	 */
+	protected List<ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>>> getValueChangeListeners() {
+		return valueChangeListeners;
+	}
+
+	/**
 	 * Get the listing {@link ValidationStatusHandler}, if available.
 	 * @return Optional listing {@link ValidationStatusHandler}
 	 */
-	protected Optional<ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>>> getValidationStatusHandler() {
+	protected Optional<ValidationStatusHandler<EditorComponentGroup<P, T>>> getValidationStatusHandler() {
 		return Optional.ofNullable(validationStatusHandler);
 	}
 
@@ -972,16 +1049,50 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
 	 */
 	protected void setValidationStatusHandler(
-			ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler) {
+			ValidationStatusHandler<EditorComponentGroup<P, T>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
+	}
+
+	/**
+	 * Get the group validation status handler to use.
+	 * @return Optional group validation status handler
+	 */
+	protected Optional<GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>>> getGroupValidationStatusHandler() {
+		return Optional.ofNullable(groupValidationStatusHandler);
+	}
+
+	/**
+	 * Set the group validation status handler to use.
+	 * @param groupValidationStatusHandler the group validation status handler to set
+	 */
+	protected void setGroupValidationStatusHandler(
+			GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>> groupValidationStatusHandler) {
+		this.groupValidationStatusHandler = groupValidationStatusHandler;
+	}
+
+	/**
+	 * Get whether to refresh the property editors when an Input value changes.
+	 * @return whether to refresh the property editors when an Input value changes
+	 */
+	protected boolean isEnableRefreshOnValueChange() {
+		return enableRefreshOnValueChange;
+	}
+
+	/**
+	 * Set whether to refresh the property editors when an Input value changes
+	 * @param enableRefreshOnValueChange whether to refresh the property editors when an Input value changes
+	 */
+	protected void setEnableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+		this.enableRefreshOnValueChange = enableRefreshOnValueChange;
 	}
 
 	/**
 	 * Init the grid editor
 	 * @param properties Visible properties
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	protected void initEditor(List<P> properties) {
+		editors.clear();
+		editorBindings.clear();
 		// property set
 		final Map<String, PropertyDefinition<T, ?>> definitions = new HashMap<>(properties.size());
 		final PropertySet<T> propertySet = new ItemListingPropertySet<>(definitions);
@@ -990,7 +1101,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			// exclude read-only
 			if (!configuration.isReadOnly()) {
 				definitions.put(configuration.getColumnKey(),
-						new ItemListingPropertyDefinition(propertySet, configuration.getColumnKey(),
+						ItemListingPropertyDefinition.create(propertySet, configuration.getColumnKey(),
 								getPropertyType(property), getPropertyValueGetter(property),
 								getPropertyValueSetter(property).orElse(null)));
 			}
@@ -999,76 +1110,227 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		final Binder<T> binder = new DefaultItemListingBinder<>(new ItemListingPropertySet<>(definitions));
 		// validation status handler
 		binder.setValidationStatusHandler(e -> {
-			// field validation status
-			e.getFieldValidationStatuses().forEach(s -> s.getBinding().getValidationStatusHandler().statusChange(s));
-			// item validation status
-			Status status = Status.VALID;
-			List<Localizable> errors = Collections.emptyList();
-			if (e.getFieldValidationErrors().stream().noneMatch(BindingValidationStatus::isError)) {
-				// item validation errors
-				if (e.getBeanValidationErrors().stream().anyMatch(ValidationResult::isError)) {
-					status = Status.INVALID;
-					errors = e.getBeanValidationErrors().stream().filter(ValidationResult::isError)
-							.map(r -> r.getErrorMessage()).filter(m -> m != null && !m.trim().equals(""))
-							.map(m -> Localizable.of(m)).collect(Collectors.toList());
-				}
-			}
-			getValidationStatusHandler().orElseGet(() -> new DialogValidationStatusHandler())
-					.validationStatusChange(ValidationStatusEvent.create(this, new ValueComponent<T>() {
-
-						@Override
-						public Component getComponent() {
-							return getGrid();
-						}
-
-						@Override
-						public T getValue() {
-							return e.getBinder().getBean();
-						}
-					}, null, status, errors));
+			getGroupValidationStatusHandler().orElse(this).validationStatusChange(asGroupValidationStatus(e));
 		});
 		// item validators
 		validators.forEach(validator -> binder.withValidator(Validatable.adapt(validator)));
-		// property editors and validators
+		// property editors
 		for (P property : properties) {
 			final ItemListingColumn<P, T, ?> configuration = getColumnConfiguration(property);
 			if (!configuration.isReadOnly()) {
 				// editor component
 				if (configuration.getEditorComponent().isPresent()) {
 					getColumn(property).ifPresent(column -> {
+						// set the column editor
 						column.setEditorComponent(i -> configuration.getEditorComponent().get().apply(i));
 					});
 				} else {
 					// editor input
 					getColumn(property).ifPresent(column -> {
 						buildPropertyEditor(configuration).ifPresent(editor -> {
-							// editor
+							editors.put(property, editor);
+							// set the column editor
 							column.setEditorComponent(editor.getComponent());
-							// validation
-							final BindingBuilder<T, ?> builder = binder.forField(editor.asHasValue());
-							// property validators
-							getDefaultPropertyValidators(property)
-									.forEach(validator -> builder.withValidator(Validatable.adapt(validator)));
-							// additional validators
-							configuration.getValidators().forEach(
-									validator -> builder.withValidator(Validatable.adapt((Validator) validator)));
-							// validation status handler
-							builder.withValidationStatusHandler(e -> {
-								configuration.getValidationStatusHandler().orElseGet(
-										() -> ValidationStatusHandler.getDefault(new DialogValidationStatusHandler<>()))
-										.validationStatusChange(ValidationStatusEvent.create(this, (Input) editor, null,
-												convertValidationStatus(e.getStatus()),
-												Localizable.of(e.getMessage().orElse("Validation failed"))));
-							});
-							// bind to column
-							builder.bind(configuration.getColumnKey());
+							// configure and bind
+							editorBindings.put(configureAndBind(binder, configuration, editor), property);
 						});
 					});
 				}
 			}
 		}
+		// set the binder as Editor Binder
 		getEditor().setBinder(binder);
+		// value change
+		getEditor().addOpenListener(e -> {
+			this.oldEditorValue = e.getItem();
+		});
+		getEditor().addCloseListener(e -> {
+			this.oldEditorValue = null;
+		});
+		getEditor().addSaveListener(e -> fireValueChangeListeners(e.getItem()));
 	}
+
+	protected EditorComponentGroup<P, T> getEditorComponentGroup() {
+		return this;
+	}
+
+	/**
+	 * Configure the {@link Input} editor component using given configuration and bind it to the editor Binder.
+	 * @param binder The editor Binder
+	 * @param configuration Property column configuration (not null)
+	 * @param input The {@link Input} component to configure
+	 * @return The editor binding
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected com.vaadin.flow.data.binder.Binder.Binding<T, ?> configureAndBind(Binder<T> binder,
+			ItemListingColumn<P, T, ?> configuration, final Input<?> input) {
+		return configureInput(binder, (ItemListingColumn) configuration, input).bind(configuration.getColumnKey());
+	}
+
+	/**
+	 * Configure the {@link Input} editor component using given configuration.
+	 * @param <V> Input type
+	 * @param binder The editor Binder
+	 * @param configuration Property column configuration (not null)
+	 * @param input The {@link Input} component to configure
+	 * @return The editor binding builder
+	 */
+	protected <V> BindingBuilder<T, V> configureInput(Binder<T> binder, ItemListingColumn<P, T, V> configuration,
+			final Input<V> input) {
+		final BindingBuilder<T, V> binding = binder.forField(input.asHasValue());
+		// value change listeners
+		configuration.getValueChangeListeners().forEach(vcl -> input.addValueChangeListener(e -> {
+			vcl.valueChange(new DefaultGroupValueChangeEvent<>(this, e.getSource(), e.getOldValue(), e.getValue(),
+					e.isUserOriginated(), configuration.getProperty(), input));
+		}));
+		// Refresh on value change
+		if (isEnableRefreshOnValueChange()) {
+			input.addValueChangeListener(e -> refreshVirtualProperties());
+		}
+		// required validator
+		if (configuration.isRequired()) {
+			input.setRequired(true);
+			final RequiredInputValidator<V> requiredValidator = configuration.getRequiredMessage()
+					.map(rm -> RequiredInputValidator.create(input, rm))
+					.orElseGet(() -> RequiredInputValidator.create(input));
+			binding.withValidator(Validatable.adapt(requiredValidator));
+		}
+		// user input validator
+		input.hasInvalidChangeEventNotifier().ifPresent(n -> {
+			final DefaultUserInputValidator<V> uiv = new DefaultUserInputValidator<>();
+			n.addInvalidChangeListener(uiv);
+			binding.withValidator(Validatable.adapt(uiv));
+		});
+		// property validators
+		getDefaultPropertyValidators(configuration.getProperty())
+				.forEach(validator -> binding.withValidator(Validatable.adapt(validator)));
+		// additional validators
+		configuration.getValidators().forEach(validator -> binding.withValidator(Validatable.adapt(validator)));
+		// post-processors
+		getEditorPostProcessors().forEach(postProcessor -> postProcessor.accept(configuration.getProperty(), input));
+		// done
+		return binding;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler#validationStatusChange(com.holonplatform.
+	 * vaadin.flow.components.GroupValidationStatusHandler.GroupValidationStatusEvent)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void validationStatusChange(
+			GroupValidationStatusEvent<EditorComponentGroup<P, T>, P, Input<?>> statusChangeEvent) {
+		// group elements
+		statusChangeEvent.getInputsValidationStatus().forEach(s -> {
+			getColumnConfiguration(s.getProperty()).getValidationStatusHandler()
+					.orElseGet(() -> ValidationStatusHandler.getDefault(ValidationStatusHandler.dialog()))
+					.validationStatusChange(
+							ValidationStatusEvent.create((Input) s.getElement(), s.getStatus(), s.getErrors()));
+		});
+		// group
+		final ValidationStatusHandler<EditorComponentGroup<P, T>> groupHandler = getValidationStatusHandler()
+				.orElseGet(() -> ValidationStatusHandler.dialog());
+		switch (statusChangeEvent.getGroupStatus()) {
+		case INVALID:
+			groupHandler.validationStatusChange(
+					ValidationStatusEvent.invalid(getEditorComponentGroup(), statusChangeEvent.getGroupErrors()));
+			break;
+		case VALID:
+			groupHandler.validationStatusChange(ValidationStatusEvent.valid(getEditorComponentGroup()));
+			break;
+		case UNRESOLVED:
+		default:
+			groupHandler.validationStatusChange(ValidationStatusEvent.unresolved(getEditorComponentGroup()));
+			break;
+		}
+	}
+
+	/**
+	 * Convert given binder validation status to a {@link GroupValidationStatusEvent}.
+	 * @param binderStatus The binder validation status
+	 * @return The {@link GroupValidationStatusEvent}
+	 */
+	private GroupValidationStatusEvent<EditorComponentGroup<P, T>, P, Input<?>> asGroupValidationStatus(
+			BinderValidationStatus<T> binderStatus) {
+		// inputs
+		final List<GroupElementValidationStatusEvent<EditorComponentGroup<P, T>, P, Input<?>>> inputsValidationStatus = binderStatus
+				.getFieldValidationStatuses().stream().map(vs -> {
+					final P property = editorBindings.get(vs.getBinding());
+					final Input<?> input = editors.get(property);
+					switch (vs.getStatus()) {
+					case ERROR:
+						return GroupElementValidationStatusEvent.<EditorComponentGroup<P, T>, P, Input<?>>invalid(
+								getEditorComponentGroup(), property, input,
+								vs.getValidationResults().stream().filter(ValidationResult::isError)
+										.map(r -> r.getErrorMessage()).filter(m -> m != null && !m.trim().equals(""))
+										.map(m -> Localizable.of(m)).collect(Collectors.toList()));
+					case OK:
+						return GroupElementValidationStatusEvent.<EditorComponentGroup<P, T>, P, Input<?>>valid(
+								getEditorComponentGroup(), property, input);
+					case UNRESOLVED:
+					default:
+						return GroupElementValidationStatusEvent.<EditorComponentGroup<P, T>, P, Input<?>>unresolved(
+								getEditorComponentGroup(), property, input);
+					}
+				}).collect(Collectors.toList());
+
+		// group
+		final Status groupStatus;
+		final List<Localizable> errors;
+		if (binderStatus.hasErrors()) {
+			groupStatus = Status.INVALID;
+			errors = binderStatus.getBeanValidationErrors().stream().map(r -> r.getErrorMessage())
+					.filter(m -> m != null && !m.trim().equals("")).map(m -> Localizable.of(m))
+					.collect(Collectors.toList());
+		} else {
+			errors = Collections.emptyList();
+			// check unresolved
+			if (binderStatus.getFieldValidationStatuses().stream().allMatch(
+					s -> com.vaadin.flow.data.binder.BindingValidationStatus.Status.UNRESOLVED == s.getStatus())) {
+				groupStatus = Status.UNRESOLVED;
+			} else {
+				groupStatus = Status.VALID;
+			}
+		}
+		return new DefaultGroupValidationStatusEvent<>(this, groupStatus, errors, inputsValidationStatus);
+	}
+
+	/**
+	 * Fire the group value change listeners.
+	 * @param value The new value
+	 */
+	protected void fireValueChangeListeners(T value) {
+		@SuppressWarnings("serial")
+		final ValueHolder<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>> vh = new ValueHolder<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>>() {
+
+			@Override
+			public void setValue(T value) {
+				editItem(value);
+			}
+
+			@Override
+			public T getValue() {
+				return isEditing().orElse(null);
+			}
+
+			@Override
+			public Registration addValueChangeListener(
+					ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>> listener) {
+				return AbstractItemListing.this.addValueChangeListener(listener);
+			}
+
+		};
+		final GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>> event = new DefaultGroupValueChangeEvent<>(
+				this, vh, oldEditorValue, value, true);
+		valueChangeListeners.forEach(l -> l.valueChange(event));
+	}
+
+	/**
+	 * Refresh all the editor inputs bound to a {@link VirtualProperty}.
+	 */
+	protected abstract void refreshVirtualProperties();
 
 	/**
 	 * Build and obtain the property editor to use with given property, if available.
@@ -1105,6 +1367,99 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 	 * @return Optional property value setter
 	 */
 	protected abstract Optional<Setter<T, ?>> getPropertyValueSetter(P property);
+
+	// ------- EditorComponentGroup
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ComponentGroup#getElements()
+	 */
+	@Override
+	public Stream<Input<?>> getElements() {
+		return editors.values().stream();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java.lang.Object)
+	 */
+	@Override
+	public Optional<Input<?>> getElement(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return Optional.ofNullable(editors.get(property));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
+	 */
+	@Override
+	public Stream<Binding<P, Input<?>>> getBindings() {
+		return editors.entrySet().stream().filter(e -> e.getValue() != null)
+				.map(e -> Binding.create(e.getKey(), e.getValue()));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup#getItem()
+	 */
+	@Override
+	public T getItem() {
+		return getEditor().getItem();
+	}
+
+	// ------- utility methods
+
+	/**
+	 * Get the given {@link SelectionMode} as a Grid SelectionMode.
+	 * @param selectionMode The selection mode (not null)
+	 * @return The Grid SelectionMode
+	 */
+	private static com.vaadin.flow.component.grid.Grid.SelectionMode asGridSelectionMode(SelectionMode selectionMode) {
+		switch (selectionMode) {
+		case MULTI:
+			return com.vaadin.flow.component.grid.Grid.SelectionMode.MULTI;
+		case SINGLE:
+			return com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE;
+		case NONE:
+		default:
+			return com.vaadin.flow.component.grid.Grid.SelectionMode.NONE;
+		}
+	}
+
+	/**
+	 * Convert the given {@link ColumnAlignment} into a {@link ColumnTextAlign}.
+	 * @param alignment Alignment to convert
+	 * @return Converted alignment
+	 */
+	private static ColumnTextAlign asColumnTextAlign(ColumnAlignment alignment) {
+		switch (alignment) {
+		case CENTER:
+			return ColumnTextAlign.CENTER;
+		case RIGHT:
+			return ColumnTextAlign.END;
+		case LEFT:
+		default:
+			return ColumnTextAlign.START;
+		}
+	}
+
+	/**
+	 * Convert given {@link SortDirection} into a {@link com.holonplatform.core.query.QuerySort.SortDirection}.
+	 * @param direction Sort direction to convert
+	 * @return Converted sort direction
+	 */
+	protected static com.holonplatform.core.query.QuerySort.SortDirection convert(SortDirection direction) {
+		switch (direction) {
+		case DESCENDING:
+			return com.holonplatform.core.query.QuerySort.SortDirection.DESCENDING;
+		case ASCENDING:
+		default:
+			return com.holonplatform.core.query.QuerySort.SortDirection.ASCENDING;
+		}
+	}
+
+	// ------- support classes
 
 	/**
 	 * ItemListing {@link PropertySet}.
@@ -1157,6 +1512,13 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 			this.type = type;
 			this.getter = getter;
 			this.setter = setter;
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		static <T> ItemListingPropertyDefinition<T, ?> create(PropertySet<T> propertySet, String name, Class<?> type,
+				ValueProvider<T, ?> getter, Setter<T, ?> setter) {
+			return new ItemListingPropertyDefinition<>(propertySet, name, (Class) type, (ValueProvider) getter,
+					(Setter) setter);
 		}
 
 		/*
@@ -1229,93 +1591,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		@Override
 		public PropertyDefinition<T, ?> getParent() {
 			return null;
-		}
-
-	}
-
-	/**
-	 * Get the given {@link SelectionMode} as a Grid SelectionMode.
-	 * @param selectionMode The selection mode (not null)
-	 * @return The Grid SelectionMode
-	 */
-	private static com.vaadin.flow.component.grid.Grid.SelectionMode asGridSelectionMode(SelectionMode selectionMode) {
-		switch (selectionMode) {
-		case MULTI:
-			return com.vaadin.flow.component.grid.Grid.SelectionMode.MULTI;
-		case SINGLE:
-			return com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE;
-		case NONE:
-		default:
-			return com.vaadin.flow.component.grid.Grid.SelectionMode.NONE;
-		}
-	}
-
-	/**
-	 * Convert the given {@link ColumnAlignment} into a {@link ColumnTextAlign}.
-	 * @param alignment Alignment to convert
-	 * @return Converted alignment
-	 */
-	private static ColumnTextAlign asColumnTextAlign(ColumnAlignment alignment) {
-		switch (alignment) {
-		case CENTER:
-			return ColumnTextAlign.CENTER;
-		case RIGHT:
-			return ColumnTextAlign.END;
-		case LEFT:
-		default:
-			return ColumnTextAlign.START;
-		}
-	}
-
-	/**
-	 * Convert given {@link SortDirection} into a {@link com.holonplatform.core.query.QuerySort.SortDirection}.
-	 * @param direction Sort direction to convert
-	 * @return Converted sort direction
-	 */
-	static com.holonplatform.core.query.QuerySort.SortDirection convert(SortDirection direction) {
-		switch (direction) {
-		case DESCENDING:
-			return com.holonplatform.core.query.QuerySort.SortDirection.DESCENDING;
-		case ASCENDING:
-		default:
-			return com.holonplatform.core.query.QuerySort.SortDirection.ASCENDING;
-		}
-	}
-
-	/**
-	 * Convert given {@link BindingValidationStatus.Status} into a {@link ValidationStatusHandler.Status}.
-	 * @param status The status to convert
-	 * @return The converted status
-	 */
-	private static ValidationStatusHandler.Status convertValidationStatus(BindingValidationStatus.Status status) {
-		switch (status) {
-		case ERROR:
-			return ValidationStatusHandler.Status.INVALID;
-		case OK:
-			return ValidationStatusHandler.Status.VALID;
-		case UNRESOLVED:
-		default:
-			return ValidationStatusHandler.Status.UNRESOLVED;
-		}
-	}
-
-	/**
-	 * A {@link ValidationStatusHandler} which opens a dialog when validation fails.
-	 *
-	 * @param <T> Item type
-	 * @param <P> Property type
-	 * @param <V> Value type
-	 * @param <C> Component type
-	 */
-	private static class DialogValidationStatusHandler<T, P, V, C extends ValueComponent<V>>
-			implements ValidationStatusHandler<ItemListing<T, P>, V, C> {
-
-		@Override
-		public void validationStatusChange(ValidationStatusEvent<ItemListing<T, P>, V, C> statusChangeEvent) {
-			if (statusChangeEvent.isInvalid()) {
-				Components.dialog.confirm().styleName("default-listing-validation-error")
-						.message(statusChangeEvent.getError().orElse(Localizable.of("Validation failed"))).open();
-			}
 		}
 
 	}
@@ -2134,13 +2409,109 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#validationStatusHandler(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object)
+		 */
+		@Override
+		public C required(P property) {
+			instance.getColumnConfiguration(property).setRequired(true);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public C required(P property, Localizable message) {
+			instance.getColumnConfiguration(property).setRequired(true);
+			instance.getColumnConfiguration(property).setRequiredMessage(message);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#withPostProcessor(java.util.function
+		 * .BiConsumer)
+		 */
+		@Override
+		public C withPostProcessor(BiConsumer<P, Input<?>> postProcessor) {
+			instance.addEditorPostProcessor(postProcessor);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(java.lang.
+		 * Object, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public C validationStatusHandler(P property, ValidationStatusHandler<Input<?>> validationStatusHandler) {
+			instance.getColumnConfiguration(property)
+					.setValidationStatusHandler((ValidationStatusHandler) validationStatusHandler);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public C validationStatusHandler(
-				ValidationStatusHandler<ItemListing<T, P>, T, ValueComponent<T>> validationStatusHandler) {
+		public C validationStatusHandler(ValidationStatusHandler<EditorComponentGroup<P, T>> validationStatusHandler) {
 			instance.setValidationStatusHandler(validationStatusHandler);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#groupValidationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
+		 */
+		@Override
+		public C groupValidationStatusHandler(
+				GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>> groupValidationStatusHandler) {
+			instance.setGroupValidationStatusHandler(groupValidationStatusHandler);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#enableRefreshOnValueChange(boolean)
+		 */
+		@Override
+		public C enableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+			instance.setEnableRefreshOnValueChange(enableRefreshOnValueChange);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#usePropertyRendererRegistry(com.
+		 * holonplatform.core.property.PropertyRendererRegistry)
+		 */
+		@Override
+		public C usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
+			instance.setPropertyRendererRegistry(propertyRendererRegistry);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#withValueChangeListener(com.
+		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public C withValueChangeListener(
+				ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>> listener) {
+			instance.addValueChangeListener(listener);
 			return getConfigurator();
 		}
 

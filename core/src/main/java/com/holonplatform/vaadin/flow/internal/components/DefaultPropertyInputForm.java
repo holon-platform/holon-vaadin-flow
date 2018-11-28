@@ -18,7 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
@@ -34,7 +34,6 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputForm;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
-import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
@@ -246,8 +245,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * property.Property, com.holonplatform.vaadin.flow.components.PropertyInputGroup.DefaultValueProvider)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> defaultValue(Property<T> property,
-				Function<Property<T>, T> defaultValueProvider) {
+		public <T> PropertyInputFormBuilder<C> defaultValue(Property<T> property, Supplier<T> defaultValueProvider) {
 			inputGroupBuilder.defaultValue(property, defaultValueProvider);
 			return this;
 		}
@@ -259,7 +257,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * property.Property, com.holonplatform.core.Validator)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> withValidator(Property<T> property, Validator<T> validator) {
+		public <T> PropertyInputFormBuilder<C> withValidator(Property<T> property, Validator<? super T> validator) {
 			inputGroupBuilder.withValidator(property, validator);
 			return this;
 		}
@@ -284,7 +282,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 */
 		@Override
 		public PropertyInputFormBuilder<C> groupValidationStatusHandler(
-				GroupValidationStatusHandler<PropertyInputGroup> groupValidationStatusHandler) {
+				GroupValidationStatusHandler<PropertyInputGroup, Property<?>, Input<?>> groupValidationStatusHandler) {
 			inputGroupBuilder.groupValidationStatusHandler(groupValidationStatusHandler);
 			return this;
 		}
@@ -296,8 +294,8 @@ public class DefaultPropertyInputForm<C extends Component>
 		 * holonplatform.core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public <T> PropertyInputFormBuilder<C> validationStatusHandler(Property<T> property,
-				ValidationStatusHandler<PropertyInputGroup, T, Input<T>> validationStatusHandler) {
+		public PropertyInputFormBuilder<C> validationStatusHandler(Property<?> property,
+				ValidationStatusHandler<Input<?>> validationStatusHandler) {
 			inputGroupBuilder.validationStatusHandler(property, validationStatusHandler);
 			return this;
 		}
@@ -310,7 +308,7 @@ public class DefaultPropertyInputForm<C extends Component>
 		 */
 		@Override
 		public PropertyInputFormBuilder<C> validationStatusHandler(
-				ValidationStatusHandler<PropertyInputGroup, PropertyBox, ValueComponent<PropertyBox>> validationStatusHandler) {
+				ValidationStatusHandler<PropertyInputGroup> validationStatusHandler) {
 			inputGroupBuilder.validationStatusHandler(validationStatusHandler);
 			return this;
 		}
