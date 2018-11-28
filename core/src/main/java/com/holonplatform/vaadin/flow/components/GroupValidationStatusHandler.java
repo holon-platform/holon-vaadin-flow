@@ -116,7 +116,7 @@ public interface GroupValidationStatusHandler<S, P, E extends HasComponent> exte
 		List<Localizable> getGroupErrors();
 
 		/**
-		 * Get the localized group error messages from {@link #getErrors()}, using the context
+		 * Get the localized group error messages from {@link #getGroupErrors()}, using the context
 		 * {@link LocalizationContext}, if available. If a {@link LocalizationContext} is not available, the default
 		 * message of each localizable error message is returned.
 		 * @return the localized group error messages, an empty list if none.

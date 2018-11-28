@@ -133,7 +133,6 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use to track given <code>property</code> validation status changes.
-	 * @param <V> Property type
 	 * @param property The property for which to set the validation status handler (not null)
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to associate to given <code>property</code>
 	 *        (not null)
