@@ -29,6 +29,7 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.vaadin.flow.components.Composable;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputForm;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
@@ -278,6 +279,19 @@ public class DefaultPropertyInputForm<C extends Component>
 		/*
 		 * (non-Javadoc)
 		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#groupValidationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
+		 */
+		@Override
+		public PropertyInputFormBuilder<C> groupValidationStatusHandler(
+				GroupValidationStatusHandler<PropertyInputGroup> groupValidationStatusHandler) {
+			inputGroupBuilder.groupValidationStatusHandler(groupValidationStatusHandler);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#validationStatusHandler(com.
 		 * holonplatform.core.property.Property, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
@@ -331,17 +345,6 @@ public class DefaultPropertyInputForm<C extends Component>
 		public PropertyInputFormBuilder<C> stopGroupValidationAtFirstFailure(
 				boolean stopOverallValidationAtFirstFailure) {
 			inputGroupBuilder.stopGroupValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#
-		 * disableDefaultPropertyValidationStatusHandler()
-		 */
-		@Override
-		public PropertyInputFormBuilder<C> disableDefaultPropertyValidationStatusHandler() {
-			inputGroupBuilder.disableDefaultPropertyValidationStatusHandler();
 			return this;
 		}
 

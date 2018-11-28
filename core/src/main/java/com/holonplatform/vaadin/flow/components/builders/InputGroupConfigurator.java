@@ -24,6 +24,7 @@ import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.BoundComponentGroup;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
@@ -118,6 +119,18 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 	default <L extends Component & HasText> C validationStatusLabel(L statusLabel) {
 		return validationStatusHandler(ValidationStatusHandler.label(statusLabel));
 	}
+
+	/**
+	 * Set the {@link GroupValidationStatusHandler} to use to track both the group element validation status changes and
+	 * the group value validation status changes.
+	 * <p>
+	 * When a {@link GroupValidationStatusHandler} is configured, any group element specific
+	 * {@link ValidationStatusHandler} and group value {@link ValidationStatusHandler} will be ignored.
+	 * </p>
+	 * @param groupValidationStatusHandler The {@link GroupValidationStatusHandler} to set (not null)
+	 * @return this
+	 */
+	C groupValidationStatusHandler(GroupValidationStatusHandler<G> groupValidationStatusHandler);
 
 	/**
 	 * Set whether to enable {@link VirtualProperty} input values refresh when any group input value changes.

@@ -15,8 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -35,22 +39,25 @@ import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyRendererRegistry.NoSuitableRendererAvailableException;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.VirtualProperty;
+import com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
-import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfiguration;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyConfigurationRegistry;
 import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry;
+import com.holonplatform.vaadin.flow.internal.components.support.InputValidationStatus;
+import com.holonplatform.vaadin.flow.internal.components.support.ValidationStatus;
 
 /**
  * Default {@link PropertyInputGroup} implementation.
@@ -58,7 +65,7 @@ import com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRe
  * @since 5.2.0
  */
 public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>, PropertyInputGroup>
-		implements PropertyInputGroup {
+		implements PropertyInputGroup, GroupValidationStatusHandler<PropertyInputGroup> {
 
 	private static final long serialVersionUID = -5441417959315472240L;
 
@@ -80,7 +87,12 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	private final List<Validator<PropertyBox>> validators = new LinkedList<>();
 
 	/**
-	 * Overall validation status handler
+	 * Group validation status handler
+	 */
+	private GroupValidationStatusHandler<PropertyInputGroup> groupValidationStatusHandler;
+
+	/**
+	 * Group value validation status handler
 	 */
 	private ValidationStatusHandler<PropertyInputGroup, PropertyBox, ?> validationStatusHandler;
 
@@ -98,11 +110,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Overall validation behaviour
 	 */
 	private boolean stopOverallValidationAtFirstFailure = false;
-
-	/**
-	 * Use default property validation status handler
-	 */
-	private boolean useDefaultPropertyValidationStatusHandler = true;
 
 	/**
 	 * Refresh on value change
@@ -240,6 +247,11 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		ObjectUtils.argumentNotNull(propertyBox, "PropertyBox must be not null");
 
 		if (validate) {
+			// reset validation status
+			resetValidationStatus();
+		}
+
+		if (validate) {
 			// inputs validation
 			validateInputs();
 		}
@@ -282,10 +294,8 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		final PropertyBox oldValue = getCurrentValue();
 		setCurrentValue(propertyBox);
 
-		// reset properties validation status
-		getPropertySet().forEach(property -> resetValidationStatus((Property<?>) property));
-		// reset overall validation status
-		resetValidationStatus(null);
+		// reset validation status
+		resetValidationStatus();
 
 		// load values
 		components.bindings().forEach(b -> {
@@ -376,7 +386,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Set whether to validate inputs at value change.
 	 * @param validateOnValueChange <code>true</code> to validate inputs at value change
 	 */
-	public void setValidateOnValueChange(boolean validateOnValueChange) {
+	protected void setValidateOnValueChange(boolean validateOnValueChange) {
 		this.validateOnValueChange = validateOnValueChange;
 	}
 
@@ -410,7 +420,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Add an overall validator
 	 * @param validator the {@link Validator} to add (not null)
 	 */
-	public void addValidator(Validator<PropertyBox> validator) {
+	protected void addValidator(Validator<PropertyBox> validator) {
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		validators.add(validator);
 	}
@@ -424,10 +434,27 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	}
 
 	/**
+	 * Get the {@link GroupValidationStatusHandler} to use.
+	 * @return Optional group validation status handler
+	 */
+	protected Optional<GroupValidationStatusHandler<PropertyInputGroup>> getGroupValidationStatusHandler() {
+		return Optional.ofNullable(groupValidationStatusHandler);
+	}
+
+	/**
+	 * Set the {@link GroupValidationStatusHandler} to use.
+	 * @param groupValidationStatusHandler the group validation status handler to set
+	 */
+	protected void setGroupValidationStatusHandler(
+			GroupValidationStatusHandler<PropertyInputGroup> groupValidationStatusHandler) {
+		this.groupValidationStatusHandler = groupValidationStatusHandler;
+	}
+
+	/**
 	 * Set the overall {@link ValidationStatusHandler}.
 	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set
 	 */
-	public void setValidationStatusHandler(
+	protected void setValidationStatusHandler(
 			ValidationStatusHandler<PropertyInputGroup, PropertyBox, ?> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
@@ -452,7 +479,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Set whether to stop validation at first validation failure.
 	 * @param stopValidationAtFirstFailure <code>true</code> to stop validation at first validation failure
 	 */
-	public void setStopValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
+	protected void setStopValidationAtFirstFailure(boolean stopValidationAtFirstFailure) {
 		this.stopValidationAtFirstFailure = stopValidationAtFirstFailure;
 	}
 
@@ -469,32 +496,15 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param stopOverallValidationAtFirstFailure <code>true</code> to stop overall validation at first validation
 	 *        failure
 	 */
-	public void setStopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
+	protected void setStopOverallValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
 		this.stopOverallValidationAtFirstFailure = stopOverallValidationAtFirstFailure;
-	}
-
-	/**
-	 * Get whether to use the default {@link ValidationStatusHandler} for property inputs.
-	 * @return whether to use the default {@link ValidationStatusHandler} for property inputs
-	 */
-	public boolean isUseDefaultPropertyValidationStatusHandler() {
-		return useDefaultPropertyValidationStatusHandler;
-	}
-
-	/**
-	 * Set whether to use the default {@link ValidationStatusHandler} for property inputs.
-	 * @param useDefaultPropertyValidationStatusHandler whether to use the default {@link ValidationStatusHandler} for
-	 *        property inputs
-	 */
-	public void setUseDefaultPropertyValidationStatusHandler(boolean useDefaultPropertyValidationStatusHandler) {
-		this.useDefaultPropertyValidationStatusHandler = useDefaultPropertyValidationStatusHandler;
 	}
 
 	/**
 	 * Get whether to enable {@link VirtualProperty} input value refresh when any group input value changes.
 	 * @return whether to enable {@link VirtualProperty} input value refresh when any group input value changes
 	 */
-	public boolean isEnableRefreshOnValueChange() {
+	protected boolean isEnableRefreshOnValueChange() {
 		return enableRefreshOnValueChange;
 	}
 
@@ -503,7 +513,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * @param enableRefreshOnValueChange whether to enable {@link VirtualProperty} input value refresh when any group
 	 *        input value changes
 	 */
-	public void setEnableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
+	protected void setEnableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
 		this.enableRefreshOnValueChange = enableRefreshOnValueChange;
 	}
 
@@ -536,7 +546,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * Refresh all the input values bound to a {@link VirtualProperty}.
 	 */
-	public void refreshVirtualProperties() {
+	protected void refreshVirtualProperties() {
 		final PropertyBox value = getValue(false);
 		components.bindings().filter(b -> b.getProperty() instanceof VirtualProperty).forEach(b -> {
 			b.getElement().setValue((value != null) ? value.getValue(b.getProperty()) : null);
@@ -547,7 +557,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	 * Build and bind {@link Input}s to the properties of the property set.
 	 */
 	@SuppressWarnings("unchecked")
-	public void build() {
+	protected void build() {
 		components.clear();
 		// render and bind components
 		getPropertySet().stream().filter(property -> !configuration.get(property).isHidden())
@@ -626,15 +636,14 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 			}
 			// Validate on value change
 			if (isValidateOnValueChange()) {
-				input.addValueChangeListener(e -> validateProperty(configuration.getProperty(), e.getValue()));
+				input.addValueChangeListener(e -> validateOnValueChange(configuration.getProperty(), e.getValue()));
 			}
 			// Refresh on value change
 			if (isEnableRefreshOnValueChange()) {
 				input.addValueChangeListener(e -> refreshVirtualProperties());
 			}
 			// default validation status handler
-			if (!configuration.getValidationStatusHandler().isPresent()
-					&& isUseDefaultPropertyValidationStatusHandler()) {
+			if (!configuration.getValidationStatusHandler().isPresent()) {
 				configuration.setValidationStatusHandler(ValidationStatusHandler.getDefault());
 			}
 			// check invalid user originated events
@@ -648,18 +657,38 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	}
 
 	/**
-	 * Overall validation
-	 * @param value Value to validate
-	 * @throws InputGroupValidationException If validation fails
+	 * Validate the group value.
+	 * @param value The value to validate
+	 * @throws ValidationException If validation fails
 	 */
-	protected void validate(PropertyBox value) throws InputGroupValidationException {
-		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
+	protected void validate(PropertyBox value) throws ValidationException {
+		final ValidationStatus validation = getGroupValidation(value);
+		// notify
+		notifyValidationStatusChange(new DefaultGroupValidationStatusEvent<>(getComponentGroup(),
+				validation.getStatus(), validation.getErrors(),
+				components.bindings()
+						.map(e -> ValidationStatusEvent.valid(getComponentGroup(), e.getElement(), e.getProperty()))
+						.collect(Collectors.toList())));
+		// check validation exceptions
+		if (!validation.getValidationExceptions().isEmpty()) {
+			throw (validation.getValidationExceptions().size() == 1) ? validation.getValidationExceptions().get(0)
+					: new ValidationException(validation.getValidationExceptions());
+		}
+	}
+
+	/**
+	 * Group value validation.
+	 * @param value The value to validate
+	 * @return The group validation status
+	 */
+	protected ValidationStatus getGroupValidation(PropertyBox value) {
+		final LinkedList<ValidationException> failures = new LinkedList<>();
 		// invoke group validators
 		for (Validator<PropertyBox> validator : getValidators()) {
 			try {
 				validator.validate(value);
 			} catch (ValidationException ve) {
-				failures.add(new InputGroupValidationException(ve));
+				failures.add(ve);
 				if (isStopOverallValidationAtFirstFailure()) {
 					break;
 				}
@@ -667,64 +696,66 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		}
 		// check validation failed
 		if (!failures.isEmpty()) {
-			InputGroupValidationException validationException = (failures.size() == 1) ? failures.getFirst()
-					: new InputGroupValidationException(failures);
-			// INVALID: notify validation status
-			notifyInvalidValidationStatus(validationException, null);
-			// throw the exception
-			throw validationException;
+			return ValidationStatus.invalid(failures);
 		}
-
-		// VALID: notify validation status
-		notifyValidValidationStatus(null);
+		// validation succeeded
+		return ValidationStatus.valid();
 	}
 
 	/**
-	 * Validate all the {@link Input}s.
-	 * @throws InputGroupValidationException If one or more input is not valid
+	 * Validate the group inputs.
+	 * @throws ValidationException If validation fails
 	 */
-	private void validateInputs() throws InputGroupValidationException {
-
-		if (isStopValidationAtFirstFailure()) {
-			// reset validation status
-			components.stream().forEach(b -> resetValidationStatus(b.getProperty()));
+	protected void validateInputs() throws ValidationException {
+		final List<ValidationException> failures = new LinkedList<>();
+		final List<ValidationStatusEvent<PropertyInputGroup, ?, ?>> inputsValidationStatus = new LinkedList<>();
+		for (Entry<Property<?>, InputValidationStatus> e : getInputsValidation().entrySet()) {
+			if (e.getValue().isInvalid()) {
+				failures.addAll(e.getValue().getValidationExceptions());
+			}
+			inputsValidationStatus.add(asValidationStatusEvent(e.getKey(), e.getValue()));
 		}
+		// notify
+		notifyValidationStatusChange(new DefaultGroupValidationStatusEvent<>(getComponentGroup(), Status.UNRESOLVED,
+				Collections.emptyList(), inputsValidationStatus));
+		// check validation exceptions
+		if (!failures.isEmpty()) {
+			throw (failures.size() == 1) ? failures.get(0) : new ValidationException(failures);
+		}
+	}
 
-		final LinkedList<InputGroupValidationException> failures = new LinkedList<>();
-
-		List<Binding<Property<Object>, Input<Object>>> bindings = components.bindings().collect(Collectors.toList());
-		for (Binding<Property<Object>, Input<Object>> b : bindings) {
+	/**
+	 * Validate all the group {@link Input}s.
+	 * @return The validation status of each property
+	 */
+	protected Map<Property<?>, InputValidationStatus> getInputsValidation() {
+		final Map<Property<?>, InputValidationStatus> validations = new LinkedHashMap<>(components.size());
+		for (Binding<Property<Object>, Input<Object>> b : components.bindings().collect(Collectors.toList())) {
+			// exclude read-only
 			if (!b.getElement().isReadOnly()) {
-				final Optional<ValidationException> ve = validateProperty(b.getProperty(), b.getElement().getValue());
-				ve.ifPresent(v -> failures.add(new InputGroupValidationException(b.getProperty(), b.getElement(), v)));
-				if (isStopValidationAtFirstFailure() && ve.isPresent()) {
+				// validate property
+				final Optional<InputValidationStatus> validation = validateProperty(b.getProperty(),
+						b.getElement().getValue());
+				validation.ifPresent(v -> validations.put(b.getProperty(), v));
+				if (isStopValidationAtFirstFailure() && validation.map(v -> v.isInvalid()).orElse(false)) {
 					// break if stop validation at first failure
 					break;
 				}
 			}
 		}
-
-		// collect validation exceptions, if any
-		if (!failures.isEmpty()) {
-			if (failures.size() == 1) {
-				throw failures.getFirst();
-			} else {
-				throw new InputGroupValidationException(failures);
-			}
-		}
+		return validations;
 	}
 
 	/**
-	 * Validate the input bound to given property.
+	 * Validate the input bound to the given property.
 	 * @param <T> Property type
 	 * @param property Property to validate
 	 * @param value Value to validate
-	 * @return Optional {@link ValidationException} if the input validation fails
+	 * @return Optional property validation status, empty if a bound Input is not avaialble
 	 */
-	private <T> Optional<ValidationException> validateProperty(final Property<T> property, final T value)
-			throws ValidationException {
-		final LinkedList<ValidationException> failures = new LinkedList<>();
-		getInput(property).ifPresent(input -> {
+	protected <T> Optional<InputValidationStatus> validateProperty(Property<T> property, T value) {
+		return getInput(property).map(input -> {
+			final LinkedList<ValidationException> failures = new LinkedList<>();
 			// required
 			if (input.isRequired()) {
 				RequiredInputValidator<T> requiredValidator = configuration.get(property).getRequiredMessage()
@@ -760,77 +791,102 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 					failures.add(e);
 				}
 			});
+			if (!failures.isEmpty()) {
+				// validation failed
+				return InputValidationStatus.invalid(input, failures);
+			}
+			// validation succeeded
+			return InputValidationStatus.valid(input);
 		});
-
-		if (!failures.isEmpty()) {
-			// validation failed
-			ValidationException ve = (failures.size() == 1) ? failures.getFirst()
-					: new ValidationException(failures.toArray(new ValidationException[0]));
-			// notify status
-			notifyInvalidValidationStatus(ve, property);
-			// return the validation exception
-			return Optional.ofNullable(ve);
-		}
-
-		// notify validation status
-		notifyValidValidationStatus(property);
-		// no validation errors
-		return Optional.empty();
 	}
 
 	/**
-	 * Reset the validation status, if a {@link ValidationStatusHandler} is available.
-	 * @param <T> Property type
-	 * @param property Validation property, if <code>null</code> resets the overall validation status
+	 * Reset the group validation status, notifying a {@link Status#UNRESOLVED} to validation status handlers.
 	 */
-	protected <T> void resetValidationStatus(Property<T> property) {
-		if (property != null) {
-			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
-				validationStatusHandler.validationStatusChange(
-						ValidationStatusEvent.unresolved(this, getInput(property).orElse(null), property));
-			});
-		} else {
-			getValidationStatusHandler()
-					.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.unresolved(this)));
-		}
+	protected void resetValidationStatus() {
+		final GroupValidationStatusEvent<PropertyInputGroup> statusChangeEvent = new DefaultGroupValidationStatusEvent<>(
+				this, Status.UNRESOLVED, Collections.emptyList(),
+				components.bindings().map(
+						b -> ValidationStatusEvent.unresolved(getComponentGroup(), b.getElement(), b.getProperty()))
+						.map(e -> (ValidationStatusEvent<PropertyInputGroup, ?, ?>) e).collect(Collectors.toList()));
+		notifyValidationStatusChange(statusChangeEvent);
 	}
 
 	/**
-	 * Notify a valid validation status, if a {@link ValidationStatusHandler} is available.
-	 * @param <T> Property type
-	 * @param property Validation property, if <code>null</code> notify the overall validation status
+	 * Notify a group validation status change.
+	 * @param statusChangeEvent Group validation status change event
 	 */
-	protected <T> void notifyValidValidationStatus(Property<T> property) {
-		if (property != null) {
-			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
-				validationStatusHandler.validationStatusChange(
-						ValidationStatusEvent.valid(this, getInput(property).orElse(null), property));
-			});
-		} else {
-			getValidationStatusHandler()
-					.ifPresent(vsh -> vsh.validationStatusChange(ValidationStatusEvent.valid(this)));
+	protected void notifyValidationStatusChange(GroupValidationStatusEvent<PropertyInputGroup> statusChangeEvent) {
+		ObjectUtils.argumentNotNull(statusChangeEvent, "GroupValidationStatusEvent must be not null");
+		getGroupValidationStatusHandler().orElse(this).validationStatusChange(statusChangeEvent);
+	}
+
+	/**
+	 * Translate given validation status into a {@link ValidationStatusEvent}.
+	 * @param property Validation property
+	 * @param validation Validation status
+	 * @return The {@link ValidationStatusEvent}
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected ValidationStatusEvent<PropertyInputGroup, ?, ?> asValidationStatusEvent(Property property,
+			InputValidationStatus validation) {
+		switch (validation.getStatus()) {
+		case INVALID:
+			return ValidationStatusEvent.invalid(getComponentGroup(), validation.getInput(), property,
+					validation.getErrors());
+		case VALID:
+			return ValidationStatusEvent.valid(getComponentGroup(), validation.getInput(), property);
+		case UNRESOLVED:
+		default:
+			return ValidationStatusEvent.unresolved(getComponentGroup(), validation.getInput(), property);
 		}
 	}
 
 	/**
-	 * Notify a invalid validation status, if a {@link ValidationStatusHandler} is available.
-	 * @param <T> Property type
-	 * @param e Validation exception
-	 * @param property Validation property, if <code>null</code> notify the overall validation status
+	 * Validate the input bound to given property when input value changes.
+	 * @param property The property
+	 * @param value The new value
 	 */
-	protected <T> void notifyInvalidValidationStatus(ValidationException e, Property<T> property) {
-		if (property != null) {
-			configuration.get(property).getValidationStatusHandler().ifPresent(validationStatusHandler -> {
-				validationStatusHandler.validationStatusChange(ValidationStatusEvent.invalid(this,
-						getInput(property).orElse(null), property, e.getValidationMessages()));
-			});
-		} else {
-			getValidationStatusHandler().ifPresent(
-					vsh -> vsh.validationStatusChange(ValidationStatusEvent.invalid(this, e.getValidationMessages())));
-		}
+	protected <T> void validateOnValueChange(Property<T> property, T value) {
+		validateProperty(property, value).ifPresent(validation -> {
+			notifyValidationStatusChange(new DefaultGroupValidationStatusEvent<>(getComponentGroup(), Status.UNRESOLVED,
+					Collections.emptyList(), Collections.singletonList(asValidationStatusEvent(property, validation))));
+		});
 	}
 
-	// Builder
+	/**
+	 * Default group validation status handling.
+	 * @param statusChangeEvent Group status change event
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void validationStatusChange(GroupValidationStatusEvent<PropertyInputGroup> statusChangeEvent) {
+		// group elements
+		statusChangeEvent.getInputsValidationStatus().forEach(s -> {
+			s.getProperty().flatMap(property -> configuration.get(property).getValidationStatusHandler())
+					.ifPresent(h -> {
+						h.validationStatusChange((ValidationStatusEvent) s);
+					});
+		});
+		// group
+		getValidationStatusHandler().ifPresent(h -> {
+			switch (statusChangeEvent.getGroupStatus()) {
+			case INVALID:
+				h.validationStatusChange(
+						ValidationStatusEvent.invalid(getComponentGroup(), statusChangeEvent.getGroupErrors()));
+				break;
+			case VALID:
+				h.validationStatusChange(ValidationStatusEvent.valid(getComponentGroup()));
+				break;
+			case UNRESOLVED:
+			default:
+				h.validationStatusChange(ValidationStatusEvent.unresolved(getComponentGroup()));
+				break;
+			}
+		});
+	}
+
+	// ------- Builders
 
 	/**
 	 * {@link PropertyInputGroup} builder.
@@ -994,6 +1050,20 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		/*
 		 * (non-Javadoc)
 		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#groupValidationStatusHandler(com.
+		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
+		 */
+		@Override
+		public B groupValidationStatusHandler(
+				GroupValidationStatusHandler<PropertyInputGroup> groupValidationStatusHandler) {
+			ObjectUtils.argumentNotNull(groupValidationStatusHandler, "GroupValidationStatusHandler must be not null");
+			instance.setGroupValidationStatusHandler(groupValidationStatusHandler);
+			return builder();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
 		 * com.holonplatform.vaadin.components.PropertyInputGroup.Builder#validationStatusHandler(com.holonplatform.core
 		 * .property.Property, com.holonplatform.vaadin.components.ValidationStatusHandler)
 		 */
@@ -1058,17 +1128,6 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		@Override
 		public B stopGroupValidationAtFirstFailure(boolean stopOverallValidationAtFirstFailure) {
 			instance.setStopOverallValidationAtFirstFailure(stopOverallValidationAtFirstFailure);
-			return builder();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupConfigurator#
-		 * disableDefaultPropertyValidationStatusHandler()
-		 */
-		@Override
-		public B disableDefaultPropertyValidationStatusHandler() {
-			instance.setUseDefaultPropertyValidationStatusHandler(false);
 			return builder();
 		}
 

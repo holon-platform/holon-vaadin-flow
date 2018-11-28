@@ -20,7 +20,6 @@ import java.util.function.Function;
 import com.holonplatform.core.beans.BeanPropertySet;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.vaadin.flow.exceptions.BeanConversionException;
 
 /**
  * A converter to convert a {@link PropertyBox} item into a bean class type.
@@ -53,7 +52,7 @@ public class BeanPropertySetItemConverter<T> implements Function<PropertyBox, T>
 			try {
 				return beanPropertySet.write(item, beanPropertySet.getBeanClass().newInstance(), true);
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new BeanConversionException("Failed to convert item [" + item + "] into a bean class instance ["
+				throw new RuntimeException("Failed to convert item [" + item + "] into a bean class instance ["
 						+ beanPropertySet.getBeanClass().getName() + "]", e);
 			}
 		}

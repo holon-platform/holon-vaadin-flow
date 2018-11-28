@@ -61,7 +61,6 @@ import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemSort;
-import com.holonplatform.vaadin.flow.exceptions.ComponentConfigurationException;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
@@ -570,7 +569,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		if (visibileColumns != null) {
 			for (P property : visibileColumns) {
 				if (!properties.contains(property)) {
-					throw new ComponentConfigurationException("The property [" + property
+					throw new IllegalArgumentException("The property [" + property
 							+ "] to set as visible column is not part of the listing property set");
 				}
 			}
@@ -614,10 +613,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P> {
 		final ItemListingColumn<P, T, ?> configuration = preProcessConfiguration(getColumnConfiguration(property));
 		// add the column
 		final Column<T> column = generateGridColumn(configuration);
-		if (column == null) {
-			throw new ComponentConfigurationException(
-					"Failed to generate listing column for property [" + configuration.getProperty() + "]");
-		}
 		// configure the column
 		column.setKey(configuration.getColumnKey());
 		// header

@@ -49,6 +49,12 @@ public interface GroupValidationStatusHandler<S> extends Serializable {
 	public interface GroupValidationStatusEvent<S> extends Serializable {
 
 		/**
+		 * Get the validation source.
+		 * @return the validation source
+		 */
+		S getSource();
+
+		/**
 		 * Get the overall validation status.
 		 * <p>
 		 * This includes the item validation status and the inputs validation status. If any of the item or inputs
@@ -56,7 +62,16 @@ public interface GroupValidationStatusHandler<S> extends Serializable {
 		 * </p>
 		 * @return the overall validation status (never null)
 		 */
-		Status getStatus();
+		default Status getStatus() {
+			if (isGroupInvalid() || isAnyInputInvalid()) {
+				return Status.INVALID;
+			}
+			if (getInputsValidationStatus().stream().allMatch(s -> s.getStatus() == Status.UNRESOLVED)
+					&& getGroupStatus() == Status.UNRESOLVED) {
+				return Status.UNRESOLVED;
+			}
+			return Status.VALID;
+		}
 
 		/**
 		 * Gets whether the overall validation failed or not.

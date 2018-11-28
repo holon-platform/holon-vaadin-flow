@@ -27,7 +27,6 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
@@ -171,15 +170,6 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 			Converter<V, T> converter) {
 		return bind(property, Input.from(field, converter));
 	}
-
-	/**
-	 * By default, a default {@link ValidationStatusHandler} is associated to each group property {@link Input}. This
-	 * method can be used to avoid the default {@link ValidationStatusHandler} configuration.
-	 * @return this
-	 * @see ValidationStatusHandler#getDefault()
-	 * @see #validationStatusHandler(Property, ValidationStatusHandler)
-	 */
-	C disableDefaultPropertyValidationStatusHandler();
 
 	/**
 	 * Sets whether to validate the available {@link Input}s value every time the {@link Input} value changes.

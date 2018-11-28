@@ -64,6 +64,12 @@ public interface InputPropertyRegistry extends Serializable {
 	Stream<Binding<Property<Object>, Input<Object>>> bindings();
 
 	/**
+	 * Get the bindings size.
+	 * @return the bindings size
+	 */
+	int size();
+
+	/**
 	 * Create a new {@link InputPropertyRegistry}.
 	 * @return A new registry
 	 */

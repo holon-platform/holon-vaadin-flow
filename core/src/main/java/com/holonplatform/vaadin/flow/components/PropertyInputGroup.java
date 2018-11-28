@@ -27,7 +27,6 @@ import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
-import com.holonplatform.vaadin.flow.exceptions.InputGroupValidationException;
 import com.holonplatform.vaadin.flow.internal.components.DefaultPropertyInputGroup;
 
 /**
@@ -113,11 +112,6 @@ public interface PropertyInputGroup extends BoundComponentGroup<Property<?>, Inp
 	 * For each property with a bound {@link Input} component, the property value is obtained from the {@link Input}
 	 * component through the {@link Input#getValue()} method.
 	 * </p>
-	 * <p>
-	 * If the validation fails, an {@link InputGroupValidationException} is thrown as {@link ValidationException}
-	 * extension, allowing to inspect the property / input component source of the validation failure. If no property /
-	 * input component is provided, it means it was an overall validation failure.
-	 * </p>
 	 * @param validate <code>true</code> to check the validity of the property bound {@link Input}s and of this
 	 *        {@link PropertyInputGroup} before returing the value, throwing a {@link ValidationException} if the
 	 *        validation is not successful.
@@ -134,16 +128,11 @@ public interface PropertyInputGroup extends BoundComponentGroup<Property<?>, Inp
 	 * component through the {@link Input#getValue()} method.
 	 * </p>
 	 * <p>
-	 * The available {@link Input}s and the overall group validation is performed before returning the value, throwing a
+	 * The group {@link Input}s and the group value validation is performed before returning the value, throwing a
 	 * {@link ValidationException} if the validation is not successful.
 	 * </p>
-	 * <p>
-	 * If the validation fails, an {@link InputGroupValidationException} is thrown as {@link ValidationException}
-	 * extension, allowing to inspect the property / input component source of the validation failure. If no property /
-	 * input component is provided, it means it was an overall validation failure.
-	 * </p>
 	 * @return A {@link PropertyBox} containing the property values (never null)
-	 * @throws ValidationException If one or more input value is not valid, providing the validation error messages
+	 * @throws ValidationException If one or more input is not valid or the group value is not valid
 	 * @see #getValue(boolean)
 	 * @see #getValueIfValid()
 	 */
@@ -167,16 +156,11 @@ public interface PropertyInputGroup extends BoundComponentGroup<Property<?>, Inp
 	 * <p>
 	 * Only the properties which belong to the group's property set are taken into account.
 	 * </p>
-	 * <p>
-	 * If the validation fails, an {@link InputGroupValidationException} is thrown as {@link ValidationException}
-	 * extension, allowing to inspect the property / input component source of the validation failure. If no property /
-	 * input component is provided, it means it was an overall validation failure.
-	 * </p>
 	 * @param value the {@link PropertyBox} which contains the property values to load. If <code>null</code>, all the
 	 *        {@link Input} components are cleared.
 	 * @param validate <code>true</code> to check the validity of the property bound {@link Input}s and of this
 	 *        {@link PropertyInputGroup}, throwing a {@link ValidationException} if the validation is not successful.
-	 * @throws ValidationException If <code>validate</code> is <code>true</code> and an {@link Input} value is not valid
+	 * @throws ValidationException If <code>validate</code> is <code>true</code> and validation fails
 	 */
 	void setValue(PropertyBox value, boolean validate);
 
@@ -209,14 +193,9 @@ public interface PropertyInputGroup extends BoundComponentGroup<Property<?>, Inp
 	void setEnabled(boolean enabled);
 
 	/**
-	 * Checks the validity of each input component of the group and of the overall group value against every registered
+	 * Checks the validity of each input component of the group and of the group value against every registered
 	 * validator, if any.
-	 * <p>
-	 * If the validation fails, an {@link InputGroupValidationException} is thrown as {@link ValidationException}
-	 * extension, allowing to inspect the property / input component source of the validation failure. If no property /
-	 * input component is provided, it means it was an overall validation failure.
-	 * </p>
-	 * @throws ValidationException If a validation error occurred
+	 * @throws ValidationException If validation fails
 	 */
 	@Override
 	void validate() throws ValidationException;

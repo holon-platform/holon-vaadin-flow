@@ -76,4 +76,13 @@ public class DefaultInputPropertyRegistry implements InputPropertyRegistry {
 				.map(e -> Binding.create((Property<Object>) e.getKey(), (Input<Object>) e.getValue()));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.InputPropertyRegistry#size()
+	 */
+	@Override
+	public int size() {
+		return components.size();
+	}
+
 }
