@@ -63,7 +63,7 @@ public class NavigatorServiceInitListener implements VaadinServiceInitListener {
 		event.getSource().addUIInitListener(e -> {
 			e.getUI().addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
 			e.getUI().addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());
-			LOGGER.debug(() -> "ViewNavigator event listeners setted up");
+			LOGGER.debug(() -> "Navigator event listeners setted up");
 		});
 	}
 
