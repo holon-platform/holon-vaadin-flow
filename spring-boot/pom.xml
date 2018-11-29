@@ -17,6 +17,21 @@
 
 	<url>https://holon-platform.com</url>
 
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Holon platform -->
+			<dependency>
+				<groupId>com.holon-platform.core</groupId>
+				<artifactId>holon-bom-platform</artifactId>
+				<version>${holon.core.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
 		<!-- Spring integration -->
@@ -24,6 +39,19 @@
 			<groupId>com.holon-platform.vaadin</groupId>
 			<artifactId>holon-vaadin-flow-spring</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Holon Spring boot -->
+		<dependency>
+			<groupId>com.holon-platform.core</groupId>
+			<artifactId>holon-spring-boot</artifactId>
+			<version>${holon.core.version}</version>
+		</dependency>
+
+		<!-- Spring Boot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
 
 	</dependencies>

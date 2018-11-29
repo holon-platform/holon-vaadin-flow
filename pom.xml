@@ -61,7 +61,7 @@
 		<bintray.package>holon-vaadin-flow</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.2.0-alpha2</holon.core.version>
+		<holon.core.version>5.2.0-beta1-SNAPSHOT</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>12.0.0.beta2</vaadin.version>
@@ -77,12 +77,6 @@
 	</properties>
 
 	<repositories>
-		<!-- Vaadin Addons -->
-		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
-
 		<!-- TODO: remove -->
 		<repository>
 			<id>vaadin-prereleases</id>

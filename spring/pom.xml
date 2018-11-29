@@ -17,6 +17,21 @@
 
 	<url>https://holon-platform.com</url>
 
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Holon platform -->
+			<dependency>
+				<groupId>com.holon-platform.core</groupId>
+				<artifactId>holon-bom-platform</artifactId>
+				<version>${holon.core.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
 		<!-- Core -->
@@ -31,6 +46,38 @@
 			<groupId>com.holon-platform.vaadin</groupId>
 			<artifactId>holon-vaadin-flow-navigator</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Spring integration -->
+		<dependency>
+			<groupId>com.holon-platform.core</groupId>
+			<artifactId>holon-spring</artifactId>
+			<version>${holon.core.version}</version>
+		</dependency>
+
+		<!-- Vaadin Spring integration -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-spring</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-webmvc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-websocket</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
 		</dependency>
 
 	</dependencies>
