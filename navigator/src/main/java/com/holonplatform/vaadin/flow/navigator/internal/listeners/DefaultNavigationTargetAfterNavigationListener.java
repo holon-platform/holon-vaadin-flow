@@ -24,15 +24,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
+import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.NavigationParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
@@ -48,25 +47,6 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 		implements AfterNavigationListener {
 
 	private static final long serialVersionUID = 3389997906125447359L;
-
-	private final NavigationParameterMapper navigationParameterMapper;
-
-	/**
-	 * Constructor using default navigation parameters mapper.
-	 */
-	public DefaultNavigationTargetAfterNavigationListener() {
-		this(NavigationParameterMapper.getDefault());
-	}
-
-	/**
-	 * Constructor.
-	 * @param navigationParameterMapper Navigation parameters mapper (not null)
-	 */
-	public DefaultNavigationTargetAfterNavigationListener(NavigationParameterMapper navigationParameterMapper) {
-		super();
-		ObjectUtils.argumentNotNull(navigationParameterMapper, "NavigationParameterMapper must be not null");
-		this.navigationParameterMapper = navigationParameterMapper;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -101,14 +81,16 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	 * @param configuration the navigation target configuration
 	 * @param location The current URL location
 	 */
-	private void setQueryParameterValues(HasElement navigationTargetInstance,
+	private static void setQueryParameterValues(HasElement navigationTargetInstance,
 			NavigationTargetConfiguration configuration, Location location) {
 		final Map<String, List<String>> queryParameters = location.getQueryParameters().getParameters();
 		configuration.getQueryParameters().forEach((name, definition) -> {
 			LOGGER.debug(() -> "Process query parameter [" + name + "] for navigation target ["
 					+ navigationTargetInstance.getClass().getName() + "]");
+			final List<String> queryParameterValues = queryParameters.get(name);
 			final Collection<?> values = getParameterValue(definition,
-					navigationParameterMapper.deserialize(definition.getType(), queryParameters.get(name)));
+					NavigationParameterMapper.get().deserialize(definition.getType(),
+							(queryParameterValues != null) ? queryParameterValues : Collections.emptyList()));
 			if (values.isEmpty()) {
 				// check required
 				if (definition.isRequired()) {
@@ -142,7 +124,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	 * @return the parameter values
 	 */
 	private static Collection<?> getParameterValue(NavigationParameterDefinition definition, Collection<?> values) {
-		if (values.isEmpty()) {
+		if (values != null && !values.isEmpty()) {
 			return definition.getDefaultValue().map(v -> {
 				if (Collection.class.isAssignableFrom(v.getClass())) {
 					return (Collection<?>) v;
@@ -150,7 +132,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 				return Collections.singleton(v);
 			}).orElse(Collections.emptySet());
 		}
-		return values;
+		return Collections.emptySet();
 	}
 
 	/**

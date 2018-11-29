@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +42,6 @@ public interface ViewNavigator extends Serializable {
 	 */
 	void navigateToLocation(String location);
 
-	/**
-	 * Navigate to the given path, using the provided URL query parameters.
-	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
-	 * @param parameters the query parameters to use for navigation
-	 */
-	void navigateToLocation(String path, Map<String, List<String>> parameters);
-	
 	/**
 	 * Navigate to the given path.
 	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
@@ -119,7 +113,7 @@ public interface ViewNavigator extends Serializable {
 		return get(ui).orElseThrow(() -> new IllegalStateException("No ViewNavigator available for UI [" + ui + "]"));
 	}
 
-	// ------- builders
+	// ------- creator
 
 	/**
 	 * Create a new {@link ViewNavigator} bound to given UI.
@@ -128,6 +122,49 @@ public interface ViewNavigator extends Serializable {
 	 */
 	static ViewNavigator create(UI ui) {
 		return new DefaultViewNavigator(ui);
+	}
+
+	// ------- builders
+
+	/**
+	 * A builder to create a navigation location and trigger the navigation action.
+	 * 
+	 * @since 5.2.0
+	 */
+	public interface NavigationBuilder extends Serializable {
+
+		/**
+		 * Add query parameter values to be included in the navigation URL.
+		 * <p>
+		 * If one or more values was previously associated to given parameter <code>name</code>, the given
+		 * <code>values</code> will be added to the existing values set.
+		 * </p>
+		 * @param name The parameter name (not null)
+		 * @param values The parameter values
+		 * @return this
+		 */
+		default NavigationBuilder withQueryParameter(String name, Object... values) {
+			return withQueryParameter(name, (values != null) ? Arrays.asList(values) : Collections.emptyList());
+		}
+
+		/**
+		 * Add query parameter values to be included in the navigation URL.
+		 * <p>
+		 * If one or more values was previously associated to given parameter <code>name</code>, the given
+		 * <code>values</code> will be added to the existing values set.
+		 * </p>
+		 * @param name The parameter name (not null)
+		 * @param values The parameter values
+		 * @return this
+		 */
+		NavigationBuilder withQueryParameter(String name, List<?> values);
+
+		/**
+		 * Navigates to the location which is composed by the specified path and the provided query parameter values, if
+		 * any.
+		 */
+		void navigate();
+
 	}
 
 	// ------- exceptions

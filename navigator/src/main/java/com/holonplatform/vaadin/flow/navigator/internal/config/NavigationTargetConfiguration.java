@@ -27,7 +27,6 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
-import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
 
 /**
  * Navigation target class (view) configuration.
@@ -99,17 +98,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 	 */
 	static NavigationTargetConfiguration create(Class<?> navigationTarget) {
 		return new DefaultNavigationTargetConfiguration(navigationTarget);
-	}
-
-	/**
-	 * Create a new {@link NavigationTargetConfiguration} for given navigation target.
-	 * @param navigationTarget The navigation target class (not null)
-	 * @param navigationParameterSerializer The {@link NavigationParameterMapper} to use (nt null)
-	 * @return A new {@link NavigationTargetConfiguration}
-	 */
-	static NavigationTargetConfiguration create(Class<?> navigationTarget,
-			NavigationParameterMapper navigationParameterSerializer) {
-		return new DefaultNavigationTargetConfiguration(navigationTarget, navigationParameterSerializer);
 	}
 
 	// ------ parameter definitions

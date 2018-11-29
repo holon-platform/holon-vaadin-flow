@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.navigator.internal.mapper;
+package com.holonplatform.vaadin.flow.navigator;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
+import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigationParameterMapper;
 
 /**
  * Navigation parameters value serializer and deserializer.
@@ -32,20 +32,20 @@ public interface NavigationParameterMapper {
 	/**
 	 * Serialize given parameter <code>value</code>.
 	 * @param value Parameter value (may be null)
-	 * @return A collection of serialized parameter values, empty if none
+	 * @return A list of serialized parameter values, empty if none
 	 * @throws InvalidNavigationParameterException If an error occurred
 	 */
-	Collection<String> serialize(Object value) throws InvalidNavigationParameterException;
+	List<String> serialize(Object value) throws InvalidNavigationParameterException;
 
 	/**
 	 * Deserialize given parameter <code>values</code>.
 	 * @param <T> Parameter type
 	 * @param type Parameter type (not null)
-	 * @param values Parameter values (may be null)
-	 * @return A collection of deserialized parameter values, empty if none
+	 * @param values The parameter values, empty if none
+	 * @return A list of deserialized parameter values, empty if none
 	 * @throws InvalidNavigationParameterException If an error occurred
 	 */
-	<T> Collection<T> deserialize(Class<T> type, List<String> values) throws InvalidNavigationParameterException;
+	<T> List<T> deserialize(Class<T> type, List<String> values) throws InvalidNavigationParameterException;
 
 	/**
 	 * Deserialize given parameter <code>value</code>.
@@ -64,7 +64,7 @@ public interface NavigationParameterMapper {
 	 * Get the default {@link NavigationParameterMapper}.
 	 * @return the default {@link NavigationParameterMapper}
 	 */
-	static NavigationParameterMapper getDefault() {
+	static NavigationParameterMapper get() {
 		return DefaultNavigationParameterMapper.INSTANCE;
 	}
 

@@ -26,7 +26,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
+
+import com.holonplatform.vaadin.flow.navigator.NavigationParameterTypeMapper;
 
 /**
  * Annotation which can be used on a navigation target class field to inject the URL query parameter value which
@@ -40,7 +43,7 @@ import java.util.Set;
  * attribute to provide a default parameter value when the value is not available from the navigation URL.
  * </p>
  * <p>
- * The supported parameter value types are:
+ * The default supported parameter value types are:
  * <ul>
  * <li>{@link String}.</li>
  * <li>{@link Number}. The <code>.</code> (dot) character must be used as decimal separator for decimal numbers.</li>
@@ -55,6 +58,10 @@ import java.util.Set;
  * <p>
  * The {@link Set} and {@link List} collection types are also supported as parameter value type, in order to obtain
  * multiple parameter values.
+ * </p>
+ * <p>
+ * One or more {@link NavigationParameterTypeMapper} can be registered using the Java {@link ServiceLoader} extensions
+ * to provide support to further parameter value types.
  * </p>
  * 
  * @since 5.2.0

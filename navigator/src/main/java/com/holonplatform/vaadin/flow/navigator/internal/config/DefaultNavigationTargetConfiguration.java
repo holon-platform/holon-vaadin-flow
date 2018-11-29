@@ -50,11 +50,11 @@ import com.holonplatform.core.internal.utils.ClassUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
+import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
-import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.Route;
@@ -86,30 +86,15 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	private final Authenticate authenticate;
 	private final Set<String> authorization;
 
-	private final NavigationParameterMapper navigationParameterMapper;
-
 	/**
-	 * Constructor using default {@link NavigationParameterMapper}.
+	 * Constructor.
 	 * @param navigationTarget The navigation target class (not null)
 	 * @throws NavigationTargetConfigurationException If a configuration error occurred
 	 */
 	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget) {
-		this(navigationTarget, NavigationParameterMapper.getDefault());
-	}
-
-	/**
-	 * Constructor.
-	 * @param navigationTarget The navigation target class (not null)
-	 * @param navigationParameterMapper The {@link NavigationParameterMapper} to use (nt null)
-	 * @throws NavigationTargetConfigurationException If a configuration error occurred
-	 */
-	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget,
-			NavigationParameterMapper navigationParameterMapper) {
 		super();
 		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
-		ObjectUtils.argumentNotNull(navigationParameterMapper, "Navigation parameter mapper must be not null");
 		this.navigationTarget = navigationTarget;
-		this.navigationParameterMapper = navigationParameterMapper;
 		this.authenticate = navigationTarget.getAnnotation(Authenticate.class);
 		final Optional<Set<String>> roles = getAuthorizationRoles(navigationTarget);
 		this.authorization = roles.orElse(Collections.emptySet());
@@ -128,7 +113,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		}
 		this.onShowMethods = detectAnnotatedMethods(navigationTarget, OnShow.class, AfterNavigationEvent.class);
 		this.onLeaveMethods = detectAnnotatedMethods(navigationTarget, OnLeave.class, BeforeLeaveEvent.class);
-		this.queryParameterDefinitions = detectURLParameters(navigationTarget, navigationParameterMapper);
+		this.queryParameterDefinitions = detectURLParameters(navigationTarget);
 	}
 
 	/*
@@ -138,14 +123,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	@Override
 	public Class<?> getNavigationTarget() {
 		return navigationTarget;
-	}
-
-	/**
-	 * Get the {@link NavigationParameterMapper} bound to this configuration.
-	 * @return the navigation parameter mapper
-	 */
-	public NavigationParameterMapper getNavigationParameterMapper() {
-		return navigationParameterMapper;
 	}
 
 	/*
@@ -293,12 +270,11 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	/**
 	 * Detect the {@link QueryParameter} annotated fields ong given navigation target class.
 	 * @param navigationTarget navigation target class
-	 * @param navigationParameterMapper The {@link NavigationParameterMapper} to use
 	 * @return The detected navigation parameters definitions
 	 * @throws NavigationTargetConfigurationException If a parameter configuration error occurred
 	 */
-	private static Map<String, QueryParameterDefinition> detectURLParameters(Class<?> navigationTarget,
-			NavigationParameterMapper navigationParameterMapper) throws NavigationTargetConfigurationException {
+	private static Map<String, QueryParameterDefinition> detectURLParameters(Class<?> navigationTarget)
+			throws NavigationTargetConfigurationException {
 		try {
 			final Map<String, QueryParameterDefinition> queryParameters = new LinkedHashMap<>(8);
 			// get property descriptors
@@ -319,8 +295,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 							getNavigationParameterContainerType(field), field);
 					definition.setRequired(annotation.required());
 					// configure
-					configureNavigationParameter(navigationParameterMapper, definition, field,
-							propertyDescriptors.get(field.getName()), annotation.defaultValue());
+					configureNavigationParameter(definition, field, propertyDescriptors.get(field.getName()),
+							annotation.defaultValue());
 					// avoid duplicates
 					if (queryParameters.values().contains(definition)) {
 						throw new NavigationTargetConfigurationException("Duplicate query parameter name: " + name
@@ -354,17 +330,15 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/**
 	 * Common navigation parameter configuration.
-	 * @param navigationParameterMapper Navigation parameter mapper
 	 * @param definition Parameter definition
 	 * @param field Parameter field
 	 * @param propertyDescriptor Field property descriptor
 	 * @param defaultValue Optional default value
 	 */
-	private static void configureNavigationParameter(NavigationParameterMapper navigationParameterMapper,
-			AbstractNavigationParameterDefinition definition, Field field, PropertyDescriptor propertyDescriptor,
-			String defaultValue) {
+	private static void configureNavigationParameter(AbstractNavigationParameterDefinition definition, Field field,
+			PropertyDescriptor propertyDescriptor, String defaultValue) {
 		// default value
-		navigationParameterMapper.deserialize(definition.getType(), AnnotationUtils.getStringValue(defaultValue))
+		NavigationParameterMapper.get().deserialize(definition.getType(), AnnotationUtils.getStringValue(defaultValue))
 				.ifPresent(value -> {
 					definition.setDefaultValue(value);
 				});

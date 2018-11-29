@@ -24,7 +24,6 @@ import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetC
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProviderRegistry;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetAfterNavigationListener;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetBeforeEnterListener;
-import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetBeforeLeaveListener;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
@@ -64,8 +63,6 @@ public class ViewNavigatorServiceInitListener implements VaadinServiceInitListen
 		event.getSource().addUIInitListener(e -> {
 			e.getUI().addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
 			e.getUI().addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());
-			e.getUI().addBeforeLeaveListener(new DefaultNavigationTargetBeforeLeaveListener());
-
 			LOGGER.debug(() -> "ViewNavigator event listeners setted up");
 		});
 	}

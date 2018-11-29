@@ -18,11 +18,14 @@ package com.holonplatform.vaadin.flow.navigator.internal;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.ViewNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.UI;
@@ -72,27 +75,17 @@ public class DefaultViewNavigator implements ViewNavigator {
 	@Override
 	public void navigateToLocation(String location) {
 		final ViewLocation viewLocation = getViewLocation(location);
-		navigateToLocation(viewLocation.getPath().orElse(""),
+		navigate(viewLocation.getPath().orElse(""),
 				viewLocation.getQuery().map(q -> LocationUtils.getQueryParameters(q)).orElse(Collections.emptyMap()));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateToLocation(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public void navigateToLocation(String location, Map<String, List<String>> parameters) {
-		getUI().navigate((location != null) ? location : "",
-				(parameters != null) ? new QueryParameters(parameters) : QueryParameters.empty());
-	}
-
-	/* (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateTo(java.lang.String, java.util.Map)
 	 */
 	@Override
 	public void navigateTo(String path, Map<String, Object> parameters) {
-		// TODO Auto-generated method stub
-		
+		navigate(path, serializeQueryParameters(parameters));
 	}
 
 	/*
@@ -111,6 +104,33 @@ public class DefaultViewNavigator implements ViewNavigator {
 	@Override
 	public void navigateBack() {
 		getUI().getPage().getHistory().back();
+	}
+
+	/**
+	 * Navigate to given path.
+	 * @param path The navigation path. If <code>null</code>, the default <code>""</code> path will be used.
+	 * @param parameters Optional query parameters
+	 */
+	protected void navigate(String path, Map<String, List<String>> parameters) {
+		getUI().navigate((path != null) ? path : "",
+				(parameters != null) ? new QueryParameters(parameters) : QueryParameters.empty());
+	}
+
+	/**
+	 * Serialize given query parameters.
+	 * @param parameters The query parameters
+	 * @return The serialized query parameters
+	 */
+	protected Map<String, List<String>> serializeQueryParameters(Map<String, Object> parameters) {
+		if (parameters != null && !parameters.isEmpty()) {
+			final NavigationParameterMapper mapper = NavigationParameterMapper.get();
+			final Map<String, List<String>> serialized = new HashMap<>(parameters.size());
+			for (Entry<String, Object> e : parameters.entrySet()) {
+				serialized.put(e.getKey(), mapper.serialize(e.getValue()));
+			}
+			return serialized;
+		}
+		return Collections.emptyMap();
 	}
 
 	/**

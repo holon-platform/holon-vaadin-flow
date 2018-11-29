@@ -28,15 +28,13 @@ import com.holonplatform.auth.exceptions.AuthenticationException;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.VaadinHttpRequest;
 import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.QueryParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.mapper.NavigationParameterMapper;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.server.VaadinRequest;
@@ -52,25 +50,6 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 
 	private static final long serialVersionUID = 4407342989579425922L;
 
-	private final NavigationParameterMapper navigationParameterMapper;
-
-	/**
-	 * Constructor using default navigation parameters mapper.
-	 */
-	public DefaultNavigationTargetBeforeEnterListener() {
-		this(NavigationParameterMapper.getDefault());
-	}
-
-	/**
-	 * Constructor.
-	 * @param navigationParameterMapper Navigation parameters mapper (not null)
-	 */
-	public DefaultNavigationTargetBeforeEnterListener(NavigationParameterMapper navigationParameterMapper) {
-		super();
-		ObjectUtils.argumentNotNull(navigationParameterMapper, "NavigationParameterMapper must be not null");
-		this.navigationParameterMapper = navigationParameterMapper;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.vaadin.flow.router.internal.BeforeEnterHandler#beforeEnter(com.vaadin.flow.router.BeforeEnterEvent)
@@ -84,7 +63,7 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 			// check authentication
 			if (checkAuthentication(event, configuration)) {
 				// check parameters
-				checkNavigationParameters(event, configuration, navigationParameterMapper);
+				checkNavigationParameters(event, configuration);
 			}
 		}
 	}
@@ -93,11 +72,10 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 	 * Check the navigation parameters.
 	 * @param event The navigation event
 	 * @param configuration The navigation target configuration
-	 * @param navigationParameterMapper Navigation parameter mapper
 	 * @return <code>true</code> if the navigation should proceed, <code>false</code> otherwise
 	 */
 	private static boolean checkNavigationParameters(BeforeEnterEvent event,
-			NavigationTargetConfiguration configuration, NavigationParameterMapper navigationParameterMapper) {
+			NavigationTargetConfiguration configuration) {
 		// query parameters
 		final Map<String, List<String>> queryParameters = event.getLocation().getQueryParameters().getParameters();
 		for (Entry<String, QueryParameterDefinition> entry : configuration.getQueryParameters().entrySet()) {
