@@ -55,7 +55,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	 */
 	@Override
 	public void afterNavigation(AfterNavigationEvent event) {
-		if (event.getActiveChain().size() > 0) {
+		if (event.getActiveChain() != null && !event.getActiveChain().isEmpty()) {
 			// current view
 			final HasElement view = event.getActiveChain().get(0);
 			if (view != null) {

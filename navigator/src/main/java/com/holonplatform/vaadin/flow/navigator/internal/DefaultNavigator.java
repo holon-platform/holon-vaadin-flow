@@ -26,12 +26,16 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.navigator.NavigationChangeListener;
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * Default {@link Navigator} implementation.
@@ -86,8 +90,17 @@ public class DefaultNavigator implements Navigator {
 	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateTo(java.lang.String, java.util.Map)
 	 */
 	@Override
-	public void navigateTo(String path, Map<String, Object> parameters) {
-		navigate(path, serializeQueryParameters(parameters));
+	public void navigateTo(String path, Map<String, Object> queryParameters) {
+		navigate(path, serializeQueryParameters(queryParameters));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#navigateTo(java.lang.Class, java.util.Map)
+	 */
+	@Override
+	public void navigateTo(Class<? extends Component> navigationTarget, Map<String, Object> queryParameters) {
+		navigate(getUI().getRouter().getUrlBase(navigationTarget), serializeQueryParameters(queryParameters));
 	}
 
 	/*
@@ -108,14 +121,29 @@ public class DefaultNavigator implements Navigator {
 		getUI().getPage().getHistory().back();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#addNavigationChangeListener(com.holonplatform.vaadin.flow.navigator.NavigationChangeListener)
+	 */
+	@Override
+	public Registration addNavigationChangeListener(NavigationChangeListener navigationChangeListener) {
+		ObjectUtils.argumentNotNull(navigationChangeListener, "NavigationChangeListener must be not null");
+		return getUI().addAfterNavigationListener(e -> {
+			HasElement target = null;
+			if (e.getActiveChain() != null && !e.getActiveChain().isEmpty()) {
+				target = e.getActiveChain().get(0);
+			}
+			navigationChangeListener.onNavigationChange(new DefaultNavigationChangeEvent(e.getLocation(), target));
+		});
+	}
+
 	/**
 	 * Navigate to given path.
 	 * @param path The navigation path. If <code>null</code>, the default <code>""</code> path will be used.
 	 * @param parameters Optional query parameters
 	 */
-	protected void navigate(String path, Map<String, List<String>> parameters) {
+	protected void navigate(String path, Map<String, List<String>> queryParameters) {
 		getUI().navigate((path != null) ? path : "",
-				(parameters != null) ? new QueryParameters(parameters) : QueryParameters.empty());
+				(queryParameters != null) ? new QueryParameters(queryParameters) : QueryParameters.empty());
 	}
 
 	/**

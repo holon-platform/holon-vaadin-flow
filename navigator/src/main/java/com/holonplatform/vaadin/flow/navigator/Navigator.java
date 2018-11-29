@@ -26,10 +26,12 @@ import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.DefaultNavigationBuilder;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * Handles the navigation between the available UI <em>routes</em>, relying on the UI {@link Router} to implement the
@@ -76,17 +78,45 @@ public interface Navigator extends Serializable {
 	}
 
 	/**
-	 * Navigate to the given path, using the provided view parameters.
+	 * Navigate to the given path, using the provided query parameters.
 	 * <p>
-	 * See the {@link QueryParameter} annotation to learn about the supported query parameter value types.
+	 * The query parameter values will be serialized to be included in the navigation location URL, using a
+	 * {@link NavigationParameterMapper}. See the {@link QueryParameter} annotation to learn about the supported query
+	 * parameter value types.
 	 * </p>
 	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
-	 * @param parameters The view parameters to be serialized into the location query parameters
+	 * @param parameters A map of query parameters, which associates the parameter names to their values
 	 */
-	void navigateTo(String path, Map<String, Object> parameters);
+	void navigateTo(String path, Map<String, Object> queryParameters);
 
 	/**
-	 * Navigates to the default view, i.e. navigates to the empty <code>""</code> route path.
+	 * Navigate to the given navigation target, using the provided query parameters.
+	 * <p>
+	 * The query parameter values will be serialized to be included in the navigation location URL, using a
+	 * {@link NavigationParameterMapper}. See the {@link QueryParameter} annotation to learn about the supported query
+	 * parameter value types.
+	 * </p>
+	 * <p>
+	 * The navigation target must be declared as a route, for example using the {@link Route} annotation.
+	 * </p>
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param parameters A map of query parameters, which associates the parameter names to their values
+	 */
+	void navigateTo(Class<? extends Component> navigationTarget, Map<String, Object> queryParameters);
+
+	/**
+	 * Navigate to the given navigation target.
+	 * <p>
+	 * The navigation target must be declared as a route, for example using the {@link Route} annotation.
+	 * </p>
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 */
+	default void navigateTo(Class<? extends Component> navigationTarget) {
+		navigateTo(navigationTarget, Collections.emptyMap());
+	}
+
+	/**
+	 * Navigates to the default navigation target, i.e. navigates to the empty <code>""</code> route path.
 	 */
 	void navigateToDefault();
 
@@ -113,6 +143,13 @@ public interface Navigator extends Serializable {
 		return new DefaultNavigationBuilder(this, path);
 	}
 
+	/**
+	 * Add a {@link NavigationChangeListener} to listen to navigation target/location changes.
+	 * @param navigationChangeListener The listener to add (not null)
+	 * @return The registration handler
+	 */
+	Registration addNavigationChangeListener(NavigationChangeListener navigationChangeListener);
+
 	// ------- getters
 
 	/**
@@ -127,7 +164,8 @@ public interface Navigator extends Serializable {
 	 * Get the {@link Navigator} bound to the current UI, throwing an {@link IllegalStateException} if the current UI is
 	 * not available or no {@link Navigator} is bound to the current UI.
 	 * @return The {@link Navigator} bound to the current UI
-	 * @throws IllegalStateException If the current UI is not available or no ViewNavigator is bound to the current UI
+	 * @throws IllegalStateException If the current UI is not available or no {@link Navigator} is bound to the current
+	 *         UI
 	 */
 	static Navigator require() {
 		return require(Optional.ofNullable(UI.getCurrent())
@@ -147,10 +185,10 @@ public interface Navigator extends Serializable {
 	 * Get the {@link Navigator} bound to given UI, throwing an {@link IllegalStateException} if not available.
 	 * @param ui The UI (not null)
 	 * @return The {@link Navigator} bound to given UI
-	 * @throws IllegalStateException If a ViewNavigator is not available for given UI
+	 * @throws IllegalStateException If a {@link Navigator} is not available for given UI
 	 */
 	static Navigator require(UI ui) {
-		return get(ui).orElseThrow(() -> new IllegalStateException("No ViewNavigator available for UI [" + ui + "]"));
+		return get(ui).orElseThrow(() -> new IllegalStateException("No Navigator available for UI [" + ui + "]"));
 	}
 
 	// ------- creator
@@ -220,62 +258,6 @@ public interface Navigator extends Serializable {
 		 * any.
 		 */
 		void navigate();
-
-	}
-
-	// ------- exceptions
-
-	/**
-	 * Exception related to navigation errors.
-	 */
-	public class ViewNavigationException extends RuntimeException {
-
-		private static final long serialVersionUID = -5449225408415110424L;
-
-		/**
-		 * The navigation location to which this exception is related.
-		 */
-		private final String location;
-
-		/**
-		 * Constructor with location and error message.
-		 * @param location Navigation location
-		 * @param message Error message
-		 */
-		public ViewNavigationException(String location, String message) {
-			super(message);
-			this.location = location;
-		}
-
-		/**
-		 * Constructor with location and nested exception.
-		 * @param location Navigation location
-		 * @param cause Nested exception
-		 */
-		public ViewNavigationException(String location, Throwable cause) {
-			this(location,
-					(location != null) ? "Failed to navigate to location [" + location + "]" : "Navigation failed",
-					cause);
-		}
-
-		/**
-		 * Constructor with location, error message and nested exception.
-		 * @param location Navigation location
-		 * @param message Error message
-		 * @param cause Nested exception
-		 */
-		public ViewNavigationException(String location, String message, Throwable cause) {
-			super(message, cause);
-			this.location = location;
-		}
-
-		/**
-		 * Get the navigation location to which this exception is related, if available.
-		 * @return Optional navigation location
-		 */
-		public Optional<String> getLocation() {
-			return Optional.ofNullable(location);
-		}
 
 	}
 
