@@ -27,6 +27,7 @@ import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.DefaultNavigationBuilder;
 import com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
 
@@ -101,7 +102,9 @@ public interface Navigator extends Serializable {
 	 * Gets a {@link NavigationBuilder} to fluently build a navigation location for the given <code>path</code>,
 	 * including any URL query parameter.
 	 * <p>
-	 * The {@link NavigationBuilder#navigate()} can be used to trigger the actual navigation.
+	 * The {@link NavigationBuilder#navigate()} can be used to trigger the actual navigation. Otherwise, the navigation
+	 * location can be obtained as a {@link Location}, using {@link NavigationBuilder#asLocation()} or as a URL, using
+	 * {@link NavigationBuilder#asLocationURL()}.
 	 * </p>
 	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
 	 * @return A new {@link NavigationBuilder}
@@ -195,6 +198,22 @@ public interface Navigator extends Serializable {
 		 * @return this
 		 */
 		NavigationBuilder withQueryParameter(String name, List<?> values);
+
+		/**
+		 * Get the navigation location as a {@link Location}, including the navigation path and any declared query
+		 * parameter.
+		 * @return the navigation {@link Location}
+		 */
+		Location asLocation();
+
+		/**
+		 * Get the navigation location as the URL part which includes the navigation path and any declared query
+		 * parameter.
+		 * @return the navigation location URL part
+		 */
+		default String asLocationURL() {
+			return asLocation().getPathWithQueryParameters();
+		}
 
 		/**
 		 * Navigates to the location which is composed by the specified path and the provided query parameter values, if

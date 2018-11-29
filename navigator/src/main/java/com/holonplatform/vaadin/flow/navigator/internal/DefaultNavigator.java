@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 /**
@@ -122,7 +123,7 @@ public class DefaultNavigator implements Navigator {
 	 * @param parameters The query parameters
 	 * @return The serialized query parameters
 	 */
-	protected Map<String, List<String>> serializeQueryParameters(Map<String, Object> parameters) {
+	protected static Map<String, List<String>> serializeQueryParameters(Map<String, Object> parameters) {
 		if (parameters != null && !parameters.isEmpty()) {
 			final NavigationParameterMapper mapper = NavigationParameterMapper.get();
 			final Map<String, List<String>> serialized = new HashMap<>(parameters.size());
@@ -180,10 +181,27 @@ public class DefaultNavigator implements Navigator {
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#asLocation()
+		 */
+		@Override
+		public Location asLocation() {
+			return new Location(path, new QueryParameters(serializeQueryParameters(getQueryParameters())));
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator.NavigationBuilder#navigate()
 		 */
 		@Override
 		public void navigate() {
+			navigator.navigateTo(path, getQueryParameters());
+		}
+
+		/**
+		 * Get the declared query parameters as a map of parameter names and values.
+		 * @return The query parameters map
+		 */
+		private Map<String, Object> getQueryParameters() {
 			Map<String, Object> parameters = new HashMap<>(queryParameters.size());
 			for (Entry<String, List<Object>> queryParameter : queryParameters.entrySet()) {
 				if (queryParameter.getValue() != null && !queryParameter.getValue().isEmpty()) {
@@ -192,8 +210,7 @@ public class DefaultNavigator implements Navigator {
 									: queryParameter.getValue());
 				}
 			}
-			// navigate
-			navigator.navigateTo(path, parameters);
+			return parameters;
 		}
 
 	}
