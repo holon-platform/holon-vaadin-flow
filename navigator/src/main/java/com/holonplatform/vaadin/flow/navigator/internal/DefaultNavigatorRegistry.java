@@ -22,15 +22,15 @@ import java.util.WeakHashMap;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
-import com.holonplatform.vaadin.flow.navigator.ViewNavigator;
+import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.vaadin.flow.component.UI;
 
 /**
- * Default {@link ViewNavigatorRegistry} instance.
+ * Default {@link NavigatorRegistry} instance.
  *
  * @since 5.2.0
  */
-public enum DefaultViewNavigatorRegistry implements ViewNavigatorRegistry {
+public enum DefaultNavigatorRegistry implements NavigatorRegistry {
 
 	/**
 	 * Singleton instance
@@ -45,7 +45,7 @@ public enum DefaultViewNavigatorRegistry implements ViewNavigatorRegistry {
 	/**
 	 * UI navigator bindings.
 	 */
-	private static final Map<UI, ViewNavigator> viewNavigators = new WeakHashMap<>();
+	private static final Map<UI, Navigator> viewNavigators = new WeakHashMap<>();
 
 	/*
 	 * (non-Javadoc)
@@ -53,7 +53,7 @@ public enum DefaultViewNavigatorRegistry implements ViewNavigatorRegistry {
 	 * com.holonplatform.vaadin.flow.navigator.ViewNavigator)
 	 */
 	@Override
-	public void bind(UI ui, ViewNavigator navigator) {
+	public void bind(UI ui, Navigator navigator) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
 		ObjectUtils.argumentNotNull(navigator, "ViewNavigator must be not null");
 		viewNavigators.put(ui, navigator);
@@ -66,9 +66,9 @@ public enum DefaultViewNavigatorRegistry implements ViewNavigatorRegistry {
 	 * @see com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry#unbind(com.vaadin.flow.component.UI)
 	 */
 	@Override
-	public Optional<ViewNavigator> unbind(UI ui) {
+	public Optional<Navigator> unbind(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		final ViewNavigator navigator = viewNavigators.remove(ui);
+		final Navigator navigator = viewNavigators.remove(ui);
 		if (navigator != null) {
 			LOGGER.debug(() -> "ViewNavigator [" + navigator + "] unbound from UI [" + ui + "] - UI id: ["
 					+ ui.getUIId() + "]");
@@ -82,7 +82,7 @@ public enum DefaultViewNavigatorRegistry implements ViewNavigatorRegistry {
 	 * com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry#getNavigator(com.vaadin.flow.component.UI)
 	 */
 	@Override
-	public Optional<ViewNavigator> getNavigator(UI ui) {
+	public Optional<Navigator> getNavigator(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
 		return Optional.ofNullable(viewNavigators.get(ui));
 	}

@@ -19,7 +19,7 @@ import java.util.ServiceLoader;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
-import com.holonplatform.vaadin.flow.navigator.ViewNavigator;
+import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProviderRegistry;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetAfterNavigationListener;
@@ -28,7 +28,7 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
 /**
- * A {@link VaadinServiceInitListener} to configure the UI event listeners used by {@link ViewNavigator} for navigation
+ * A {@link VaadinServiceInitListener} to configure the UI event listeners used by {@link Navigator} for navigation
  * targets configuration.
  * <p>
  * The listener is automatically registered using {@link ServiceLoader}.
@@ -36,7 +36,7 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
  *
  * @since 5.2.0
  */
-public class ViewNavigatorServiceInitListener implements VaadinServiceInitListener {
+public class NavigatorServiceInitListener implements VaadinServiceInitListener {
 
 	private static final long serialVersionUID = 7465077536980858875L;
 
@@ -57,7 +57,7 @@ public class ViewNavigatorServiceInitListener implements VaadinServiceInitListen
 		});
 		// UI navigator initialization
 		event.getSource().addUIInitListener(e -> {
-			ViewNavigatorRegistry.getCurrent().bind(e.getUI(), ViewNavigator.create(e.getUI()));
+			NavigatorRegistry.getCurrent().bind(e.getUI(), Navigator.create(e.getUI()));
 		});
 		// UI navigation listeners
 		event.getSource().addUIInitListener(e -> {

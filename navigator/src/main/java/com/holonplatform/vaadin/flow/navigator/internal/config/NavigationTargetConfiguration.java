@@ -25,7 +25,6 @@ import java.util.Set;
 
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 
 /**
@@ -64,12 +63,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 	 * @return the navigation target class {@link OnShow} annotated methods, or an empty list if none
 	 */
 	List<Method> getOnShowMethods();
-
-	/**
-	 * Get the navigation target class {@link OnLeave} annotated methods, if any.
-	 * @return the navigation target class {@link OnLeave} annotated methods, or an empty list if none
-	 */
-	List<Method> getOnLeaveMethods();
 
 	/**
 	 * Check whether authentication is required to access this navigation target.

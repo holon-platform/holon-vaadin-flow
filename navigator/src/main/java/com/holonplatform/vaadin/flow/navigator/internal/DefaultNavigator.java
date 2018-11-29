@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,17 +27,17 @@ import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
-import com.holonplatform.vaadin.flow.navigator.ViewNavigator;
+import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.QueryParameters;
 
 /**
- * Default {@link ViewNavigator} implementation.
+ * Default {@link Navigator} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultViewNavigator implements ViewNavigator {
+public class DefaultNavigator implements Navigator {
 
 	private static final long serialVersionUID = -5365345141554389835L;
 
@@ -49,7 +50,7 @@ public class DefaultViewNavigator implements ViewNavigator {
 	 * Constructor.
 	 * @param ui The {@link UI} to which the navigator is bound (not null)
 	 */
-	public DefaultViewNavigator(UI ui) {
+	public DefaultNavigator(UI ui) {
 		super();
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
 		this.uiReference = new WeakReference<>(ui);
@@ -131,6 +132,70 @@ public class DefaultViewNavigator implements ViewNavigator {
 			return serialized;
 		}
 		return Collections.emptyMap();
+	}
+
+	/**
+	 * Default {@link NavigationBuilder} implementation.
+	 * 
+	 * @since 5.2.0
+	 */
+	public static class DefaultNavigationBuilder implements NavigationBuilder {
+
+		private static final long serialVersionUID = -3835424377998263190L;
+
+		private final Navigator navigator;
+
+		private final String path;
+
+		private final Map<String, List<Object>> queryParameters = new HashMap<>(8);
+
+		/**
+		 * Constructor.
+		 * @param path The navigation path
+		 */
+		public DefaultNavigationBuilder(Navigator navigator, String path) {
+			super();
+			ObjectUtils.argumentNotNull(navigator, "Navigator must be not null");
+			this.navigator = navigator;
+			this.path = (path != null) ? path : "";
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.navigator.ViewNavigator.NavigationBuilder#withQueryParameter(java.lang.String,
+		 * java.util.List)
+		 */
+		@Override
+		public NavigationBuilder withQueryParameter(String name, List<?> values) {
+			if (name == null || name.trim().equals("")) {
+				throw new IllegalArgumentException("Parameter name must be nt null or blank");
+			}
+			if (values != null && !values.isEmpty()) {
+				final List<Object> parameterValues = queryParameters.computeIfAbsent(name, n -> new LinkedList<>());
+				values.stream().filter(v -> v != null).forEach(v -> parameterValues.add(v));
+			}
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator.NavigationBuilder#navigate()
+		 */
+		@Override
+		public void navigate() {
+			Map<String, Object> parameters = new HashMap<>(queryParameters.size());
+			for (Entry<String, List<Object>> queryParameter : queryParameters.entrySet()) {
+				if (queryParameter.getValue() != null && !queryParameter.getValue().isEmpty()) {
+					parameters.put(queryParameter.getKey(),
+							(queryParameter.getValue().size() == 1) ? queryParameter.getValue().get(0)
+									: queryParameter.getValue());
+				}
+			}
+			// navigate
+			navigator.navigateTo(path, parameters);
+		}
+
 	}
 
 	/**

@@ -23,14 +23,38 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
-import com.holonplatform.vaadin.flow.navigator.internal.DefaultViewNavigator;
-import com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry;
+import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator;
+import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.DefaultNavigationBuilder;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.Router;
 
 /**
- * TODO
+ * Handles the navigation between the available UI <em>routes</em>, relying on the UI {@link Router} to implement the
+ * actual routing.
+ * <p>
+ * A route is decalred using the {@link Route} annotation and bound to a navigation path. See the {@link Router}
+ * documentation for more information about route definitions and routing layouts.
+ * </p>
+ * <p>
+ * The {@link Navigator} supports navigation parameters declaration and mapping, performing the parameters value
+ * serialization to translate the Java type values into the {@link String} type URL parameter values.
+ * </p>
+ * <p>
+ * It provides the {@link #navigateBack()} method to navigate back in the browser history.
+ * </p>
+ * <p>
+ * The {@link #get()} and {@link #require()} static methods can be used to obtain the {@link Navigator} reference for
+ * the current UI.
+ * </p>
+ * 
+ * @since 5.2.0
+ * 
+ * @see QueryParameter
+ * @see NavigationParameterMapper
  */
-public interface ViewNavigator extends Serializable {
+public interface Navigator extends Serializable {
 
 	/**
 	 * Navigate to the given location.
@@ -73,55 +97,68 @@ public interface ViewNavigator extends Serializable {
 	 */
 	void navigateBack();
 
+	/**
+	 * Gets a {@link NavigationBuilder} to fluently build a navigation location for the given <code>path</code>,
+	 * including any URL query parameter.
+	 * <p>
+	 * The {@link NavigationBuilder#navigate()} can be used to trigger the actual navigation.
+	 * </p>
+	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
+	 * @return A new {@link NavigationBuilder}
+	 */
+	default NavigationBuilder navigation(String path) {
+		return new DefaultNavigationBuilder(this, path);
+	}
+
 	// ------- getters
 
 	/**
-	 * Get the {@link ViewNavigator} bound to the current UI, if available.
-	 * @return Optional {@link ViewNavigator} bound to the current UI
+	 * Get the {@link Navigator} bound to the current UI, if available.
+	 * @return Optional {@link Navigator} bound to the current UI
 	 */
-	static Optional<ViewNavigator> get() {
+	static Optional<Navigator> get() {
 		return Optional.ofNullable(UI.getCurrent()).flatMap(ui -> get(ui));
 	}
 
 	/**
-	 * Get the {@link ViewNavigator} bound to the current UI, throwing an {@link IllegalStateException} if the current
-	 * UI is not available or no {@link ViewNavigator} is bound to the current UI.
-	 * @return The {@link ViewNavigator} bound to the current UI
+	 * Get the {@link Navigator} bound to the current UI, throwing an {@link IllegalStateException} if the current UI is
+	 * not available or no {@link Navigator} is bound to the current UI.
+	 * @return The {@link Navigator} bound to the current UI
 	 * @throws IllegalStateException If the current UI is not available or no ViewNavigator is bound to the current UI
 	 */
-	static ViewNavigator require() {
+	static Navigator require() {
 		return require(Optional.ofNullable(UI.getCurrent())
 				.orElseThrow(() -> new IllegalStateException("The current UI is not available")));
 	}
 
 	/**
-	 * Get the {@link ViewNavigator} bound to given UI, if available.
+	 * Get the {@link Navigator} bound to given UI, if available.
 	 * @param ui The UI (not null)
-	 * @return Optional {@link ViewNavigator} bound to given UI
+	 * @return Optional {@link Navigator} bound to given UI
 	 */
-	static Optional<ViewNavigator> get(UI ui) {
-		return ViewNavigatorRegistry.getCurrent().getNavigator(ui);
+	static Optional<Navigator> get(UI ui) {
+		return NavigatorRegistry.getCurrent().getNavigator(ui);
 	}
 
 	/**
-	 * Get the {@link ViewNavigator} bound to given UI, throwing an {@link IllegalStateException} if not available.
+	 * Get the {@link Navigator} bound to given UI, throwing an {@link IllegalStateException} if not available.
 	 * @param ui The UI (not null)
-	 * @return The {@link ViewNavigator} bound to given UI
+	 * @return The {@link Navigator} bound to given UI
 	 * @throws IllegalStateException If a ViewNavigator is not available for given UI
 	 */
-	static ViewNavigator require(UI ui) {
+	static Navigator require(UI ui) {
 		return get(ui).orElseThrow(() -> new IllegalStateException("No ViewNavigator available for UI [" + ui + "]"));
 	}
 
 	// ------- creator
 
 	/**
-	 * Create a new {@link ViewNavigator} bound to given UI.
+	 * Create a new {@link Navigator} bound to given UI.
 	 * @param ui The {@link UI} to which the navigator is bound (not null)
-	 * @return A new {@link ViewNavigator} instance
+	 * @return A new {@link Navigator} instance
 	 */
-	static ViewNavigator create(UI ui) {
-		return new DefaultViewNavigator(ui);
+	static Navigator create(UI ui) {
+		return new DefaultNavigator(ui);
 	}
 
 	// ------- builders

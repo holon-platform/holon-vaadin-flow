@@ -51,12 +51,10 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
-import com.holonplatform.vaadin.flow.navigator.annotations.OnLeave;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
 
@@ -80,7 +78,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	private final Map<String, QueryParameterDefinition> queryParameterDefinitions;
 
 	private final List<Method> onShowMethods;
-	private final List<Method> onLeaveMethods;
 
 	private final boolean authenticationRequired;
 	private final Authenticate authenticate;
@@ -112,7 +109,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 			this.caption = null;
 		}
 		this.onShowMethods = detectAnnotatedMethods(navigationTarget, OnShow.class, AfterNavigationEvent.class);
-		this.onLeaveMethods = detectAnnotatedMethods(navigationTarget, OnLeave.class, BeforeLeaveEvent.class);
 		this.queryParameterDefinitions = detectURLParameters(navigationTarget);
 	}
 
@@ -159,15 +155,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	@Override
 	public List<Method> getOnShowMethods() {
 		return onShowMethods;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getOnLeaveMethods()
-	 */
-	@Override
-	public List<Method> getOnLeaveMethods() {
-		return onLeaveMethods;
 	}
 
 	/*
