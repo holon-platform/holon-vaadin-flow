@@ -107,9 +107,12 @@
 		<module>test</module>
 		<module>core</module>
 		<module>navigator</module>
-		<!--  <module>spring</module> <module>spring-boot</module> 
-			<module>starter</module> <module>starter-undertow</module> <module>bom</module> 
-			<module>documentation</module> -->
+		<module>spring</module>
+		<module>spring-boot</module>
+		<module>starter</module>
+		<module>starter-undertow</module>
+		<module>bom</module>
+		<module>documentation</module>
 	</modules>
 
 	<dependencies>

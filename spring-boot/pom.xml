@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.holon-platform.vaadin</groupId>
+		<artifactId>holon-vaadin-flow-root</artifactId>
+		<version>5.2.0-alpha2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>holon-vaadin-flow-spring-boot</artifactId>
+	<packaging>jar</packaging>
+
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Holon Vaadin Flow Spring Boot integration</description>
+
+	<url>https://holon-platform.com</url>
+
+	<dependencies>
+
+		<!-- Spring integration -->
+		<dependency>
+			<groupId>com.holon-platform.vaadin</groupId>
+			<artifactId>holon-vaadin-flow-spring</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- JDK9 Automatic-Module-Name -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>com.holonplatform.vaadin.flow.spring.boot</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

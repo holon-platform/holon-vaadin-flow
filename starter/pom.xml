@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.holon-platform.vaadin</groupId>
+		<artifactId>holon-vaadin-flow-root</artifactId>
+		<version>5.2.0-alpha2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>holon-starter-vaadin-flow</artifactId>
+	<packaging>jar</packaging>
+
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Holon Vaadin Flow Spring Boot starter using Tomcat</description>
+
+	<url>https://holon-platform.com</url>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Holon platform -->
+			<dependency>
+				<groupId>com.holon-platform.core</groupId>
+				<artifactId>holon-bom-platform</artifactId>
+				<version>${holon.core.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+
+		<!-- Holon base stater -->
+		<dependency>
+			<groupId>com.holon-platform.core</groupId>
+			<artifactId>holon-starter</artifactId>
+			<version>${holon.core.version}</version>
+		</dependency>
+
+		<!-- Spring Boot starter tomcat -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</dependency>
+
+		<!-- Spring Boot integration -->
+		<dependency>
+			<groupId>com.holon-platform.vaadin</groupId>
+			<artifactId>holon-vaadin-flow-spring-boot</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+
+</project>

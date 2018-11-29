@@ -1,0 +1,18 @@
+= Holon Platform Vaadin Flow Module - Reference manual
+:description: Holon platform Vaadin Flow module reference documentation. \
+The Holon Vaadin Flow module represents the platform support for the Vaadin web applications platform (version 10+), focusing on the user interface components and data binding features.
+:revnumber: {project-version}
+:apidir: ../api/holon-vaadin-flow
+:linkattrs:
+:sectnums:
+:nofooter:
+:toc: left
+:toclevels: 3
+
+Copyright © 2016-2018
+
+_Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically._
+
+== Introduction
+
+TBD
