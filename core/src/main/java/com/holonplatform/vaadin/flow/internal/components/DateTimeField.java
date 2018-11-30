@@ -29,6 +29,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -390,7 +391,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 						e.isFromClient()));
 			}
 		});
-		final Registration tl = this.time.addValueChangeListener(e -> {
+		final com.holonplatform.core.Registration tl = this.time.addValueChangeListener(e -> {
 			if (e.isUserOriginated()) {
 				listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
 						getDateValue().map(date -> LocalDateTime.of(date, e.getOldValue())).orElse(null),
@@ -594,9 +595,9 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 * holonplatform.vaadin.flow.components.events.InvalidChangeEventListener)
 	 */
 	@Override
-	public Registration addInvalidChangeListener(InvalidChangeEventListener listener) {
-		return this.date.addInvalidChangeListener(
-				e -> listener.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), this.date)));
+	public com.holonplatform.core.Registration addInvalidChangeListener(InvalidChangeEventListener listener) {
+		return RegistrationAdapter.adapt(this.date.addInvalidChangeListener(
+				e -> listener.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), this.date))));
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -33,7 +34,6 @@ import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Base {@link HasPropertySet} property components group implementation.

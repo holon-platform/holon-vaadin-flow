@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.holonplatform.core.Context;
+import com.holonplatform.core.Registration;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.DefaultNavigationBuilder;
@@ -32,7 +33,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Handles the navigation between the available UI <em>routes</em>, relying on the UI {@link Router} to implement the

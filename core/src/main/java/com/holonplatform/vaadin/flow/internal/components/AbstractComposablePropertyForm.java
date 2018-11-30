@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -34,7 +35,6 @@ import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Base {@link Composable} property form component.

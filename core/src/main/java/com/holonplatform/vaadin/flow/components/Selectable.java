@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-import com.vaadin.flow.shared.Registration;
+import com.holonplatform.core.Registration;
 
 /**
  * Represents a component which supports items selection.

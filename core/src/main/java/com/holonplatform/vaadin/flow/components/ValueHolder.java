@@ -19,8 +19,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Represents an object which holds a value and provide methods to handle such value.

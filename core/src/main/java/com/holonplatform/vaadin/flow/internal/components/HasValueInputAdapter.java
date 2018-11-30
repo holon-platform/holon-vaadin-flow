@@ -15,12 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * {@link Input} to {@link HasValue} adapter.
@@ -96,10 +96,11 @@ public class HasValueInputAdapter<T> implements HasValue<ComponentValueChangeEve
 	 * com.vaadin.flow.component.HasValue#addValueChangeListener(com.vaadin.flow.component.HasValue.ValueChangeListener)
 	 */
 	@Override
-	public Registration addValueChangeListener(
+	public com.vaadin.flow.shared.Registration addValueChangeListener(
 			ValueChangeListener<? super ComponentValueChangeEvent<Component, T>> listener) {
-		return input.addValueChangeListener(e -> listener.valueChanged(
+		final Registration r = input.addValueChangeListener(e -> listener.valueChanged(
 				new ComponentValueChangeEvent<>(input.getComponent(), this, e.getOldValue(), e.isUserOriginated())));
+		return () -> r.remove();
 	}
 
 	/*

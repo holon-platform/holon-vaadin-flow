@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.HasPlaceholder;
@@ -26,6 +27,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.Focusable;
@@ -41,7 +43,6 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.HasValueChangeMode;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Adapter to use a {@link HasValue} {@link Component} as an {@link Input}.
@@ -599,9 +600,9 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	@Override
 	public Registration addValueChangeListener(Input.ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		return field
-				.addValueChangeListener(e -> listener.valueChange(new DefaultValueChangeEvent<>(this, e.getOldValue(),
-						e.getValue(), (e instanceof ComponentEvent) ? ((ComponentEvent<?>) e).isFromClient() : false)));
+		return RegistrationAdapter.adapt(field.addValueChangeListener(
+				e -> listener.valueChange(new DefaultValueChangeEvent<>(this, e.getOldValue(), e.getValue(),
+						(e instanceof ComponentEvent) ? ((ComponentEvent<?>) e).isFromClient() : false))));
 	}
 
 	/**

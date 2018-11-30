@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.holonplatform.vaadin.flow.navigator.NavigationChangeListener;
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
@@ -34,7 +36,6 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Default {@link Navigator} implementation.
@@ -130,13 +131,13 @@ public class DefaultNavigator implements Navigator {
 	@Override
 	public Registration addNavigationChangeListener(NavigationChangeListener navigationChangeListener) {
 		ObjectUtils.argumentNotNull(navigationChangeListener, "NavigationChangeListener must be not null");
-		return getUI().addAfterNavigationListener(e -> {
+		return RegistrationAdapter.adapt(getUI().addAfterNavigationListener(e -> {
 			HasElement target = null;
 			if (e.getActiveChain() != null && !e.getActiveChain().isEmpty()) {
 				target = e.getActiveChain().get(0);
 			}
 			navigationChangeListener.onNavigationChange(new DefaultNavigationChangeEvent(e.getLocation(), target));
-		});
+		}));
 	}
 
 	/**

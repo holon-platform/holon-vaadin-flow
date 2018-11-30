@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
@@ -84,6 +85,7 @@ import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemList
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
+import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -121,7 +123,6 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.ValueProvider;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Abstract {@link ItemListing} implementation using a {@link Grid}.
@@ -904,9 +905,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	@Override
 	public Registration addSelectionListener(SelectionListener<T> selectionListener) {
 		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
-		return getGrid().addSelectionListener(e -> {
+		return RegistrationAdapter.adapt(getGrid().addSelectionListener(e -> {
 			selectionListener.onSelectionChange(new DefaultSelectionEvent<>(e.getAllSelectedItems(), e.isFromClient()));
-		});
+		}));
 	}
 
 	/*

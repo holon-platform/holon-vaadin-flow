@@ -15,6 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 
@@ -30,9 +34,19 @@ public interface HasComponentsConfigurator<C extends HasComponentsConfigurator<C
 
 	/**
 	 * Adds the given components as children of this component.
-	 * @param components THe components to add
+	 * @param components The components to add
 	 * @return this
 	 */
 	C add(Component... components);
+
+	/**
+	 * Adds the components of each {@link HasComponent} as children of this component.
+	 * @param components The {@link HasComponent}s to add
+	 * @return this
+	 */
+	default C add(HasComponent... components) {
+		return add(Arrays.asList(components).stream().map(c -> c.getComponent()).collect(Collectors.toList())
+				.toArray(new Component[0]));
+	}
 
 }

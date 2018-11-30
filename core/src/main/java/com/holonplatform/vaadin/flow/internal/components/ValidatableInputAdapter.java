@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.beans.Validators;
@@ -37,7 +38,6 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValidation;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Adapter to convert an {@link Input} instance into a {@link ValidatableInput} one.

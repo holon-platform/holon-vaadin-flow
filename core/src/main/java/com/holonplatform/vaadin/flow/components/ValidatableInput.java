@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -29,7 +30,6 @@ import com.holonplatform.vaadin.flow.internal.components.ValidatableInputAdapter
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * An {@link Input} component with validation support using {@link Validator}s.

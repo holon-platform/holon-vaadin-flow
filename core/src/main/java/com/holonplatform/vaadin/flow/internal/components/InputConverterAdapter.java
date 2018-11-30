@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Optional;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.HasPlaceholder;
@@ -33,7 +34,6 @@ import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.value.HasValueChangeMode;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * Adapter class to build a {@link Input} of a different value type from another {@link Input}, using a suitable

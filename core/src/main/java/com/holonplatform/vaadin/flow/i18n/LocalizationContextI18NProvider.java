@@ -13,23 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.components.events;
+package com.holonplatform.vaadin.flow.i18n;
 
-import com.holonplatform.core.Registration;
+import com.holonplatform.core.i18n.LocalizationContext;
+import com.vaadin.flow.i18n.I18NProvider;
 
 /**
- * {@link InvalidChangeEvent} notifier.
- * 
- * @since 5.2.0
+ * A {@link I18NProvider} which uses a {@link LocalizationContext}
+ *
  */
-@FunctionalInterface
-public interface InvalidChangeEventNotifier {
-
-	/**
-	 * Add an invalid change event listener.
-	 * @param listener The listener to add (not null)
-	 * @return An handler to remove the registered listener
-	 */
-	Registration addInvalidChangeListener(InvalidChangeEventListener listener);
+public interface LocalizationContextI18NProvider extends I18NProvider {
 
 }

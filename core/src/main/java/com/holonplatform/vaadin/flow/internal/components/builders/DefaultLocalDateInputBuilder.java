@@ -34,6 +34,7 @@ import com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -113,8 +114,9 @@ public class DefaultLocalDateInputBuilder extends
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
-				.invalidChangeEventNotifierSupplier(f -> listener -> f.addInvalidChangeListener(
-						e -> listener.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), f))))
+				.invalidChangeEventNotifierSupplier(
+						f -> listener -> RegistrationAdapter.adapt(f.addInvalidChangeListener(e -> listener
+								.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), f)))))
 				.withValueChangeListeners(valueChangeListeners).build();
 	}
 
