@@ -19,15 +19,30 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.holonplatform.vaadin.flow.navigator.Navigator;
+import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
+import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.spring.EnableNavigator;
 import com.holonplatform.vaadin.flow.spring.boot.internal.DefaultNavigatorErrorsRegistrar;
 
 /**
- * TODO
+ * A Spring Boot auto-configuration class to setup a UI-scoped {@link Navigator} bean and register the default error
+ * components for the {@link UnauthorizedNavigationException} and {@link ForbiddenNavigationException} navigation
+ * exceptions.
+ * <p>
+ * The UI-scoped {@link Navigator} bean is registered only if there is not another {@link Navigator} type bean
+ * registered in context.
+ * </p>
+ * <p>
+ * The <code>holon.vaadin.navigator.errors.enabled</code> boolean configuration property can be used to disable the
+ * default error components registration, setting its value to <code>false</code>.
+ * </p>
+ * 
+ * @since 5.2.0
  */
 @Configuration
 @ConditionalOnClass(Navigator.class)
@@ -43,6 +58,7 @@ public class NavigatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnProperty(prefix = "holon.vaadin.navigator.errors", name = "enabled", matchIfMissing = true)
 	@Import(DefaultNavigatorErrorsRegistrar.class)
 	static class DefaultNavigatorErrorsAutoConfiguration {
 
