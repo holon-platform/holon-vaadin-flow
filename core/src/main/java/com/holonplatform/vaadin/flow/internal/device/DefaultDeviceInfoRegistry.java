@@ -21,7 +21,6 @@ import java.util.WeakHashMap;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
-import com.holonplatform.vaadin.flow.device.DeviceInfoRegistry;
 import com.vaadin.flow.component.UI;
 
 /**
@@ -33,7 +32,7 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 
 	private static final long serialVersionUID = -3886097061085664626L;
 
-	private final Map<UI, DeviceInfo> deviceInfos = new WeakHashMap<>();
+	private final Map<UI, DeviceInfo> deviceInfos = new WeakHashMap<>(8);
 
 	/**
 	 * Get the number of the registered device infos.

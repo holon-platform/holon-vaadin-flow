@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
-import com.holonplatform.vaadin.flow.device.DeviceInfoRegistry;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinRequest;

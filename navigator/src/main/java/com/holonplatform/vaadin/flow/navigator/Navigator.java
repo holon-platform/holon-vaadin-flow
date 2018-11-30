@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.holonplatform.core.Context;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.DefaultNavigationBuilder;
@@ -58,6 +59,20 @@ import com.vaadin.flow.shared.Registration;
  * @see NavigationParameterMapper
  */
 public interface Navigator extends Serializable {
+
+	/**
+	 * Default navigation failed error message.
+	 */
+	public static final String DEFAULT_NAVIGATION_FAILED_MESSAGE = "Could not navigate to path";
+	/**
+	 * Default navigation failed error message localization code.
+	 */
+	public static final String DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE = "com.holonplatform.vaadin.flow.navigator.error";
+
+	/**
+	 * Default {@link Context} resource key.
+	 */
+	public static final String CONTEXT_KEY = Navigator.class.getName();
 
 	/**
 	 * Navigate to the given location.
@@ -150,51 +165,45 @@ public interface Navigator extends Serializable {
 	 */
 	Registration addNavigationChangeListener(NavigationChangeListener navigationChangeListener);
 
-	// ------- getters
+	// ------- getter
 
 	/**
-	 * Get the {@link Navigator} bound to the current UI, if available.
-	 * @return Optional {@link Navigator} bound to the current UI
-	 */
-	static Optional<Navigator> get() {
-		return Optional.ofNullable(UI.getCurrent()).flatMap(ui -> get(ui));
-	}
-
-	/**
-	 * Get the {@link Navigator} bound to the current UI, throwing an {@link IllegalStateException} if the current UI is
-	 * not available or no {@link Navigator} is bound to the current UI.
+	 * Get the {@link Navigator} bound to the current UI.
+	 * <p>
+	 * If a {@link Navigator} is available as a {@link Context} resource using the {@link #CONTEXT_KEY} resource key,
+	 * that instance is returned.
+	 * </p>
+	 * <p>
+	 * Otherwise, if a {@link Navigator} session registry is available, it is used to obtain the {@link Navigator} bound
+	 * the current UI, or a new {@link Navigator} instance is created and returned is the session registry is missing.
+	 * </p>
+	 * <p>
+	 * When a {@link Navigator} is not available as a {@link Context} resource, the {@link UI#getCurrent()} method is
+	 * used to obtain the current UI and if it is not available an {@link IllegalStateException} is thrown.
+	 * </p>
 	 * @return The {@link Navigator} bound to the current UI
-	 * @throws IllegalStateException If the current UI is not available or no {@link Navigator} is bound to the current
-	 *         UI
+	 * @throws IllegalStateException If a {@link Navigator} is not available from {@link Context} and the current UI is
+	 *         not available through {@link UI#getCurrent()}
 	 */
-	static Navigator require() {
-		return require(Optional.ofNullable(UI.getCurrent())
-				.orElseThrow(() -> new IllegalStateException("The current UI is not available")));
-	}
-
-	/**
-	 * Get the {@link Navigator} bound to given UI, if available.
-	 * @param ui The UI (not null)
-	 * @return Optional {@link Navigator} bound to given UI
-	 */
-	static Optional<Navigator> get(UI ui) {
-		return NavigatorRegistry.getCurrent().getNavigator(ui);
-	}
-
-	/**
-	 * Get the {@link Navigator} bound to given UI, throwing an {@link IllegalStateException} if not available.
-	 * @param ui The UI (not null)
-	 * @return The {@link Navigator} bound to given UI
-	 * @throws IllegalStateException If a {@link Navigator} is not available for given UI
-	 */
-	static Navigator require(UI ui) {
-		return get(ui).orElseThrow(() -> new IllegalStateException("No Navigator available for UI [" + ui + "]"));
+	static Navigator get() {
+		// check context
+		return Context.get().resource(CONTEXT_KEY, Navigator.class).orElseGet(() -> {
+			// use session registry, if available
+			final UI ui = Optional.ofNullable(UI.getCurrent())
+					.orElseThrow(() -> new IllegalStateException("A current UI is not available"));
+			return NavigatorRegistry.getSessionRegistry().map(r -> r.getOrCreateNavigator(ui, u -> create(u)))
+					.orElseGet(() -> create(ui));
+		});
 	}
 
 	// ------- creator
 
 	/**
 	 * Create a new {@link Navigator} bound to given UI.
+	 * <p>
+	 * The recomended way to obtain a {@link Navigator} reference is to use the {@link #get()} or {@link #require()}
+	 * methods.
+	 * </p>
 	 * @param ui The {@link UI} to which the navigator is bound (not null)
 	 * @return A new {@link Navigator} instance
 	 */

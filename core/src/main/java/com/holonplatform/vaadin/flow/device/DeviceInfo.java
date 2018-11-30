@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.device.DefaultDeviceInfo;
+import com.holonplatform.vaadin.flow.internal.device.DeviceInfoRegistry;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinRequest;
 

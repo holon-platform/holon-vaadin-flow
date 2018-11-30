@@ -13,11 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.device;
+package com.holonplatform.vaadin.flow.internal.device;
 
 import java.io.Serializable;
 import java.util.Optional;
 
+import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 

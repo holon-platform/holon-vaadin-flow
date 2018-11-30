@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.navigator.internal;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -30,12 +31,9 @@ import com.vaadin.flow.component.UI;
  *
  * @since 5.2.0
  */
-public enum DefaultNavigatorRegistry implements NavigatorRegistry {
+public class DefaultNavigatorRegistry implements NavigatorRegistry {
 
-	/**
-	 * Singleton instance
-	 */
-	INSTANCE;
+	private static final long serialVersionUID = -4967741563966590261L;
 
 	/**
 	 * Logger
@@ -45,46 +43,52 @@ public enum DefaultNavigatorRegistry implements NavigatorRegistry {
 	/**
 	 * UI navigator bindings.
 	 */
-	private static final Map<UI, Navigator> viewNavigators = new WeakHashMap<>();
+	private final Map<UI, Navigator> navigators = new WeakHashMap<>(8);
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry#bind(com.vaadin.flow.component.UI,
-	 * com.holonplatform.vaadin.flow.navigator.ViewNavigator)
+	/**
+	 * Get the number of the registered navigators.
+	 * @return the number of the registered navigators
 	 */
-	@Override
-	public void bind(UI ui, Navigator navigator) {
-		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		ObjectUtils.argumentNotNull(navigator, "ViewNavigator must be not null");
-		viewNavigators.put(ui, navigator);
-		LOGGER.debug(
-				() -> "ViewNavigator [" + navigator + "] bound to UI [" + ui + "] - UI id: [" + ui.getUIId() + "]");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry#unbind(com.vaadin.flow.component.UI)
-	 */
-	@Override
-	public Optional<Navigator> unbind(UI ui) {
-		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		final Navigator navigator = viewNavigators.remove(ui);
-		if (navigator != null) {
-			LOGGER.debug(() -> "ViewNavigator [" + navigator + "] unbound from UI [" + ui + "] - UI id: ["
-					+ ui.getUIId() + "]");
-		}
-		return Optional.ofNullable(navigator);
+	public int getNavigatorCount() {
+		return navigators.size();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.ViewNavigatorRegistry#getNavigator(com.vaadin.flow.component.UI)
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry#setNavigator(com.vaadin.flow.component.UI,
+	 * com.holonplatform.vaadin.flow.navigator.Navigator)
+	 */
+	@Override
+	public void setNavigator(UI ui, Navigator navigator) {
+		ObjectUtils.argumentNotNull(ui, "UI must be not null");
+		ObjectUtils.argumentNotNull(navigator, "ViewNavigator must be not null");
+		navigators.put(ui, navigator);
+		LOGGER.debug(() -> "Navigator [" + navigator + "] bound to UI [" + ui + "] - UI id: [" + ui.getUIId() + "]");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry#getNavigator(com.vaadin.flow.component.UI)
 	 */
 	@Override
 	public Optional<Navigator> getNavigator(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		return Optional.ofNullable(viewNavigators.get(ui));
+		return Optional.ofNullable(navigators.get(ui));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry#getOrCreateNavigator(com.vaadin.flow.component
+	 * .UI, java.util.function.Function)
+	 */
+	@Override
+	public Navigator getOrCreateNavigator(UI ui, Function<UI, Navigator> creator) {
+		ObjectUtils.argumentNotNull(ui, "UI must be not null");
+		ObjectUtils.argumentNotNull(creator, "Creator function must be not null");
+		return navigators.computeIfAbsent(ui, u -> creator.apply(u));
 	}
 
 }

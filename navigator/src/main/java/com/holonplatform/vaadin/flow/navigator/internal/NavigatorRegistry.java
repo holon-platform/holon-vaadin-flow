@@ -17,10 +17,11 @@ package com.holonplatform.vaadin.flow.navigator.internal;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.function.Function;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinSession;
 
 /**
  * {@link Navigator} instances registry.
@@ -30,50 +31,40 @@ import com.vaadin.flow.component.UI;
 public interface NavigatorRegistry extends Serializable {
 
 	/**
-	 * Default {@link Context} resource key.
-	 */
-	public static final String CONTEXT_KEY = NavigatorRegistry.class.getName();
-
-	/**
 	 * Bind the given {@link Navigator} instance to the given <code>ui</code>.
 	 * <p>
-	 * If another {@link Navigator} instance was bound to given UI, it will be replaced by the new navigator
-	 * instance.
+	 * If another {@link Navigator} instance was bound to given UI, it will be replaced by the new navigator instance.
 	 * </p>
 	 * @param ui The UI (not null)
 	 * @param navigator The navigator (not null)
 	 */
-	void bind(UI ui, Navigator navigator);
+	void setNavigator(UI ui, Navigator navigator);
 
 	/**
-	 * Unbind the {@link Navigator} from <code>ui</code>, if present.
-	 * @param ui The UI (not null)
-	 * @return The {@link Navigator} which was bound to given UI, if any.
-	 */
-	Optional<Navigator> unbind(UI ui);
-
-	/**
-	 * Get the {@link Navigator} bound to given UI.
+	 * Get the {@link Navigator} bound to given UI, if available.
 	 * @param ui The UI for which to obtain the navigator (not null)
-	 * @return The {@link Navigator} bound to given UI, if available.
+	 * @return Optional {@link Navigator} bound to given UI
 	 */
 	Optional<Navigator> getNavigator(UI ui);
 
 	/**
-	 * Get the current {@link NavigatorRegistry} made available as {@link Context} resource, using default
-	 * {@link ClassLoader}, or the default {@link NavigatorRegistry} if not available.
-	 * @return The current {@link NavigatorRegistry}, either from the current context or using the default instance
+	 * Get the {@link Navigator} bound to given UI, creating it if not present.
+	 * @param ui The UI for which to obtain the navigator (not null)
+	 * @param creator The function to use to create a new {@link Navigator} and bound it to the UI (not null)
+	 * @return The {@link Navigator} bound to given UI
 	 */
-	static NavigatorRegistry getCurrent() {
-		return Context.get().resource(CONTEXT_KEY, NavigatorRegistry.class).orElseGet(() -> getDefault());
-	}
+	Navigator getOrCreateNavigator(UI ui, Function<UI, Navigator> creator);
 
 	/**
-	 * Get the default navigator registry.
-	 * @return the default navigator registry
+	 * Get the {@link NavigatorRegistry} associated with current session, if available.
+	 * @return Optional session registry
 	 */
-	static NavigatorRegistry getDefault() {
-		return DefaultNavigatorRegistry.INSTANCE;
+	static Optional<NavigatorRegistry> getSessionRegistry() {
+		VaadinSession session = VaadinSession.getCurrent();
+		if (session != null) {
+			return Optional.ofNullable(session.getAttribute(NavigatorRegistry.class));
+		}
+		return Optional.empty();
 	}
 
 }

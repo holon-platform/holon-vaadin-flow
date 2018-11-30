@@ -16,7 +16,6 @@
 package com.holonplatform.vaadin.flow.navigator.internal;
 
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,9 +46,16 @@ public class DefaultNavigator implements Navigator {
 	private static final long serialVersionUID = -5365345141554389835L;
 
 	/**
-	 * The UI reference
+	 * The UI
 	 */
-	private final WeakReference<UI> uiReference;
+	private final UI ui;
+
+	/**
+	 * Constructor using the current UI.
+	 */
+	public DefaultNavigator() {
+		this(UI.getCurrent());
+	}
 
 	/**
 	 * Constructor.
@@ -58,19 +64,14 @@ public class DefaultNavigator implements Navigator {
 	public DefaultNavigator(UI ui) {
 		super();
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
-		this.uiReference = new WeakReference<>(ui);
+		this.ui = ui;
 	}
 
 	/**
-	 * Get the {@link UI} reference.
-	 * @return the UI reference
-	 * @throws IllegalStateException If the navigator UI reference is no more available
+	 * Get the {@link UI}.
+	 * @return the UI to which the navigator is bound
 	 */
 	protected UI getUI() {
-		final UI ui = uiReference.get();
-		if (ui == null) {
-			throw new IllegalStateException("The navigator UI reference is no more available");
-		}
 		return ui;
 	}
 
@@ -121,8 +122,10 @@ public class DefaultNavigator implements Navigator {
 		getUI().getPage().getHistory().back();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#addNavigationChangeListener(com.holonplatform.vaadin.flow.navigator.NavigationChangeListener)
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#addNavigationChangeListener(com.holonplatform.vaadin.flow.
+	 * navigator.NavigationChangeListener)
 	 */
 	@Override
 	public Registration addNavigationChangeListener(NavigationChangeListener navigationChangeListener) {

@@ -55,9 +55,11 @@ public class NavigatorServiceInitListener implements VaadinServiceInitListener {
 			e.getUI().getRouter().getRegistry().getRegisteredRoutes()
 					.forEach(route -> provider.getConfiguration(route.getNavigationTarget()));
 		});
-		// UI navigator initialization
-		event.getSource().addUIInitListener(e -> {
-			NavigatorRegistry.getCurrent().bind(e.getUI(), Navigator.create(e.getUI()));
+		event.getSource().addSessionInitListener(e -> {
+			// Session navigators registry
+			if (e.getSession().getAttribute(NavigatorRegistry.class) == null) {
+				e.getSession().setAttribute(NavigatorRegistry.class, new DefaultNavigatorRegistry());
+			}
 		});
 		// UI navigation listeners
 		event.getSource().addUIInitListener(e -> {

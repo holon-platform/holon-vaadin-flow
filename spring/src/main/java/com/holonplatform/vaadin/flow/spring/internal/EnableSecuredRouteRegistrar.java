@@ -26,10 +26,12 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
 import com.holonplatform.core.internal.utils.ClassUtils;
+import com.holonplatform.vaadin.flow.spring.EnableSecuredRoute;
 
 /**
- * @author BODSI08
- *
+ * A bean definition registrar for the {@link EnableSecuredRoute} annotation.
+ * 
+ * @since 5.2.0
  */
 public class EnableSecuredRouteRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware {
 
