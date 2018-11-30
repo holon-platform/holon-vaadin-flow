@@ -15,20 +15,38 @@
  */
 package com.holonplatform.vaadin.flow.spring.boot;
 
+import java.util.Locale;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
+import com.holonplatform.vaadin.flow.spring.boot.internal.LocalizationContextInitializer;
 import com.holonplatform.vaadin.flow.spring.boot.internal.LocalizationContextPostProcessor;
 
 /**
  * A Spring Boot auto-configuration class to setup the {@link LocalizationContext} integration with the Vaadin session
- * and UI localization support.
+ * and UI localization support. The auto-configuration strategy implemented by this class is the following:
+ * <p>
+ * If a {@link LocalizationContext} type bean is available in context, and its scope is either <code>vaadin-ui</code> or
+ * <code>session</code>/<code>"vaadin-session"</code>, a post processor is configured to listener to context
+ * localization changes and reflect the changed context {@link Locale} to the current UI or Vaadin Session, according to
+ * the {@link LocalizationContext} bean scope. This feature can be disabled using the application configuration property
+ * <code>holon.vaadin.localization.context.reflect-locale=false</code>.
+ * </p>
+ * <p>
+ * If a {@link LocalizationContext} type bean is available in context, and its scope is either <code>vaadin-ui</code> or
+ * <code>session</code>/<code>"vaadin-session"</code>, an initializer is bound to the Vaadin Session or UI
+ * initialization event, according to the {@link LocalizationContext} bean scope, to set the initial Session/UI
+ * {@link Locale} as {@link LocalizationContext} localization. This feature can be disabled using the application configuration property
+ * <code>holon.vaadin.localization.context.auto-init=false</code>.
+ * </p>
  * 
  * @since 5.2.0
  */
@@ -39,13 +57,21 @@ public class LocalizationContextAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(LocalizationContext.class)
-	@ConditionalOnProperty(prefix = "holon.vaadin.localization", name = "reflect-in-ui", matchIfMissing = true)
-	static class UINavigatorAutoConfiguration {
+	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "reflect-locale", matchIfMissing = true)
+	static class LocalizationContextPostProcessorConfiguration {
 
 		@Bean
 		static LocalizationContextPostProcessor localizationContextPostProcessor() {
 			return new LocalizationContextPostProcessor();
 		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(LocalizationContext.class)
+	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "auto-init", matchIfMissing = true)
+	@Import(LocalizationContextInitializer.class)
+	static class LocalizationContextInitializerConfiguration {
 
 	}
 

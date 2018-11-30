@@ -15,22 +15,16 @@
  */
 package com.holonplatform.vaadin.flow.spring.boot.internal;
 
-import java.util.Optional;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.i18n.LocalizationContext.LocalizationChangeEvent;
 import com.holonplatform.core.i18n.LocalizationContext.LocalizationChangeListener;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
-import com.holonplatform.vaadin.flow.internal.VaadinSessionScope;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -40,7 +34,8 @@ import com.vaadin.flow.server.VaadinSession;
  *
  * @since 5.2.0
  */
-public class LocalizationContextPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class LocalizationContextPostProcessor extends AbstractInitializer
+		implements BeanPostProcessor, BeanFactoryAware {
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
@@ -64,25 +59,20 @@ public class LocalizationContextPostProcessor implements BeanPostProcessor, Bean
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LocalizationContext) {
-			final boolean sessionScoped = isSessionScope(beanFactory, beanName);
-			((LocalizationContext) bean).addLocalizationChangeListener(new LocalizationChangeReflector(sessionScoped));
-
-			LOGGER.info(sessionScoped ? "Localization context Locale reflection to Session Locale activated"
-					: "Localization context Locale reflection to UI Locale activated");
+			if (isSessionScope(beanFactory, beanName)) {
+				((LocalizationContext) bean).addLocalizationChangeListener(new SessionLocalizationChangeReflector());
+				LOGGER.info("Localization context Locale reflection to Session Locale activated");
+			} else if (isUIScope(beanFactory, beanName)) {
+				((LocalizationContext) bean).addLocalizationChangeListener(new UILocalizationChangeReflector());
+				LOGGER.info("Localization context Locale reflection to UI Locale activated");
+			}
 		}
 		return bean;
 	}
 
-	static class LocalizationChangeReflector implements LocalizationChangeListener {
+	static class SessionLocalizationChangeReflector implements LocalizationChangeListener {
 
-		private static final long serialVersionUID = -8299171206172261063L;
-
-		private final boolean sessionScope;
-
-		public LocalizationChangeReflector(boolean sessionScope) {
-			super();
-			this.sessionScope = sessionScope;
-		}
+		private static final long serialVersionUID = 7336953791954450518L;
 
 		/*
 		 * (non-Javadoc)
@@ -91,53 +81,35 @@ public class LocalizationContextPostProcessor implements BeanPostProcessor, Bean
 		 */
 		@Override
 		public void onLocalizationChange(LocalizationChangeEvent event) {
-			if (sessionScope) {
-				if (VaadinSession.getCurrent() != null) {
-					event.getLocale().ifPresent(locale -> {
-						VaadinSession.getCurrent().setLocale(locale);
-						LOGGER.debug(() -> "Setted LocalizationContext locale [" + locale + "] to current session");
-					});
-				}
-			} else {
-				if (UI.getCurrent() != null) {
-					event.getLocale().ifPresent(locale -> {
-						UI.getCurrent().setLocale(locale);
-						LOGGER.debug(() -> "Setted LocalizationContext locale [" + locale + "] to current UI");
-					});
-				}
+			if (VaadinSession.getCurrent() != null) {
+				event.getLocale().ifPresent(locale -> {
+					VaadinSession.getCurrent().setLocale(locale);
+					LOGGER.debug(() -> "Setted LocalizationContext locale [" + locale + "] to current session");
+				});
 			}
 		}
 
 	}
 
-	/**
-	 * Gets whether the bean with given name is session scoped.
-	 * @param beanFactory The bean factory
-	 * @param beanName The bean name
-	 * @return <code>true</code> if session scoped
-	 */
-	private static boolean isSessionScope(BeanFactory beanFactory, String beanName) {
-		return getBeanScope(beanFactory, beanName).filter(scope -> scope != null).map(
-				scope -> (WebApplicationContext.SCOPE_SESSION.equals(scope) || VaadinSessionScope.NAME.equals(scope)))
-				.orElse(false);
-	}
+	static class UILocalizationChangeReflector implements LocalizationChangeListener {
 
-	/**
-	 * Get the scope of given bean name, if available.
-	 * @param beanFactory The bean factory
-	 * @param beanName The bean name
-	 * @return Optional bean scope
-	 */
-	private static Optional<String> getBeanScope(BeanFactory beanFactory, String beanName) {
-		if (beanFactory instanceof ConfigurableListableBeanFactory) {
-			try {
-				return Optional.ofNullable(
-						((ConfigurableListableBeanFactory) beanFactory).getBeanDefinition(beanName).getScope());
-			} catch (@SuppressWarnings("unused") NoSuchBeanDefinitionException e) {
-				return Optional.empty();
+		private static final long serialVersionUID = 6723782844437508012L;
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.core.i18n.LocalizationContext.LocalizationChangeListener#onLocalizationChange(com.
+		 * holonplatform.core.i18n.LocalizationContext.LocalizationChangeEvent)
+		 */
+		@Override
+		public void onLocalizationChange(LocalizationChangeEvent event) {
+			if (UI.getCurrent() != null) {
+				event.getLocale().ifPresent(locale -> {
+					UI.getCurrent().setLocale(locale);
+					LOGGER.debug(() -> "Setted LocalizationContext locale [" + locale + "] to current UI");
+				});
 			}
 		}
-		return Optional.empty();
+
 	}
 
 }
