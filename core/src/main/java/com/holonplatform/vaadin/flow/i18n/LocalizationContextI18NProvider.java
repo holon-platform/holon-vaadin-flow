@@ -15,13 +15,41 @@
  */
 package com.holonplatform.vaadin.flow.i18n;
 
+import java.util.List;
+import java.util.Locale;
+
 import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.internal.i18n.DefaultLocalizationContextI18NProvider;
 import com.vaadin.flow.i18n.I18NProvider;
 
 /**
- * A {@link I18NProvider} which uses a {@link LocalizationContext}
+ * A {@link I18NProvider} which uses the current {@link LocalizationContext} to provide the messages localization.
+ * <p>
+ * A {@link LocalizationContext} reference must be available from {@link LocalizationContext#getCurrent()} in order for
+ * the localization to work, otherwise a <code>null</code> translation will be returned for any message key.
+ * </p>
  *
+ * @since 5.2.0
  */
 public interface LocalizationContextI18NProvider extends I18NProvider {
+
+	/**
+	 * Create a new {@link LocalizationContextI18NProvider} without any provided {@link Locale}.
+	 * @return A new {@link LocalizationContextI18NProvider}
+	 * @see I18NProvider#getProvidedLocales()
+	 */
+	static LocalizationContextI18NProvider create() {
+		return new DefaultLocalizationContextI18NProvider();
+	}
+
+	/**
+	 * Create a new {@link LocalizationContextI18NProvider} using given provided locales.
+	 * @return A new {@link LocalizationContextI18NProvider}
+	 * @param providedLocales The provided locales
+	 * @see I18NProvider#getProvidedLocales()
+	 */
+	static LocalizationContextI18NProvider create(List<Locale> providedLocales) {
+		return new DefaultLocalizationContextI18NProvider(providedLocales);
+	}
 
 }
