@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator.internal.config;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -38,6 +39,18 @@ public interface NavigationTargetConfigurationRegistry extends Serializable {
 	 */
 	NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget)
 			throws NavigationTargetConfigurationException;
+
+	/**
+	 * Get whether the registry was pre-initialized with a navigation target configuration set.
+	 * @return Whether the registry was pre-initialized
+	 */
+	boolean isInitialized();
+
+	/**
+	 * Initialize the registry with the given class set.
+	 * @param classes The initial class set
+	 */
+	void initialize(Set<Class<?>> classes);
 
 	/**
 	 * Create a new {@link NavigationTargetConfigurationRegistry}.

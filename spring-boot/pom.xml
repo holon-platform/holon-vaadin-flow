@@ -54,6 +54,14 @@
 			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
 
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

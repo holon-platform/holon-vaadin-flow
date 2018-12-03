@@ -15,11 +15,15 @@
  */
 package com.holonplatform.vaadin.flow.spring.boot;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -28,6 +32,7 @@ import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationExc
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.spring.EnableNavigator;
 import com.holonplatform.vaadin.flow.spring.boot.internal.DefaultNavigatorErrorsRegistrar;
+import com.holonplatform.vaadin.flow.spring.boot.internal.NavigatorServletContextInitializer;
 
 /**
  * A Spring Boot auto-configuration class to setup a UI-scoped {@link Navigator} bean and register the default error
@@ -41,6 +46,10 @@ import com.holonplatform.vaadin.flow.spring.boot.internal.DefaultNavigatorErrors
  * The <code>holon.vaadin.navigator.errors.enabled</code> boolean configuration property can be used to disable the
  * default error components registration, setting its value to <code>false</code>.
  * </p>
+ * <p>
+ * Furthermore, this class sets up a servlet context initializer to pre-load the navigation target classes
+ * configurations.
+ * </p>
  * 
  * @since 5.2.0
  */
@@ -49,6 +58,14 @@ import com.holonplatform.vaadin.flow.spring.boot.internal.DefaultNavigatorErrors
 @AutoConfigureBefore(com.vaadin.flow.spring.SpringBootAutoConfiguration.class)
 @AutoConfigureAfter(com.vaadin.flow.spring.VaadinScopesConfig.class)
 public class NavigatorAutoConfiguration {
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Bean
+	public ServletContextInitializer navigatorNavigationTargetConfigurationServletContextInitializer() {
+		return new NavigatorServletContextInitializer(applicationContext);
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(Navigator.class)

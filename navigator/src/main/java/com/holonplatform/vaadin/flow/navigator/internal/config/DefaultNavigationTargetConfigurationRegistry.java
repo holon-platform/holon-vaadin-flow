@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator.internal.config;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import com.holonplatform.core.internal.Logger;
@@ -41,6 +42,47 @@ public class DefaultNavigationTargetConfigurationRegistry implements NavigationT
 	 * Configurations
 	 */
 	private Map<Class<?>, NavigationTargetConfiguration> configurations = new WeakHashMap<>();
+
+	/**
+	 * Initialized
+	 */
+	private boolean initialized = false;
+
+	/**
+	 * Default constructor.
+	 */
+	public DefaultNavigationTargetConfigurationRegistry() {
+		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#isInitialized()
+	 */
+	@Override
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#initialize(java.
+	 * util.Set)
+	 */
+	@Override
+	public void initialize(Set<Class<?>> classes) {
+		if (classes != null) {
+			for (Class<?> cls : classes) {
+				if (cls != null) {
+					LOGGER.debug(() -> "Create NavigationTargetConfiguration for [" + cls.getName() + "]");
+					configurations.put(cls, NavigationTargetConfiguration.create(cls));
+				}
+			}
+		}
+		this.initialized = true;
+	}
 
 	/*
 	 * (non-Javadoc)
