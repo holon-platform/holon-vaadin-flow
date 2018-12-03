@@ -218,13 +218,13 @@ public enum DefaultNavigationParameterMapper implements NavigationParameterMappe
 			return (T) value;
 		}
 		try {
-			if (TypeUtils.isBoolean(value.getClass())) {
+			if (TypeUtils.isBoolean(type)) {
 				return (T) Boolean.valueOf(value);
 			}
 			if (TypeUtils.isEnum(type)) {
 				return (T) Enum.valueOf((Class<Enum>) type, value);
 			}
-			if (TypeUtils.isNumber(value.getClass())) {
+			if (TypeUtils.isNumber(type)) {
 				return (T) ConversionUtils.parseNumber(value, (Class<Number>) type);
 			}
 			if (LocalDate.class.isAssignableFrom(type)) {
