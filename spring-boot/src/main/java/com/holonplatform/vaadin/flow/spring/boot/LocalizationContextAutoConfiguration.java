@@ -41,20 +41,20 @@ import com.vaadin.flow.i18n.I18NProvider;
  * or <code>session</code>/<code>"vaadin-session"</code>, a post processor is configured to listener to context
  * localization changes and reflect the changed context {@link Locale} to the current UI or Vaadin Session, according to
  * the {@link LocalizationContext} bean scope. This feature can be disabled using the application configuration property
- * <code>holon.vaadin.localization.context.reflect-locale=false</code>.
+ * <code>holon.vaadin.localization-context.reflect-locale=false</code>.
  * </p>
  * <p>
  * 2. If a {@link LocalizationContext} type bean is available in context, and its scope is either <code>vaadin-ui</code>
  * or <code>session</code>/<code>"vaadin-session"</code>, an initializer is bound to the Vaadin Session or UI
  * initialization event, according to the {@link LocalizationContext} bean scope, to set the initial Session/UI
  * {@link Locale} as {@link LocalizationContext} localization. This feature can be disabled using the application
- * configuration property <code>holon.vaadin.localization.context.auto-init=false</code>.
+ * configuration property <code>holon.vaadin.localization-context.auto-init=false</code>.
  * </p>
  * <p>
  * 3. If a {@link LocalizationContext} type bean is available in context, and {@link I18NProvider} bean type is not
  * already defined, a Vaadin {@link I18NProvider} bean type is registered, using the current {@link LocalizationContext}
  * to provide the messages localization. See {@link LocalizationContextI18NProvider}. This feature can be disabled using
- * the application configuration property <code>holon.vaadin.localization.context.i18nprovider=false</code>.
+ * the application configuration property <code>holon.vaadin.localization-context.i18nprovider=false</code>.
  * </p>
  * 
  * @since 5.2.0
@@ -66,7 +66,7 @@ public class LocalizationContextAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(LocalizationContext.class)
-	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "reflect-locale", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "holon.vaadin.localization-context", name = "reflect-locale", matchIfMissing = true)
 	static class LocalizationContextPostProcessorConfiguration {
 
 		@Bean
@@ -78,7 +78,7 @@ public class LocalizationContextAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(LocalizationContext.class)
-	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "auto-init", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "holon.vaadin.localization-context", name = "auto-init", matchIfMissing = true)
 	@Import(LocalizationContextInitializer.class)
 	static class LocalizationContextInitializerConfiguration {
 
@@ -87,12 +87,13 @@ public class LocalizationContextAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(LocalizationContext.class)
 	@ConditionalOnMissingBean(I18NProvider.class)
-	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "i18nprovider", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "holon.vaadin.localization-context", name = "i18nprovider", matchIfMissing = true)
 	static class I18NProviderConfiguration {
 
 		@Bean
-		public LocalizationContextI18NProvider localizationContextI18NProvider() {
-			return LocalizationContextI18NProvider.create();
+		public LocalizationContextI18NProvider localizationContextI18NProvider(
+				LocalizationContext localizationContext) {
+			return LocalizationContextI18NProvider.create(localizationContext);
 		}
 
 	}

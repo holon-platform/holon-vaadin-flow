@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: 'off'
+
+---
+spring:
+  profiles: i18n-disabled
+  
+holon:
+  vaadin:
+    localization-context: 
+      i18nprovider: false

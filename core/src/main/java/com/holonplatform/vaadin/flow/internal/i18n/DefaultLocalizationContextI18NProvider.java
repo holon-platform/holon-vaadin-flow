@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.internal.i18n;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.i18n.LocalizationContextI18NProvider;
@@ -31,13 +32,15 @@ public class DefaultLocalizationContextI18NProvider implements LocalizationConte
 
 	private static final long serialVersionUID = 820749775814684825L;
 
+	private final LocalizationContext localizationContext;
+
 	private final List<Locale> providedLocales;
 
 	/**
 	 * Constructor without provided {@link Locale}s.
 	 */
 	public DefaultLocalizationContextI18NProvider() {
-		this(Collections.emptyList());
+		this(null, Collections.emptyList());
 	}
 
 	/**
@@ -45,7 +48,26 @@ public class DefaultLocalizationContextI18NProvider implements LocalizationConte
 	 * @param providedLocales The provided {@link Locale}s
 	 */
 	public DefaultLocalizationContextI18NProvider(List<Locale> providedLocales) {
+		this(null, providedLocales);
+	}
+
+	/**
+	 * Constructor without provided {@link Locale}s.
+	 * @param localizationContext The {@link LocalizationContext} to use
+	 */
+	public DefaultLocalizationContextI18NProvider(LocalizationContext localizationContext) {
+		this(localizationContext, Collections.emptyList());
+	}
+
+	/**
+	 * Constructor with provided {@link Locale}s.
+	 * @param localizationContext The {@link LocalizationContext} to use
+	 * @param providedLocales The provided {@link Locale}s
+	 */
+	public DefaultLocalizationContextI18NProvider(LocalizationContext localizationContext,
+			List<Locale> providedLocales) {
 		super();
+		this.localizationContext = localizationContext;
 		this.providedLocales = (providedLocales != null) ? providedLocales : Collections.emptyList();
 	}
 
@@ -64,8 +86,19 @@ public class DefaultLocalizationContextI18NProvider implements LocalizationConte
 	 */
 	@Override
 	public String getTranslation(String key, Locale locale, Object... params) {
-		return LocalizationContext.getCurrent().map(c -> c.asMessageResolver())
-				.flatMap(r -> r.getMessage(locale, key, params)).orElse(null);
+		return getLocalizationContext().map(c -> c.asMessageResolver()).flatMap(r -> r.getMessage(locale, key, params))
+				.orElse(null);
+	}
+
+	/**
+	 * Get the {@link LocalizationContext} context to use.
+	 * @return The configured {@link LocalizationContext} or the context {@link LocalizationContext}, if available
+	 */
+	protected Optional<LocalizationContext> getLocalizationContext() {
+		if (localizationContext != null) {
+			return Optional.of(localizationContext);
+		}
+		return LocalizationContext.getCurrent();
 	}
 
 }
