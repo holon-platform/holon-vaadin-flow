@@ -73,6 +73,8 @@
 		<holon.jdbc.datastore.version>5.2.0-alpha2</holon.jdbc.datastore.version>
 		<!-- Spring Boot for integration tests -->
 		<spring.boot.test.version>2.1.0.RELEASE</spring.boot.test.version>
+		<!-- Mockito (test) -->
+		<mockito.version>2.23.0</mockito.version>
 
 	</properties>
 

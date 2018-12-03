@@ -49,7 +49,7 @@ public class UINavigatorRegistrar implements ImportBeanDefinitionRegistrar {
 		beanDefinition.setBeanClass(DefaultNavigator.class);
 		beanDefinition.setScope(VaadinUIScope.VAADIN_UI_SCOPE_NAME);
 		beanDefinition.setAutowireCandidate(true);
-		registry.registerBeanDefinition(Navigator.class.getName(), beanDefinition);
+		registry.registerBeanDefinition(Navigator.CONTEXT_KEY, beanDefinition);
 
 		LOGGER.info("UI scoped Navigator registered");
 	}
