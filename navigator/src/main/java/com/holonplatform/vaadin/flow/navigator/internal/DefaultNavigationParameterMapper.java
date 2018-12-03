@@ -56,6 +56,8 @@ public enum DefaultNavigationParameterMapper implements NavigationParameterMappe
 	 */
 	INSTANCE;
 
+	private static final Logger LOGGER = VaadinLogger.create();
+
 	private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 	private static final DateTimeFormatter LOCAL_DATETIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 	private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_TIME;
@@ -69,11 +71,10 @@ public enum DefaultNavigationParameterMapper implements NavigationParameterMappe
 	 */
 	private static final Map<Class<?>, NavigationParameterTypeMapper<?>> typeMappers = new HashMap<>(8);
 
-	@SuppressWarnings("rawtypes")
-	private DefaultNavigationParameterMapper() {
-		final Logger LOGGER = VaadinLogger.create();
+	static {
 		LOGGER.debug(() -> "Load NavigationParameterTypeMappers using ServiceLoader with service name: "
 				+ NavigationParameterTypeMapper.class.getName());
+		@SuppressWarnings("rawtypes")
 		Iterable<NavigationParameterTypeMapper> mappers = AccessController
 				.doPrivileged(new PrivilegedAction<Iterable<NavigationParameterTypeMapper>>() {
 					@Override

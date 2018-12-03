@@ -20,7 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +41,7 @@ import org.junit.jupiter.api.Test;
 
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
+import com.holonplatform.vaadin.flow.navigator.test.data.TestParameterType;
 
 public class TestQueryParameters {
 
@@ -295,6 +306,181 @@ public class TestQueryParameters {
 		assertNotNull(btvs);
 		assertEquals(1, btvs.size());
 		assertEquals(Byte.valueOf("1"), btvs.get(0));
+
+		// float
+		serialized = mapper.serialize(23.5f);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals("23.5", serialized.get(0));
+
+		List<Float> fvs = mapper.deserialize(Float.class, serialized);
+		assertNotNull(fvs);
+		assertEquals(1, fvs.size());
+		assertEquals(Float.valueOf(23.5f), fvs.get(0));
+
+		// double
+		serialized = mapper.serialize(21.543d);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals("21.543", serialized.get(0));
+
+		List<Double> dvs = mapper.deserialize(Double.class, serialized);
+		assertNotNull(dvs);
+		assertEquals(1, dvs.size());
+		assertEquals(Double.valueOf(21.543d), dvs.get(0));
+
+		// BigDecimal
+		serialized = mapper.serialize(BigDecimal.valueOf(123.4567d));
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals("123.4567", serialized.get(0));
+
+		List<BigDecimal> bdvs = mapper.deserialize(BigDecimal.class, serialized);
+		assertNotNull(bdvs);
+		assertEquals(1, bdvs.size());
+		assertEquals(BigDecimal.valueOf(123.4567d), bdvs.get(0));
+
+		// enum
+		serialized = mapper.serialize(TestEnum.ONE);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals(TestEnum.ONE.name(), serialized.get(0));
+
+		List<TestEnum> ebvs = mapper.deserialize(TestEnum.class, serialized);
+		assertNotNull(ebvs);
+		assertEquals(1, ebvs.size());
+		assertEquals(TestEnum.ONE, ebvs.get(0));
+
+		serialized = mapper.serialize(Arrays.asList(TestEnum.TWO, TestEnum.ONE));
+		assertNotNull(serialized);
+		assertEquals(2, serialized.size());
+		assertEquals(TestEnum.TWO.name(), serialized.get(0));
+		assertEquals(TestEnum.ONE.name(), serialized.get(1));
+
+		ebvs = mapper.deserialize(TestEnum.class, serialized);
+		assertNotNull(ebvs);
+		assertEquals(2, ebvs.size());
+		assertEquals(TestEnum.TWO, ebvs.get(0));
+		assertEquals(TestEnum.ONE, ebvs.get(1));
+
+		// LocalDate
+		final LocalDate ldate = LocalDate.of(2018, Month.DECEMBER, 3);
+		final LocalDate ldate2 = LocalDate.of(2019, Month.JANUARY, 12);
+
+		serialized = mapper.serialize(ldate);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE.format(ldate), serialized.get(0));
+
+		List<LocalDate> ldvs = mapper.deserialize(LocalDate.class, serialized);
+		assertNotNull(ldvs);
+		assertEquals(1, ldvs.size());
+		assertEquals(ldate, ldvs.get(0));
+
+		serialized = mapper.serialize(Arrays.asList(ldate, ldate2));
+		assertNotNull(serialized);
+		assertEquals(2, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE.format(ldate), serialized.get(0));
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE.format(ldate2), serialized.get(1));
+
+		ldvs = mapper.deserialize(LocalDate.class, serialized);
+		assertNotNull(ldvs);
+		assertEquals(2, ldvs.size());
+		assertEquals(ldate, ldvs.get(0));
+		assertEquals(ldate2, ldvs.get(1));
+
+		// LocalTime
+		final LocalTime ltime = LocalTime.of(14, 21, 15);
+		final LocalTime ltime2 = LocalTime.of(18, 30);
+
+		serialized = mapper.serialize(ltime);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_TIME.format(ltime), serialized.get(0));
+
+		List<LocalTime> ltvs = mapper.deserialize(LocalTime.class, serialized);
+		assertNotNull(ltvs);
+		assertEquals(1, ltvs.size());
+		assertEquals(ltime, ltvs.get(0));
+
+		serialized = mapper.serialize(Arrays.asList(ltime, ltime2));
+		assertNotNull(serialized);
+		assertEquals(2, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_TIME.format(ltime), serialized.get(0));
+		assertEquals(DateTimeFormatter.ISO_LOCAL_TIME.format(ltime2), serialized.get(1));
+
+		ltvs = mapper.deserialize(LocalTime.class, serialized);
+		assertNotNull(ltvs);
+		assertEquals(2, ltvs.size());
+		assertEquals(ltime, ltvs.get(0));
+		assertEquals(ltime2, ltvs.get(1));
+
+		// LocalDateTime
+		final LocalDateTime ldtime = LocalDateTime.of(2018, Month.DECEMBER, 3, 14, 21, 15);
+		final LocalDateTime ldtime2 = LocalDateTime.of(2019, Month.JANUARY, 12, 18, 30);
+
+		serialized = mapper.serialize(ldtime);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ldtime), serialized.get(0));
+
+		List<LocalDateTime> ldtvs = mapper.deserialize(LocalDateTime.class, serialized);
+		assertNotNull(ldtvs);
+		assertEquals(1, ldtvs.size());
+		assertEquals(ldtime, ldtvs.get(0));
+
+		serialized = mapper.serialize(Arrays.asList(ldtime, ldtime2));
+		assertNotNull(serialized);
+		assertEquals(2, serialized.size());
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ldtime), serialized.get(0));
+		assertEquals(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ldtime2), serialized.get(1));
+
+		ldtvs = mapper.deserialize(LocalDateTime.class, serialized);
+		assertNotNull(ldtvs);
+		assertEquals(2, ldtvs.size());
+		assertEquals(ldtime, ldtvs.get(0));
+		assertEquals(ldtime2, ldtvs.get(1));
+
+		// Date
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.DAY_OF_MONTH, 3);
+		c.set(Calendar.MONTH, 11);
+		c.set(Calendar.YEAR, 2018);
+		c.set(Calendar.HOUR_OF_DAY, 14);
+		c.set(Calendar.MINUTE, 26);
+		c.set(Calendar.SECOND, 30);
+		c.set(Calendar.MILLISECOND, 0);
+
+		final Date ud = c.getTime();
+
+		serialized = mapper.serialize(ud);
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals(
+				DateTimeFormatter.ISO_LOCAL_DATE_TIME
+						.format(Instant.ofEpochMilli(ud.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime()),
+				serialized.get(0));
+
+		List<Date> udvs = mapper.deserialize(Date.class, serialized);
+		assertNotNull(udvs);
+		assertEquals(1, udvs.size());
+		assertEquals(ud, udvs.get(0));
+
+		// custom mapper
+		serialized = mapper.serialize(new TestParameterType(7));
+		assertNotNull(serialized);
+		assertEquals(1, serialized.size());
+		assertEquals("7", serialized.get(0));
+
+		List<TestParameterType> tvs = mapper.deserialize(TestParameterType.class, serialized);
+		assertNotNull(tvs);
+		assertEquals(1, tvs.size());
+		assertEquals(new TestParameterType(7), tvs.get(0));
+	}
+
+	private enum TestEnum {
+
+		ONE, TWO
 
 	}
 
