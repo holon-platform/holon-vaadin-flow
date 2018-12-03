@@ -109,19 +109,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 	}
 
 	/**
-	 * URL path navigation parameter definition.
-	 */
-	public interface PathParameterDefinition extends NavigationParameterDefinition {
-
-		/**
-		 * Get the path segment to which the parameter is bound.
-		 * @return the path segment index, <code>0</code> based, or <code>-1</code> to map the whole path
-		 */
-		int getPathSegment();
-
-	}
-
-	/**
 	 * Base navigation parameter definition.
 	 */
 	public interface NavigationParameterDefinition extends Serializable {
