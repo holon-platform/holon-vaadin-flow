@@ -20,6 +20,7 @@ import java.util.Locale;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,10 +51,10 @@ import com.vaadin.flow.i18n.I18NProvider;
  * configuration property <code>holon.vaadin.localization.context.auto-init=false</code>.
  * </p>
  * <p>
- * 3. If a {@link LocalizationContext} type bean is available in context, a Vaadin {@link I18NProvider} bean type is
- * registered, using the current {@link LocalizationContext} to provide the messages localization. See
- * {@link LocalizationContextI18NProvider}. This feature can be disabled using the application configuration property
- * <code>holon.vaadin.localization.context.i18nprovider=false</code>.
+ * 3. If a {@link LocalizationContext} type bean is available in context, and {@link I18NProvider} bean type is not
+ * already defined, a Vaadin {@link I18NProvider} bean type is registered, using the current {@link LocalizationContext}
+ * to provide the messages localization. See {@link LocalizationContextI18NProvider}. This feature can be disabled using
+ * the application configuration property <code>holon.vaadin.localization.context.i18nprovider=false</code>.
  * </p>
  * 
  * @since 5.2.0
@@ -85,6 +86,7 @@ public class LocalizationContextAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(LocalizationContext.class)
+	@ConditionalOnMissingBean(I18NProvider.class)
 	@ConditionalOnProperty(prefix = "holon.vaadin.localization.context", name = "i18nprovider", matchIfMissing = true)
 	static class I18NProviderConfiguration {
 
