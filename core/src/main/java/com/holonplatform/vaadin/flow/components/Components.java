@@ -74,6 +74,8 @@ import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentCo
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator.VerticalLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.VerticalLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
+import com.holonplatform.vaadin.flow.components.events.ClickEvent;
+import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
@@ -248,6 +250,41 @@ public interface Components {
 	 */
 	static ButtonBuilder button() {
 		return ButtonBuilder.create();
+	}
+
+	/**
+	 * Create a {@link Button} with given text and given <code>click</code> event listener.
+	 * @param text The button text
+	 * @param clickListener The click listener (not null)
+	 * @return A new {@link Button}
+	 * @see #button()
+	 */
+	static Button button(String text, ClickEventListener<Button, ClickEvent<Button>> clickListener) {
+		return ButtonBuilder.create().text(text).onClick(clickListener).build();
+	}
+
+	/**
+	 * Create a {@link Button} with given localizable text and given <code>click</code> event listener.
+	 * @param defaultText The default button text
+	 * @param messageCode The button text message localization code
+	 * @param clickListener The click listener (not null)
+	 * @return A new {@link Button}
+	 * @see #button()
+	 */
+	static Button button(String defaultText, String messageCode,
+			ClickEventListener<Button, ClickEvent<Button>> clickListener) {
+		return ButtonBuilder.create().text(defaultText, messageCode).onClick(clickListener).build();
+	}
+
+	/**
+	 * Create a {@link Button} with given localizable text and given <code>click</code> event listener.
+	 * @param tex The {@link Localizable} button text
+	 * @param clickListener The click listener (not null)
+	 * @return A new {@link Button}
+	 * @see #button()
+	 */
+	static Button button(Localizable text, ClickEventListener<Button, ClickEvent<Button>> clickListener) {
+		return ButtonBuilder.create().text(text).onClick(clickListener).build();
 	}
 
 	/**
