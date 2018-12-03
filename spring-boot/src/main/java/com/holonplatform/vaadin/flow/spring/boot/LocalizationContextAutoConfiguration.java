@@ -91,9 +91,8 @@ public class LocalizationContextAutoConfiguration {
 	static class I18NProviderConfiguration {
 
 		@Bean
-		public LocalizationContextI18NProvider localizationContextI18NProvider(
-				LocalizationContext localizationContext) {
-			return LocalizationContextI18NProvider.create(localizationContext);
+		public LocalizationContextI18NProvider localizationContextI18NProvider() {
+			return LocalizationContextI18NProvider.create();
 		}
 
 	}
