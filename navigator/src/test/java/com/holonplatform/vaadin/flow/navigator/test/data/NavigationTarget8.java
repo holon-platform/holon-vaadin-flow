@@ -18,7 +18,7 @@ package com.holonplatform.vaadin.flow.navigator.test.data;
 import com.holonplatform.core.i18n.Caption;
 import com.vaadin.flow.router.Route;
 
-@Caption(value = "test", messageCode = "testcode")
+@Caption(value = "test", messageCode = "test.code")
 @Route("8")
 public class NavigationTarget8 {
 
