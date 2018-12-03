@@ -20,8 +20,6 @@ import java.util.ServiceLoader;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProviderRegistry;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetAfterNavigationListener;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetBeforeEnterListener;
 import com.vaadin.flow.server.ServiceInitEvent;
@@ -48,15 +46,8 @@ public class NavigatorServiceInitListener implements VaadinServiceInitListener {
 	 */
 	@Override
 	public void serviceInit(ServiceInitEvent event) {
-		// navigation target configuration provider
-		event.getSource().addUIInitListener(e -> {
-			final NavigationTargetConfigurationProvider provider = NavigationTargetConfigurationProviderRegistry
-					.getProvider(e.getUI().getClass().getClassLoader());
-			e.getUI().getRouter().getRegistry().getRegisteredRoutes()
-					.forEach(route -> provider.getConfiguration(route.getNavigationTarget()));
-		});
+		// Session navigators registry initialization
 		event.getSource().addSessionInitListener(e -> {
-			// Session navigators registry
 			if (e.getSession().getAttribute(NavigatorRegistry.class) == null) {
 				e.getSession().setAttribute(NavigatorRegistry.class, new DefaultNavigatorRegistry());
 			}

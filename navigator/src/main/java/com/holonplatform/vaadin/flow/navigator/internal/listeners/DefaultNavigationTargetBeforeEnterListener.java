@@ -34,7 +34,6 @@ import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParam
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.QueryParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.server.VaadinRequest;
@@ -58,8 +57,8 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 	public void beforeEnter(BeforeEnterEvent event) {
 		final Class<?> navigationTarget = event.getNavigationTarget();
 		if (navigationTarget != null) {
-			final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
-					.get(navigationTarget.getClassLoader()).getConfiguration(navigationTarget);
+			final NavigationTargetConfiguration configuration = getNavigationTargetConfigurationRegistry()
+					.getConfiguration(navigationTarget);
 			// check authentication
 			if (checkAuthentication(event, configuration)) {
 				// check parameters

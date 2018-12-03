@@ -19,17 +19,18 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import com.holonplatform.core.internal.Logger;
+import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 
 /**
- * {@link NavigationTargetConfiguration} registry.
+ * Default {@link NavigationTargetConfigurationRegistry} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultNavigationTargetConfigurationProvider implements NavigationTargetConfigurationProvider {
+public class DefaultNavigationTargetConfigurationRegistry implements NavigationTargetConfigurationRegistry {
 
-	private static final long serialVersionUID = -4473679591541295868L;
+	private static final long serialVersionUID = -8266974913448585865L;
 
 	/**
 	 * Logger
@@ -39,17 +40,18 @@ public class DefaultNavigationTargetConfigurationProvider implements NavigationT
 	/**
 	 * Configurations
 	 */
-	private final Map<Class<?>, NavigationTargetConfiguration> configurations = new WeakHashMap<>();
+	private Map<Class<?>, NavigationTargetConfiguration> configurations = new WeakHashMap<>();
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfigurationProvider#getConfiguration(java.lang
-	 * .Class)
+	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#getConfiguration(
+	 * java.lang.Class)
 	 */
 	@Override
 	public NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget)
 			throws NavigationTargetConfigurationException {
+		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
 		return configurations.computeIfAbsent(navigationTarget, ntc -> {
 			LOGGER.debug(() -> "Create NavigationTargetConfiguration for [" + navigationTarget.getName() + "]");
 			return NavigationTargetConfiguration.create(ntc);

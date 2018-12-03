@@ -89,7 +89,7 @@ public enum DefaultNavigationParameterMapper implements NavigationParameterMappe
 						+ "] returned null from getParameterType() and will be ignored");
 			} else {
 				typeMappers.put(type, mapper);
-				LOGGER.error("NavigationParameterTypeMapper [" + mapper.getClass().getName()
+				LOGGER.info("NavigationParameterTypeMapper [" + mapper.getClass().getName()
 						+ "] registered and bound to the [" + type.getName() + "] parameter type");
 			}
 		});

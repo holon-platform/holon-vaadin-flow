@@ -15,8 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +29,6 @@ import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.NavigationParameterDefinition;
-import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationProvider;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
@@ -56,20 +53,21 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	@Override
 	public void afterNavigation(AfterNavigationEvent event) {
 		if (event.getActiveChain() != null && !event.getActiveChain().isEmpty()) {
-			// current view
-			final HasElement view = event.getActiveChain().get(0);
-			if (view != null) {
-				LOGGER.debug(() -> "Process navigation target [" + view.getClass().getName() + "] after navigation");
+			// current navigation target
+			final HasElement navigationTarget = event.getActiveChain().get(0);
+			if (navigationTarget != null) {
+				LOGGER.debug(() -> "Process navigation target [" + navigationTarget.getClass().getName()
+						+ "] after navigation");
 				// configuration
-				final NavigationTargetConfiguration configuration = NavigationTargetConfigurationProvider
-						.get(view.getClass().getClassLoader()).getConfiguration(view.getClass());
+				final NavigationTargetConfiguration configuration = getNavigationTargetConfigurationRegistry()
+						.getConfiguration(navigationTarget.getClass());
 				// set query parameters
-				setQueryParameterValues(view, configuration, event.getLocation());
+				setQueryParameterValues(navigationTarget, configuration, event.getLocation());
 				// fire OnShow methods
 				configuration.getOnShowMethods().forEach(method -> {
 					LOGGER.debug(() -> "Invoke OnShow method [" + method.getName() + "] for navigation target ["
-							+ view.getClass().getName() + "]");
-					invokeMethod(view, method, event);
+							+ navigationTarget.getClass().getName() + "]");
+					invokeMethod(navigationTarget, method, event);
 				});
 			}
 		}
@@ -88,7 +86,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 			LOGGER.debug(() -> "Process query parameter [" + name + "] for navigation target ["
 					+ navigationTargetInstance.getClass().getName() + "]");
 			final List<String> queryParameterValues = queryParameters.get(name);
-			final Collection<?> values = getParameterValue(definition,
+			final List<?> values = getParameterValue(definition,
 					NavigationParameterMapper.get().deserialize(definition.getType(),
 							(queryParameterValues != null) ? queryParameterValues : Collections.emptyList()));
 			if (values.isEmpty()) {
@@ -103,14 +101,14 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 				// check container type
 				switch (definition.getParameterContainerType()) {
 				case LIST:
-					setParameterValue(navigationTargetInstance, definition, new ArrayList<>(values));
+					setParameterValue(navigationTargetInstance, definition, values);
 					break;
 				case SET:
 					setParameterValue(navigationTargetInstance, definition, new HashSet<>(values));
 					break;
 				case NONE:
 				default:
-					setParameterValue(navigationTargetInstance, definition, values.iterator().next());
+					setParameterValue(navigationTargetInstance, definition, values.get(0));
 					break;
 				}
 			}
@@ -118,21 +116,18 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	}
 
 	/**
-	 * Get the parameter value, checking default value if given value is empty.
+	 * Get the parameter values, checking default value if given values null or is empty.
 	 * @param definition The parameter definition
 	 * @param values The parameter values
 	 * @return the parameter values
 	 */
-	private static Collection<?> getParameterValue(NavigationParameterDefinition definition, Collection<?> values) {
-		if (values != null && !values.isEmpty()) {
-			return definition.getDefaultValue().map(v -> {
-				if (Collection.class.isAssignableFrom(v.getClass())) {
-					return (Collection<?>) v;
-				}
-				return Collections.singleton(v);
-			}).orElse(Collections.emptySet());
+	private static List<?> getParameterValue(NavigationParameterDefinition definition, List<?> values) {
+		if (values == null || values.isEmpty()) {
+			// check default
+			return definition.getDefaultValue().map(defaultValue -> Collections.singletonList(defaultValue))
+					.orElse(Collections.emptyList());
 		}
-		return Collections.emptySet();
+		return values;
 	}
 
 	/**

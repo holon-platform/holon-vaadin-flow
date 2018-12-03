@@ -16,10 +16,17 @@
 package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
+
+import javax.servlet.ServletContext;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.flow.server.VaadinServletService;
 
 /**
  * Base class for navigation event listeners.
@@ -32,6 +39,31 @@ public abstract class AbstractNavigationTargetListener {
 	 * Logger
 	 */
 	protected static final Logger LOGGER = VaadinLogger.create();
+
+	/**
+	 * Get the {@link NavigationTargetConfigurationRegistry} to use, checking if a servlet context bound registry is
+	 * available or returning the default ClassLoader one.
+	 * @return The {@link NavigationTargetConfigurationRegistry} to use
+	 */
+	protected NavigationTargetConfigurationRegistry getNavigationTargetConfigurationRegistry() {
+		return getServletContext().map(sc -> NavigationTargetConfigurationRegistry.servletContext(sc))
+				.orElseGet(() -> NavigationTargetConfigurationRegistry.classLoader());
+	}
+
+	/**
+	 * Try to obtain the current servlet context.
+	 * @return Optional servlet context
+	 */
+	private static Optional<ServletContext> getServletContext() {
+		VaadinService service = VaadinService.getCurrent();
+		if (service != null && service instanceof VaadinServletService) {
+			VaadinServlet servlet = ((VaadinServletService) service).getServlet();
+			if (servlet != null) {
+				return Optional.ofNullable(servlet.getServletContext());
+			}
+		}
+		return Optional.empty();
+	}
 
 	/**
 	 * Invoke given <code>method</code> on given <code>instance</code>, checking if the method signature has a single
