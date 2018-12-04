@@ -16,18 +16,63 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import com.holonplatform.vaadin.flow.components.HasComponent;
+import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator;
+import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigationLink;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasText;
 
 /**
- * TODO
+ * A link (using the default <code>A</code> tag) that handles navigation internally, without loading a new page in the
+ * browser.
+ * <p>
+ * The {@link #getComponent()} method can be used to obtain the component to be added in the UI.
+ * </p>
+ * 
+ * @since 5.2.0
  */
 public interface NavigationLink extends HasComponent, HasText, HasStyle {
 
 	/**
 	 * Gets the href (the URL) of this link.
-	 * @return the href
+	 * @return the href value
 	 */
 	String getHref();
+
+	// ------- builders
+
+	/**
+	 * Get a builder to create a {@link NavigationLink}.
+	 * @param path The path to navigate to
+	 * @return A new {@link NavigationLink} builder
+	 */
+	static Builder builder(String path) {
+		return new DefaultNavigationLink.DefaultBuilder(path);
+	}
+
+	/**
+	 * Get a builder to create a {@link NavigationLink}.
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @return A new {@link NavigationLink} builder
+	 */
+	static Builder builder(Class<? extends Component> navigationTarget) {
+		return new DefaultNavigationLink.DefaultBuilder(navigationTarget);
+	}
+
+	/**
+	 * {@link NavigationLink} builder.
+	 */
+	public interface Builder extends ComponentConfigurator<Builder>, HasTextConfigurator<Builder>,
+			HasStyleConfigurator<Builder>, NavigationURLBuilder<Builder> {
+
+		/**
+		 * Build the {@link NavigationLink}.
+		 * @return A new {@link NavigationLink} instance
+		 */
+		NavigationLink build();
+
+	}
 
 }

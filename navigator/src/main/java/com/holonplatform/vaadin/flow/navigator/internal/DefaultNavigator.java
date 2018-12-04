@@ -17,26 +17,20 @@ package com.holonplatform.vaadin.flow.navigator.internal;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.holonplatform.vaadin.flow.navigator.NavigationChangeListener;
-import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 /**
@@ -95,7 +89,7 @@ public class DefaultNavigator implements Navigator {
 	 */
 	@Override
 	public void navigateTo(String path, Map<String, Object> queryParameters) {
-		navigate(path, serializeQueryParameters(queryParameters));
+		navigate(path, NavigationParameterUtils.serializeQueryParameters(queryParameters));
 	}
 
 	/*
@@ -166,103 +160,35 @@ public class DefaultNavigator implements Navigator {
 	}
 
 	/**
-	 * Serialize given query parameters.
-	 * @param parameters The query parameters
-	 * @return The serialized query parameters
-	 */
-	protected static Map<String, List<String>> serializeQueryParameters(Map<String, Object> parameters) {
-		if (parameters != null && !parameters.isEmpty()) {
-			final NavigationParameterMapper mapper = NavigationParameterMapper.get();
-			final Map<String, List<String>> serialized = new HashMap<>(parameters.size());
-			for (Entry<String, Object> e : parameters.entrySet()) {
-				serialized.put(e.getKey(), mapper.serialize(e.getValue()));
-			}
-			return serialized;
-		}
-		return Collections.emptyMap();
-	}
-
-	/**
-	 * Serialize given path parameters.
-	 * @param parameter The path parameters values
-	 * @return The serialized path parameters values
-	 */
-	protected static <T> List<String> serializePathParameters(List<T> parameters) {
-		if (parameters != null && !parameters.isEmpty()) {
-			return parameters.stream().map(v -> NavigationParameterMapper.get().serialize(Collections.singletonList(v)))
-					.flatMap(List::stream).collect(Collectors.toList());
-		}
-		return Collections.emptyList();
-	}
-
-	/**
 	 * Default {@link NavigationBuilder} implementation.
 	 * 
 	 * @since 5.2.0
 	 */
-	public static class DefaultNavigationBuilder implements NavigationBuilder {
+	public static class DefaultNavigationBuilder extends AbstractNavigationURLBuilder<NavigationBuilder>
+			implements NavigationBuilder {
 
 		private static final long serialVersionUID = -3835424377998263190L;
 
 		private final Navigator navigator;
 
-		private final StringBuilder path;
-
-		private final Map<String, List<Object>> queryParameters = new HashMap<>(8);
-
 		/**
 		 * Constructor.
+		 * @param navigator The {@link Navigator} instance (not null)
 		 * @param path The navigation path
 		 */
 		public DefaultNavigationBuilder(Navigator navigator, String path) {
-			super();
+			super(path);
 			ObjectUtils.argumentNotNull(navigator, "Navigator must be not null");
 			this.navigator = navigator;
-			this.path = new StringBuilder();
-			if (path != null) {
-				this.path.append(path);
-			}
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.navigator.ViewNavigator.NavigationBuilder#withQueryParameter(java.lang.String,
-		 * java.util.List)
+		 * @see com.holonplatform.vaadin.flow.navigator.internal.AbstractNavigationURLBuilder#getBuilder()
 		 */
 		@Override
-		public <T> NavigationBuilder withQueryParameter(String name, List<T> values) {
-			if (name == null || name.trim().equals("")) {
-				throw new IllegalArgumentException("Parameter name must be nt null or blank");
-			}
-			if (values != null && !values.isEmpty()) {
-				final List<Object> parameterValues = queryParameters.computeIfAbsent(name, n -> new LinkedList<>());
-				values.stream().filter(v -> v != null).forEach(v -> parameterValues.add(v));
-			}
+		protected NavigationBuilder getBuilder() {
 			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#withPathParameter(java.lang.Object)
-		 */
-		@Override
-		public <T> NavigationBuilder withPathParameter(T pathParameter) {
-			ObjectUtils.argumentNotNull(pathParameter, "Path parameter value must be not null");
-			serializePathParameters(Collections.singletonList(pathParameter)).forEach(p -> {
-				path.append("/");
-				path.append(p);
-			});
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#asLocation()
-		 */
-		@Override
-		public Location asLocation() {
-			return new Location(path.toString(), new QueryParameters(serializeQueryParameters(getQueryParameters())));
 		}
 
 		/*
@@ -271,23 +197,7 @@ public class DefaultNavigator implements Navigator {
 		 */
 		@Override
 		public void navigate() {
-			navigator.navigateTo(path.toString(), getQueryParameters());
-		}
-
-		/**
-		 * Get the declared query parameters as a map of parameter names and values.
-		 * @return The query parameters map
-		 */
-		private Map<String, Object> getQueryParameters() {
-			Map<String, Object> parameters = new HashMap<>(queryParameters.size());
-			for (Entry<String, List<Object>> queryParameter : queryParameters.entrySet()) {
-				if (queryParameter.getValue() != null && !queryParameter.getValue().isEmpty()) {
-					parameters.put(queryParameter.getKey(),
-							(queryParameter.getValue().size() == 1) ? queryParameter.getValue().get(0)
-									: queryParameter.getValue());
-				}
-			}
-			return parameters;
+			navigator.navigateTo(getPath(), getQueryParameters());
 		}
 
 	}

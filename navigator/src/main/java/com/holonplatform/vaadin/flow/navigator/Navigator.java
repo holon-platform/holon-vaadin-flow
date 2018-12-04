@@ -16,7 +16,6 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -337,60 +336,7 @@ public interface Navigator extends Serializable {
 	 * 
 	 * @since 5.2.0
 	 */
-	public interface NavigationBuilder extends Serializable {
-
-		/**
-		 * Add query parameter values to be included in the navigation URL.
-		 * <p>
-		 * If one or more values was previously associated to given parameter <code>name</code>, the given
-		 * <code>values</code> will be added to the existing values set.
-		 * </p>
-		 * @param <T> Parameter type
-		 * @param name The parameter name (not null)
-		 * @param values The parameter values
-		 * @return this
-		 */
-		@SuppressWarnings("unchecked")
-		default <T> NavigationBuilder withQueryParameter(String name, T... values) {
-			return withQueryParameter(name, (values != null) ? Arrays.asList(values) : Collections.emptyList());
-		}
-
-		/**
-		 * Add query parameter values to be included in the navigation URL.
-		 * <p>
-		 * If one or more values was previously associated to given parameter <code>name</code>, the given
-		 * <code>values</code> will be added to the existing values set.
-		 * </p>
-		 * @param <T> Parameter type
-		 * @param name The parameter name (not null)
-		 * @param values The parameter values
-		 * @return this
-		 */
-		<T> NavigationBuilder withQueryParameter(String name, List<T> values);
-
-		/**
-		 * Add a URL path parameter value to be included in the navigation URL.
-		 * @param <T> Parameter type
-		 * @param pathParameter The parameter value (not null)
-		 * @return this
-		 */
-		<T> NavigationBuilder withPathParameter(T pathParameter);
-
-		/**
-		 * Get the navigation location as a {@link Location}, including the navigation path and any declared query
-		 * parameter.
-		 * @return the navigation {@link Location}
-		 */
-		Location asLocation();
-
-		/**
-		 * Get the navigation location as the URL part which includes the navigation path and any declared query
-		 * parameter.
-		 * @return the navigation location URL part
-		 */
-		default String asLocationURL() {
-			return asLocation().getPathWithQueryParameters();
-		}
+	public interface NavigationBuilder extends NavigationURLBuilder<NavigationBuilder> {
 
 		/**
 		 * Navigates to the location which is composed by the specified path and the provided query parameter values, if
