@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigator.Default
 import com.holonplatform.vaadin.flow.navigator.internal.NavigatorRegistry;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
@@ -100,7 +101,7 @@ public interface Navigator extends Serializable {
 	 * parameter value types.
 	 * </p>
 	 * @param path The path to navigate to. If <code>null</code>, the default (<code>""</code>) path will be used
-	 * @param parameters A map of query parameters, which associates the parameter names to their values
+	 * @param queryParameters A map of query parameters, which associates the parameter names to their values
 	 */
 	void navigateTo(String path, Map<String, Object> queryParameters);
 
@@ -115,9 +116,11 @@ public interface Navigator extends Serializable {
 	 * The navigation target must be declared as a route, for example using the {@link Route} annotation.
 	 * </p>
 	 * @param navigationTarget The navigation target to navigate to (not null)
-	 * @param parameters A map of query parameters, which associates the parameter names to their values
+	 * @param queryParameters A map of query parameters, which associates the parameter names to their values
 	 */
-	void navigateTo(Class<? extends Component> navigationTarget, Map<String, Object> queryParameters);
+	default void navigateTo(Class<? extends Component> navigationTarget, Map<String, Object> queryParameters) {
+		navigateTo(getUrl(navigationTarget), queryParameters);
+	}
 
 	/**
 	 * Navigate to the given navigation target.
@@ -128,6 +131,70 @@ public interface Navigator extends Serializable {
 	 */
 	default void navigateTo(Class<? extends Component> navigationTarget) {
 		navigateTo(navigationTarget, Collections.emptyMap());
+	}
+
+	/**
+	 * Navigate to the given navigation target and provide the given <code>pathParameter</code> in the URL.
+	 * <p>
+	 * The navigation target must be declared as a route and implement the {@link HasUrlParameter} interface.
+	 * </p>
+	 * @param <T> Path parameter type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param pathParameter The parameter to include into the navigation url
+	 */
+	default <T, C extends Component & HasUrlParameter<T>> void navigateTo(Class<? extends C> navigationTarget,
+			T pathParameter) {
+		navigateTo(navigationTarget, Collections.singletonList(pathParameter), Collections.emptyMap());
+	}
+
+	/**
+	 * Navigate to the given navigation target and provide the given <code>pathParameters</code> in the URL.
+	 * <p>
+	 * The navigation target must be declared as a route and implement the {@link HasUrlParameter} interface.
+	 * </p>
+	 * @param <T> Path parameter type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param pathParameters The parameters to include into the navigation url
+	 */
+	default <T, C extends Component & HasUrlParameter<T>> void navigateTo(Class<? extends C> navigationTarget,
+			List<T> pathParameters) {
+		navigateTo(navigationTarget, pathParameters, Collections.emptyMap());
+	}
+
+	/**
+	 * Navigate to the given navigation target, providing the given <code>pathParameter</code> in the URL and the given
+	 * query parameters.
+	 * <p>
+	 * The navigation target must be declared as a route and implement the {@link HasUrlParameter} interface.
+	 * </p>
+	 * @param <T> Path parameter type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param pathParameter The parameter to include into the navigation url (not null)
+	 * @param queryParameters A map of query parameters, which associates the parameter names to their values
+	 */
+	default <T, C extends Component & HasUrlParameter<T>> void navigateTo(Class<? extends C> navigationTarget,
+			T pathParameter, Map<String, Object> queryParameters) {
+		navigateTo(navigationTarget, Collections.singletonList(pathParameter), queryParameters);
+	}
+
+	/**
+	 * Navigate to the given navigation target, providing the given <code>pathParameters</code> in the URL and the given
+	 * query parameters.
+	 * <p>
+	 * The navigation target must be declared as a route and implement the {@link HasUrlParameter} interface.
+	 * </p>
+	 * @param <T> Path parameter type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param pathParameters The parameters to include into the navigation url (not null)
+	 * @param queryParameters A map of query parameters, which associates the parameter names to their values
+	 */
+	default <T, C extends Component & HasUrlParameter<T>> void navigateTo(Class<? extends C> navigationTarget,
+			List<T> pathParameters, Map<String, Object> queryParameters) {
+		navigateTo(getUrl(navigationTarget, pathParameters), queryParameters);
 	}
 
 	/**
@@ -157,6 +224,58 @@ public interface Navigator extends Serializable {
 	default NavigationBuilder navigation(String path) {
 		return new DefaultNavigationBuilder(this, path);
 	}
+
+	/**
+	 * Gets a {@link NavigationBuilder} to fluently build a navigation location for the given
+	 * <code>navigationTarget</code>, including any URL query parameter.
+	 * <p>
+	 * The {@link NavigationBuilder#navigate()} can be used to trigger the actual navigation. Otherwise, the navigation
+	 * location can be obtained as a {@link Location}, using {@link NavigationBuilder#asLocation()} or as a URL, using
+	 * {@link NavigationBuilder#asLocationURL()}.
+	 * </p>
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @return A new {@link NavigationBuilder}
+	 */
+	default NavigationBuilder navigation(Class<? extends Component> navigationTarget) {
+		return navigation(getUrl(navigationTarget));
+	}
+
+	/**
+	 * Get the registered URL for given navigation target class.
+	 * <p>
+	 * This method ignores any declared URL parameter, and always returns the navigation target base URL. To obtain the
+	 * URL for a navigation target with required URL parameters, use {@link #getUrl(Class, List)} or
+	 * {@link #getUrl(Class, Object)}.
+	 * </p>
+	 * @param navigationTarget The navigation target to get URL for (not null)
+	 * @return The URL for the given navigation target
+	 */
+	String getUrl(Class<? extends Component> navigationTarget);
+
+	/**
+	 * Get the registered URL for given navigation target class, including the given <code>parameter</code> in the url.
+	 * @param <T> URL parameter type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to get url for (not null)
+	 * @param parameter The parameter to include in the generated URL (not null)
+	 * @return The URL for the given navigation target, including the given URL parameter
+	 */
+	default <T, C extends Component & HasUrlParameter<T>> String getUrl(Class<? extends C> navigationTarget,
+			T parameter) {
+		return getUrl(navigationTarget, Collections.singletonList(parameter));
+	}
+
+	/**
+	 * Get the registered URL for given navigation target class, including the given <code>parameters</code> in the url.
+	 * @param <T> URL parameters type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to get url for (not null)
+	 * @param parameters The parameters to include in the generated URL (not null)
+	 * 
+	 * @return The URL for the given navigation target, including the given URL parameters
+	 */
+	<T, C extends Component & HasUrlParameter<T>> String getUrl(Class<? extends C> navigationTarget,
+			List<T> parameters);
 
 	/**
 	 * Add a {@link NavigationChangeListener} to listen to navigation target/location changes.
@@ -226,11 +345,13 @@ public interface Navigator extends Serializable {
 		 * If one or more values was previously associated to given parameter <code>name</code>, the given
 		 * <code>values</code> will be added to the existing values set.
 		 * </p>
+		 * @param <T> Parameter type
 		 * @param name The parameter name (not null)
 		 * @param values The parameter values
 		 * @return this
 		 */
-		default NavigationBuilder withQueryParameter(String name, Object... values) {
+		@SuppressWarnings("unchecked")
+		default <T> NavigationBuilder withQueryParameter(String name, T... values) {
 			return withQueryParameter(name, (values != null) ? Arrays.asList(values) : Collections.emptyList());
 		}
 
@@ -240,11 +361,20 @@ public interface Navigator extends Serializable {
 		 * If one or more values was previously associated to given parameter <code>name</code>, the given
 		 * <code>values</code> will be added to the existing values set.
 		 * </p>
+		 * @param <T> Parameter type
 		 * @param name The parameter name (not null)
 		 * @param values The parameter values
 		 * @return this
 		 */
-		NavigationBuilder withQueryParameter(String name, List<?> values);
+		<T> NavigationBuilder withQueryParameter(String name, List<T> values);
+
+		/**
+		 * Add a URL path parameter value to be included in the navigation URL.
+		 * @param <T> Parameter type
+		 * @param pathParameter The parameter value (not null)
+		 * @return this
+		 */
+		<T> NavigationBuilder withPathParameter(T pathParameter);
 
 		/**
 		 * Get the navigation location as a {@link Location}, including the navigation path and any declared query

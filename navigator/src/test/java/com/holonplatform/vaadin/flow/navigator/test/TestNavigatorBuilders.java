@@ -39,11 +39,15 @@ public class TestNavigatorBuilders {
 		NavigationBuilder builder = navigator.navigation("test");
 		assertNotNull(builder);
 
+		String url = navigator.navigation("").asLocationURL();
+		assertNotNull(url);
+		assertEquals("", url);
+
 		Location l = builder.asLocation();
 		assertNotNull(l);
 		assertEquals("test", l.getPath());
 
-		String url = builder.asLocationURL();
+		url = builder.asLocationURL();
 		assertNotNull(url);
 		assertEquals("test", url);
 
@@ -67,7 +71,7 @@ public class TestNavigatorBuilders {
 		assertTrue(l.getQueryParameters().getParameters().get("p1").contains("testx"));
 		assertNotNull(l.getQueryParameters().getParameters().get("p2"));
 		assertEquals("test2", l.getQueryParameters().getParameters().get("p2").get(0));
-		
+
 		l = navigator.navigation("test").withQueryParameter("p1", "test1", "testx").asLocation();
 		assertNotNull(l);
 		assertEquals("test", l.getPath());
@@ -77,7 +81,29 @@ public class TestNavigatorBuilders {
 		assertEquals(2, l.getQueryParameters().getParameters().get("p1").size());
 		assertTrue(l.getQueryParameters().getParameters().get("p1").contains("test1"));
 		assertTrue(l.getQueryParameters().getParameters().get("p1").contains("testx"));
-		
+
+	}
+
+	@Test
+	public void testNavigationBuilderPathParameters() {
+
+		final UI ui = new UI();
+
+		Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+
+		String url = navigator.navigation("test").withPathParameter("a").asLocationURL();
+		assertNotNull(url);
+		assertEquals("test/a", url);
+
+		url = navigator.navigation("test").withPathParameter("a").withPathParameter("b").asLocationURL();
+		assertNotNull(url);
+		assertEquals("test/a/b", url);
+
+		url = navigator.navigation("test").withPathParameter("a").withQueryParameter("p1", "test1").asLocationURL();
+		assertNotNull(url);
+		assertEquals("test/a?p1=test1", url);
+
 	}
 
 }

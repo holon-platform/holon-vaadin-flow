@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -34,6 +35,7 @@ import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
@@ -98,20 +100,11 @@ public class DefaultNavigator implements Navigator {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#navigateTo(java.lang.Class, java.util.Map)
-	 */
-	@Override
-	public void navigateTo(Class<? extends Component> navigationTarget, Map<String, Object> queryParameters) {
-		navigate(getUI().getRouter().getUrlBase(navigationTarget), serializeQueryParameters(queryParameters));
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.navigator.ViewNavigator#navigateToDefault()
 	 */
 	@Override
 	public void navigateToDefault() {
-		getUI().navigate("");
+		navigateTo("");
 	}
 
 	/*
@@ -121,6 +114,28 @@ public class DefaultNavigator implements Navigator {
 	@Override
 	public void navigateBack() {
 		getUI().getPage().getHistory().back();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#getUrl(java.lang.Class)
+	 */
+	@Override
+	public String getUrl(Class<? extends Component> navigationTarget) {
+		ObjectUtils.argumentNotNull(navigationTarget, "The navigation target class must be not null");
+		return getUI().getRouter().getUrlBase(navigationTarget);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#getUrl(java.lang.Class, java.util.List)
+	 */
+	@Override
+	public <T, C extends Component & HasUrlParameter<T>> String getUrl(Class<? extends C> navigationTarget,
+			List<T> parameters) {
+		ObjectUtils.argumentNotNull(navigationTarget, "The navigation target class must be not null");
+		ObjectUtils.argumentNotNull(parameters, "URL parameters must be not null");
+		return getUI().getRouter().getUrl(navigationTarget, parameters);
 	}
 
 	/*
@@ -168,6 +183,19 @@ public class DefaultNavigator implements Navigator {
 	}
 
 	/**
+	 * Serialize given path parameters.
+	 * @param parameter The path parameters values
+	 * @return The serialized path parameters values
+	 */
+	protected static <T> List<String> serializePathParameters(List<T> parameters) {
+		if (parameters != null && !parameters.isEmpty()) {
+			return parameters.stream().map(v -> NavigationParameterMapper.get().serialize(Collections.singletonList(v)))
+					.flatMap(List::stream).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	/**
 	 * Default {@link NavigationBuilder} implementation.
 	 * 
 	 * @since 5.2.0
@@ -178,7 +206,7 @@ public class DefaultNavigator implements Navigator {
 
 		private final Navigator navigator;
 
-		private final String path;
+		private final StringBuilder path;
 
 		private final Map<String, List<Object>> queryParameters = new HashMap<>(8);
 
@@ -190,7 +218,10 @@ public class DefaultNavigator implements Navigator {
 			super();
 			ObjectUtils.argumentNotNull(navigator, "Navigator must be not null");
 			this.navigator = navigator;
-			this.path = (path != null) ? path : "";
+			this.path = new StringBuilder();
+			if (path != null) {
+				this.path.append(path);
+			}
 		}
 
 		/*
@@ -200,7 +231,7 @@ public class DefaultNavigator implements Navigator {
 		 * java.util.List)
 		 */
 		@Override
-		public NavigationBuilder withQueryParameter(String name, List<?> values) {
+		public <T> NavigationBuilder withQueryParameter(String name, List<T> values) {
 			if (name == null || name.trim().equals("")) {
 				throw new IllegalArgumentException("Parameter name must be nt null or blank");
 			}
@@ -213,11 +244,25 @@ public class DefaultNavigator implements Navigator {
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#withPathParameter(java.lang.Object)
+		 */
+		@Override
+		public <T> NavigationBuilder withPathParameter(T pathParameter) {
+			ObjectUtils.argumentNotNull(pathParameter, "Path parameter value must be not null");
+			serializePathParameters(Collections.singletonList(pathParameter)).forEach(p -> {
+				path.append("/");
+				path.append(p);
+			});
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#asLocation()
 		 */
 		@Override
 		public Location asLocation() {
-			return new Location(path, new QueryParameters(serializeQueryParameters(getQueryParameters())));
+			return new Location(path.toString(), new QueryParameters(serializeQueryParameters(getQueryParameters())));
 		}
 
 		/*
@@ -226,7 +271,7 @@ public class DefaultNavigator implements Navigator {
 		 */
 		@Override
 		public void navigate() {
-			navigator.navigateTo(path, getQueryParameters());
+			navigator.navigateTo(path.toString(), getQueryParameters());
 		}
 
 		/**
