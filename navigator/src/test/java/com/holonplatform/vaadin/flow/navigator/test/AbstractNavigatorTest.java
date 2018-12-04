@@ -33,7 +33,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetAfterNavigationListener;
+import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetBeforeEnterListener;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget11;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget2;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget4;
@@ -44,12 +47,14 @@ import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget8;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.InvalidRouteConfigurationException;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
@@ -67,6 +72,8 @@ public abstract class AbstractNavigatorTest {
 
 	protected Router router;
 
+	protected VaadinService vaadinService;
+
 	protected VaadinSession vaadinSession;
 
 	protected UI ui;
@@ -75,7 +82,7 @@ public abstract class AbstractNavigatorTest {
 	public static void _beforeAll() throws Exception {
 		routeRegistry = new TestRouteRegistry(Arrays.asList(NavigationTarget1.class, NavigationTarget2.class,
 				NavigationTarget3.class, NavigationTarget4.class, NavigationTarget5.class, NavigationTarget6.class,
-				NavigationTarget7.class, NavigationTarget8.class, NavigationTarget9.class));
+				NavigationTarget7.class, NavigationTarget8.class, NavigationTarget9.class, NavigationTarget11.class));
 	}
 
 	@AfterAll
@@ -87,7 +94,8 @@ public abstract class AbstractNavigatorTest {
 	public void _beforeEach() throws Exception {
 		router = new Router(routeRegistry);
 
-		vaadinSession = createVaadinSession(Locale.US);
+		vaadinService = createVaadinService();
+		vaadinSession = createVaadinSession(vaadinService, Locale.US);
 		VaadinRequest request = buildVaadinRequest();
 		CurrentInstance.set(VaadinSession.class, vaadinSession);
 		CurrentInstance.set(VaadinRequest.class, request);
@@ -95,6 +103,9 @@ public abstract class AbstractNavigatorTest {
 		ui = new UI();
 		ui.getInternals().setSession(vaadinSession);
 		ui.doInit(request, TEST_UIID);
+
+		ui.addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
+		ui.addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());
 
 		CurrentInstance.setCurrent(ui);
 	}
@@ -104,18 +115,23 @@ public abstract class AbstractNavigatorTest {
 		router = null;
 	}
 
-	protected VaadinSession createVaadinSession(Locale locale) throws Exception {
-		WrappedSession wrappedSession = mock(WrappedSession.class);
+	protected VaadinService createVaadinService() throws Exception {
 		VaadinServletService vaadinService = mock(VaadinServletService.class);
 		when(vaadinService.getDeploymentConfiguration())
 				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
 		when(vaadinService.getRouter()).thenReturn(router);
+		when(vaadinService.getInstantiator()).thenReturn(new DefaultInstantiator(vaadinService));
+		return vaadinService;
+	}
+
+	protected VaadinSession createVaadinSession(VaadinService service, Locale locale) throws Exception {
+		WrappedSession wrappedSession = mock(WrappedSession.class);
 		SpringVaadinSession session = mock(SpringVaadinSession.class);
 		when(session.getState()).thenReturn(VaadinSessionState.OPEN);
 		when(session.getSession()).thenReturn(wrappedSession);
-		when(session.getService()).thenReturn(vaadinService);
+		when(session.getService()).thenReturn(service);
 		when(session.getSession().getId()).thenReturn(TEST_SESSION_ID);
 		when(session.hasLock()).thenReturn(true);
 		when(session.getLocale()).thenReturn(locale != null ? locale : Locale.US);

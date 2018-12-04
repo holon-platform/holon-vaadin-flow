@@ -19,12 +19,12 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-@Route("1")
-public class NavigationTarget1 extends Div {
+@Route("login")
+public class LoginNavigationTarget extends Div {
 
-	public NavigationTarget1() {
+	public LoginNavigationTarget() {
 		super();
-		addClassName("nav1");
+		addClassName("navlogin");
 	}
 
 }

@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -58,6 +59,9 @@ import com.holonplatform.vaadin.flow.navigator.NavigationParameterTypeMapper;
  * <p>
  * The {@link Set} and {@link List} collection types are also supported as parameter value type, in order to obtain
  * multiple parameter values.
+ * </p>
+ * <p>
+ * At last, the {@link Optional} type is supported as parameter value type.
  * </p>
  * <p>
  * One or more {@link NavigationParameterTypeMapper} can be registered using the Java {@link ServiceLoader} extensions

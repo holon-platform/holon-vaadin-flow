@@ -35,15 +35,20 @@ public class NavigationTarget2 extends Div {
 
 	@QueryParameter(required = true)
 	private Double param3;
-	
-	@QueryParameter(value="param4", defaultValue="dft")
+
+	@QueryParameter(value = "param4", defaultValue = "dft")
 	private String p4;
-	
+
 	@QueryParameter
 	private List<String> param5;
-	
+
 	@QueryParameter("param6")
 	private Set<LocalDate> p6;
+
+	public NavigationTarget2() {
+		super();
+		addClassName("nav2");
+	}
 
 	public Double getParam3() {
 		return param3;
@@ -51,6 +56,26 @@ public class NavigationTarget2 extends Div {
 
 	public void setParam3(Double param3) {
 		this.param3 = param3;
+	}
+
+	public String getParam1Value() {
+		return param1;
+	}
+
+	public Integer getParam2Value() {
+		return p2;
+	}
+
+	public String getParam4Value() {
+		return p4;
+	}
+
+	public List<String> getParam5Value() {
+		return param5;
+	}
+
+	public Set<LocalDate> getParam6Value() {
+		return p6;
 	}
 
 }

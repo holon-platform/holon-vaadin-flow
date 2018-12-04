@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -29,6 +30,7 @@ import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.NavigationParameterDefinition;
+import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.ParameterContainerType;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
@@ -96,10 +98,14 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 							"The value of the query parameter [" + name + "] is required");
 				}
 				// set as null
-				setParameterValue(navigationTargetInstance, definition, getNullParameterValue(definition.getType()));
+				setParameterValue(navigationTargetInstance, definition,
+						getNullParameterValue(definition.getType(), definition.getParameterContainerType()));
 			} else {
 				// check container type
 				switch (definition.getParameterContainerType()) {
+				case OPTIONAL:
+					setParameterValue(navigationTargetInstance, definition, Optional.ofNullable(values.get(0)));
+					break;
 				case LIST:
 					setParameterValue(navigationTargetInstance, definition, values);
 					break;
@@ -163,9 +169,16 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	/**
 	 * Get the null parameter value according to type, taking into account primitive types.
 	 * @param type Parameter value type
+	 * @param parameterContainerType Parameter container type
 	 * @return the null parameter value
 	 */
-	private static Object getNullParameterValue(Class<?> type) {
+	private static Object getNullParameterValue(Class<?> type, ParameterContainerType parameterContainerType) {
+		if (ParameterContainerType.LIST == parameterContainerType) {
+			return Collections.emptyList();
+		}
+		if (ParameterContainerType.SET == parameterContainerType) {
+			return Collections.emptySet();
+		}
 		if (TypeUtils.isPrimitiveBoolean(type)) {
 			return Boolean.FALSE;
 		}

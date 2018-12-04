@@ -27,9 +27,15 @@ public class NavigationTarget3 extends Div {
 	@QueryParameter
 	private String param1;
 	
+	private String showed;
+	
+	public String getShowed() {
+		return showed;
+	}
+
 	@OnShow
 	public void onShow1() {
-		
+		showed = param1;
 	}
 
 }

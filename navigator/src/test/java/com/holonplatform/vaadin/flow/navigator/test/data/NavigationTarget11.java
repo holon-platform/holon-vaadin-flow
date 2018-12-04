@@ -15,16 +15,28 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
+import java.util.Optional;
+
+import com.holonplatform.auth.annotations.Authenticate;
+import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@Authenticate(redirectURI = "login")
 @SuppressWarnings("serial")
-@Route("1")
-public class NavigationTarget1 extends Div {
+@Route("11")
+public class NavigationTarget11 extends Div {
 
-	public NavigationTarget1() {
+	@QueryParameter
+	private Optional<String> param;
+
+	public NavigationTarget11() {
 		super();
-		addClassName("nav1");
+		addClassName("nav11");
+	}
+
+	public Optional<String> getOptionalParam() {
+		return param;
 	}
 
 }

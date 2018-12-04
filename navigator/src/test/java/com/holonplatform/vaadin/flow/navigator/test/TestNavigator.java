@@ -15,16 +15,27 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget2;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.Location;
 
 public class TestNavigator extends AbstractNavigatorTest {
@@ -102,22 +113,119 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertEquals("test/a?p1=test1", url);
 
 	}
-	
+
 	@Test
 	public void testGetURL() {
 
 		Navigator navigator = Navigator.create(ui);
 		assertNotNull(navigator);
-		
+
 		String url = navigator.getUrl(NavigationTarget1.class);
 		assertNotNull(url);
 		assertEquals("1", url);
-		
+
 		url = navigator.getUrl(NavigationTarget9.class, "test");
 		assertNotNull(url);
 		assertEquals("9/test", url);
-		
+
 	}
-		
+
+	@Test
+	public void testNavigation() {
+
+		Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+
+		navigator.navigateTo(NavigationTarget1.class);
+
+		Element element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getClassList().contains("nav1"));
+
+		navigator.navigateTo("1");
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getClassList().contains("nav1"));
+
+		navigator.navigateTo(NavigationTarget9.class, "test");
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getClassList().contains("nav9"));
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(NavigationTarget9.class, element.getComponent().get().getClass());
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("param1", "test1");
+		params.put("param3", 3d);
+
+		navigator.navigateTo("2", params);
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getClassList().contains("nav2"));
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(NavigationTarget2.class, element.getComponent().get().getClass());
+
+		NavigationTarget2 nt2 = (NavigationTarget2) element.getComponent().get();
+		assertEquals("test1", nt2.getParam1Value());
+		assertNull(nt2.getParam2Value());
+		assertEquals(Double.valueOf(3d), nt2.getParam3());
+		assertEquals("dft", nt2.getParam4Value());
+		assertNotNull(nt2.getParam5Value());
+		assertTrue(nt2.getParam5Value().isEmpty());
+		assertNotNull(nt2.getParam6Value());
+		assertTrue(nt2.getParam6Value().isEmpty());
+
+		final LocalDate ld = LocalDate.of(2018, Month.DECEMBER, 4);
+
+		params = new HashMap<>();
+		params.put("param1", "test1");
+		params.put("param2", Integer.valueOf(7));
+		params.put("param3", 5d);
+		params.put("param4", "test4");
+		params.put("param5", Arrays.asList("s1", "s2"));
+		params.put("param6", ld);
+
+		navigator.navigateTo(NavigationTarget2.class, params);
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getClassList().contains("nav2"));
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(NavigationTarget2.class, element.getComponent().get().getClass());
+
+		nt2 = (NavigationTarget2) element.getComponent().get();
+		assertEquals("test1", nt2.getParam1Value());
+		assertEquals(Integer.valueOf(7), nt2.getParam2Value());
+		assertEquals(Double.valueOf(5d), nt2.getParam3());
+		assertEquals("test4", nt2.getParam4Value());
+		assertNotNull(nt2.getParam5Value());
+		assertFalse(nt2.getParam5Value().isEmpty());
+		assertEquals(2, nt2.getParam5Value().size());
+		assertTrue(nt2.getParam5Value().contains("s2"));
+		assertTrue(nt2.getParam5Value().contains("s1"));
+		assertNotNull(nt2.getParam6Value());
+		assertFalse(nt2.getParam6Value().isEmpty());
+		assertEquals(1, nt2.getParam6Value().size());
+		assertEquals(ld, nt2.getParam6Value().iterator().next());
+
+		navigator.navigation("3").navigate();
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(NavigationTarget3.class, element.getComponent().get().getClass());
+
+		NavigationTarget3 nt3 = (NavigationTarget3) element.getComponent().get();
+		assertNull(nt3.getShowed());
+
+		navigator.navigation(NavigationTarget3.class).withQueryParameter("param1", "testx").navigate();
+		element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(NavigationTarget3.class, element.getComponent().get().getClass());
+
+		nt3 = (NavigationTarget3) element.getComponent().get();
+		assertNotNull(nt3.getShowed());
+		assertEquals("testx", nt3.getShowed());
+
+	}
 
 }

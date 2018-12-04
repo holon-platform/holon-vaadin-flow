@@ -390,7 +390,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 			throws NavigationTargetConfigurationException {
 		final Class<?> type = field.getType();
 		// check container
-		if (List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type)) {
+		if (List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type)
+				|| Optional.class.isAssignableFrom(type)) {
 			// check element type
 			final Class<?> elementType = getParametrizedElementType(field);
 			if (elementType != null) {
@@ -425,6 +426,9 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	 * @return the parameter container type
 	 */
 	private static ParameterContainerType getNavigationParameterContainerType(Field field) {
+		if (Optional.class.isAssignableFrom(field.getType())) {
+			return ParameterContainerType.OPTIONAL;
+		}
 		if (List.class.isAssignableFrom(field.getType())) {
 			return ParameterContainerType.LIST;
 		}

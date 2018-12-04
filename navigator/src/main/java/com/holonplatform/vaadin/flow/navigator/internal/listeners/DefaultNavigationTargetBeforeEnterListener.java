@@ -84,7 +84,8 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 			if (definition.isRequired() && !definition.getDefaultValue().isPresent()) {
 				if (!queryParameters.containsKey(name) || queryParameters.get(name) == null
 						|| queryParameters.get(name).isEmpty()) {
-					event.rerouteToError(InvalidNavigationParameterException.class,
+					event.rerouteToError(
+							new InvalidNavigationParameterException("Missing required query parameter: " + name),
 							"Missing required query parameter: " + name);
 					return false;
 				}

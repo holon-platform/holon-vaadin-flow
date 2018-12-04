@@ -166,6 +166,11 @@ public interface NavigationTargetConfiguration extends Serializable {
 		 * None
 		 */
 		NONE,
+		
+		/**
+		 * {@link Optional} type container
+		 */
+		OPTIONAL,
 
 		/**
 		 * {@link Set} type contanier

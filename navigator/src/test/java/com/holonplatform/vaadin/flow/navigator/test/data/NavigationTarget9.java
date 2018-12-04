@@ -26,6 +26,11 @@ public class NavigationTarget9 extends Div implements HasUrlParameter<String> {
 
 	private String parameter;
 
+	public NavigationTarget9() {
+		super();
+		addClassName("nav9");
+	}
+
 	public String getParameter() {
 		return parameter;
 	}
