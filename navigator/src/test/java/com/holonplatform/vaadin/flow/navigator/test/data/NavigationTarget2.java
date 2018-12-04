@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Route("2")
-public class NavigationTarget2 {
+public class NavigationTarget2 extends Div {
 
 	@QueryParameter
 	private String param1;

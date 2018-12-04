@@ -17,10 +17,12 @@ package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Route("3")
-public class NavigationTarget3 {
+public class NavigationTarget3 extends Div {
 
 	@QueryParameter
 	private String param1;

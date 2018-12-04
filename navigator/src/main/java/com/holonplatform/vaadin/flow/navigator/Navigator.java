@@ -339,6 +339,22 @@ public interface Navigator extends Serializable {
 	public interface NavigationBuilder extends NavigationURLBuilder<NavigationBuilder> {
 
 		/**
+		 * Get the navigation location as a {@link Location}, including the navigation path and any declared query
+		 * parameter.
+		 * @return the navigation {@link Location}
+		 */
+		Location asLocation();
+
+		/**
+		 * Get the navigation location as the URL part which includes the navigation path and any declared query
+		 * parameter.
+		 * @return the navigation location URL part
+		 */
+		default String asLocationURL() {
+			return asLocation().getPathWithQueryParameters();
+		}
+
+		/**
 		 * Navigates to the location which is composed by the specified path and the provided query parameter values, if
 		 * any.
 		 */

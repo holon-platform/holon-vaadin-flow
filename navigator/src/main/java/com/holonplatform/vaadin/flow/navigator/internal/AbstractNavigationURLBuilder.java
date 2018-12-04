@@ -85,6 +85,15 @@ public abstract class AbstractNavigationURLBuilder<B extends NavigationURLBuilde
 		return path.toString();
 	}
 
+	/**
+	 * Get the {@link Location} using current path and query parameters.
+	 * @return The location
+	 */
+	protected Location getLocation() {
+		return new Location(path.toString(),
+				new QueryParameters(NavigationParameterUtils.serializeQueryParameters(getQueryParameters())));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.navigator.NavigationURLBuilder#withQueryParameter(java.lang.String,
@@ -114,16 +123,6 @@ public abstract class AbstractNavigationURLBuilder<B extends NavigationURLBuilde
 			path.append(p);
 		});
 		return getBuilder();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.NavigationURLBuilder#asLocation()
-	 */
-	@Override
-	public Location asLocation() {
-		return new Location(path.toString(),
-				new QueryParameters(NavigationParameterUtils.serializeQueryParameters(getQueryParameters())));
 	}
 
 }

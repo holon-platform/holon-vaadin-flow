@@ -17,12 +17,14 @@ package com.holonplatform.vaadin.flow.navigator;
 
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigationLink;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasText;
+import com.vaadin.flow.router.Router;
 
 /**
  * A link (using the default <code>A</code> tag) that handles navigation internally, without loading a new page in the
@@ -62,10 +64,20 @@ public interface NavigationLink extends HasComponent, HasText, HasStyle {
 	}
 
 	/**
+	 * Get a builder to create a {@link NavigationLink}.
+	 * @param navigationTarget The navigation target to navigate to (not null)
+	 * @param router The {@link Router} to use to resolve navigation target URLs
+	 * @return A new {@link NavigationLink} builder
+	 */
+	static Builder builder(Class<? extends Component> navigationTarget, Router router) {
+		return new DefaultNavigationLink.DefaultBuilder(navigationTarget, router);
+	}
+
+	/**
 	 * {@link NavigationLink} builder.
 	 */
 	public interface Builder extends ComponentConfigurator<Builder>, HasTextConfigurator<Builder>,
-			HasStyleConfigurator<Builder>, NavigationURLBuilder<Builder> {
+			HasStyleConfigurator<Builder>, NavigationURLBuilder<Builder>, DeferrableLocalizationConfigurator<Builder> {
 
 		/**
 		 * Build the {@link NavigationLink}.

@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.navigator.test.data;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Route("5")
 public class NavigationTarget5 extends AbstractNavigationTarget {
 

@@ -13,46 +13,81 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.holonplatform.vaadin.flow.spring.test;
+package com.holonplatform.vaadin.flow.navigator.test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget2;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget4;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget5;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget6;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget7;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget8;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.router.Router;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.InvalidRouteConfigurationException;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
+import com.vaadin.flow.server.startup.RouteRegistry;
 import com.vaadin.flow.spring.SpringVaadinSession;
 
-public abstract class AbstractVaadinSpringTest {
+public abstract class AbstractNavigatorTest {
 
 	protected static final String TEST_SESSION_ID = "TestSessionID";
-
 	protected static final int TEST_UIID = 1;
+
+	protected static RouteRegistry routeRegistry;
+
+	protected Router router;
 
 	protected VaadinSession vaadinSession;
 
 	protected UI ui;
 
+	@BeforeAll
+	public static void _beforeAll() throws Exception {
+		routeRegistry = new TestRouteRegistry(Arrays.asList(NavigationTarget1.class, NavigationTarget2.class,
+				NavigationTarget3.class, NavigationTarget4.class, NavigationTarget5.class, NavigationTarget6.class,
+				NavigationTarget7.class, NavigationTarget8.class, NavigationTarget9.class));
+	}
+
+	@AfterAll
+	public static void _afterAll() {
+		routeRegistry = null;
+	}
+
 	@BeforeEach
 	public void _beforeEach() throws Exception {
-		vaadinSession = createVaadinSession(getClientLocale());
+		router = new Router(routeRegistry);
+
+		vaadinSession = createVaadinSession(Locale.US);
 		VaadinRequest request = buildVaadinRequest();
 		CurrentInstance.set(VaadinSession.class, vaadinSession);
 		CurrentInstance.set(VaadinRequest.class, request);
@@ -66,23 +101,9 @@ public abstract class AbstractVaadinSpringTest {
 
 	@AfterEach
 	public void _afterEach() {
-		CurrentInstance.clearAll();
+		router = null;
 	}
 
-	/**
-	 * Ger Locale tu use
-	 * @return Client simulated Locale
-	 */
-	protected Locale getClientLocale() {
-		return Locale.US;
-	}
-
-	/**
-	 * Create a VaadinSession
-	 * @param locale Client locale
-	 * @return VaadinSession instance
-	 * @throws Exception Failed to create session
-	 */
 	protected VaadinSession createVaadinSession(Locale locale) throws Exception {
 		WrappedSession wrappedSession = mock(WrappedSession.class);
 		VaadinServletService vaadinService = mock(VaadinServletService.class);
@@ -90,6 +111,7 @@ public abstract class AbstractVaadinSpringTest {
 				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
+		when(vaadinService.getRouter()).thenReturn(router);
 		SpringVaadinSession session = mock(SpringVaadinSession.class);
 		when(session.getState()).thenReturn(VaadinSessionState.OPEN);
 		when(session.getSession()).thenReturn(wrappedSession);
@@ -130,22 +152,21 @@ public abstract class AbstractVaadinSpringTest {
 		return request;
 	}
 
-	/**
-	 * Get Properties to provide to Vaadin DeploymentConfiguration
-	 * @return DeploymentConfiguration properties
-	 */
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(!isVaadinDebugMode()));
+		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
 		return properties;
 	}
 
-	/**
-	 * Whether to use Vaadin debug mode
-	 * @return <code>true</code> to use Vaadin debug mode
-	 */
-	protected boolean isVaadinDebugMode() {
-		return false;
+	@SuppressWarnings("serial")
+	static class TestRouteRegistry extends RouteRegistry {
+
+		public TestRouteRegistry(List<Class<? extends Component>> navigationTargets)
+				throws InvalidRouteConfigurationException {
+			super();
+			setNavigationTargets(navigationTargets.stream().collect(Collectors.toSet()));
+		}
+
 	}
 
 }

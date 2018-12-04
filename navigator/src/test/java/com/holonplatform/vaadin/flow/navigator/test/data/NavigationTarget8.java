@@ -16,10 +16,12 @@
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.holonplatform.core.i18n.Caption;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Caption(value = "test", messageCode = "test.code")
 @Route("8")
-public class NavigationTarget8 {
+public class NavigationTarget8 extends Div {
 
 }

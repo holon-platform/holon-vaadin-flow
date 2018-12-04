@@ -16,10 +16,12 @@
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.holonplatform.auth.annotations.Authenticate;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Authenticate
 @Route("6")
-public class NavigationTarget6 {
+public class NavigationTarget6 extends Div {
 
 }

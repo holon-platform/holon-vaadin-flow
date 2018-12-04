@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.flow.router.Location;
-
 /**
  * A builder to compose a navigation URL.
  * 
@@ -67,20 +65,5 @@ public interface NavigationURLBuilder<B extends NavigationURLBuilder<B>> extends
 	 * @return this
 	 */
 	<T> B withPathParameter(T pathParameter);
-
-	/**
-	 * Get the navigation location as a {@link Location}, including the navigation path and any declared query
-	 * parameter.
-	 * @return the navigation {@link Location}
-	 */
-	Location asLocation();
-
-	/**
-	 * Get the navigation location as the URL part which includes the navigation path and any declared query parameter.
-	 * @return the navigation location URL part
-	 */
-	default String asLocationURL() {
-		return asLocation().getPathWithQueryParameters();
-	}
 
 }

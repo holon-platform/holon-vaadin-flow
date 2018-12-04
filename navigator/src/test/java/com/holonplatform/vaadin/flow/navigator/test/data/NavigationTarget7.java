@@ -17,10 +17,12 @@ package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import javax.annotation.security.RolesAllowed;
 
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @RolesAllowed({ "A", "B" })
 @Route("7")
-public class NavigationTarget7 {
+public class NavigationTarget7 extends Div {
 
 }

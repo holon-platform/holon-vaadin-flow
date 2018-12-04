@@ -15,9 +15,11 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Route("1")
-public class NavigationTarget1 {
+public class NavigationTarget1 extends Div {
 
 }

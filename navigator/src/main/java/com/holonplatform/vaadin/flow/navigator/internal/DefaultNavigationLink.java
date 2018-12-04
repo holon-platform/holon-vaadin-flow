@@ -82,14 +82,26 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 		private final DefaultHasTextConfigurator textConfigurator;
 		private final DefaultHasStyleConfigurator styleConfigurator;
 
+		private boolean deferredLocalizationEnabled;
+
 		/**
 		 * Constructor with navigation target.
 		 * @param navigationTarget The navigation target (not null).
 		 */
 		public DefaultBuilder(Class<? extends Component> navigationTarget) {
+			this(navigationTarget, null);
+		}
+
+		/**
+		 * Constructor with navigation target.
+		 * @param navigationTarget The navigation target (not null).
+		 * @param router The {@link Router} to use to resolve navigation target URLs (may be null)
+		 */
+		public DefaultBuilder(Class<? extends Component> navigationTarget, Router router) {
 			this("");
 			ObjectUtils.argumentNotNull(navigationTarget, "The navigation target class must be not null");
-			path.append(getRouter().getUrlBase(navigationTarget));
+			final Router r = (router != null) ? router : getRouter();
+			path.append(r.getUrlBase(navigationTarget));
 		}
 
 		/**
@@ -101,7 +113,7 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 			this.instance = new DefaultNavigationLink();
 
 			this.componentConfigurator = new DefaultComponentConfigurator(instance);
-			this.textConfigurator = new DefaultHasTextConfigurator(instance);
+			this.textConfigurator = new DefaultHasTextConfigurator(instance, this);
 			this.styleConfigurator = new DefaultHasStyleConfigurator(instance);
 		}
 
@@ -111,6 +123,28 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 		 */
 		@Override
 		protected Builder getBuilder() {
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+		 */
+		@Override
+		public boolean isDeferredLocalizationEnabled() {
+			return deferredLocalizationEnabled;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization
+		 * (boolean)
+		 */
+		@Override
+		public Builder withDeferredLocalization(boolean deferredLocalization) {
+			this.deferredLocalizationEnabled = deferredLocalization;
 			return this;
 		}
 
@@ -229,7 +263,7 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 		 */
 		@Override
 		public NavigationLink build() {
-			instance.setHref(asLocationURL());
+			instance.setHref(getLocation().getPathWithQueryParameters());
 			return instance;
 		}
 

@@ -23,15 +23,14 @@ import org.junit.jupiter.api.Test;
 
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder;
-import com.vaadin.flow.component.UI;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
 import com.vaadin.flow.router.Location;
 
-public class TestNavigatorBuilders {
+public class TestNavigator extends AbstractNavigatorTest {
 
 	@Test
 	public void testNavigationBuilder() {
-
-		final UI ui = new UI();
 
 		Navigator navigator = Navigator.create(ui);
 		assertNotNull(navigator);
@@ -87,8 +86,6 @@ public class TestNavigatorBuilders {
 	@Test
 	public void testNavigationBuilderPathParameters() {
 
-		final UI ui = new UI();
-
 		Navigator navigator = Navigator.create(ui);
 		assertNotNull(navigator);
 
@@ -105,5 +102,22 @@ public class TestNavigatorBuilders {
 		assertEquals("test/a?p1=test1", url);
 
 	}
+	
+	@Test
+	public void testGetURL() {
+
+		Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+		
+		String url = navigator.getUrl(NavigationTarget1.class);
+		assertNotNull(url);
+		assertEquals("1", url);
+		
+		url = navigator.getUrl(NavigationTarget9.class, "test");
+		assertNotNull(url);
+		assertEquals("9/test", url);
+		
+	}
+		
 
 }

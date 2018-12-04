@@ -16,11 +16,13 @@
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("serial")
 @Route("4")
-public class NavigationTarget4 {
+public class NavigationTarget4 extends Div {
 
 	@OnShow
 	public void onShow2(@SuppressWarnings("unused") AfterNavigationEvent event) {

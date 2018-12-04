@@ -15,15 +15,24 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
-import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNavigationTarget extends Div {
+@Route("9")
+public class NavigationTarget9 extends Div implements HasUrlParameter<String> {
 
-	@OnShow
-	public void parentShow() {
+	private String parameter;
 
+	public String getParameter() {
+		return parameter;
+	}
+
+	@Override
+	public void setParameter(BeforeEvent event, String parameter) {
+		this.parameter = parameter;
 	}
 
 }

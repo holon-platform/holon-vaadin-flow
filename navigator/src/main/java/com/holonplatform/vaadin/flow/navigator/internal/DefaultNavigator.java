@@ -31,6 +31,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 /**
@@ -189,6 +190,15 @@ public class DefaultNavigator implements Navigator {
 		@Override
 		protected NavigationBuilder getBuilder() {
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder#asLocation()
+		 */
+		@Override
+		public Location asLocation() {
+			return getLocation();
 		}
 
 		/*
