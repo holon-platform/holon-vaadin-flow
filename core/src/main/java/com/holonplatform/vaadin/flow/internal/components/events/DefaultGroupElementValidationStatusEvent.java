@@ -36,7 +36,7 @@ public class DefaultGroupElementValidationStatusEvent<S, P, E extends HasCompone
 		extends DefaultValidationStatusEvent<S> implements GroupElementValidationStatusEvent<S, P, E> {
 
 	private static final long serialVersionUID = -6525450825356074007L;
-	
+
 	private final P property;
 	private final E element;
 

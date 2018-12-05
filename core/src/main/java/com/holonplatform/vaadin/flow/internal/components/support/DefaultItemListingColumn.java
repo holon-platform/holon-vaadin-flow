@@ -523,8 +523,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 	 */
 	@Override
-	public void setValidationStatusHandler(
-			ValidationStatusHandler<Input<V>> validationStatusHandler) {
+	public void setValidationStatusHandler(ValidationStatusHandler<Input<V>> validationStatusHandler) {
 		this.validationStatusHandler = validationStatusHandler;
 	}
 

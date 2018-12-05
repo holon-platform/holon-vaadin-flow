@@ -89,7 +89,7 @@ public interface ValueHolder<V, E extends ValueChangeEvent<V>> extends Serializa
 	 * @return a registration for the listener, which provides the <em>remove</em> operation
 	 */
 	public Registration addValueChangeListener(ValueChangeListener<V, E> listener);
-	
+
 	// ------- value change handling
 
 	/**

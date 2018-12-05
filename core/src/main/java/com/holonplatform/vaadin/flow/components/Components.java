@@ -278,7 +278,7 @@ public interface Components {
 
 	/**
 	 * Create a {@link Button} with given localizable text and given <code>click</code> event listener.
-	 * @param tex The {@link Localizable} button text
+	 * @param text The {@link Localizable} button text
 	 * @param clickListener The click listener (not null)
 	 * @return A new {@link Button}
 	 * @see #button()

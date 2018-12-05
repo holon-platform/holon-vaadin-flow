@@ -31,8 +31,8 @@ import com.vaadin.flow.theme.NoTheme;
 /**
  * Default navigator error handler for the {@link UnauthorizedNavigationError} error.
  * <p>
- * This error handler will show a localizable header message composed by the {@link #DEFAULT_NAVIGATION_FAILED_MESSAGE}
- * followed by the failed navigation path, using the {@link #DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE} as localization
+ * This error handler will show a localizable header message composed by the {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE}
+ * followed by the failed navigation path, using the {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE} as localization
  * message code.
  * </p>
  * <p>

@@ -49,8 +49,7 @@ import com.vaadin.flow.router.Router;
  * It provides the {@link #navigateBack()} method to navigate back in the browser history.
  * </p>
  * <p>
- * The {@link #get()} and {@link #require()} static methods can be used to obtain the {@link Navigator} reference for
- * the current UI.
+ * The {@link #get()} static method can be used to obtain the {@link Navigator} reference for the current UI.
  * </p>
  * 
  * @since 5.2.0
@@ -319,8 +318,7 @@ public interface Navigator extends Serializable {
 	/**
 	 * Create a new {@link Navigator} bound to given UI.
 	 * <p>
-	 * The recomended way to obtain a {@link Navigator} reference is to use the {@link #get()} or {@link #require()}
-	 * methods.
+	 * The recomended way to obtain a {@link Navigator} reference is to use the {@link #get()} method.
 	 * </p>
 	 * @param ui The {@link UI} to which the navigator is bound (not null)
 	 * @return A new {@link Navigator} instance
