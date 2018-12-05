@@ -26,15 +26,39 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.auth.AuthContext;
+import com.holonplatform.auth.Authentication;
+import com.holonplatform.auth.Authenticator;
+import com.holonplatform.auth.Realm;
+import com.holonplatform.auth.exceptions.InvalidCredentialsException;
+import com.holonplatform.auth.token.AccountCredentialsToken;
+import com.holonplatform.core.Context;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.Navigator.NavigationBuilder;
+import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
+import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
+import com.holonplatform.vaadin.flow.navigator.test.data.AuthLayout;
+import com.holonplatform.vaadin.flow.navigator.test.data.AuthParentLayout;
+import com.holonplatform.vaadin.flow.navigator.test.data.LoginNavigationTarget;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget10;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget11;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget12;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget13;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget14;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget2;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget4;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget6;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget7;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
+import com.holonplatform.vaadin.flow.navigator.test.data.NoAuthLayout;
+import com.holonplatform.vaadin.flow.navigator.test.data.TestNavigationError;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.Location;
 
@@ -117,7 +141,7 @@ public class TestNavigator extends AbstractNavigatorTest {
 	@Test
 	public void testGetURL() {
 
-		Navigator navigator = Navigator.create(ui);
+		final Navigator navigator = Navigator.create(ui);
 		assertNotNull(navigator);
 
 		String url = navigator.getUrl(NavigationTarget1.class);
@@ -137,35 +161,23 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertNotNull(navigator);
 
 		navigator.navigateTo(NavigationTarget1.class);
-
-		Element element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getClassList().contains("nav1"));
+		NavigationTarget1 nt1 = getNavigationComponent(NavigationTarget1.class);
+		assertNotNull(nt1);
 
 		navigator.navigateTo("1");
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getClassList().contains("nav1"));
+		nt1 = getNavigationComponent(NavigationTarget1.class);
+		assertNotNull(nt1);
 
 		navigator.navigateTo(NavigationTarget9.class, "test");
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getClassList().contains("nav9"));
-		assertTrue(element.getComponent().isPresent());
-		assertEquals(NavigationTarget9.class, element.getComponent().get().getClass());
+		NavigationTarget9 nt9 = getNavigationComponent(NavigationTarget9.class);
+		assertNotNull(nt9);
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("param1", "test1");
 		params.put("param3", 3d);
 
 		navigator.navigateTo("2", params);
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getClassList().contains("nav2"));
-		assertTrue(element.getComponent().isPresent());
-		assertEquals(NavigationTarget2.class, element.getComponent().get().getClass());
-
-		NavigationTarget2 nt2 = (NavigationTarget2) element.getComponent().get();
+		NavigationTarget2 nt2 = getNavigationComponent(NavigationTarget2.class);
 		assertEquals("test1", nt2.getParam1Value());
 		assertNull(nt2.getParam2Value());
 		assertEquals(Double.valueOf(3d), nt2.getParam3());
@@ -186,13 +198,8 @@ public class TestNavigator extends AbstractNavigatorTest {
 		params.put("param6", ld);
 
 		navigator.navigateTo(NavigationTarget2.class, params);
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getClassList().contains("nav2"));
-		assertTrue(element.getComponent().isPresent());
-		assertEquals(NavigationTarget2.class, element.getComponent().get().getClass());
-
-		nt2 = (NavigationTarget2) element.getComponent().get();
+		nt2 = getNavigationComponent(NavigationTarget2.class);
+		assertNotNull(nt2);
 		assertEquals("test1", nt2.getParam1Value());
 		assertEquals(Integer.valueOf(7), nt2.getParam2Value());
 		assertEquals(Double.valueOf(5d), nt2.getParam3());
@@ -208,24 +215,191 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertEquals(ld, nt2.getParam6Value().iterator().next());
 
 		navigator.navigation("3").navigate();
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getComponent().isPresent());
-		assertEquals(NavigationTarget3.class, element.getComponent().get().getClass());
-
-		NavigationTarget3 nt3 = (NavigationTarget3) element.getComponent().get();
+		NavigationTarget3 nt3 = getNavigationComponent(NavigationTarget3.class);
+		assertNotNull(nt3);
 		assertNull(nt3.getShowed());
 
 		navigator.navigation(NavigationTarget3.class).withQueryParameter("param1", "testx").navigate();
-		element = ui.getElement().getChildren().findFirst().orElse(null);
-		assertNotNull(element);
-		assertTrue(element.getComponent().isPresent());
-		assertEquals(NavigationTarget3.class, element.getComponent().get().getClass());
-
-		nt3 = (NavigationTarget3) element.getComponent().get();
+		nt3 = getNavigationComponent(NavigationTarget3.class);
+		assertNotNull(nt3);
 		assertNotNull(nt3.getShowed());
 		assertEquals("testx", nt3.getShowed());
 
+		navigator.navigateToLocation("3?param1=testx");
+		nt3 = getNavigationComponent(NavigationTarget3.class);
+		assertNotNull(nt3);
+		assertNotNull(nt3.getShowed());
+		assertEquals("testx", nt3.getShowed());
+
+		navigator.navigateTo("4");
+		NavigationTarget4 nt4 = getNavigationComponent(NavigationTarget4.class);
+		assertNotNull(nt4);
+		assertNotNull(nt4.getLocation());
+
+		params = new HashMap<>();
+		params.put("param1", "test1");
+
+		navigator.navigateTo(NavigationTarget9.class, "test", params);
+		nt9 = getNavigationComponent(NavigationTarget9.class);
+		assertNotNull(nt9);
+		assertEquals("test1", nt9.getParam1());
+
+	}
+
+	@Test
+	public void testOptionalNavigationParameters() {
+
+		final Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+
+		navigator.navigateTo("11");
+		NavigationTarget11 nt11 = getNavigationComponent(NavigationTarget11.class);
+		assertNotNull(nt11);
+		assertNotNull(nt11.getOptionalParam());
+		assertFalse(nt11.getOptionalParam().isPresent());
+
+		navigator.navigation("11").withQueryParameter("param", "test").navigate();
+		nt11 = getNavigationComponent(NavigationTarget11.class);
+		assertNotNull(nt11);
+		assertNotNull(nt11.getOptionalParam());
+		assertTrue(nt11.getOptionalParam().isPresent());
+		assertEquals("test", nt11.getOptionalParam().orElse(null));
+
+	}
+
+	@Test
+	public void testNavigationAuth() {
+
+		final Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+
+		final Realm realm = Realm.builder().withDefaultAuthorizer()
+				.authenticator(Authenticator.create(AccountCredentialsToken.class, token -> {
+					if ("test".equals(token.getPrincipal())) {
+						return Authentication.builder("test").build();
+					}
+					if ("test2".equals(token.getPrincipal())) {
+						return Authentication.builder("test").permission("X").build();
+					}
+					if ("test3".equals(token.getPrincipal())) {
+						return Authentication.builder("test").permission("A").build();
+					}
+					throw new InvalidCredentialsException();
+				})).build();
+
+		navigator.navigateTo("6");
+		TestNavigationError error = getNavigationComponent(TestNavigationError.class);
+		assertNotNull(error);
+		assertNotNull(error.getException());
+		assertEquals(IllegalStateException.class, error.getException().getClass());
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			navigator.navigateTo("6");
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(UnauthorizedNavigationException.class, error2.getException().getClass());
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test", "pwd"));
+
+			navigator.navigateTo("6");
+			NavigationTarget6 nt6 = getNavigationComponent(NavigationTarget6.class);
+			assertNotNull(nt6);
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			navigator.navigateTo(NavigationTarget7.class);
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(UnauthorizedNavigationException.class, error2.getException().getClass());
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test", "pwd"));
+
+			navigator.navigateTo(NavigationTarget7.class);
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(ForbiddenNavigationException.class, error2.getException().getClass());
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test2", "pwd"));
+
+			navigator.navigateTo(NavigationTarget7.class);
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(ForbiddenNavigationException.class, error2.getException().getClass());
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test3", "pwd"));
+
+			navigator.navigateTo(NavigationTarget7.class);
+			NavigationTarget7 nt7 = getNavigationComponent(NavigationTarget7.class);
+			assertNotNull(nt7);
+		});
+
+		// redirect
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			navigator.navigateTo(NavigationTarget10.class);
+			LoginNavigationTarget login = getNavigationComponent(LoginNavigationTarget.class);
+			assertNotNull(login);
+		});
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test", "pwd"));
+
+			navigator.navigateTo(NavigationTarget10.class);
+			NavigationTarget10 nt10 = getNavigationComponent(NavigationTarget10.class);
+			assertNotNull(nt10);
+		});
+
+		// layouts
+		navigator.navigateTo(NavigationTarget13.class);
+		NoAuthLayout nt13 = getNavigationComponent(NoAuthLayout.class);
+		assertNotNull(nt13);
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			navigator.navigateTo(NavigationTarget12.class);
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(UnauthorizedNavigationException.class, error2.getException().getClass());
+
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test", "pwd"));
+			navigator.navigateTo(NavigationTarget12.class);
+			AuthLayout t = getNavigationComponent(AuthLayout.class);
+			assertNotNull(t);
+		});
+
+		Context.get().executeThreadBound(AuthContext.CONTEXT_KEY, AuthContext.create(realm), () -> {
+			navigator.navigateTo(NavigationTarget14.class);
+			TestNavigationError error2 = getNavigationComponent(TestNavigationError.class);
+			assertNotNull(error2);
+			assertNotNull(error2.getException());
+			assertEquals(UnauthorizedNavigationException.class, error2.getException().getClass());
+
+			AuthContext.require().authenticate(AccountCredentialsToken.create("test", "pwd"));
+			navigator.navigateTo(NavigationTarget14.class);
+			AuthParentLayout t = getNavigationComponent(AuthParentLayout.class);
+			assertNotNull(t);
+		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Component> T getNavigationComponent(Class<T> navigationTarget) {
+		ui.getElement().getChildren().collect(Collectors.toList());
+		Element element = ui.getElement().getChildren().findFirst().orElse(null);
+		assertNotNull(element);
+		assertTrue(element.getComponent().isPresent());
+		assertEquals(navigationTarget, element.getComponent().get().getClass());
+		return (T) element.getComponent().get();
 	}
 
 }

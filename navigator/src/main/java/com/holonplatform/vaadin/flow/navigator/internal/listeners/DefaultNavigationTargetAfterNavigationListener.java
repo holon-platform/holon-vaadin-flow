@@ -173,6 +173,9 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	 * @return the null parameter value
 	 */
 	private static Object getNullParameterValue(Class<?> type, ParameterContainerType parameterContainerType) {
+		if (ParameterContainerType.OPTIONAL == parameterContainerType) {
+			return Optional.empty();
+		}
 		if (ParameterContainerType.LIST == parameterContainerType) {
 			return Collections.emptyList();
 		}

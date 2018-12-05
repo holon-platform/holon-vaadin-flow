@@ -16,10 +16,11 @@
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.ParentLayout;
+import com.vaadin.flow.router.RouterLayout;
 
+@ParentLayout(AuthParentLayout.class)
 @SuppressWarnings("serial")
-@Route("1")
-public class NavigationTarget1 extends Div {
+public class ChildAuthLayout extends Div implements RouterLayout {
 
 }

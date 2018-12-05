@@ -35,8 +35,13 @@ import org.junit.jupiter.api.BeforeEach;
 
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetAfterNavigationListener;
 import com.holonplatform.vaadin.flow.navigator.internal.listeners.DefaultNavigationTargetBeforeEnterListener;
+import com.holonplatform.vaadin.flow.navigator.test.data.LoginNavigationTarget;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget1;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget10;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget11;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget12;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget13;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget14;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget2;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget4;
@@ -45,6 +50,7 @@ import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget6;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget7;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget8;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
+import com.holonplatform.vaadin.flow.navigator.test.data.TestNavigationError;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.DefaultInstantiator;
@@ -80,9 +86,13 @@ public abstract class AbstractNavigatorTest {
 
 	@BeforeAll
 	public static void _beforeAll() throws Exception {
-		routeRegistry = new TestRouteRegistry(Arrays.asList(NavigationTarget1.class, NavigationTarget2.class,
-				NavigationTarget3.class, NavigationTarget4.class, NavigationTarget5.class, NavigationTarget6.class,
-				NavigationTarget7.class, NavigationTarget8.class, NavigationTarget9.class, NavigationTarget11.class));
+		routeRegistry = new TestRouteRegistry(
+				Arrays.asList(NavigationTarget1.class, NavigationTarget2.class, NavigationTarget3.class,
+						NavigationTarget4.class, NavigationTarget5.class, NavigationTarget6.class,
+						NavigationTarget7.class, NavigationTarget8.class, NavigationTarget9.class,
+						NavigationTarget10.class, NavigationTarget11.class, NavigationTarget12.class,
+						NavigationTarget13.class, NavigationTarget14.class, LoginNavigationTarget.class),
+				Arrays.asList(TestNavigationError.class));
 	}
 
 	@AfterAll
@@ -177,10 +187,11 @@ public abstract class AbstractNavigatorTest {
 	@SuppressWarnings("serial")
 	static class TestRouteRegistry extends RouteRegistry {
 
-		public TestRouteRegistry(List<Class<? extends Component>> navigationTargets)
-				throws InvalidRouteConfigurationException {
+		public TestRouteRegistry(List<Class<? extends Component>> navigationTargets,
+				List<Class<? extends Component>> errors) throws InvalidRouteConfigurationException {
 			super();
 			setNavigationTargets(navigationTargets.stream().collect(Collectors.toSet()));
+			setErrorNavigationTargets(errors.stream().collect(Collectors.toSet()));
 		}
 
 	}

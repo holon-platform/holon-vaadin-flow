@@ -15,36 +15,30 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
-import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
+import javax.servlet.http.HttpServletResponse;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.ErrorParameter;
+import com.vaadin.flow.router.HasErrorParameter;
+import com.vaadin.flow.theme.NoTheme;
 
 @SuppressWarnings("serial")
-@Route("9")
-public class NavigationTarget9 extends Div implements HasUrlParameter<String> {
+@Tag(Tag.DIV)
+@NoTheme
+public class TestNavigationError extends Component implements HasErrorParameter<Exception> {
 
-	@QueryParameter
-	private String param1;
+	private Exception exception;
 
-	private String parameter;
-
-	public String getParameter() {
-		return parameter;
+	public Exception getException() {
+		return exception;
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, String parameter) {
-		this.parameter = parameter;
-	}
-
-	public String getParam1() {
-		return param1;
-	}
-
-	public void setParam1(String param1) {
-		this.param1 = param1;
+	public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<Exception> parameter) {
+		exception = parameter.getCaughtException();
+		return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 	}
 
 }

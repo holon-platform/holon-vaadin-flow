@@ -15,11 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
+import com.holonplatform.auth.annotations.Authenticate;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 
+@Authenticate
 @SuppressWarnings("serial")
-@Route("1")
-public class NavigationTarget1 extends Div {
+public class AuthParentLayout extends Div implements RouterLayout {
 
 }

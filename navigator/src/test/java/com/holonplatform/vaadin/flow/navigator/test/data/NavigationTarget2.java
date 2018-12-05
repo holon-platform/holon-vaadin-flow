@@ -45,11 +45,6 @@ public class NavigationTarget2 extends Div {
 	@QueryParameter("param6")
 	private Set<LocalDate> p6;
 
-	public NavigationTarget2() {
-		super();
-		addClassName("nav2");
-	}
-
 	public Double getParam3() {
 		return param3;
 	}

@@ -19,7 +19,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-@Route("1")
-public class NavigationTarget1 extends Div {
+@Route(value="12", layout=AuthLayout.class)
+public class NavigationTarget12 extends Div {
+
 
 }

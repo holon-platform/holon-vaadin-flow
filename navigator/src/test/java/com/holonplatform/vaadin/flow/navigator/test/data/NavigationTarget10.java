@@ -19,14 +19,9 @@ import com.holonplatform.auth.annotations.Authenticate;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
-@Authenticate(redirectURI="login")
+@Authenticate(redirectURI = "login")
 @SuppressWarnings("serial")
 @Route("10")
 public class NavigationTarget10 extends Div {
-
-	public NavigationTarget10() {
-		super();
-		addClassName("nav10");
-	}
 
 }
