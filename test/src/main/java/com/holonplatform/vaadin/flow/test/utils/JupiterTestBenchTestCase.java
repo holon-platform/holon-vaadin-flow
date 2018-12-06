@@ -72,7 +72,6 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 
 	/**
 	 * Convenience method the return {@link TestBenchCommands} for the default {@link WebDriver} instance.
-	 *
 	 * @return The driver cast to a TestBenchCommands instance.
 	 */
 	public TestBenchCommands testBench() {
@@ -82,7 +81,6 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 	/**
 	 * Combines a base URL with an URI to create a final URL. This removes possible double slashes if the base URL ends
 	 * with a slash and the URI begins with a slash.
-	 *
 	 * @param baseUrl the base URL
 	 * @param uri the URI
 	 * @return the URL resulting from the combination of base URL and URI
@@ -98,7 +96,6 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 	 * Returns the {@link WebDriver} instance previously specified by {@link #setDriver(org.openqa.selenium.WebDriver)},
 	 * or (if the previously provided WebDriver instance was not already a {@link TestBenchDriverProxy} instance) a
 	 * {@link TestBenchDriverProxy} that wraps that driver.
-	 *
 	 * @return the active WebDriver instance
 	 */
 	@Override
@@ -154,7 +151,6 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 	 * provided will be executed as the body of an anonymous function.
 	 * <p>
 	 * This method wraps any returned {@link WebElement} as {@link TestBenchElement}.
-	 *
 	 * @param script the script to execute
 	 * @param args the arguments, available in the script as {@code arguments[0]...arguments[N]}
 	 * @return whatever {@link org.openqa.selenium.JavascriptExecutor#executeScript(String, Object...)} returns
@@ -170,15 +166,13 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 	 * {@link NotFoundException}s are ignored by default.
 	 * <p>
 	 * Use e.g. as <code>waitUntil(ExpectedConditions.presenceOfElementLocated(by), 10);</code>
-	 *
+	 * @param <T> Condition type
 	 * @param condition Models a condition that might reasonably be expected to eventually evaluate to something that is
 	 *        neither null nor false.
 	 * @param timeoutInSeconds The timeout in seconds for the wait.
 	 * @return The condition's return value if it returned something different from null or false before the timeout
 	 *         expired.
-	 *
 	 * @throws TimeoutException If the timeout expires.
-	 *
 	 * @see FluentWait#until
 	 * @see ExpectedCondition
 	 */
@@ -191,14 +185,12 @@ public abstract class JupiterTestBenchTestCase implements HasDriver, HasTestBenc
 	 * ignored by default.
 	 * <p>
 	 * Use e.g. as <code>waitUntil(ExpectedConditions.presenceOfElementLocated(by));</code>
-	 *
+	 * @param <T> Condition type
 	 * @param condition Models a condition that might reasonably be expected to eventually evaluate to something that is
 	 *        neither null nor false.
 	 * @return The condition's return value if it returned something different from null or false before the timeout
 	 *         expired.
-	 *
 	 * @throws TimeoutException If 10 seconds passed.
-	 *
 	 * @see FluentWait#until
 	 * @see ExpectedCondition
 	 */
