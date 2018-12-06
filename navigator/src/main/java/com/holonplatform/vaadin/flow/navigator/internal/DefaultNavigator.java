@@ -153,7 +153,7 @@ public class DefaultNavigator implements Navigator {
 	/**
 	 * Navigate to given path.
 	 * @param path The navigation path. If <code>null</code>, the default <code>""</code> path will be used.
-	 * @param parameters Optional query parameters
+	 * @param queryParameters Optional query parameters
 	 */
 	protected void navigate(String path, Map<String, List<String>> queryParameters) {
 		getUI().navigate((path != null) ? path : "",

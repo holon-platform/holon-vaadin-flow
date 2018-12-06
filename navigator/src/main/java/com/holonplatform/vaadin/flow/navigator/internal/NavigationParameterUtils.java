@@ -56,7 +56,8 @@ public final class NavigationParameterUtils implements Serializable {
 
 	/**
 	 * Serialize given path parameters.
-	 * @param parameter The path parameters values
+	 * @param <T> Parameter value type
+	 * @param parameters The path parameters values
 	 * @return The serialized path parameters values
 	 */
 	public static <T> List<String> serializePathParameters(List<T> parameters) {

@@ -844,6 +844,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 
 	/**
 	 * Validate the input bound to given property when input value changes.
+	 * @param <T> Property type
 	 * @param property The property
 	 * @param value The new value
 	 */

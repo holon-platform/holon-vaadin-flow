@@ -90,6 +90,7 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 	/**
 	 * Constructor.
+	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter the item converter to use (not null)
 	 */
 	protected DefaultPropertySelectModeSingleSelectInputBuilder(Property<T> selectionProperty,
