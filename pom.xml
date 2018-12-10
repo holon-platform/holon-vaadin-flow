@@ -61,7 +61,7 @@
 		<bintray.package>holon-vaadin-flow</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.2.0-beta1-SNAPSHOT</holon.core.version>
+		<holon.core.version>5.2.0-rc1</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>12.0.0</vaadin.version>
