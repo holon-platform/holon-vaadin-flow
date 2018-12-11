@@ -131,11 +131,11 @@ public class DefaultDateInputBuilder implements DateInputBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#useContextLocale(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#updateLocaleOnAttach(boolean)
 	 */
 	@Override
-	public DateInputBuilder useContextLocale(boolean useContextLocale) {
-		builder.useContextLocale(useContextLocale);
+	public DateInputBuilder updateLocaleOnAttach(boolean updateLocaleOnAttach) {
+		builder.updateLocaleOnAttach(updateLocaleOnAttach);
 		return this;
 	}
 

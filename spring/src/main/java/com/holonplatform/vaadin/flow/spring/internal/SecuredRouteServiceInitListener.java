@@ -25,10 +25,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -78,9 +77,8 @@ public class SecuredRouteServiceInitListener implements VaadinServiceInitListene
 					if (!isAccessGranted(roles)) {
 						// redirect to error
 						event.rerouteToError(UnauthorizedNavigationException.class,
-								LocalizationContext
-										.translate(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
-												UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE), true));
+								LocalizationProvider.localize(UnauthorizedNavigationException.DEFAULT_MESSAGE,
+										UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE));
 					}
 				}
 			}

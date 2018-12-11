@@ -25,10 +25,9 @@ import com.holonplatform.auth.AuthContext;
 import com.holonplatform.auth.Authentication;
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.auth.exceptions.AuthenticationException;
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.vaadin.flow.VaadinHttpRequest;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
@@ -123,9 +122,8 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 				} else {
 					// redirect to error
 					event.rerouteToError(UnauthorizedNavigationException.class,
-							LocalizationContext
-									.translate(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
-											UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE), true));
+							LocalizationProvider.localize(UnauthorizedNavigationException.DEFAULT_MESSAGE,
+									UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE));
 				}
 				return false;
 			}
@@ -134,8 +132,8 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 			if (!roles.isEmpty() && !authContext.isPermittedAny(roles.toArray(new String[roles.size()]))) {
 				// redirect to error
 				event.rerouteToError(ForbiddenNavigationException.class,
-						LocalizationContext.translate(Localizable.of(ForbiddenNavigationException.DEFAULT_MESSAGE,
-								ForbiddenNavigationException.DEFAULT_MESSAGE_CODE), true));
+						LocalizationProvider.localize(ForbiddenNavigationException.DEFAULT_MESSAGE,
+								ForbiddenNavigationException.DEFAULT_MESSAGE_CODE));
 				return false;
 			}
 		}

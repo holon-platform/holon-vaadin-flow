@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -68,6 +67,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemSort;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
@@ -657,12 +657,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		// configure the column
 		column.setKey(configuration.getColumnKey());
 		// header
-		getColumnHeader(configuration).ifPresent(h -> {
-			column.setHeader(LocalizationContext.translate(h, true));
-		});
+		getColumnHeader(configuration).flatMap(t -> LocalizationProvider.localize(t))
+				.ifPresent(h -> column.setHeader(h));
 		configuration.getHeaderComponent().ifPresent(c -> column.setHeader(c));
 		// footer
-		configuration.getFooterText().ifPresent(t -> column.setFooter(LocalizationContext.translate(t, true)));
+		configuration.getFooterText().flatMap(t -> LocalizationProvider.localize(t))
+				.ifPresent(f -> column.setFooter(f));
 		configuration.getFooterComponent().ifPresent(c -> column.setFooter(c));
 		// visible
 		column.setVisible(configuration.isVisible());
@@ -2588,7 +2588,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
 				Localizable text) {
 			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
-			final MenuItem item = getComponent().addItem(LocalizationContext.translate(text, true), handler);
+			final MenuItem item = getComponent().addItem(LocalizationProvider.localize(text).orElse(""), handler);
 			return new ItemListingContextMenuItemBuilder<>(getConfigurator(), item, handler);
 		}
 
@@ -2675,7 +2675,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> text(
 				Localizable text) {
-			menuItem.setText(LocalizationContext.translate(text, true));
+			menuItem.setText(LocalizationProvider.localize(text).orElse(""));
 			return this;
 		}
 

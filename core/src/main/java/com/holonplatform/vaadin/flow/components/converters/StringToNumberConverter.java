@@ -19,7 +19,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.internal.converters.DefaultStringToNumberConverter;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -28,10 +27,6 @@ import com.vaadin.flow.data.converter.Converter;
  * <p>
  * The String value is trimmed before conversion. Null or empty String values will be converted into <code>null</code>
  * Number values.
- * </p>
- * <p>
- * When the {@link Locale} to ue for conversion is not available from conversion context or current UI, it is retrieved
- * from the current {@link LocalizationContext}, if available.
  * </p>
  * 
  * @param <T> Number type

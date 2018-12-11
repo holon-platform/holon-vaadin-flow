@@ -15,10 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.HasLabel;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 
 /**
  * Configurator for {@link HasLabel} type components.
@@ -30,8 +29,7 @@ import com.holonplatform.vaadin.flow.components.HasLabel;
 public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 
 	/**
-	 * Sets the label text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the label text using a {@link Localizable} message.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>
@@ -40,7 +38,7 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 	 * </p>
 	 * @param label Localizable label text message (may be null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	C label(Localizable label);
 
@@ -60,16 +58,15 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 	}
 
 	/**
-	 * Sets the label text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the label text using a localizable <code>messageCode</code>.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>
-	 * @param defaultLabel Default label text if no translation is available for given <code>messageCode</code>.
+	 * @param defaultLabel Default label text if no translation is available for given <code>messageCode</code>
 	 * @param messageCode Label text translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see @see LocalizationProvider
 	 */
 	default C label(String defaultLabel, String messageCode, Object... arguments) {
 		return label(Localizable.builder().message((defaultLabel == null) ? "" : defaultLabel).messageCode(messageCode)

@@ -38,9 +38,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
@@ -371,14 +369,13 @@ public class TestDateTimeInput {
 		assertTrue(input.getComponent() instanceof DateTimeField);
 		assertEquals(Locale.ITALIAN, ((DateTimeField) input.getComponent()).getLocale());
 
-		final Input<Date> input2 = Input.dateTime().useContextLocale(true).build();
+		final Input<Date> input2 = Input.dateTime().updateLocaleOnAttach(true).build();
 
-		final LocalizationContext lc = LocalizationContext.builder().withInitialLocale(Locale.FRANCE).build();
-		Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY, lc, () -> {
-			assertEquals(Locale.US, ((DateTimeField) input2.getComponent()).getLocale());
-			ComponentUtil.onComponentAttach(input2.getComponent(), true);
-			assertEquals(Locale.FRANCE, ((DateTimeField) input2.getComponent()).getLocale());
-		});
+		assertEquals(Locale.US, ((DateTimeField) input2.getComponent()).getLocale());
+		ui.setLocale(Locale.FRANCE);
+		ComponentUtil.onComponentAttach(input2.getComponent(), true);
+		assertEquals(Locale.FRANCE, ((DateTimeField) input2.getComponent()).getLocale());
+		ui.setLocale(Locale.US);
 
 		input = Input.dateTime().min(date1).max(date2).build();
 		assertEquals(asLocalDate(date1), ((DateTimeField) input.getComponent()).getMin());

@@ -18,9 +18,9 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.util.function.Consumer;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.AttachNotifier;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.shared.Registration;
@@ -71,12 +71,12 @@ public abstract class AbstractLocalizationSupportConfigurator<C extends HasEleme
 				// register attach listener
 				localizatorOnAttachRegistration = ((AttachNotifier) component).addAttachListener(event -> {
 					if (event.isInitialAttach()) {
-						operation.accept(LocalizationContext.translate(localization, true));
+						LocalizationProvider.localize(localization).ifPresent(m -> operation.accept(m));
 					}
 				});
 				return true;
 			} else {
-				operation.accept(LocalizationContext.translate(localization, true));
+				LocalizationProvider.localize(localization).ifPresent(m -> operation.accept(m));
 			}
 		}
 		return false;

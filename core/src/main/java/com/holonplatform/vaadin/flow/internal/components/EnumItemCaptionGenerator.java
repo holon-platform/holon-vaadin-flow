@@ -15,8 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultEnumCaptionRegistry;
 
 /**
@@ -39,7 +39,7 @@ public class EnumItemCaptionGenerator<E extends Enum<E>> implements ItemCaptionG
 	@Override
 	public String getItemCaption(E item) {
 		if (item != null) {
-			return LocalizationContext.translate(DefaultEnumCaptionRegistry.getEnumCaption(item), true);
+			return LocalizationProvider.localize(DefaultEnumCaptionRegistry.getEnumCaption(item)).orElse(item.name());
 		}
 		return null;
 	}

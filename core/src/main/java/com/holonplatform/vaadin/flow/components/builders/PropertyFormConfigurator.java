@@ -16,10 +16,10 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.vaadin.flow.components.ComponentGroup;
 import com.holonplatform.vaadin.flow.components.HasComponent;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.HasElement;
 
 /**
@@ -36,11 +36,12 @@ public interface PropertyFormConfigurator<L extends HasElement, E extends HasCom
 		extends ComposableConfigurator<L, E, G, C>, ComponentConfigurator<C> {
 
 	/**
-	 * Set the caption for the component bound to given property. By default, the caption is obtained from
+	 * Set the localizable caption for the component bound to given property. By default, the caption is obtained from
 	 * {@link Property} itself (which is {@link Localizable}).
 	 * @param property Property for which to set the caption (not null)
 	 * @param caption Localizable caption
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	C propertyCaption(Property<?> property, Localizable caption);
 
@@ -54,14 +55,14 @@ public interface PropertyFormConfigurator<L extends HasElement, E extends HasCom
 	C propertyCaption(Property<?> property, String caption);
 
 	/**
-	 * Set the caption for the component bound to given property. By default, the caption is obtained from
+	 * Set the localizable caption for the component bound to given property. By default, the caption is obtained from
 	 * {@link Property} itself (which is {@link Localizable}).
 	 * @param property Property for which to set the caption (not null)
-	 * @param defaultCaption Default caption if no translation is available for given <code>messageCode</code> for
-	 *        current Locale, or no {@link LocalizationContext} is available at all
+	 * @param defaultCaption Default caption if no translation is available for given <code>messageCode</code>
 	 * @param messageCode Caption translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	C propertyCaption(Property<?> property, String defaultCaption, String messageCode, Object... arguments);
 

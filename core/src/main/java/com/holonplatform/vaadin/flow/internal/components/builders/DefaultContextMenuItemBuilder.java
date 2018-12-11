@@ -18,12 +18,12 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 
@@ -80,7 +80,7 @@ public class DefaultContextMenuItemBuilder<M extends ContextMenuBase<M>, B exten
 	 */
 	@Override
 	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, B> text(Localizable text) {
-		menuItem.setText(LocalizationContext.translate(text, true));
+		menuItem.setText(LocalizationProvider.localize(text).orElse(""));
 		return this;
 	}
 

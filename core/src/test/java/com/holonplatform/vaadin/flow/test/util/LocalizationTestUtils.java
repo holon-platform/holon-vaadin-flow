@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.test.util;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
@@ -40,6 +41,11 @@ public final class LocalizationTestUtils {
 
 	public static void withTestLocalizationContext(Runnable operation) {
 		Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY, getTestLocalizationContext(), operation);
+	}
+
+	public static <T> T withTestLocalizationContext(Callable<T> operation) {
+		return Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY, getTestLocalizationContext(),
+				operation);
 	}
 
 	public static final String TEST_LOCALIZED_REQUIRED_ERROR = "Localized required error";

@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.AttachNotifier;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -64,7 +64,7 @@ public class DeferrableItemLabelGenerator<ITEM>
 		if (localize) {
 			Localizable caption = itemCaptions.get(item);
 			if (caption != null) {
-				return LocalizationContext.translate(caption, true);
+				return LocalizationProvider.localize(caption).orElseGet(() -> String.valueOf(item));
 			}
 		} else {
 			Localizable caption = itemCaptions.get(item);

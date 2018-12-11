@@ -77,9 +77,11 @@ import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HtmlContainer;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -95,6 +97,8 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.server.VaadinService;
 
 /**
  * Main provider of UI components builders and configurators.
@@ -361,9 +365,10 @@ public interface Components {
 		/**
 		 * Show a message dialog with given localizable message text.
 		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 *        <code>messageCode</code> for current {@link Locale}
 		 * @param messageCode Dialog message translation message key
 		 * @param arguments Optional dialog message translation arguments
+		 * @see LocalizationProvider
 		 */
 		static void showMessage(String defaultMessage, String messageCode, Object... arguments) {
 			showMessage(Localizable.builder().message(defaultMessage).messageCode(messageCode)
@@ -402,9 +407,10 @@ public interface Components {
 		/**
 		 * Show a confirm dialog with given localizable message text.
 		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 *        <code>messageCode</code> for current {@link Locale}.
 		 * @param messageCode Dialog message translation message key
 		 * @param arguments Optional dialog message translation arguments
+		 * @see LocalizationProvider
 		 */
 		static void showConfirm(String defaultMessage, String messageCode, Object... arguments) {
 			showConfirm(Localizable.builder().message(defaultMessage).messageCode(messageCode)
@@ -448,9 +454,10 @@ public interface Components {
 		 * Show a question dialog with given localizable message text.
 		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
 		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current Locale, or no {@link LocalizationContext} is available at all
+		 *        <code>messageCode</code> for current {@link Locale}
 		 * @param messageCode Dialog message translation message key
 		 * @param arguments Optional dialog message translation arguments
+		 * @see LocalizationProvider
 		 */
 		static void showQuestion(QuestionDialogCallback questionDialogCallback, String defaultMessage,
 				String messageCode, Object... arguments) {
@@ -1181,36 +1188,144 @@ public interface Components {
 
 	}
 
-	// utils
+	// ------- localization
 
 	/**
-	 * Localize given <code>message</code> using the current {@link LocalizationContext}, if it is available as a
-	 * {@link Context} resource and a {@link Locale} is configured.
-	 * @param message The message to localize (not null)
-	 * @return The localized message, according to the {@link Localizable#getMessageCode()} localization code and to the
-	 *         current {@link LocalizationContext} configuration, or the default {@link Localizable#getMessage()} if a
-	 *         {@link LocalizationContext} is not available or not localized
+	 * Get the current {@link Locale}, if available.
+	 * <p>
+	 * The current {@link Locale} retrieving strategy is:
+	 * <ul>
+	 * <li>If a current {@link UI} is available and a UI {@link Locale} is configured, the UI locale is returned.</li>
+	 * <li>If a {@link LocalizationContext} is available as a {@link Context} resource and it is localized, the
+	 * {@link LocalizationContext} {@link Locale} is returned.</li>
+	 * <li>If a {@link I18NProvider} is available from the {@link VaadinService}, the first {@link Locale} from
+	 * {@link I18NProvider#getProvidedLocales()} is returned, if available.</li>
+	 * </ul>
+	 * @return Optional current {@link Locale}
 	 * @see LocalizationContext#getCurrent()
 	 */
-	static String localize(Localizable message) {
-		return LocalizationContext.translate(message, true);
+	static Optional<Locale> getCurrentLocale() {
+		return LocalizationProvider.getCurrentLocale();
 	}
 
 	/**
-	 * Localize given <code>defaultMessage</code> with the provided <code>messageCode</code> using the current
-	 * {@link LocalizationContext}, if it is available as a {@link Context} resource and a {@link Locale} is configured.
-	 * @param defaultMessage The default message to use if no translation is available for given
-	 *        <code>messageCode</code> for current {@link Locale}, or no {@link LocalizationContext} is available at all
-	 * @param messageCode The message translation code
-	 * @param arguments Optional message translation arguments
-	 * @return The localized message, according to the {@link Localizable#getMessageCode()} localization code and to the
-	 *         current {@link LocalizationContext} configuration, or the <code>defaultMessage</code> if a
-	 *         {@link LocalizationContext} is not available or not localized
+	 * Get the message localization for given <code>locale</code>, using the provided {@link Localizable} to obtain the
+	 * message localization key ({@link Localizable#getMessageCode()}) and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
+	 * @param localizable The {@link Localizable} which represents the message to localize (not null)
+	 * @return The localized message, if available. If the given <code>localizable</code> provides a default message
+	 *         ({@link Localizable#getMessage()}) and a message localization is not available, the default message is
+	 *         returned
 	 * @see LocalizationContext#getCurrent()
 	 */
+	static Optional<String> getLocalization(Locale locale, Localizable localizable) {
+		return LocalizationProvider.getLocalization(locale, localizable);
+	}
+
+	/**
+	 * Get the message localization for given <code>locale</code>, using the provided <code>messageCode</code> as
+	 * message localization key and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
+	 * @param messageCode The message localization key (not null)
+	 * @param arguments Optional message localization arguments
+	 * @return The localized message, if available
+	 * @see LocalizationContext#getCurrent()
+	 */
+	static Optional<String> getLocalization(Locale locale, String messageCode, Object... arguments) {
+		return LocalizationProvider.getLocalization(locale, messageCode, arguments);
+	}
+
+	/**
+	 * Get the message localization for given <code>locale</code>, using the provided <code>messageCode</code> as
+	 * message localization key and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
+	 * @param defaultMessage The default message to use when a message localization is not available for the provided
+	 *        {@link Locale} and message code
+	 * @param messageCode The message localization key (not null)
+	 * @param arguments Optional message localization arguments
+	 * @return The localized message, or the <code>defaultMessage</code> if not available
+	 * @see LocalizationContext#getCurrent()
+	 */
+	static String getLocalization(Locale locale, String defaultMessage, String messageCode, Object... arguments) {
+		return LocalizationProvider.getLocalization(locale, defaultMessage, messageCode, arguments);
+	}
+
+	/**
+	 * Get the message localization for the current {@link Locale}, using the provided {@link Localizable} to obtain the
+	 * message localization key ({@link Localizable#getMessageCode()}) and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * <p>
+	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * </p>
+	 * @param localizable The {@link Localizable} which represents the message to localize (not null)
+	 * @return The localized message, if available. If the given <code>localizable</code> provides a default message
+	 *         ({@link Localizable#getMessage()}) and a message localization is not available, the default message is
+	 *         returned
+	 * @see #getCurrentLocale()
+	 */
+	static Optional<String> localize(Localizable localizable) {
+		return LocalizationProvider.localize(localizable);
+	}
+
+	/**
+	 * Get the message localization for the current {@link Locale}, using the provided <code>messageCode</code> as
+	 * message localization key and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * <p>
+	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * </p>
+	 * @param messageCode The message localization key (not null)
+	 * @param arguments Optional message localization arguments
+	 * @return The localized message, if available
+	 * @see #getCurrentLocale()
+	 */
+	static Optional<String> localize(String messageCode, Object... arguments) {
+		return LocalizationProvider.localize(messageCode, arguments);
+	}
+
+	/**
+	 * Get the message localization for the current {@link Locale}, using the provided <code>messageCode</code> as
+	 * message localization key and the optional localization arguments.
+	 * <p>
+	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
+	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
+	 * resource and it is localized.
+	 * </p>
+	 * <p>
+	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * </p>
+	 * @param defaultMessage The default message to use when a message localization is not available for the provided
+	 *        {@link Locale} and message code
+	 * @param messageCode The message localization key (not null)
+	 * @param arguments Optional message localization arguments
+	 * @return The localized message, or the <code>defaultMessage</code> if not available
+	 * @see #getCurrentLocale()
+	 */
 	static String localize(String defaultMessage, String messageCode, Object... arguments) {
-		return localize(Localizable.builder().message(defaultMessage).messageCode(messageCode)
-				.messageArguments(arguments).build());
+		return LocalizationProvider.localize(defaultMessage, messageCode, arguments);
 	}
 
 }

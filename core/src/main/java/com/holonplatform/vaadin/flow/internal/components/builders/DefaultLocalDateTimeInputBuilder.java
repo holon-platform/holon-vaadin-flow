@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -368,10 +369,10 @@ public class DefaultLocalDateTimeInputBuilder
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#useContextLocale(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#updateLocaleOnAttach(boolean)
 	 */
 	@Override
-	public LocalDateTimeInputBuilder useContextLocale(boolean useContextLocale) {
+	public LocalDateTimeInputBuilder updateLocaleOnAttach(boolean updateLocaleOnAttach) {
 		// unregister previous
 		if (contextLocaleOnAttachRegistration != null) {
 			contextLocaleOnAttachRegistration.remove();
@@ -379,8 +380,11 @@ public class DefaultLocalDateTimeInputBuilder
 		}
 		contextLocaleOnAttachRegistration = getComponent().addAttachListener(e -> {
 			if (e.isInitialAttach()) {
-				LocalizationContext.getCurrent().flatMap(ctx -> ctx.getLocale())
-						.ifPresent(locale -> getComponent().setLocale(locale));
+				Locale componentLocale = getComponent().getLocale();
+				Locale currentLocale = LocalizationProvider.getCurrentLocale().orElse(null);
+				if (currentLocale != null && !Objects.equals(currentLocale, componentLocale)) {
+					getComponent().setLocale(currentLocale);
+				}
 			}
 		});
 		return getConfigurator();
@@ -450,25 +454,25 @@ public class DefaultLocalDateTimeInputBuilder
 	private static DatePickerI18n localize(CalendarLocalization localization) {
 		DatePickerI18n dpi = new DatePickerI18n();
 		if (!localization.getMonthNames().isEmpty()) {
-			dpi.setMonthNames(localization.getMonthNames().stream().map(m -> LocalizationContext.translate(m, true))
-					.collect(Collectors.toList()));
+			dpi.setMonthNames(localization.getMonthNames().stream()
+					.map(m -> LocalizationProvider.localize(m).orElse("")).collect(Collectors.toList()));
 		}
 		if (!localization.getWeekdays().isEmpty()) {
-			dpi.setWeekdays(localization.getWeekdays().stream().map(m -> LocalizationContext.translate(m, true))
+			dpi.setWeekdays(localization.getWeekdays().stream().map(m -> LocalizationProvider.localize(m).orElse(""))
 					.collect(Collectors.toList()));
 		}
 		if (!localization.getWeekdaysShort().isEmpty()) {
 			dpi.setWeekdaysShort(localization.getWeekdaysShort().stream()
-					.map(m -> LocalizationContext.translate(m, true)).collect(Collectors.toList()));
+					.map(m -> LocalizationProvider.localize(m).orElse("")).collect(Collectors.toList()));
 		}
 		if (localization.getFirstDayOfWeek() != null) {
 			dpi.setFirstDayOfWeek(localization.getFirstDayOfWeek().intValue());
 		}
-		localization.getWeek().ifPresent(m -> dpi.setWeek(LocalizationContext.translate(m, true)));
-		localization.getCalendar().ifPresent(m -> dpi.setCalendar(LocalizationContext.translate(m, true)));
-		localization.getClear().ifPresent(m -> dpi.setClear(LocalizationContext.translate(m, true)));
-		localization.getToday().ifPresent(m -> dpi.setToday(LocalizationContext.translate(m, true)));
-		localization.getCancel().ifPresent(m -> dpi.setCancel(LocalizationContext.translate(m, true)));
+		localization.getWeek().ifPresent(m -> dpi.setWeek(LocalizationProvider.localize(m).orElse("")));
+		localization.getCalendar().ifPresent(m -> dpi.setCalendar(LocalizationProvider.localize(m).orElse("")));
+		localization.getClear().ifPresent(m -> dpi.setClear(LocalizationProvider.localize(m).orElse("")));
+		localization.getToday().ifPresent(m -> dpi.setToday(LocalizationProvider.localize(m).orElse("")));
+		localization.getCancel().ifPresent(m -> dpi.setCancel(LocalizationProvider.localize(m).orElse("")));
 		return dpi;
 	}
 

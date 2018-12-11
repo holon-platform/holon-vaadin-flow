@@ -19,11 +19,11 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
@@ -98,7 +98,8 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> withItem(Localizable text) {
 		ObjectUtils.argumentNotNull(text, "Text must be not null");
 		return new DefaultContextMenuItemBuilder<>(getConfigurator(),
-				textMenuItemProvider.apply(instance, LocalizationContext.translate(text, true)), clickEventConverter);
+				textMenuItemProvider.apply(instance, LocalizationProvider.localize(text).orElse("")),
+				clickEventConverter);
 	}
 
 	/*

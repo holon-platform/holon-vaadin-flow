@@ -15,9 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 
 /**
  * Configurator for components which support a placeholder.
@@ -29,14 +28,13 @@ import com.holonplatform.core.i18n.LocalizationContext;
 public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator<C>> {
 
 	/**
-	 * Sets the placeholder text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the placeholder text using a {@link Localizable} message.
 	 * <p>
 	 * The placeholder is a hint to the user of what can be entered in the control.
 	 * </p>
 	 * @param placeholder Localizable placeholder text (may be null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	C placeholder(Localizable placeholder);
 
@@ -50,17 +48,16 @@ public interface HasPlaceholderConfigurator<C extends HasPlaceholderConfigurator
 	}
 
 	/**
-	 * Sets the placeholder text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the placeholder text using a localizable <code>messageCode</code>.
 	 * <p>
 	 * The placeholder is a hint to the user of what can be entered in the control.
 	 * </p>
 	 * @param defaultPlaceholder Default placeholder text if no translation is available for given
-	 *        <code>messageCode</code>.
+	 *        <code>messageCode</code>
 	 * @param messageCode Placeholder text translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default C placeholder(String defaultPlaceholder, String messageCode, Object... arguments) {
 		return placeholder(Localizable.builder().message((defaultPlaceholder == null) ? "" : defaultPlaceholder)

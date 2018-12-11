@@ -77,6 +77,9 @@ public class DefaultLocalizationContextI18NProvider implements LocalizationConte
 	 */
 	@Override
 	public List<Locale> getProvidedLocales() {
+		if (providedLocales.isEmpty() && localizationContext != null && localizationContext.getLocale().isPresent()) {
+			return Collections.singletonList(localizationContext.getLocale().get());
+		}
 		return providedLocales;
 	}
 

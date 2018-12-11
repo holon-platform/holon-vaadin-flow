@@ -17,9 +17,9 @@ package com.holonplatform.vaadin.flow.internal.components.support;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventListener;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 
 public class DefaultUserInputValidator<T> implements Validator<T>, InvalidChangeEventListener {
 
@@ -39,7 +39,7 @@ public class DefaultUserInputValidator<T> implements Validator<T>, InvalidChange
 	@Override
 	public void onInvalidChangeEvent(InvalidChangeEvent event) {
 		if (event.isInvalid() && event.isFromClient()) {
-			error = event.getErrorMessage().orElseGet(() -> LocalizationContext.translate(DEFAULT_ERROR, true));
+			error = event.getErrorMessage().orElseGet(() -> LocalizationProvider.localize(DEFAULT_ERROR).orElse(null));
 		} else {
 			error = null;
 		}

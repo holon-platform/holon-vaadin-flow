@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -34,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.ValueComponent;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -235,15 +235,13 @@ public abstract class AbstractComposablePropertyForm<C extends Component, E exte
 					hasLabel.setLabel(null);
 				} else {
 					if (propertyCaptions.containsKey(property)) {
-						hasLabel.setLabel(LocalizationContext.translate(propertyCaptions.get(property), true));
+						LocalizationProvider.localize(propertyCaptions.get(property))
+								.ifPresent(message -> hasLabel.setLabel(message));
 					} else {
 						if (hasLabel.getLabel() == null) {
 							// default behaviour
-							if (property.getMessage() != null) {
-								hasLabel.setLabel(LocalizationContext.translate(property, true));
-							} else {
-								hasLabel.setLabel(property.getName());
-							}
+							hasLabel.setLabel(
+									LocalizationProvider.localize(property).orElseGet(() -> property.getName()));
 						}
 					}
 				}

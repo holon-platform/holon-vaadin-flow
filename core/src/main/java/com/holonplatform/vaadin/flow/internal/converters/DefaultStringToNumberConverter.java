@@ -21,12 +21,11 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.holonplatform.core.Context;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
@@ -37,15 +36,10 @@ import com.vaadin.flow.data.converter.Converter;
  * The String value is trimmed before conversion. Null or empty String values will be converted into <code>null</code>
  * Number values.
  * </p>
- * <p>
- * The {@link NumberFormat} to use for conversion is retrieved from {@link LocalizationContext}, if available as
- * {@link Context} resource. If a {@link LocalizationContext} is not available, default Number formats for current
- * Locale are used.
- * </p>
  * 
  * @param <T> Number type
  * 
- * @since 5.0.0
+ * @since 5.2.0
  */
 public class DefaultStringToNumberConverter<T extends Number> extends AbstractLocaleSupportConverter<String, T>
 		implements StringToNumberConverter<T> {
@@ -285,7 +279,7 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 			return symbols;
 		}
 		// use current Locale
-		return getCurrentLocale().map(locale -> DecimalFormatSymbols.getInstance(locale));
+		return LocalizationProvider.getCurrentLocale().map(locale -> DecimalFormatSymbols.getInstance(locale));
 	}
 
 	/**
@@ -312,8 +306,8 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 			// check max decimals
 			final String decimalSuffix = (getMaxDecimals() > -1) ? ("{0," + getMaxDecimals() + "}") : "*";
 			// base pattern
-			final String decimalPattern = PATTERN_DECIMAL_PREFIX + "(" + TextConverterUtils.escape(decimals) + "|"
-					+ TextConverterUtils.escape(decimals) + "[0-9]" + decimalSuffix + ")?";
+			final String decimalPattern = PATTERN_DECIMAL_PREFIX + "(" + escape(decimals) + "|" + escape(decimals)
+					+ "[0-9]" + decimalSuffix + ")?";
 			// check negatives
 			if (isAllowNegatives()) {
 				return PATTERN_NEGATIVE_PREFIX + "|" + decimalPattern + "|" + PATTERN_NEGATIVE_PREFIX + decimalPattern;

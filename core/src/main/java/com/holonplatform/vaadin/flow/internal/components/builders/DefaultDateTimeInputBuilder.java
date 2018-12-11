@@ -176,11 +176,11 @@ public class DefaultDateTimeInputBuilder implements DateTimeInputBuilder {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateTimeInputBuilder#useContextLocale(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#updateLocaleOnAttach(boolean)
 	 */
 	@Override
-	public DateTimeInputBuilder useContextLocale(boolean useContextLocale) {
-		builder.useContextLocale(useContextLocale);
+	public DateTimeInputBuilder updateLocaleOnAttach(boolean updateLocaleOnAttach) {
+		builder.updateLocaleOnAttach(updateLocaleOnAttach);
 		return this;
 	}
 

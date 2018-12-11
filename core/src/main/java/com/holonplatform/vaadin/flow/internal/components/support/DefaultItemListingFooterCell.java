@@ -16,9 +16,9 @@
 package com.holonplatform.vaadin.flow.internal.components.support;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.FooterRow.FooterCell;
 
@@ -44,7 +44,7 @@ public class DefaultItemListingFooterCell implements ItemListingCell {
 	 */
 	@Override
 	public void setText(Localizable text) {
-		cell.setText((text == null) ? null : LocalizationContext.translate(text, true));
+		cell.setText((text == null) ? null : LocalizationProvider.localize(text).orElse(""));
 	}
 
 	/*

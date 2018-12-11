@@ -122,9 +122,8 @@ public class DefaultStringToTimeConverter extends AbstractLocaleSupportConverter
 	@Override
 	public String getValidationPattern() {
 		final char timeSeparator = getTimeSeparator();
-		return "^([01]?[0-9]|2[0-3])(" + TextConverterUtils.escape(timeSeparator) + "|"
-				+ TextConverterUtils.escape(timeSeparator) + "[0-5]|" + TextConverterUtils.escape(timeSeparator)
-				+ "[0-5][0-9])?";
+		return "^([01]?[0-9]|2[0-3])(" + escape(timeSeparator) + "|" + escape(timeSeparator) + "[0-5]|"
+				+ escape(timeSeparator) + "[0-5][0-9])?";
 	}
 
 	/**

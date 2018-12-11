@@ -21,11 +21,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -49,17 +48,13 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	B locale(Locale locale);
 
 	/**
-	 * Set whether to use the current {@link LocalizationContext} {@link Locale}, if available. The context
-	 * {@link Locale} is configured when the input component is attached to a parent layout.
-	 * <p>
-	 * To obtain the context {@link Locale}, a {@link LocalizationContext} must be valid (localized) and available as a
-	 * {@link Context} resource.
-	 * </p>
-	 * @param useContextLocale Whether to use the current {@link LocalizationContext} {@link Locale}, if available
+	 * Set whether to update the {@link Locale} when the component is attached to a parent layout, using the current
+	 * application {@link Locale}, if available.
+	 * @param updateLocaleOnAttach Whether to update the component {@link Locale} on attach
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
-	B useContextLocale(boolean useContextLocale);
+	B updateLocaleOnAttach(boolean updateLocaleOnAttach);
 
 	/**
 	 * Sets the minimum date that is allowed to be selected.

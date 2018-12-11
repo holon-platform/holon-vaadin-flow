@@ -17,10 +17,9 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.EventListener;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -40,14 +39,13 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 		extends ComponentConfigurator<C>, HasStyleConfigurator<C> {
 
 	/**
-	 * Create a new menu item with the given text content. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Create a new menu item with the given localizable text content.
 	 * <p>
 	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
 	 * </p>
 	 * @param text Localizable menu item text content
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	MenuItemBuilder<L, M, C> withItem(Localizable text);
 
@@ -64,9 +62,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	}
 
 	/**
-	 * Create a new menu item using given <code>messageCode</code> for text content localization. In order for the
-	 * localization to work, a {@link LocalizationContext} must be valid (localized) and available as a {@link Context}
-	 * resource.
+	 * Create a new menu item using given <code>messageCode</code> for text content localization.
 	 * <p>
 	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
 	 * </p>
@@ -75,7 +71,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @param messageCode Menu item text content translation message key
 	 * @param arguments Optional translation arguments
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default MenuItemBuilder<L, M, C> withItem(String defaultText, String messageCode, Object... arguments) {
 		return withItem(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)
@@ -93,25 +89,25 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	MenuItemBuilder<L, M, C> withItem(Component component);
 
 	/**
-	 * Add a new menu item using given text content and a {@link ClickEventListener} for menu item clicks.
+	 * Add a new menu item using given localizable text content and a {@link ClickEventListener} for menu item clicks.
 	 * @param text Menu item text content
 	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default C withItem(Localizable text, L clickEventListener) {
 		return withItem(text).withClickListener(clickEventListener).add();
 	}
 
 	/**
-	 * Add a new menu item using given text content using given <code>messageCode</code> for text localization and a
-	 * {@link ClickEventListener} for menu item clicks.
+	 * Add a new menu item using given <code>messageCode</code> for text localization and a {@link ClickEventListener}
+	 * for menu item clicks.
 	 * @param defaultText Default menu item text content if no translation is available for given
 	 *        <code>messageCode</code>.
 	 * @param messageCode Menu item text content translation message key
 	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default C withItem(String defaultText, String messageCode, L clickEventListener) {
 		return withItem(defaultText, messageCode).withClickListener(clickEventListener).add();
@@ -132,7 +128,6 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @param component The menu item component (not null)
 	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
 	 */
 	default C withItem(Component component, L clickEventListener) {
 		return withItem(component).withClickListener(clickEventListener).add();

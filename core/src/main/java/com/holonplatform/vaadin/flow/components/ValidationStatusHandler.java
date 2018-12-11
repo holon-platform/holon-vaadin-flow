@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.DefaultHasComponentValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.DialogValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.LabelValidationStatusHandler;
@@ -229,13 +229,13 @@ public interface ValidationStatusHandler<S> extends Serializable {
 		List<Localizable> getErrors();
 
 		/**
-		 * Get the localized error messages from {@link #getErrors()}, using the context {@link LocalizationContext}, if
-		 * available. If a {@link LocalizationContext} is not available, the default message of each localizable error
-		 * message is returned.
+		 * Get the localized error messages from {@link #getErrors()}.
 		 * @return the localized error messages, an empty list if none.
+		 * @see LocalizationProvider
 		 */
 		default List<String> getErrorMessages() {
-			return getErrors().stream().map(e -> LocalizationContext.translate(e, true)).collect(Collectors.toList());
+			return getErrors().stream().map(e -> LocalizationProvider.localize(e).orElse(e.getMessage()))
+					.collect(Collectors.toList());
 		}
 
 		/**
@@ -248,13 +248,12 @@ public interface ValidationStatusHandler<S> extends Serializable {
 		}
 
 		/**
-		 * Get the first localized error message, using the context {@link LocalizationContext}, if available. If a
-		 * {@link LocalizationContext} is not available, the default message of the first localizable error message is
-		 * returned.
+		 * Get the first localized error message.
 		 * @return the first localized error message, or <code>null</code> if none
+		 * @see LocalizationProvider
 		 */
 		default String getErrorMessage() {
-			return getError().map(e -> LocalizationContext.translate(e, true)).orElse(null);
+			return getError().map(e -> LocalizationProvider.localize(e).orElse(e.getMessage())).orElse(null);
 		}
 
 		// ------- builders

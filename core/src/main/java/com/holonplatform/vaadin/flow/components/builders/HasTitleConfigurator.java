@@ -15,9 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 
 /**
  * Configurator for components which supports a title.
@@ -29,8 +28,7 @@ import com.holonplatform.core.i18n.LocalizationContext;
 public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 
 	/**
-	 * Sets the title text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the title text using a {@link Localizable} message.
 	 * <p>
 	 * Browsers typically use the title to show a tooltip when hovering an element
 	 * <p>
@@ -40,7 +38,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	 * </p>
 	 * @param title Localizable title message (may be null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	C title(Localizable title);
 
@@ -61,18 +59,17 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	}
 
 	/**
-	 * Sets the title text using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the title text using a localizable <code>messageCode</code>.
 	 * <p>
 	 * Browsers typically use the title to show a tooltip when hovering an element
 	 * <p>
 	 * HTML markup is not supported.
 	 * <p>
-	 * @param defaultTitle Default title if no translation is available for given <code>messageCode</code>.
+	 * @param defaultTitle Default title if no translation is available for given <code>messageCode</code>
 	 * @param messageCode Title translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default C title(String defaultTitle, String messageCode, Object... arguments) {
 		return title(Localizable.builder().message((defaultTitle == null) ? "" : defaultTitle).messageCode(messageCode)
@@ -80,9 +77,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	}
 
 	/**
-	 * Sets the description text using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource. This is an alias for
-	 * {@link #title(Localizable)}.
+	 * Sets the description text using a {@link Localizable} message.
 	 * <p>
 	 * The description is set using the <code>title</code> attribute. Browsers typically use the title to show a tooltip
 	 * when hovering an element
@@ -93,6 +88,7 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	 * </p>
 	 * @param description Localizable description message (may be null)
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	default C description(Localizable description) {
 		return title(description);
@@ -116,19 +112,18 @@ public interface HasTitleConfigurator<C extends HasTitleConfigurator<C>> {
 	}
 
 	/**
-	 * Sets the description using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and as a {@link Context} resource. This is an alias for
-	 * {@link #title(String, String, Object...)}.
+	 * Sets the description using a localizable <code>messageCode</code>.
 	 * <p>
 	 * The description is set using the <code>title</code> attribute. Browsers typically use the title to show a tooltip
 	 * when hovering an element
 	 * <p>
 	 * HTML markup is not supported.
 	 * <p>
-	 * @param defaultDescription Default description if no translation is available for given <code>messageCode</code>.
+	 * @param defaultDescription Default description if no translation is available for given <code>messageCode</code>
 	 * @param messageCode Description translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	default C description(String defaultDescription, String messageCode, Object... arguments) {
 		return title(defaultDescription, messageCode, arguments);

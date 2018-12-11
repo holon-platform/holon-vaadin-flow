@@ -16,8 +16,8 @@
 package com.holonplatform.vaadin.flow.navigator.errors;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.http.HttpStatus;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.vaadin.flow.component.html.Div;
@@ -31,9 +31,9 @@ import com.vaadin.flow.theme.NoTheme;
 /**
  * Default navigator error handler for the {@link UnauthorizedNavigationError} error.
  * <p>
- * This error handler will show a localizable header message composed by the {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE}
- * followed by the failed navigation path, using the {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE} as localization
- * message code.
+ * This error handler will show a localizable header message composed by the
+ * {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE} followed by the failed navigation path, using the
+ * {@link Navigator#DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE} as localization message code.
  * </p>
  * <p>
  * The header is followed by the localizable message {@link UnauthorizedNavigationException#DEFAULT_MESSAGE}, using the
@@ -54,12 +54,14 @@ public class UnauthorizedNavigationError extends Div implements HasErrorParamete
 
 	@Override
 	public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<UnauthorizedNavigationException> parameter) {
-		add(new H2(LocalizationContext
-				.translate(Localizable.of(Navigator.DEFAULT_NAVIGATION_FAILED_MESSAGE,
-						Navigator.DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE), true)
-				+ ": " + event.getLocation().getPath()));
-		add(new H3(LocalizationContext.translate(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
-				UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE), true)));
+		add(new H2(LocalizationProvider
+				.localize(Localizable.of(Navigator.DEFAULT_NAVIGATION_FAILED_MESSAGE,
+						Navigator.DEFAULT_NAVIGATION_FAILED_MESSAGE_CODE))
+				.orElse(Navigator.DEFAULT_NAVIGATION_FAILED_MESSAGE) + ": " + event.getLocation().getPath()));
+		add(new H3(LocalizationProvider
+				.localize(Localizable.of(UnauthorizedNavigationException.DEFAULT_MESSAGE,
+						UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE))
+				.orElse(UnauthorizedNavigationException.DEFAULT_MESSAGE)));
 		return HttpStatus.UNAUTHORIZED.getCode();
 	}
 

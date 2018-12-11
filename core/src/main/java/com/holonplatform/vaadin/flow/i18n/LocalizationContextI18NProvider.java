@@ -25,10 +25,6 @@ import com.vaadin.flow.i18n.I18NProvider;
 
 /**
  * A {@link I18NProvider} which uses the current {@link LocalizationContext} to provide the messages localization.
- * <p>
- * A {@link LocalizationContext} reference must be available from {@link LocalizationContext#getCurrent()} in order for
- * the localization to work, otherwise a <code>null</code> translation will be returned for any message key.
- * </p>
  *
  * @since 5.2.0
  */

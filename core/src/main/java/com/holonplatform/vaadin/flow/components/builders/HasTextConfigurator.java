@@ -15,9 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.HasText;
 
 /**
@@ -30,8 +29,7 @@ import com.vaadin.flow.component.HasText;
 public interface HasTextConfigurator<C extends HasTextConfigurator<C>> {
 
 	/**
-	 * Sets the text content using a {@link Localizable} message. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the text content using a {@link Localizable} message.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>
@@ -40,7 +38,7 @@ public interface HasTextConfigurator<C extends HasTextConfigurator<C>> {
 	 * </p>
 	 * @param text Localizable text content message (may be null)
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	C text(Localizable text);
 
@@ -60,16 +58,15 @@ public interface HasTextConfigurator<C extends HasTextConfigurator<C>> {
 	}
 
 	/**
-	 * Sets the text content using a localizable <code>messageCode</code>. In order for the localization to work, a
-	 * {@link LocalizationContext} must be valid (localized) and available as a {@link Context} resource.
+	 * Sets the text content using a localizable <code>messageCode</code>.
 	 * <p>
 	 * The text value is interpred as <em>plain text</em> and the HTML markup is not supported.
 	 * </p>
-	 * @param defaultText Default text content if no translation is available for given <code>messageCode</code>.
+	 * @param defaultText Default text content if no translation is available for given <code>messageCode</code>
 	 * @param messageCode Text translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
-	 * @see LocalizationContext#getCurrent()
+	 * @see LocalizationProvider
 	 */
 	default C text(String defaultText, String messageCode, Object... arguments) {
 		return text(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)

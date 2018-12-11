@@ -22,9 +22,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupElementValidationStatusEvent;
 
 /**
@@ -116,13 +116,12 @@ public interface GroupValidationStatusHandler<S, P, E extends HasComponent> exte
 		List<Localizable> getGroupErrors();
 
 		/**
-		 * Get the localized group error messages from {@link #getGroupErrors()}, using the context
-		 * {@link LocalizationContext}, if available. If a {@link LocalizationContext} is not available, the default
-		 * message of each localizable error message is returned.
+		 * Get the localized group error messages from {@link #getGroupErrors()}.
 		 * @return the localized group error messages, an empty list if none.
+		 * @see LocalizationProvider
 		 */
 		default List<String> getGroupErrorMessages() {
-			return getGroupErrors().stream().map(e -> LocalizationContext.translate(e, true))
+			return getGroupErrors().stream().map(e -> LocalizationProvider.localize(e).orElse(e.getMessage()))
 					.collect(Collectors.toList());
 		}
 
@@ -136,13 +135,12 @@ public interface GroupValidationStatusHandler<S, P, E extends HasComponent> exte
 		}
 
 		/**
-		 * Get the first localized group error message, using the context {@link LocalizationContext}, if available. If
-		 * a {@link LocalizationContext} is not available, the default message of the first localizable error message is
-		 * returned.
+		 * Get the first localized group error message.
 		 * @return the first localized group error message, or <code>null</code> if none
+		 * @see LocalizationProvider
 		 */
 		default String getGroupErrorMessage() {
-			return getGroupError().map(e -> LocalizationContext.translate(e, true)).orElse(null);
+			return getGroupError().map(e -> LocalizationProvider.localize(e).orElse(e.getMessage())).orElse(null);
 		}
 
 		/**

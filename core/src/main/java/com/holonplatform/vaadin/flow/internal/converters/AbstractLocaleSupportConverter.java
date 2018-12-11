@@ -15,11 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.internal.converters;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.holonplatform.core.i18n.LocalizationContext;
-import com.vaadin.flow.component.UI;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -31,6 +32,9 @@ import com.vaadin.flow.data.converter.Converter;
 public abstract class AbstractLocaleSupportConverter<PRESENTATION, MODEL> implements Converter<PRESENTATION, MODEL> {
 
 	private static final long serialVersionUID = 403136100747168679L;
+
+	public static final List<Character> REGEX_RESERVED = Arrays.asList('.', '<', '(', '[', '{', '\\', '^', '-', '=',
+			'$', '!', '|', ']', '}', ')', '?', '*', '+', '>');
 
 	/**
 	 * Locale
@@ -61,7 +65,7 @@ public abstract class AbstractLocaleSupportConverter<PRESENTATION, MODEL> implem
 		if (getFixedLocale().isPresent()) {
 			return getFixedLocale();
 		}
-		return getCurrentLocale();
+		return LocalizationProvider.getCurrentLocale();
 	}
 
 	/**
@@ -89,31 +93,25 @@ public abstract class AbstractLocaleSupportConverter<PRESENTATION, MODEL> implem
 			return getFixedLocale().get();
 		}
 		if (context == null) {
-			return getCurrentLocale().orElseGet(() -> Locale.getDefault());
+			return LocalizationProvider.getCurrentLocale().orElseGet(() -> Locale.getDefault());
 		}
-		return context.getLocale().orElseGet(() -> getCurrentLocale().orElseGet(() -> Locale.getDefault()));
+		return context.getLocale()
+				.orElseGet(() -> LocalizationProvider.getCurrentLocale().orElseGet(() -> Locale.getDefault()));
 	}
 
 	/**
-	 * Get the current {@link Locale}, if available.
-	 * <p>
-	 * The current {@link Locale} is obtained form the current {@link LocalizationContext}, if available and localized,
-	 * or from the current {@link UI}, if available and with a configured locale.
-	 * </p>
-	 * @return Optional current {@link Locale}
+	 * Escape given character for regex if required.
+	 * @param c Character to escape
+	 * @return Escaped character
 	 */
-	protected Optional<Locale> getCurrentLocale() {
-		// Check context
-		Optional<Locale> contextLocale = LocalizationContext.getCurrent().filter(l -> l.isLocalized())
-				.flatMap(l -> l.getLocale());
-		if (contextLocale.isPresent()) {
-			return contextLocale;
+	protected static String escape(Character c) {
+		if (c == null) {
+			return null;
 		}
-		// Check UI
-		if (UI.getCurrent() != null) {
-			return Optional.ofNullable(UI.getCurrent().getLocale());
+		if (REGEX_RESERVED.contains(c)) {
+			return "\\" + c;
 		}
-		return Optional.empty();
+		return String.valueOf(c);
 	}
 
 }

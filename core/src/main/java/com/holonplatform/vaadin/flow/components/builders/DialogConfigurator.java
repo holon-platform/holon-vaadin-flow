@@ -15,9 +15,10 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Context;
+import java.util.Locale;
+
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
+import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -35,12 +36,9 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 
 	/**
 	 * Sets the {@link Localizable} dialog message.
-	 * <p>
-	 * For message localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource.
-	 * </p>
 	 * @param message The {@link Localizable} dialog message
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	C message(Localizable message);
 
@@ -55,15 +53,12 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 
 	/**
 	 * Sets the localizable dialog message.
-	 * <p>
-	 * For dialog message localization, a {@link LocalizationContext} must be available and localized as {@link Context}
-	 * resource.
-	 * </p>
 	 * @param defaultMessage Default dialog message if no translation is available for given <code>messageCode</code>
-	 *        for current Locale, or no {@link LocalizationContext} is available at all
+	 *        for current {@link Locale}
 	 * @param messageCode Dialog message translation message key
 	 * @param arguments Optional Dialog message translation arguments
 	 * @return this
+	 * @see LocalizationProvider
 	 */
 	default C message(String defaultMessage, String messageCode, Object... arguments) {
 		return message(Localizable.builder().message(defaultMessage).messageCode(messageCode)
