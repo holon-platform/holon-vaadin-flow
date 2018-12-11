@@ -274,15 +274,15 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertNotNull(navigator);
 
 		final Realm realm = Realm.builder().withDefaultAuthorizer()
-				.authenticator(Authenticator.create(AccountCredentialsToken.class, token -> {
+				.withAuthenticator(Authenticator.create(AccountCredentialsToken.class, token -> {
 					if ("test".equals(token.getPrincipal())) {
 						return Authentication.builder("test").build();
 					}
 					if ("test2".equals(token.getPrincipal())) {
-						return Authentication.builder("test").permission("X").build();
+						return Authentication.builder("test").withPermission("X").build();
 					}
 					if ("test3".equals(token.getPrincipal())) {
-						return Authentication.builder("test").permission("A").build();
+						return Authentication.builder("test").withPermission("A").build();
 					}
 					throw new InvalidCredentialsException();
 				})).build();

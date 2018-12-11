@@ -28,7 +28,7 @@ public final class LocalizationTestUtils {
 	}
 
 	public static LocalizationContext getTestLocalizationContext() {
-		return LocalizationContext.builder().withInitialLocale(Locale.US).messageProvider((locale, code) -> {
+		return LocalizationContext.builder().withInitialLocale(Locale.US).withMessageProvider((locale, code) -> {
 			if (Locale.US.equals(locale)) {
 				if ("test.code".equals(code)) {
 					return Optional.of("TestUS");
@@ -45,7 +45,7 @@ public final class LocalizationTestUtils {
 	public static final String TEST_LOCALIZED_REQUIRED_ERROR = "Localized required error";
 
 	public static LocalizationContext getInputValidationLocalizationContext() {
-		return LocalizationContext.builder().withInitialLocale(Locale.US).messageProvider((locale, code) -> {
+		return LocalizationContext.builder().withInitialLocale(Locale.US).withMessageProvider((locale, code) -> {
 			if (Locale.US.equals(locale)) {
 				if (RequiredInputValidator.DEFAULT_REQUIRED_ERROR.getMessageCode().equals(code)) {
 					return Optional.of(TEST_LOCALIZED_REQUIRED_ERROR);

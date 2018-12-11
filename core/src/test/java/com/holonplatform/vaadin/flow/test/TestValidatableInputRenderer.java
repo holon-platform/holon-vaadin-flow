@@ -55,8 +55,8 @@ public class TestValidatableInputRenderer {
 	@Test
 	public void testPropertyValidators() {
 
-		final Property<String> p1 = StringProperty.create("test").validator(Validator.min(2))
-				.validator(Validator.max(3));
+		final Property<String> p1 = StringProperty.create("test").withValidator(Validator.min(2))
+				.withValidator(Validator.max(3));
 
 		ValidatableInput<String> i = ValidatableInput.create(p1);
 		assertNotNull(i);

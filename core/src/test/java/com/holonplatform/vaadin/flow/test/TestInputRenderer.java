@@ -183,7 +183,7 @@ public class TestInputRenderer {
 
 		final ConfigProperty<Boolean> REQUIRED = ConfigProperty.create("test_required", Boolean.class);
 
-		final Property<String> P1 = StringProperty.create("test").configuration(REQUIRED, true);
+		final Property<String> P1 = StringProperty.create("test").withConfiguration(REQUIRED, true);
 
 		Input<String> i1 = Input.create(P1);
 		assertFalse(i1.isRequired());
