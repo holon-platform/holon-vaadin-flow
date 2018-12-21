@@ -82,8 +82,9 @@ public abstract class AbstractLocaleSupportConverter<PRESENTATION, MODEL> implem
 	 * If a fixed {@link Locale} is configured, it is returned.
 	 * </p>
 	 * <p>
-	 * Otherwise, the {@link Locale} is obtained from the given context, or using {@link #getCurrentLocale()} if not
-	 * available. The default {@link Locale} is returned if a current {@link Locale} cannot be detected.
+	 * Otherwise, the {@link Locale} is obtained from the given context, or using
+	 * {@link LocalizationProvider#getCurrentLocale()} if not available. The default {@link Locale} is returned if a
+	 * current {@link Locale} cannot be detected.
 	 * </p>
 	 * @param context Value context (not null)
 	 * @return The {@link Locale} to use for number formatting

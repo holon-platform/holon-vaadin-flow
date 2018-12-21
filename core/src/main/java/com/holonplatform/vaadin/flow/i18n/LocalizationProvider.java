@@ -112,7 +112,7 @@ public interface LocalizationProvider extends Serializable {
 
 	/**
 	 * Create a new {@link LocalizationProvider} using given {@link LocalizationContext}.
-	 * @param i18nProvider The {@link LocalizationContext} to use for messages localization (not null)
+	 * @param localizationContext The {@link LocalizationContext} to use for messages localization (not null)
 	 * @return A new {@link LocalizationProvider} using given {@link LocalizationContext}
 	 */
 	static LocalizationProvider create(LocalizationContext localizationContext) {

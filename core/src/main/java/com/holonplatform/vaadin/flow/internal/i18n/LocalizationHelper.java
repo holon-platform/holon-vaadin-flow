@@ -28,7 +28,5 @@ public final class LocalizationHelper implements Serializable {
 
 	private LocalizationHelper() {
 	}
-	
-	
 
 }

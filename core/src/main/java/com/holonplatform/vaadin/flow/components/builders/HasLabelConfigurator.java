@@ -66,7 +66,7 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 	 * @param messageCode Label text translation message key
 	 * @param arguments Optional translation arguments
 	 * @return this
-	 * @see @see LocalizationProvider
+	 * @see LocalizationProvider
 	 */
 	default C label(String defaultLabel, String messageCode, Object... arguments) {
 		return label(Localizable.builder().message((defaultLabel == null) ? "" : defaultLabel).messageCode(messageCode)
