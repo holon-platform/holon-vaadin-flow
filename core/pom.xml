@@ -53,7 +53,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Testing -->
+		<!-- Test -->
 		<dependency>
 			<groupId>com.holon-platform.vaadin</groupId>
 			<artifactId>holon-vaadin-flow-test</artifactId>
@@ -61,34 +61,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-testbench</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-spring</artifactId>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.test.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<version>${spring.boot.test.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>com.holon-platform.jdbc</groupId>
 			<artifactId>holon-datastore-jdbc</artifactId>
@@ -118,98 +95,6 @@
 					</archive>
 				</configuration>
 			</plugin>
-
-			<!-- Unit tests -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/test/Test*.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/test/it/*.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-
-			<!-- Spring Boot for integration tests -->
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.boot.test.version}</version>
-				<configuration>
-					<mainClass>com.holonplatform.vaadin.flow.test.it.IntegrationTestApplication</mainClass>
-					<useTestClasspath>true</useTestClasspath>
-					<maxAttempts>120</maxAttempts>
-					<folders>
-						<folder>${project.build.testOutputDirectory}</folder>
-					</folders>
-				</configuration>
-				<executions>
-					<execution>
-						<id>pre-integration-test</id>
-						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>post-integration-test</id>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Integration tests -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includes>
-						<include>**/test/it/*IT.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/test/*.java</exclude>
-					</excludes>
-					<trimStackTrace>false</trimStackTrace>
-					<systemPropertyVariables>
-						<webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
-						<com.vaadin.testbench.Parameters.runLocally>chrome</com.vaadin.testbench.Parameters.runLocally>
-					</systemPropertyVariables>
-				</configuration>
-			</plugin>
-
-			<!-- Plugin for automatically download Chrome Driver for tests -->
-			<plugin>
-				<groupId>com.lazerycode.selenium</groupId>
-				<artifactId>driver-binary-downloader-maven-plugin</artifactId>
-				<version>1.0.17</version>
-				<configuration>
-					<onlyGetDriversForHostOperatingSystem>true</onlyGetDriversForHostOperatingSystem>
-					<downloadedZipFileDirectory>${project.basedir}/target/webdriver/zips</downloadedZipFileDirectory>
-					<rootStandaloneServerDirectory>${project.basedir}/target/webdriver</rootStandaloneServerDirectory>
-					<customRepositoryMap>${project.basedir}/src/test/resources/webdrivers.xml</customRepositoryMap>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>selenium</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 

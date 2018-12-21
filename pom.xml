@@ -71,8 +71,6 @@
 
 		<!-- Test JDBC Datastore -->
 		<holon.jdbc.datastore.version>5.2.0-rc1</holon.jdbc.datastore.version>
-		<!-- Spring Boot for integration tests -->
-		<spring.boot.test.version>2.1.1.RELEASE</spring.boot.test.version>
 		<!-- Mockito (test) -->
 		<mockito.version>2.23.0</mockito.version>
 

@@ -67,7 +67,6 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.RouteRegistry;
-import com.vaadin.flow.spring.SpringVaadinSession;
 
 public abstract class AbstractNavigatorTest {
 
@@ -138,7 +137,7 @@ public abstract class AbstractNavigatorTest {
 
 	protected VaadinSession createVaadinSession(VaadinService service, Locale locale) throws Exception {
 		WrappedSession wrappedSession = mock(WrappedSession.class);
-		SpringVaadinSession session = mock(SpringVaadinSession.class);
+		VaadinSession session = mock(VaadinSession.class);
 		when(session.getState()).thenReturn(VaadinSessionState.OPEN);
 		when(session.getSession()).thenReturn(wrappedSession);
 		when(session.getService()).thenReturn(service);
