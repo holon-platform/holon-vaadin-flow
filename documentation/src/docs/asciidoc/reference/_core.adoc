@@ -16,7 +16,27 @@ It provides integration between the Vaadin Flow core architecture and the Holon 
 [[DatastoreIntegration]]
 === Datastore API integration
 
+The Holon Platform link:holon-core.html#Datastore[Datastore API^] can be used to bind a UI component to backend data in a simple and powerful way, relying on the Holon Platform link:holon-core.html#Property[Property model^] to represent the underlying data model.
+
+The link:{apidir}/com/holonplatform/vaadin/flow/data/DatastoreDataProvider.html[DatastoreDataProvider^] API is a standard Vaadin Flow `com.vaadin.flow.data.provider.DataProvider` which uses the `Datastore` API to fetch data from backend and makes available a set of configuration methods to control and setup the queries to perform.
+
+Since it is a standard `DataProvider`, it can be seamlessy used in any Vaadin UI component which support data binding.
+
+The `DatastoreDataProvider` provides a set of `create(..)` and `builder(..)` methods to build and configure a new `Datastore` based `DataProvider`. At least the following elements are required to create a `DatastoreDataProvider`:
+
+* The reference to the `Datastore` instance to use.
+* A `DataTarget` declaration, which represents the data model _entity_ to use as data source (for example, a RDBMS table name).
+
+==== Item types
+
+By default, the Holon Platform link:holon-core.html#Property[Property model^] is used to represent the backend data model attributes, and the link:holon-core.html#PropertyBox[PropertyBox^] type to represent a data source _item_, intended as a collection of properties and their values.
+
+
+
+==== Filter types
+
 TBD
+
 
 [[I18n]]
 === Internationalization
