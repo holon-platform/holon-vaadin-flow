@@ -287,6 +287,27 @@ The link:{apidir}/com/holonplatform/vaadin/flow/components/Components.html[Compo
 
 It provides a complete set of methods to obtain _fluent_ builders to create and configure both standard Vaadin Flow components and the additional UI components provided by the Holon Platform Vaadin Flow module.
 
+The `Components` API structure:
+
+|===
+|Sub-interface |Provides
+
+|*[NONE]*
+|A set of _configure(*)_ methods to setup existing standard component instances and a set of methods to obtain the _fluent_ builders for base Vaadin components, such as `Button` and standard layout components. See <<BaseBuilders>>.
+
+|*dialog*
+|Message and question dialogs builders. See <<Dialogs>>.
+
+|*view*
+|Builders for view components and forms. See <<View>>.
+
+|*input*
+|Builders input components and forms. See <<Input>>.
+
+|*listing*
+|Builders for grid type components to list data. See <<Listing>>.
+|===
+
 ==== Component builders structure
 
 Each component builder API is composed by a set of specific builders, each related to a specific feature of the component. The feature builders are independent from the specific UI component to build, thus providing a common API which makes component configuration simple and intuitive.
@@ -313,13 +334,122 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.
 [[BaseBuilders]]
 ==== Base components builders
 
-TBD
+===== Button
+
+The `Components.button()` method provides a standard Vaadin `Button` component builder, with localizable text support.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=button,indent=0]
+----
+<1> Get the `Button` builder
+<2> Set the button text
+<3> Set the button localizable text, providing a default text and a message localization code
+<4> Set the button description
+<5> Set the button width to 100%
+<6> Add a CSS style class name
+<7> Add a theme variant
+<8> Set the button icon
+<9> Automatically disables button when clicked
+<10> Add a click event listener
+<11> Shorter to directly create a `Button` providing the text and the click handler
+
+The `Components.nativeButton()` builder can be used to build a `NativeButton` component.
+
+===== Label
+
+A _label_ component can be used to display a text, which can be *localizable*, and can be implemented using a set of tags. The default tag used by the `Components.label()` method is `DIV`.
+
+TIP: See <<I18n>> for information about the UI components text localization.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=label1,indent=0]
+----
+<1> Get a label builder using a `Div` component
+<2> Set the label text
+<3> Set the label localizable text, providing a default text and a message localization code
+<4> Set the label description
+<5> Set the label width to 100%
+<6> Add a CSS style class name
+
+Other builders are available for the tags: `P`, `SPAN`, `H1`, `H2`, `H3`, `H4`, `H5`, `H6`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=label2,indent=0]
+----
+<1> Get a label builder using a `Paragraph` component
+<2> Get a label builder using a `Span` component
+<3> Get a label builder using a `H1` component
+<4> Get a label builder using a `H2` component
+<5> Get a label builder using a `H3` component
+<6> Get a label builder using a `H4` component
+<7> Get a label builder using a `H5` component
+<8> Get a label builder using a `H6` component
+
+===== Layouts
+
+The Vaadin Flow base layouts can be created and configured using the following builders:
+
+* *Vertical layout: * `Components.vl()`.
+* *Horizontal layout: * `Components.hl()`.
+* *Form layout: * `Components.formLayout()`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=layouts,indent=0]
+----
+<1> Get a `VerticalLayout` builder
+<2> Enable spacing
+<3> Enable margins
+<4> Set the default component alignment
+<5> Set the justify content mode
+<6> Set width and height to 100%
+<7> Add a CSS style class name 
+<8> Add a Button component
+<9> Add two label components
+<10> Add a component and set its alignment 
+<11> Get a `HorizontalLayout` builder 
+<12> Add a component
+<13> Add another component
+<14> Set the flex grow ratio for the first component
+<15> Get a `FormLayout` builder 
+<16> Add a component
+<17> Add a FormItem slot with a component and its label
+<18> Set the responsive steps
+
+===== Context menu
+
+The `Components.contextMenu()` method can be used to configure a `ContextMenu` and bind it to a component.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=ctxmenu,indent=0]
+----
+<1> Get a `ContextMenu` builder
+<2> Add a menu item with a text and a click handler
+<3> Add disabled a menu item with a localizable text
+<4> Add a menu item using a component
+<5> Add a menu open change listener
+<6> Build the `ContextMenu` and bind it to the `myComponent` component
 
 [[BaseConfigurators]]
 ==== Base components configurators
 
-TBD
+Besides the builders, the `Components` API provides a set of _configurator_ methods, which can be used to *configure existing UI components*. The available configurators acts on some base UI components: label, Button and layouts.
 
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=configurators,indent=0]
+----
+<1> Configure the `Button`, setting a localizable text
+<2> Configure the `VerticalLayout`, disabling spacing and adding a component
+
+[[Dialogs]]
+=== Dialogs
+
+TBD
 
 [[Listing]]
 === List data in grids
@@ -333,11 +463,6 @@ TBD
 
 [[Input]]
 === Input components and forms
-
-TBD
-
-[[Dialogs]]
-=== Dialogs
 
 TBD
 
