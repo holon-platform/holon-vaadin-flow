@@ -185,8 +185,100 @@ See <<Components>> to learn about the available component builders.
 [[I18n]]
 === Internationalization
 
-TBD
+The Holon Platform Vaadin Flow module provides a complete integration with the Holon Platform link:holon-core.html#i18n[internationalization^] architecture, making UI components and messages localization simple and conistent with the full application stack.
 
+Each localizable messages is represented by:
+
+* A required *message code*, i.e. the `String` key to be used to obtain the message localization for a given `Locale`.
+* An optional *default message*, to be used if a localized message is not available for a `Locale`.
+* A set of optional *localization arguments*, which can be used to replace a specific _placeholder_ with the actual values.
+
+The localizable message attributes described above can be declared and represented using the link:{coreapidir}/com/holonplatform/core/i18n/Localizable.html[Localizable^] interface, which provides convenient methods to create `Localizable` instances providing the message localization attributes.
+
+The UI component builders which allow to setup localizable messages and texts, always support the `Localizable` API to provide the message localization attributes, providing also convenient methods to directly set the message localization attributes.
+
+Example using a _button_ component builder:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=builder1,indent=0]
+----
+<1> Set the button text using a not localizable message
+<2> Set the button text using a localizable message, providing the default message and the localization code
+<3> Set the button text using a localizable message, also providing two message localization arguments 
+<4> Set the button text using a `Localizable` reference
+
+See <<Components>> to learn about the available component builders.
+
+==== LocalizationContext and LocalizationProvider
+
+The Holon Platform internationalization support relies on the link:holon-core.html#LocalizationContext[LocalizationContext^] API, which acts as message resolver, localized data formatter and holder for the current user `Locale`.
+
+In order for the UI components localization to work, one of the following conditions must be met:
+
+* A `LocalizationContext` is available as _context_ resource and a `Locale` is configured. See the Holon Platform link:holon-core.html#Context[Context^] architecture for information about the context resources management.
+
+* Otherwise, a Vaadin Flow `I18NProvider` is available from the current Vaadin Service.
+
+TIP: See <<VaadinSessionScope>> to learn about the _context scope_ for resources bound to the current Vaadin application session.
+
+The link:{apidir}/com/holonplatform/vaadin/flow/i18n/LocalizationProvider.html[LocalizationProvider^] API is used by the UI components and builders to obtain the localization information and to localize the messages to display.
+
+The `LocalizationProvider` API makes available a set of static methods to seamlessy integrate the messages localization in any part of the application, delegating the actual internationalization logic to the concrete localization provider, if available, which can be either a Holon Platform `LocalizationContext` or a Vaadin Flow `I18NProvider`.
+
+The *actual localization service to use* is automatically detected with the following strategy:
+
+* If a Vaadin Flow `I18NProvider` is available from current `VaadinService`, it is used for messages localization.
+* Otherwise, a `LocalizationContext` is used if available as a _context_ resource.
+
+This way, the `LocalizationProvider` API  `getLocalization` static methods can be used as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=localizationProvider1,indent=0]
+----
+<1> Get the localization for the given `Localizable` message using the given `Locale`
+<2> Get the localization for the given `message.localization.code` message code using the given `Locale` and the default `Default message` message if the localization is not available
+
+If the `Locale` is not explicitly provided, the `LocalizationProvider` API  `localize` static methods can be used and the *current Locale* is obtained with the following strategy:
+
+* If a current `UI` is available and a `Locale` is configured for the `UI`, this one is used.
+* If a `LocalizationContext` is available as a _context_ resource and it is localized, the `LocalizationContext` current `Locale` is used.
+* If a Vaadin Flow `I18NProvider` is available from current `VaadinService`, the first provided `Locale` is used if available.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=localizationProvider2,indent=0]
+----
+<1> Get the current `Locale`, if available
+<2> Get the localization for the given `Localizable` message using the current `Locale`
+<3> Get the localization for the given `message.localization.code` message code using the current `Locale`: the default `Default message` message is returned if the message localization or the current `Locale` is not available
+
+==== Use a LocalizationContext as I18NProvider
+
+The Holon Platform `LocalizationContext` can be used as a standard Vaadin Flow `I18NProvider` through the link:{apidir}/com/holonplatform/vaadin/flow/i18n/LocalizationContextI18NProvider.html[LocalizationContextI18NProvider^] API.
+
+TIP: See the link:holon-core.html#LocalizationContext[LocalizationContext^] documentation for information about the `LocalizationContext` configuration and use.
+
+The `LocalizationContextI18NProvider` provides static methods to build a `I18NProvider` instance which uses a `LocalizationContext` as message localizations provider.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=i18nprovider1,indent=0]
+----
+<1> Set the messages localization source
+<2> Set the initial `Locale`
+<3> Create a `I18NProvider` instance using the `LocalizationContext` as message localization provider
+
+A `LocalizationContextI18NProvider` which uses the current `LocalizationContext` (if available as a _context_ resource) can be obtained with the `create()` method:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=i18nprovider2,indent=0]
+----
+<1> Create a `LocalizationContext`
+<2> Put the `LocalizationContext` instance as a Vaadin Session attribute
+<3> Create a `I18NProvider` instance which uses the current `LocalizationContext`
 
 [[Components]]
 === Component builders and providers

@@ -1,1 +1,1 @@
-com.holonplatform.vaadin.flow.internal.VaadinSessionScope
+com.holonplatform.vaadin.flow.internal.DefaultVaadinSessionScope

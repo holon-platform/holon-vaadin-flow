@@ -21,6 +21,7 @@ import com.holonplatform.core.ContextScope;
 import com.holonplatform.core.exceptions.TypeMismatchException;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
+import com.holonplatform.vaadin.flow.VaadinSessionScope;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
@@ -34,12 +35,7 @@ import com.vaadin.flow.server.VaadinSession;
  * 
  * @since 5.2.0
  */
-public class VaadinSessionScope implements ContextScope {
-
-	/**
-	 * Context name
-	 */
-	public final static String NAME = "vaadin-session";
+public class DefaultVaadinSessionScope implements VaadinSessionScope {
 
 	/**
 	 * Context order

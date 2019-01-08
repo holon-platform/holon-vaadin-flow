@@ -22,7 +22,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.holonplatform.vaadin.flow.internal.VaadinSessionScope;
+import com.holonplatform.vaadin.flow.VaadinSessionScope;
 import com.vaadin.flow.spring.scopes.VaadinUIScope;
 
 /**

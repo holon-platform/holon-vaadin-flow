@@ -3,6 +3,7 @@
 The Holon Vaadin Flow module represents the platform support for the Vaadin web applications platform (version 10+), focusing on the user interface components and data binding features.
 :revnumber: {project-version}
 :apidir: ../api/holon-vaadin-flow
+:coreapidir: ../api/holon-core
 :linkattrs:
 :sectnums:
 :nofooter:
