@@ -449,7 +449,85 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.
 [[Dialogs]]
 === Dialogs
 
-TBD
+The `Components.dialog` sub-interface provides a set of method to build and configure a Vaadin Flow `Dialog`. Three types of dialogs are available, as described below.
+
+==== Message Dialog
+
+A *message dialog* is a `Dialog` which can be used to display a simple message to the user.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java[tag=dialog1,indent=0]
+----
+<1> Build a message `Dialog` with given message text
+<2> Build a message `Dialog` with given localizable message text and open it
+<3> Shorter to build and show a message `Dialog` with a localizable message text
+
+==== Confirm Dialog
+
+A *confirm dialog* is a `Dialog` which can be used to display a simple message to the user and provides a `OK` button at the bottom right position.
+
+The `OK` button can be configured using the dialog builder.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java[tag=dialog2,indent=0]
+----
+<1> Get a confirm `Dialog` builder
+<2> Set the localizable dialog message
+<3> Configure the confirm dialog OK button
+<4> Build and open the dialog
+<5> Shorter to build and show a confirm `Dialog` with a localizable message text
+
+==== Question Dialog
+
+A *question dialog* is a `Dialog` which can be used to ask a question to the user and handle the user answer. A `QuestionDialogCallback` function must be provided to handle the user answer.
+
+Two buttons are displayed at the bottom right position, which by default represents the `yes` or `no` answers. The buttons can be configured using the dialog builder.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java[tag=dialog3,indent=0]
+----
+<1> Get a question `Dialog` builder, providing the user answer callback
+<2> Set the localizable dialog message
+<3> Configure the _confirm_ dialog button
+<4> Configure the _deny_ dialog button
+<5> Build and open the dialog
+<6> Shorter to build and show a question `Dialog` with a localizable message text
+
+==== Dialog configuration options
+
+All the dialog builders provides a set of common `Dialog` configuration options, including:
+
+* Dialog size configuration
+* Dialog style configuration
+* Dialog closing mode configuration and open change listener
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java[tag=dialog4,indent=0]
+----
+<1> Set the dialog width
+<2> Set the dialog height
+<3> Add a CSS style class name
+<4> Disable closing when `ESC` pressed
+<5> Enable closing when user clicks outside the dialog
+<6> Add a open change listener
+
+==== Adding components to the Dialog
+
+The dialog builders allow to add custom components to the `Dialog` content. The components can be added in two positions:
+
+* In the main dialog content: will be placed after the dialog message label, if any.
+* In the dialog bottom toolbar: will be placed before the standard dialog buttons, if any.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java[tag=dialog5,indent=0]
+----
+<1> Add a label component in the dialog content area
+<2> Add a button component in the dialog toolbar
 
 [[Listing]]
 === List data in grids
