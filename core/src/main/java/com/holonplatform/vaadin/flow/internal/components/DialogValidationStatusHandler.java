@@ -40,7 +40,7 @@ public class DialogValidationStatusHandler<S> implements ValidationStatusHandler
 	public void validationStatusChange(ValidationStatusEvent<S> statusChangeEvent) {
 		if (statusChangeEvent.isInvalid()) {
 			Components.dialog.confirm().styleName("dialog-validation-status-error")
-					.message(statusChangeEvent.getError().orElse(Localizable.of("Validation failed"))).open();
+					.text(statusChangeEvent.getError().orElse(Localizable.of("Validation failed"))).open();
 		}
 	}
 

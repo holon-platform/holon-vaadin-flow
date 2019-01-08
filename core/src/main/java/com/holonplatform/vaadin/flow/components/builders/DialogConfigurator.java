@@ -15,10 +15,6 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.Locale;
-
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -32,38 +28,7 @@ import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
  * @since 5.2.0
  */
 public interface DialogConfigurator<C extends DialogConfigurator<C>> extends ComponentConfigurator<C>,
-		HasSizeConfigurator<C>, HasStyleConfigurator<C>, DeferrableLocalizationConfigurator<C> {
-
-	/**
-	 * Sets the {@link Localizable} dialog message.
-	 * @param message The {@link Localizable} dialog message
-	 * @return this
-	 * @see LocalizationProvider
-	 */
-	C message(Localizable message);
-
-	/**
-	 * Sets the dialog message.
-	 * @param message The dialog message to set
-	 * @return this
-	 */
-	default C message(String message) {
-		return message(Localizable.builder().message(message).build());
-	}
-
-	/**
-	 * Sets the localizable dialog message.
-	 * @param defaultMessage Default dialog message if no translation is available for given <code>messageCode</code>
-	 *        for current {@link Locale}
-	 * @param messageCode Dialog message translation message key
-	 * @param arguments Optional Dialog message translation arguments
-	 * @return this
-	 * @see LocalizationProvider
-	 */
-	default C message(String defaultMessage, String messageCode, Object... arguments) {
-		return message(Localizable.builder().message(defaultMessage).messageCode(messageCode)
-				.messageArguments(arguments).build());
-	}
+		HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasTextConfigurator<C>, DeferrableLocalizationConfigurator<C> {
 
 	/**
 	 * Add given component to the dialog content.

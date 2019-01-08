@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.vaadin.flow.component.Component;
@@ -70,6 +71,13 @@ public abstract class AbstractSessionTest {
 		ui.doInit(request, TEST_UIID);
 
 		CurrentInstance.setCurrent(ui);
+	}
+
+	@AfterEach
+	public void _afterEach() throws Exception {
+		CurrentInstance.set(VaadinSession.class, null);
+		CurrentInstance.set(VaadinRequest.class, null);
+		CurrentInstance.set(UI.class, null);
 	}
 
 	protected VaadinService createVaadinService() throws Exception {

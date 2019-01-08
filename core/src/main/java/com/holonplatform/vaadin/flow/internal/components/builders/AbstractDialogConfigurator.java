@@ -89,12 +89,12 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#message(com.holonplatform.core.i18n.
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */
 	@Override
-	public C message(Localizable message) {
-		messageConfigurator.setMessage(message);
+	public C text(Localizable text) {
+		messageConfigurator.setMessage(text);
 		return getConfigurator();
 	}
 

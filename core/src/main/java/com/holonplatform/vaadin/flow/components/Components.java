@@ -351,7 +351,7 @@ public interface Components {
 		 * @param message The dialog message text
 		 */
 		static void showMessage(Localizable message) {
-			message().message(message).open();
+			message().text(message).open();
 		}
 
 		/**
@@ -393,7 +393,7 @@ public interface Components {
 		 * @param message The dialog message text
 		 */
 		static void showConfirm(Localizable message) {
-			confirm().message(message).open();
+			confirm().text(message).open();
 		}
 
 		/**
@@ -438,7 +438,7 @@ public interface Components {
 		 * @param message The dialog message text
 		 */
 		static void showQuestion(QuestionDialogCallback questionDialogCallback, Localizable message) {
-			question(questionDialogCallback).message(message).open();
+			question(questionDialogCallback).text(message).open();
 		}
 
 		/**
