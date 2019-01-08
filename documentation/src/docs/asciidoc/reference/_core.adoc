@@ -1,0 +1,105 @@
+[[VaadinFlowComponents]]
+== Vaadin Flow UI components
+
+The `holon-vaadin-flow` artifact is the main entry point to enable the Holon platform Vaadin Flow integration.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-flow</artifactId>
+<version>{revnumber}</version>
+----
+
+It provides integration between the Vaadin Flow core architecture and the Holon Platform one, providing also a set of UI components specifically designed to ensure a seamless integration with the Holon Platform Property model, Datastore API, authentication and internationalization APIs.
+
+[[DatastoreIntegration]]
+=== Datastore API integration
+
+TBD
+
+[[I18n]]
+=== Internationalization
+
+TBD
+
+
+[[Components]]
+=== Component builders and providers
+
+The link:{apidir}/com/holonplatform/vaadin/flow/components/Components.html[Components^] API is *the main entry point* to build and configure the UI components.
+
+It provides a complete set of methods to obtain _fluent_ builders to create and configure both standard Vaadin Flow components and the additional UI components provided by the Holon Platform Vaadin Flow module.
+
+==== Component builders structure
+
+Each component builder API is composed by a set of specific builders, each related to a specific feature of the component. The feature builders are independent from the specific UI component to build, thus providing a common API which makes component configuration simple and intuitive.
+
+For example, the link:{apidir}/com/holonplatform/vaadin/flow/components/builders/HasTextConfigurator.html[HasTextConfigurator^] represents a builder part for UI components which supports a _text_, and it is included in any builder for UI components with text support.
+
+Similarly, the the link:{apidir}/com/holonplatform/vaadin/flow/components/builders/HasSizeConfigurator.html[HasSizeConfigurator^] API is included in component builders which supports the component _size_ configuration.
+
+This ensures a consistent and common API to build and configure any UI component.
+
+In the example below, the `HasTextConfigurator` and the `HasSizeConfigurator` are used in the same way to configure a _label_ and a _button_ component text and size:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=builders1,indent=0]
+----
+<1> Get a _label_ component builder
+<2> Set the label text (using the `HasTextConfigurator` API)
+<3> Set the label width (using the `HasSizeConfigurator` API)
+<4> Get a _button_ component builder
+<5> Set the button text (using the `HasTextConfigurator` API)
+<6> Set the button width (using the `HasSizeConfigurator` API)
+
+[[BaseBuilders]]
+==== Base components builders
+
+TBD
+
+[[BaseConfigurators]]
+==== Base components configurators
+
+TBD
+
+
+[[Listing]]
+=== List data in grids
+
+TBD
+
+[[View]]
+=== View components and forms
+
+TBD
+
+[[Input]]
+=== Input components and forms
+
+TBD
+
+[[Dialogs]]
+=== Dialogs
+
+TBD
+
+[[PropertyRenderers]]
+=== Property renderers for UI components
+
+TBD
+
+[[VaadinSessionScope]]
+== Vaadin session scope
+
+TBD
+
+[[DeviceInfo]]
+=== Device information
+
+TBD
+
+
+
+
