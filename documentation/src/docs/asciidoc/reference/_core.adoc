@@ -169,6 +169,19 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.j
 ----
 <1> Set an item identifier provider function which provides the bean id value as item identifier using the `getId()` method
 
+==== Setup a `Datastore` data provider using builders
+
+The Holon Platform Vaadin Flow module _builder_ APIs provides covenient methods to setup a `Datastore` based data provider for UI components which support data binding.
+
+Example for a _single select_, implemented using a Vaadin `ComboBox` component:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=builder,indent=0]
+----
+
+See <<Components>> to learn about the available component builders.
+
 [[I18n]]
 === Internationalization
 

@@ -24,6 +24,8 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 
@@ -139,6 +141,12 @@ public class ExampleDatastore {
 				.itemIdentifierProvider(bean -> bean.getId()) // <1>
 				.build();
 		// end::dataprovider10[]
+	}
+
+	public void builder() {
+		// tag::builder[]
+		SingleSelect<Long> select = Components.input.singleSelect(ID).dataSource(datastore, TARGET).build();
+		// end::builder[]
 	}
 
 	private class MyBean {
