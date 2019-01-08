@@ -31,12 +31,143 @@ The `DatastoreDataProvider` provides a set of `create(..)` and `builder(..)` met
 
 By default, the Holon Platform link:holon-core.html#Property[Property model^] is used to represent the backend data model attributes, and the link:holon-core.html#PropertyBox[PropertyBox^] type to represent a data source _item_, intended as a collection of properties and their values.
 
+So, besides the `Datastore` reference and the `DataTarget` definition, the *property set* to use has to be provided to the `DatastoreDataProvider` builder methods.
 
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider1,indent=0]
+----
+<1> Property set declaration
+<2> Data target definition
+<3> Datastore reference
+<4> Create a new `DatastoreDataProvider` using the `SUBJECT` property set
+<5> Create a new `DatastoreDataProvider` providing the `ID` and `NAME` properties as property set
+
+Furthermore, the `DatastoreDataProvider` API provides methods to use a *bean class* as item type. The item property set is obtained form the bean class attributes, using the bean property names as property set property names.
+
+TIP: See the link:holon-core.html#Beans[Java Beans and property model^] documentation section for information about the conventions and the configuration options which can be used when a Java Bean is used with the Holon Platform property model.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider2,indent=0]
+----
+<1> Data target definition
+<2> Datastore reference
+<3> Create a new `DatastoreDataProvider` using the `MyBean` class as item type
 
 ==== Filter types
 
-TBD
+By default, the `QueryFilter` type is used used as data provider filter type, since it is the default property model representation for the `Datastore` API query restrictions definition.
 
+To use a different data provider filter type, a *filter converter function* can be configured for the `DatastoreDataProvider`, to provide the custom filter type to `QueryFilter` type conversion logic.
+
+In the example below, a `String` type filter is used and the conversion function creates a `QueryFilter` which represents the condition "The `NAME` data model attribute value starts with the given filter value":
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider3,indent=0]
+----
+
+Similarly when a bean item type is used:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider4,indent=0]
+----
+
+==== Custom item and filter type
+
+The `DatastoreDataProvider` API makes also available methods to customize both the item type and the data provider filter type, providing:
+
+* The `PropertyBox` type to the custom item type conversion function.
+* The custom filter type to the `QueryFilter` type conversion function.
+
+For example, using a `MyItem` item class and a `String` filter type:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider5,indent=0]
+----
+<1> The `SUBJECT` property set is used as query projection
+<2> Item conversion function: from the `PropertyBox` type object to the `MyItem` item type
+<3> Filter conversion function: from a `String` type filter to a `QueryFilter` type
+
+==== `Datastore` Query configuration
+
+The queries performed by the `Datastore` to fetch the data from backend can be configured using the `DatastoreDataProvider` *builder API*.
+
+===== Query filters and sorts
+
+The query filters and sorts can be configured in two ways:
+
+*1. At construction time, using the appropriate builder methods:* 
+
+The `DatastoreDataProvider` builder API provide methods to:
+
+* Add one or more `QueryFilter` to the query definition. These filters will always be included in the query execution.
+* Add one or more `QuerySort` to the query definition. These sorts will always be included in the query execution.
+* Set a default `QuerySort`, which will be used when no other sort is configured for the query.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider6,indent=0]
+----
+<1> Get a `DatastoreDataProvider` builder 
+<2> Add a query filter
+<3> Add a query sort
+<4> Set the default query sort
+
+*2. Dynamically, using a `QueryConfigurationProvider`:* 
+
+One or more `QueryConfigurationProvider` references can be configured for the query using the `DatastoreDataProvider` builder API. 
+
+At each query execution, the `getQueryFilter()` and `getQuerySort()` methods of each available `QueryConfigurationProvider` will be invoked to obtain the filters and sorts to add to the query, if any.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider7,indent=0]
+----
+<1> Get a `DatastoreDataProvider` builder 
+<2> Add a `QueryConfigurationProvider`
+<3> At each query execution, this method will be invoked to obtain the query filters, if any
+<4> At each query execution, this method will be invoked to obtain the query sorts, if any
+
+===== `QuerySortOrder` conversion
+
+When the standard Vaadin Flow `com.vaadin.flow.data.provider.QuerySortOrder` type is used for the data provider query configuration, the `DatastoreDataProvider` can be configured to control how a `QuerySortOrder` declaration is converted into a `QuerySort` definition.
+
+For this purpose, the `DatastoreDataProvider` builder API allows to configure a `QuerySortOrder` conversion function.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider8,indent=0]
+----
+<1> Get a `DatastoreDataProvider` builder 
+<2> Set the `QuerySortOrder` conversion function
+
+===== Item identifier
+
+By default, the item itself is used as _item identifier_ to discern each item from another within the query results. The item identification relies on the standard Java `equals` and `hashCode` object methods.
+
+When a `PropertyBox` type item is used, the default item identification strategy relies on the property set *identifier properties* values, if declared.
+
+TIP: See the link:holon-core.html#IdentifierProperties[Identifier properties^] documentation section for details.
+
+If a custom item identifier should be used, an item identifier provider function can be configured using the `DatastoreDataProvider` builder API. This function must provide the item identifier for each item obtained form query execution.
+
+.Example using a PropertyBox type item
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider9,indent=0]
+----
+<1> Set an item identifier provider function which provides the `ID` property value as item identifier
+
+.Example using a bean item
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.java[tag=dataprovider10,indent=0]
+----
+<1> Set an item identifier provider function which provides the bean id value as item identifier using the `getId()` method
 
 [[I18n]]
 === Internationalization
