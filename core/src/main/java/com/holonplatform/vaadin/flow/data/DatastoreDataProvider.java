@@ -108,6 +108,19 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type and {@link QueryFilter} type
+	 * data provider filters.
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * @param properties The property set to use as query projection (not null)
+	 * @return A new {@link DatastoreDataProvider}
+	 */
+	static DatastoreDataProvider<PropertyBox, QueryFilter> create(Datastore datastore, DataTarget<?> target,
+			Property<?>... properties) {
+		return builder(datastore, target, PropertySet.of(properties)).build();
+	}
+
+	/**
 	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type.
 	 * @param <F> Query filter type
 	 * @param datastore The {@link Datastore} to use (not null)
@@ -120,6 +133,21 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	static <F> DatastoreDataProvider<PropertyBox, F> create(Datastore datastore, DataTarget<?> target,
 			PropertySet<?> propertySet, Function<F, QueryFilter> filterConverter) {
 		return builder(datastore, target, propertySet, filterConverter).build();
+	}
+
+	/**
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type.
+	 * @param <F> Query filter type
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * @param properties The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
+	 *        null)
+	 * @return A new {@link DatastoreDataProvider}
+	 */
+	static <F> DatastoreDataProvider<PropertyBox, F> create(Datastore datastore, DataTarget<?> target,
+			Function<F, QueryFilter> filterConverter, Property<?>... properties) {
+		return builder(datastore, target, PropertySet.of(properties), filterConverter).build();
 	}
 
 	/**
@@ -187,6 +215,20 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 	/**
 	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
+	 * type and {@link QueryFilter} type data provider filters.
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * @param properties The property set to use as query projection (not null)
+	 * @return a new {@link DatastoreDataProvider} builder
+	 */
+	static PropertyBoxItemBuilder<QueryFilter> builder(Datastore datastore, DataTarget<?> target,
+			Property<?>... properties) {
+		return new DefaultDatastoreDataProvider.DefaultPropertyBoxItemBuilder<>(datastore, target,
+				PropertySet.of(properties), Function.identity(), Function.identity());
+	}
+
+	/**
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
 	 * type.
 	 * @param <F> Query filter type
 	 * @param datastore The {@link Datastore} to use (not null)
@@ -200,6 +242,23 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 			Function<F, QueryFilter> filterConverter) {
 		return new DefaultDatastoreDataProvider.DefaultPropertyBoxItemBuilder<>(datastore, target, propertySet,
 				Function.identity(), filterConverter);
+	}
+
+	/**
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
+	 * type.
+	 * @param <F> Query filter type
+	 * @param datastore The {@link Datastore} to use (not null)
+	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * @param properties The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
+	 *        null)
+	 * @return a new {@link DatastoreDataProvider} builder
+	 */
+	static <F> PropertyBoxItemBuilder<F> builder(Datastore datastore, DataTarget<?> target,
+			Function<F, QueryFilter> filterConverter, Property<?>... properties) {
+		return new DefaultDatastoreDataProvider.DefaultPropertyBoxItemBuilder<>(datastore, target,
+				PropertySet.of(properties), Function.identity(), filterConverter);
 	}
 
 	/**
