@@ -571,7 +571,77 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDialog.java
 [[Listing]]
 === List data in grids
 
-TBD
+The link:{apidir}/com/holonplatform/vaadin/flow/components/ItemListing.html[ItemListing^] API represents a UI component which can be used to display data in a tabular way. 
+
+Extends `HasComponent` (see <<HasComponent>>) and it is actually implemented using a Vaadin Flow `Grid` component.
+
+A `ItemListing` is designed to display a set of data *items* of a specific type, each one rendered as a list _row_. An item is a collection of values, and each value is bound to a *property* definition of a specific type. 
+
+Each `ItemListing` column is bound to an item _property_ by default, even if _virtual_ or calculated columns can be added to the listing.
+
+Two `ItemListing` implementations are available: 
+
+* `PropertyListing`: to use the Holon Platform _property model_ to represent the item properties and the `PropertyBox` type as item representation. See <<PropertyListing>>.
+
+* `BeanListing`: to use a Java Bean class as item type and the bean property names as item properties. See <<BeanListing>>.
+
+Each item listing implementation provides one or more suitable `builder` methods to obtain the _fluent_ builder to use to create and configure an item listing instance.
+
+The same builders are also available from the `Components` API, through the `Components.listing` sub interface. See <<Components>>.
+
+[[PropertyListing]]
+==== PropertyListing
+
+The link:{apidir}/com/holonplatform/vaadin/flow/components/PropertyListing.html[PropertyListing^] API is the default `ItemListing` implementation which uses the *Holon Platform link:holon-core.html#Property[Property model^]* to represent and manage the data items.
+
+* A *property set* must be provided at `PropertyListing` costruction time. It represents the available item properties, each one bound by default to a listing _column_.
+
+* The `PropertyBox` type is used to represent an _item instance_, using the listing property set. So each listing row is bound to a `PropertyBox` instance, which collects the property values to be displayed for each listing column.
+
+For example, given the following property model definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=propertydef,indent=0]
+----
+
+A `PropertyListing` can be created in the following way:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing1,indent=0]
+----
+<1> Build a `PropertyListing` using the `SUBJECT` property set. The listing will provide two columns, one bound to the `ID` item property and the other bound to the `NAME` item property
+<2> Build a `PropertyListing` using the `Components` API, directly providing the `ID` and `NAME` properties as listing property set
+<3> Just like any `HasComponent` component type, the `getComponent()` method should be used to obtain the actual listing Component
+
+[[BeanListing]]
+==== BeanListing
+
+The link:{apidir}/com/holonplatform/vaadin/flow/components/BeanListing.html[BeanListing^] API is the default `ItemListing` implementation to use a *Java Bean class* as item type.
+
+* A *bean class* must be provided at `BeanListing` costruction time. The bean class _property names_ will be used as listing property set and so rendered as listing _columns_. For this reason the item listing property definition type is a `String`.
+
+* Each listing _row_ is bound to a bean class instance, and the bean class _getters_ will be used to obtain the property value to be rendered for each listing column.
+
+For example, given the following bean class definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=beandef,indent=0]
+----
+
+A `BeanListing` can be created in the following way:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing2,indent=0]
+----
+<1> Build a `BeanListing` using the `MyBean` class. The listing will provide two columns, one bound to the `id` bean property name and the other bound to the `name` bean property name
+<2> Build a `BeanListing` using the `Components` API
+<3> Just like any `HasComponent` component type, the `getComponent()` method should be used to obtain the actual listing Component
+
+
 
 [[View]]
 === View components and forms
