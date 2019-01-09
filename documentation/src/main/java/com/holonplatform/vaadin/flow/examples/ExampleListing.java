@@ -22,18 +22,24 @@ import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.property.PropertyValuePresenterRegistry;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.TextRenderer;
 
@@ -375,6 +381,48 @@ public class ExampleListing {
 		listing.deselect(myItem); // <10>
 		listing.deselectAll(); // <11>
 		// end::listing22[]
+	}
+
+	@SuppressWarnings("null")
+	public void listing23() {
+		PropertyListing listing = null;
+		// tag::listing23[]
+		PropertyListing.builder(SUBJECT) //
+				.editable() // <1>
+				.editorBuffered(true) // <2>
+				.withComponentColumn(item -> Components.button("Edit", e -> listing.editItem(item)) // <3>
+				).editorComponent(new Div( // <4>
+						Components.button("Save", e -> listing.saveEditingItem()),
+						Components.button("Cancel", e -> listing.cancelEditing())))
+				.displayAsFirst() // <5>
+				.add() // <6>
+				.withEditorSaveListener(event -> { // <7>
+					PropertyBox item = event.getItem(); // <8>
+					/* update the item in backend */
+				}).build();
+		// end::listing23[]
+	}
+
+	public void listing24() {
+		// tag::listing24[]
+		PropertyListing.builder(SUBJECT) //
+				.editor(NAME, Input.string().build()) // <1>
+				.editor(NAME, property -> Input.string().build()) // <2>
+				.editor(ID, Input.string().build(), new StringToLongConverter("")) // <3>
+				.editorField(NAME, new TextField()) // <4>
+				.editorField(ID, new TextField(), new StringToLongConverter("")) // <5>
+				.editorComponent(ID, new Button()) // <6>
+				.build();
+		// end::listing24[]
+	}
+
+	public void listing25() {
+		// tag::listing25[]
+		PropertyRendererRegistry.getDefault().forProperty(NAME, // <1>
+				InputPropertyRenderer.create(property -> Input.stringArea().build()));
+
+		PropertyListing.builder(SUBJECT).editable().build(); // <2>
+		// end::listing25[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {

@@ -1043,7 +1043,66 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 [[ItemListingEdit]]
 ==== Editing the listing items
 
-TBD
+The item listing supports an *edit mode*, which can be enabled using the `editable()` builder method.
+
+When a listing is editable, a row can be setted in edit mode using the `editItem(T item)` method of the item listing API. When `editItem` is called, each cell content is replaced by an *input component* to allow to change the item property value which corresponds to each column.
+
+The updated row item values can be saved using the `saveEditingItem()` method of the item listing API, or discarded using the `cancelEditing()` method. Then the row editor is closed, restoring the default cell contents.
+
+A set of listeners can be added to the listing to control the editing process:
+
+* `EditorSaveListener`: for editor save events, which corresponds to the `saveEditingItem()` method call. Can be used for example to update the data in the backend.
+* `EditorCancelListener`: for editor cancel events, which corresponds to the `cancelEditing()` method call.
+* `EditorOpenListener` / `EditorCloseListener`: for editor open and close events.
+
+The component to use as input to edit each item property value can be customized using the `editorComponent(...)` builder method.
+
+The row editor provides a *buffered* mode: when enabled, the edited values are setted into the item instance only when the `saveEditingItem()` method is called, for example using a provided _save_ button. The `editorBuffered` builder method can be used to enable or disable the buffered mode.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing23,indent=0]
+----
+<1> Enable the editable mode
+<2> Set the editor in buffered mode
+<3> Add a new column to provide the `Edit` button for each row, using the `editItem` method to edit the current row item
+<4> Set the editor component for the added column: it will be displayed when the row is in edit mode, providing the `Save` and `Cancel` buttons, which invoke the `saveEditingItem()` and the `cancelEditing()` methods respectively
+<5> Configure the added column to be displayed as first column
+<6> Add the column to the listing
+<7> Add an editor save listener to update the item data in backend
+<8> The save event provides the edited item instance
+
+===== Default editor components and customization 
+
+By default, when a row is turned into edit mode, the Holon PropertyRenderer architecture is used to obtain an `Input` type component for each item property to edit (See <<Input>> for information on the `Input` component API).
+
+TIP: See the link:holon-core.html#PropertyRenderer[Property renderering^] documentation for details about the property renderers architecture.
+
+The editor component for a listing item property (and so for a listing column), can be configured using the following builder methods:
+
+* `editor`: to set a `Input` as editor component. See <<Input>>.
+* `editorField`: to use a standard Vaadin `HasValue` component as editor component.
+* `editorComponent`: to use generic `Component` as editor component. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing24,indent=0]
+----
+<1> Set the editor `Input` to use for the `NAME` property/column
+<2> Set the editor `Input` to use for the `NAME` property/column
+<3> Set the editor `Input` to use for the `ID` property/column, providing a `Long` to `String` and back converter
+<4> Set the editor `HasValue` component to use for the `NAME` property/column
+<5> Set the editor `HasValue` component to use for the `ID` property/column, providing a `Long` to `String` and back converter
+<6> Set a generic component as `ID` property/column editor component
+
+Since the `PropertyRenderer` based architecture is used to obtain the editor components by default using the `Input` rendering type, the editor component can customized also by adding a new `PropertyRenderer` for a property definition. This ensures consistency across the application, and can be used to automatically configure the editor components for any item listing instance.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing25,indent=0]
+----
+<1> Add a new `PropertyRenderer` to the default registry to render the `NAME` property using the provided _stringArea_ type `Input` component.
+<2> Any item listing which includes the `NAME` property will use the registered renderer to obtain the `Input` component to use as the `NAME` property/column editor
 
 [[View]]
 === View components and forms
