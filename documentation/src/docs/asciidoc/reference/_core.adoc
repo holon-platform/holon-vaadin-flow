@@ -772,6 +772,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <4> Set the number of _frozen_ columns, i.e. the fixed columns, not involved in horizontal scrolling
 <5> Set whether the listing's height is defined by the number of its rows
 <6> Set whether the vertical scrolling is enabled
+<7> Set whether multiple column sorting is enabled on the client-side
 
 [[ItemClickListener]]
 ==== Listen to listing row clicks
@@ -839,17 +840,18 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 ----
 <1> Set the `NAME` column header
 <2> Set the `NAME` column header using a localizable message
-<3> Set the `NAME` column width
-<4> Set the `NAME` column flex grow ratio
-<5> Set the `NAME` column alignment
-<6> Set the `NAME` column footer
-<7> Set whether the `NAME` column is resizable
-<8> Set whether the `NAME` column is sortable
-<9> Set that the `ID` property must be used to sort the `NAME` column
-<10> Set the `NAME` column sort logic
-<11> Set the `NAME` column value provider
-<12> Set the `NAME` column renderer
-<13> Set the `NAME` column as frozen
+<3> Set the `NAME` column header using a `Component`
+<4> Set the `NAME` column width
+<5> Set the `NAME` column flex grow ratio
+<6> Set the `NAME` column alignment
+<7> Set the `NAME` column footer
+<8> Set whether the `NAME` column is resizable
+<9> Set whether the `NAME` column is sortable
+<10> Set that the `ID` property must be used to sort the `NAME` column
+<11> Set the `NAME` column sort logic
+<12> Set the `NAME` column value provider
+<13> Set the `NAME` column renderer
+<14> Set the `NAME` column as frozen
 
 ===== Adding columns
 
@@ -991,12 +993,52 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 [[ItemListingHeaderFooter]]
 ==== Header and footer configuration
 
-TBD
+The item listing header and footer sections can be completely customized, setting the cells contents and joining two or more cells together.
+
+The header and footer sections handlers can be obtainer either using:
+
+* The builder API, using the `header` and `footer` methods.
+* The item listing API, using the `getHeader()` and `getFooter()` methods.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing21,indent=0]
+----
+<1> Use the builder to customize the header section
+<2> Use the builder to customize the footer section
+<3> Get the header section
+<4> Get the footer section
 
 [[ItemListingSelection]]
 ==== Handling row selection
 
-TBD
+The item listing supports both *single* and *multiple* row selection modes. When the listing is in multiple selection mode, a _checkbox_ is shown before each listing row to allow user selection. Additionaly, a _select all_ checkbox is available in the listing header first cell.
+
+The item listing selection mode can be enabled either using:
+
+* The builder API, using the `selectionMode` method (`NONE`, `SINGLE` or `MULTI`). The `singleSelect()` and `multiSelect()` convenience methods are provided as shorters for the single and multiple selection mode.
+
+* The item listing API, using the `setSelectionMode` method (`NONE`, `SINGLE` or `MULTI`).
+
+A `SelectionListener` can be added to the item listing in order to listen to item selection events and obtain the currently selected items.
+
+Furthermore, the item listing API provides a set of methods to select or deselect one or more items programmatically.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing22,indent=0]
+----
+<1> Set the listing selection mode
+<2> Set the listing selection mode as single
+<3> Set the listing selection mode as multiple
+<4> Add a selection listener
+<5> Get the selected items, if any
+<6> Get the first selected item, if any
+<7> Use the listing API to change the selection mode
+<8> Add a selection listener
+<9> Programmatically select an item
+<10> Programmatically deselect an item
+<11> Deselect all items
 
 [[ItemListingEdit]]
 ==== Editing the listing items

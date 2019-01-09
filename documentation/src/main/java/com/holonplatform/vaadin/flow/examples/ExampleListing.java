@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.examples;
 
+import java.util.Optional;
+import java.util.Set;
+
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.NumericProperty;
@@ -25,6 +28,7 @@ import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.component.button.Button;
@@ -190,6 +194,7 @@ public class ExampleListing {
 				.frozenColumns(1) // <4>
 				.heightByRows(true) // <5>
 				.verticalScrollingEnabled(true) // <6>
+				.multiSort(true) // <7>
 				.build();
 		// end::listing11[]
 	}
@@ -229,19 +234,20 @@ public class ExampleListing {
 		PropertyListing listing = PropertyListing.builder(SUBJECT) //
 				.header(NAME, "The name") // <1>
 				.header(NAME, "The name", "name.message.code") // <2>
-				.width(NAME, "100px") // <3>
-				.flexGrow(NAME, 1) // <4>
-				.alignment(NAME, ColumnAlignment.CENTER) // <5>
-				.footer(NAME, "Footer text") // <6>
-				.resizable(NAME, true) // <7>
-				.sortable(NAME, true) // <8>
-				.sortUsing(NAME, ID) // <9>
+				.headerComponent(NAME, new Button("name")) // <3>
+				.width(NAME, "100px") // <4>
+				.flexGrow(NAME, 1) // <5>
+				.alignment(NAME, ColumnAlignment.CENTER) // <6>
+				.footer(NAME, "Footer text") // <7>
+				.resizable(NAME, true) // <8>
+				.sortable(NAME, true) // <9>
+				.sortUsing(NAME, ID) // <10>
 				.sortProvider(NAME, direction ->
 				/* sort logic omitted */
-				null) // <10>
-				.valueProvider(NAME, item -> item.getValue(NAME)) // <11>
-				.renderer(NAME, new TextRenderer<>()) // <12>
-				.frozen(NAME, true) // <13>
+				null) // <11>
+				.valueProvider(NAME, item -> item.getValue(NAME)) // <12>
+				.renderer(NAME, new TextRenderer<>()) // <13>
+				.frozen(NAME, true) // <14>
 				.build();
 		// end::listing13[]
 	}
@@ -329,6 +335,46 @@ public class ExampleListing {
 					e.getSource().setItemDetailsVisible(e.getItem(), true);
 				}).build();
 		// end::listing20[]
+	}
+
+	public void listing21() {
+		// tag::listing21[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.header(header -> { // <1>
+					header.prependRow().join(ID, NAME).setText("A text");
+				}).footer(footer -> { // <2>
+					footer.appendRow().getCell(ID).ifPresent(cell -> cell.setText("ID footer"));
+				}).build();
+
+		listing.getHeader().ifPresent(header -> { // <3>
+			/* customize header */
+		});
+		listing.getFooter().ifPresent(footer -> { // <4>
+			/* customize footer */
+		});
+		// end::listing21[]
+	}
+
+	public void listing22() {
+		PropertyBox myItem = null;
+		// tag::listing22[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.selectionMode(SelectionMode.SINGLE) // <1>
+				.singleSelect() // <2>
+				.multiSelect() // <3>
+				.withSelectionListener(event -> { // <4>
+					Set<PropertyBox> items = event.getAllSelectedItems(); // <5>
+					Optional<PropertyBox> item = event.getFirstSelectedItem(); // <6>
+				}).build();
+
+		listing.setSelectionMode(SelectionMode.MULTI); // <7>
+		listing.addSelectionListener(event -> { // <8>
+		});
+
+		listing.select(myItem); // <9>
+		listing.deselect(myItem); // <10>
+		listing.deselectAll(); // <11>
+		// end::listing22[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
