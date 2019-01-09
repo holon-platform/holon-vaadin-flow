@@ -20,13 +20,17 @@ import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.NumericProperty;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.property.PropertyValuePresenterRegistry;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.vaadin.flow.components.BeanListing;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.renderer.TextRenderer;
 
 @SuppressWarnings("unused")
 public class ExampleListing {
@@ -174,6 +178,103 @@ public class ExampleListing {
 				.withQuerySort(ID.asc()) // <3>
 				.build();
 		// end::listing10[]
+	}
+
+	public void listing11() {
+		// tag::listing11[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.pageSize(50) // <1>
+				.columnReorderingAllowed(true) // <2>
+				.resizable(true) // <3>
+				.frozenColumns(1) // <4>
+				.heightByRows(true) // <5>
+				.verticalScrollingEnabled(true) // <6>
+				.build();
+		// end::listing11[]
+	}
+
+	public void listing12() {
+		// tag::listing12[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.visibleColumns(NAME, ID) // <1>
+				.displayAsFirst(NAME) // <2>
+				.displayAsLast(ID) // <3>
+				.displayBefore(NAME, ID) // <4>
+				.displayAfter(ID, NAME) // <5>
+				.hidden(ID) // <6>
+				.build();
+
+		BeanListing<MyBean> listing2 = BeanListing.builder(MyBean.class) // <7>
+				.visibleColumns("name", "id").displayAsFirst("name").hidden("id").build();
+		// end::listing12[]
+	}
+
+	public void listing13() {
+		// tag::listing13[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.header(NAME, "The name") // <1>
+				.header(NAME, "The name", "name.message.code") // <2>
+				.width(NAME, "100px") // <3>
+				.flexGrow(NAME, 1) // <4>
+				.alignment(NAME, ColumnAlignment.CENTER) // <5>
+				.footer(NAME, "Footer text") // <6>
+				.resizable(NAME, true) // <7>
+				.sortable(NAME, true) // <8>
+				.sortUsing(NAME, ID) // <9>
+				.sortProvider(NAME, direction ->
+				/* sort logic omitted */
+				null) // <10>
+				.valueProvider(NAME, item -> item.getValue(NAME)) // <11>
+				.renderer(NAME, new TextRenderer<>()) // <12>
+				.frozen(NAME, true) // <13>
+				.build();
+		// end::listing13[]
+	}
+
+	public void listing14() {
+		// tag::listing14[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.withColumn(item -> "Virtual: " + item.getValue(ID)) // <1>
+				.header("Virtual") // <2>
+				.displayBefore(NAME) // <3>
+				.add() // <4>
+				.build();
+		// end::listing14[]
+	}
+
+	public void listing15() {
+		// tag::listing15[]
+		BeanListing<MyBean> listing2 = BeanListing.builder(MyBean.class) //
+				.withColumn(item -> "Virtual: " + item.getId()) // <1>
+				.header("Virtual") // <2>
+				.displayAsFirst() // <3>
+				.add() // <4>
+				.build();
+		// end::listing15[]
+	}
+
+	public void listing16() {
+		// tag::listing16[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.withComponentColumn(item -> new Button(item.getValue(NAME))) // <1>
+				.header("Component") // <2>
+				.sortUsing(NAME) // <3>
+				.add() // <4>
+				.build();
+		// end::listing16[]
+	}
+
+	public void listing17() {
+		// tag::listing17a[]
+		PropertyValuePresenterRegistry.getDefault() // <1>
+				.forProperty(ID, (property, value) -> "#" + value); // <2>
+		// end::listing17a[]
+
+		// tag::listing17b[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT).build(); // <1>
+
+		String value = ID.present(1L); // <2>
+		// end::listing17b[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
