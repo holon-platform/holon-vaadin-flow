@@ -207,13 +207,13 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#generateDefaultGridColumn(com.holonplatform
 	 * .vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Column<PropertyBox> generateDefaultGridColumn(
 			ItemListingColumn<Property<?>, PropertyBox, ?> configuration) {
 		final Property<?> property = configuration.getProperty();
 		// check component
 		if (Component.class.isAssignableFrom(property.getType())) {
-			@SuppressWarnings("unchecked")
 			final Property<? extends Component> componentProperty = (Property<? extends Component>) property;
 			return getGrid().addComponentColumn(item -> {
 				if (item.contains(property)) {
@@ -227,7 +227,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			if (item.contains(property)) {
 				return item.present(property);
 			}
-			return this;
+			return null;
 		});
 	}
 
@@ -344,6 +344,33 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public DefaultPropertyListingBuilder getConfigurator() {
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
+		 * .ValueProvider)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withColumn(
+				ValueProvider<PropertyBox, X> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			return withColumn(VirtualProperty.create(Object.class, item -> valueProvider.apply(item)));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withColumn(com.holonplatform.
+		 * core.property.VirtualProperty)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withColumn(
+				VirtualProperty<X> property) {
+			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
+			getInstance().addPropertyColumn(property).setValueProvider(new VirtualPropertyValueProvider<>(property));
+			return new DefaultItemListingColumnBuilder<>(property, getInstance(), getConfigurator());
 		}
 
 		/*
@@ -467,6 +494,34 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			super();
 			this.builder = builder;
 			this.datastoreDataProvider = datastoreDataProvider;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withColumn(com.holonplatform.
+		 * core.property.VirtualProperty)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withColumn(
+				VirtualProperty<X> property) {
+			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
+			builder.getInstance().addPropertyColumn(property)
+					.setValueProvider(new VirtualPropertyValueProvider<>(property));
+			return new DefaultItemListingColumnBuilder<>(property, builder.getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
+		 * .ValueProvider)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withColumn(
+				ValueProvider<PropertyBox, X> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			return withColumn(VirtualProperty.create(Object.class, item -> valueProvider.apply(item)));
 		}
 
 		/*
@@ -1416,6 +1471,24 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public PropertyListing build() {
 			return builder.build();
+		}
+
+	}
+
+	static class VirtualPropertyValueProvider<T> implements ValueProvider<PropertyBox, String> {
+
+		private static final long serialVersionUID = 582674628237265592L;
+
+		private final VirtualProperty<T> property;
+
+		public VirtualPropertyValueProvider(VirtualProperty<T> property) {
+			super();
+			this.property = property;
+		}
+
+		@Override
+		public String apply(PropertyBox source) {
+			return property.present(property.getValueProvider().getPropertyValue(source));
 		}
 
 	}

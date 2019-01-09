@@ -44,6 +44,19 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 		PropertySetInputGroupConfigurator<EditorComponentGroup<Property<?>, PropertyBox>, C> {
 
 	/**
+	 * Add a column which contents will be rendered using given {@link VirtualProperty}.
+	 * <p>
+	 * The virtual property {@link PropertyValueProvider} will be invoked for each listing item to obtain the value to
+	 * display.
+	 * </p>
+	 * @param <X> Property type
+	 * @param property The virtual property which represent the column.
+	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
+	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 */
+	<X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, C> withColumn(VirtualProperty<X> property);
+
+	/**
 	 * Add a column which contents will be rendered as a {@link Component} using given {@link VirtualProperty}.
 	 * <p>
 	 * The virtual property {@link PropertyValueProvider} will be invoked for each listing item to obtain the Component

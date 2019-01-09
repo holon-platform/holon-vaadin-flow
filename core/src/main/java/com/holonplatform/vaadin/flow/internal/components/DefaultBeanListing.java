@@ -35,6 +35,7 @@ import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.core.presentation.StringValuePresenter;
 import com.holonplatform.core.property.PathProperty;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -101,9 +102,9 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	private final BeanPropertySet<T> propertySet;
 
 	/**
-	 * Component columns
+	 * Virtual columns
 	 */
-	private final Set<String> componentColumnProperties = new HashSet<>(4);
+	private final Set<String> virtualColumnProperties = new HashSet<>(4);
 
 	/**
 	 * Constructor.
@@ -138,11 +139,12 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	}
 
 	/**
-	 * Add a component type virtual column.
+	 * Add a virtual column.
 	 * @return The property id
 	 */
-	protected String addComponentColumnProperty() {
-		final String id = "_component" + componentColumnProperties.size();
+	protected String addColumnProperty() {
+		final String id = "_!virtual#" + virtualColumnProperties.size();
+		virtualColumnProperties.add(id);
 		addPropertyColumn(id);
 		return id;
 	}
@@ -153,7 +155,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 */
 	@Override
 	protected boolean isReadOnlyByDefault(String property) {
-		return property != null && componentColumnProperties.contains(property);
+		return property != null && virtualColumnProperties.contains(property);
 	}
 
 	/*
@@ -387,8 +389,23 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		public ItemListingColumnBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> withComponentColumn(
 				ValueProvider<T, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
-			final String columnId = getInstance().addComponentColumnProperty();
+			final String columnId = getInstance().addColumnProperty();
 			getInstance().getColumnConfiguration(columnId).setRenderer(new ComponentRenderer<>(valueProvider));
+			return new DefaultItemListingColumnBuilder<>(columnId, getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
+		 * .ValueProvider)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<T, String, BeanListing<T>, BeanListingBuilder<T>> withColumn(
+				ValueProvider<T, X> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			final String columnId = getInstance().addColumnProperty();
+			getInstance().getColumnConfiguration(columnId).setValueProvider(new ValueProviderAdapter<>(valueProvider));
 			return new DefaultItemListingColumnBuilder<>(columnId, getInstance(), this);
 		}
 
@@ -1168,8 +1185,25 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		public ItemListingColumnBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> withComponentColumn(
 				ValueProvider<T, Component> valueProvider) {
 			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
-			return new DefaultItemListingColumnBuilder<>(builder.getInstance().addComponentColumnProperty(),
-					builder.getInstance(), this);
+			final String columnId = builder.getInstance().addColumnProperty();
+			builder.getInstance().getColumnConfiguration(columnId).setRenderer(new ComponentRenderer<>(valueProvider));
+			return new DefaultItemListingColumnBuilder<>(columnId, builder.getInstance(), this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
+		 * .ValueProvider)
+		 */
+		@Override
+		public <X> ItemListingColumnBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> withColumn(
+				ValueProvider<T, X> valueProvider) {
+			ObjectUtils.argumentNotNull(valueProvider, "ValueProvider must be not null");
+			final String columnId = builder.getInstance().addColumnProperty();
+			builder.getInstance().getColumnConfiguration(columnId)
+					.setValueProvider(new ValueProviderAdapter<>(valueProvider));
+			return new DefaultItemListingColumnBuilder<>(columnId, builder.getInstance(), this);
 		}
 
 		/*
@@ -1379,6 +1413,24 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public BeanListing<T> build() {
 			return builder.build();
+		}
+
+	}
+
+	static class ValueProviderAdapter<T, V> implements ValueProvider<T, String> {
+
+		private static final long serialVersionUID = -3231386190085166260L;
+
+		private final ValueProvider<T, V> provider;
+
+		public ValueProviderAdapter(ValueProvider<T, V> provider) {
+			super();
+			this.provider = provider;
+		}
+
+		@Override
+		public String apply(T source) {
+			return StringValuePresenter.getDefault().present(provider.apply(source));
 		}
 
 	}

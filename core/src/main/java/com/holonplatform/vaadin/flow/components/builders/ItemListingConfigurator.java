@@ -105,6 +105,16 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C displayAfter(P property, P afterProperty);
 
 	/**
+	 * Add a <em>virtual</em> column which contents will be rendered using given <code>valueProvider</code>.
+	 * @param <X> Column value type
+	 * @param valueProvider The value provider to use to provide the column value, using the current row item instance
+	 *        (not null)
+	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
+	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 */
+	<X> ItemListingColumnBuilder<T, P, L, C> withColumn(ValueProvider<T, X> valueProvider);
+
+	/**
 	 * Add a column which contents will be rendered as a {@link Component} using given <code>valueProvider</code>.
 	 * @param valueProvider The value provider to use to provide the column {@link Component} using the current row item
 	 *        instance (not null)
