@@ -92,6 +92,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDatastore.j
 <2> Item conversion function: from the `PropertyBox` type object to the `MyItem` item type
 <3> Filter conversion function: from a `String` type filter to a `QueryFilter` type
 
+[[DatastoreQueryConfiguration]]
 ==== `Datastore` Query configuration
 
 The queries performed by the `Datastore` to fetch the data from backend can be configured using the `DatastoreDataProvider` *builder API*.
@@ -641,7 +642,118 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <2> Build a `BeanListing` using the `Components` API
 <3> Just like any `HasComponent` component type, the `getComponent()` method should be used to obtain the actual listing Component
 
+[[ItemListingDataSource]]
+==== Item listing data source
 
+To obtain the item set to display, an item listing needs a _data source_ to be configured. This can be achieved either using the `items(...)` or the `datasource(...)` builder methods, to provide a static set of items or a backend data connection respectively.
+
+*1. Using a static set of items:*
+
+The item listing item set can be provided at listing costruction time, using the `items(...)` or `addItem(...)` builder methods. The provided item instances must be of the same type of the listing item type.
+
+The provided item will be displayed in the same order they are provided at construction time.
+
+Example using a `PropertyListing`:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing3,indent=0]
+----
+<1> Set the listing items
+<2> Set the listing items using `addItem(...)`
+
+Example using a `BeanListing`:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing4,indent=0]
+----
+<1> Set the listing items
+<2> Set the listing items using `addItem(...)`
+
+*2. Using a `DataProvider`:*
+
+A Vaadin `com.vaadin.flow.data.provider.DataProvider` can be used as items data source. This allows to provide a _dynamic_ set of items, for example using a backend service.
+
+The `DataProvider` data type must be consistent with the listing item type.
+
+Example using a `PropertyListing`:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing5,indent=0]
+----
+<1> Obtain a `DataProvider` using the `PropertyBox` data type
+<2> Set the data provider as listing data source
+
+Example using a `BeanListing`:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing6,indent=0]
+----
+<1> Obtain a `DataProvider` using the `MyBean` data type
+<2> Set the data provider as listing data source
+
+When a `DataProvider` is used as data source, the `refresh()` and `refreshItem(T item)` can be used to refresh the listing item set:
+
+* The `refresh` method can be used to refresh the whole item set. In most cases, the data provider configured as data source will execute again a query to obtain the data from the backend.
+
+* The `refreshItem` method can be used to refresh a single item, providing an updated instance to be included in the listing item set, replacing the previous one.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing7,indent=0]
+----
+<1> Create a listing and use a data provider as data source
+<2> Refresh all the listing items
+<3> Refresh a specific item
+
+[[ItemListingDatastoreDataSource]]
+==== Using a `Datastore` as item listing data source
+
+The Holon Platform link:holon-core.html#Datastore[Datastore API^] can be used to implement a listing data source, and maybe it is the most straight and easy way to connect a _property model_ based listing to a backend data source.
+
+This first way to use a `Datastore` as listing data source is to use the `DataProvider` adapter, available through the link:{apidir}/com/holonplatform/vaadin/flow/data/DatastoreDataProvider.html[DatastoreDataProvider^] API.
+
+See the <<DatastoreIntegration>> section to learn how to create and configure a `Datastore` based `DataProvider`.
+
+When a `Datastore` is used, a `DataTarget` definition is required to declare the data model _entity_ to use as items data source (for example a RDBMS table name, or a collection name in a document based database).
+
+Supposing to use the following `DataTarget` definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=target,indent=0]
+----
+
+A `PropertyListing` data source can be declared as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing8,indent=0]
+----
+<1> Create a `PropertyListing` using the `SUBJECT` property set
+<2> Use the `DatastoreDataProvider` API to create a data provider which uses the provided `Datastore` and `DataTarget` to perform backend data queries
+
+But the most straight and easy way to use a `Datastore` as listing data source is to rely on the *listing builder methods* available for this purpose. Furthermore, the builder methods allow to avoid to specify the query projection *property set* again, using the listing property set by default.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing9,indent=0]
+----
+<1> Create a `PropertyListing` using the `SUBJECT` property set
+<2> Directly use the `dataSource` builder method to create a data provider which uses the provided `Datastore` and `DataTarget` to perform backend data queries. In this case, there is no need to specify the `SUBJECT` property set, since the listing property set is used as query projection
+
+The `dataSource` builder method turns the root listing builder in a Datastore-aware builder, making available a set of additional methods which can be used to configure the `Datastore` based data provider, for example to *add query filters and sorts*. The `Datastore` based data provider configuration methods corresponds to the ones provided by the `DatastoreDataProvider` API. See <<DatastoreQueryConfiguration>> for details.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing10,indent=0]
+----
+<1> Set the listing data source using a `Datastore` and providing the data target to use
+<2> Configure the `Datastore` data provider adding a query filter
+<3> Configure the `Datastore` data provider adding a query sort
 
 [[View]]
 === View components and forms
