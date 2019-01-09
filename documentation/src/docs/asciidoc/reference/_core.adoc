@@ -1187,11 +1187,6 @@ TBD
 
 TBD
 
-[[PropertyRenderers]]
-=== Property renderers for UI components
-
-TBD
-
 [[VaadinSessionScope]]
 == Vaadin session scope
 
@@ -1201,7 +1196,3 @@ TBD
 === Device information
 
 TBD
-
-
-
-
