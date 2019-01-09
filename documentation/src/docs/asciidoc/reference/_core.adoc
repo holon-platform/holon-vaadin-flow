@@ -1104,6 +1104,79 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <1> Add a new `PropertyRenderer` to the default registry to render the `NAME` property using the provided _stringArea_ type `Input` component.
 <2> Any item listing which includes the `NAME` property will use the registered renderer to obtain the `Input` component to use as the `NAME` property/column editor
 
+===== Data validation
+
+To validate the user input when a listing row is in edit mode, the standard Holon link:holon-core.html#Validator[Validator^] API can be used.
+
+When the editor _save_ action is performed (using the `saveEditingItem()` item listing API method), all the registered validators are invoked and the save operation is interrupted if one ore more validators fails, notifying the validation errors to the user.
+
+*1. Property level validators:*
+
+One or more validators can be bound to an item property to perform the property value validation. The property value validation is performed when the user leaves an editor component and when the editor _save_ action in invoked.
+
+Any validator bound to a property at property definition time are *automatically inherited* as item property value validators.
+
+New validators can be added to an item property using the `withValidator` item listing builder method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing26,indent=0]
+----
+<1> The _notBlank_ validator is added to the `NAME` property at definition time, so it will be inherited from the item listing editor validation
+<2> A _max_ validator is added to the `NAME` property to ensure the String value is maximum 10 characters long
+
+*2. Row level validators:*
+
+One or more row level validators can be added to an item listing using the `withValidator` builder method. The row level validators are invoked when the editor _save_ action is performed, and the current item state s provided to validators to perform the required checks.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing27,indent=0]
+----
+<1> Add a row level validator
+
+===== Validation status handler
+
+By default, the validation errors originated by the registered validators are notified to the user in the following way:
+
+* For property level validators, if the editor component supports error messages notification (using the Vaadin HasValidation `interface`), the validation errors are setted as component errors.
+* For row level validators, a Dialog is used to notify the validation errors.
+
+The validation status errors notification can be customized using the link:{apidir}/com/holonplatform/vaadin/flow/components/ValidationStatusHandler.html[ValidationStatusHandler^] interface, both at property and row level.
+
+The `ValidationStatusHandler` validation event provides the validation status (valid, invalid or unresolved) and the current validation errors, if any. 
+
+To customize both the *property level* and the *row level* validation status notification, the `validationStatusHandler` builder method can be used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing28,indent=0]
+----
+<1> Set a custom row level validation status handler
+<2> Set a custom property level validation status handler for the `NAME` property
+
+Furthermore, the link:{apidir}/com/holonplatform/vaadin/flow/components/GroupValidationStatusHandler.html[GroupValidationStatusHandler^] interface can be used to override all the validation status notification, customizing both the property level and the row level validation status notification using a single handler.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing29,indent=0]
+----
+<1> Set the `GroupValidationStatusHandler` for the row editor
+<2> Get the row-level validation status
+<3> Get the single editor components validation status
+<4> Get the row-level validation errors
+<5> Get the single editor components validation errors
+
+===== Listening to editor components value change
+
+When a listing row is in edit mode, one ore more `ValueChangeListener` can be added to the editor input components to listen to value change, using the `withValueChangeListener` builder method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing30,indent=0]
+----
+<1> Add a value change listener for the `NAME` property
+
 [[View]]
 === View components and forms
 

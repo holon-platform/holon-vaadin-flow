@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.examples;
 import java.util.Optional;
 import java.util.Set;
 
+import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.NumericProperty;
@@ -423,6 +424,59 @@ public class ExampleListing {
 
 		PropertyListing.builder(SUBJECT).editable().build(); // <2>
 		// end::listing25[]
+	}
+
+	public void listing26() {
+		// tag::listing26[]
+		final StringProperty NAME = StringProperty.create("name").withValidator(Validator.notBlank()); // <1>
+
+		PropertyListing.builder(SUBJECT) //
+				.withValidator(NAME, Validator.max(10)) // <2>
+				.build();
+		// end::listing26[]
+	}
+
+	public void listing27() {
+		// tag::listing27[]
+		PropertyListing.builder(SUBJECT) //
+				.withValidator(Validator.create(item -> item.getValue(ID) != null, "Id value must be not null")) // <1>
+				.build();
+		// end::listing27[]
+	}
+
+	public void listing28() {
+		// tag::listing28[]
+		PropertyListing.builder(SUBJECT) //
+				.validationStatusHandler(event -> { // <1>
+					if (event.isInvalid()) {
+						Notification.show("Validation falied: " + event.getErrorMessage());
+					}
+				}).validationStatusHandler(NAME, event -> { // <2>
+					/* omitted */
+				}).build();
+		// end::listing28[]
+	}
+
+	public void listing29() {
+		// tag::listing29[]
+		PropertyListing.builder(SUBJECT) //
+				.groupValidationStatusHandler(event -> { // <1>
+					event.getGroupStatus(); // <2>
+					event.getInputsValidationStatus(); // <3>
+					event.getGroupErrorMessages(); // <4>
+					event.getInputsValidationStatus().forEach(s -> s.getErrorMessages()); // <5>
+				}).build();
+		// end::listing29[]
+	}
+
+	public void listing30() {
+		// tag::listing30[]
+		PropertyListing.builder(SUBJECT) //
+				.withValueChangeListener(NAME, event -> { // <1>
+					event.getOldValue();
+					event.getValue();
+				}).build();
+		// end::listing30[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
