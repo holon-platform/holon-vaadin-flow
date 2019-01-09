@@ -280,6 +280,45 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[t
 <2> Put the `LocalizationContext` instance as a Vaadin Session attribute
 <3> Create a `I18NProvider` instance which uses the current `LocalizationContext`
 
+[[HasComponent]]
+=== The `HasComponent` interface
+
+Many of the additional UI components provided by the Holon Platform Vaadin Flow module extends the link:{apidir}/com/holonplatform/vaadin/flow/components/HasComponent.html[HasComponent^] interface to make available the actual Vaadin `com.vaadin.flow.component.Component` which can be used in the application UI. 
+
+The `getComponent()` method should be used to obtain the actual `Component`, for example to add it to a layout.
+
+This because all the Holon UI components are represented using an _interface_, while the Vaadin `Component` object is a _class_. For this reason, the UI component interface cannot directly extend a class and the actual Vaadin `Component` is thus provided through the `getComponent()` method.
+
+Example for an `Input` type component:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=hascomponent,indent=0]
+----
+<1> Create a String type `Input`
+<2> Use the `getComponent()` method to add the actual input component to a layout
+
+All the Holon UI components interfaces are located in the `com.holonplatform.vaadin.flow.components` package.
+
+Furthermore, the `HasComponent` API provides methods to check if the actual component supports a set of features and to obtain the appropriate interface which allow to manage a specific feature. 
+
+Some of the component features which can be checked and accessed are:
+
+* _Enabled mode_: using `hasEnabled()`.
+* _Size_: using `hasSize()`.
+* _Style_: using `hasStyle()`.
+* _Label_: using `hasLabel()`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.java[tag=hascomponent2,indent=0]
+----
+<1> Create a String type `Input`
+<2> Check if the component supports the enabled mode and if so set it to `false`
+<3> Check if the component supports size and if so set it to full
+<3> Check if the component supports style and if so add a CSS style class name
+<4> Check if the component supports a label and if so set it to `My label`
+
 [[Components]]
 === Component builders and providers
 

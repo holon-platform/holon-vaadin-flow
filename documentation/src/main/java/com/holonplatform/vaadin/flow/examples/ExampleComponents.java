@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.examples;
 
 import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -154,6 +155,26 @@ public class ExampleComponents {
 
 		Components.configure(vl).withoutSpacing().add(myComponent); // <2>
 		// end::configurators[]
+	}
+
+	public void hascomponent() {
+		// tag::hascomponent[]
+		Input<String> input = Input.string().build(); // <1>
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.add(input.getComponent()); // <2>
+		// end::hascomponent[]
+	}
+
+	public void hascomponent2() {
+		// tag::hascomponent2[]
+		Input<String> input = Input.string().build(); // <1>
+
+		input.hasEnabled().ifPresent(e -> e.setEnabled(false)); // <2>
+		input.hasSize().ifPresent(s -> s.setSizeFull()); // <3>
+		input.hasStyle().ifPresent(s -> s.addClassName("my-style")); // <4>
+		input.hasLabel().ifPresent(l -> l.setLabel("My label")); // <5>
+		// end::hascomponent2[]
 	}
 
 }
