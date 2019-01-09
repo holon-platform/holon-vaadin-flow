@@ -916,7 +916,28 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 [[ItemListingContextMenu]]
 ==== Add a context menu
 
-TBD
+The item listing supports a *context menu*, which can be added to the listing and will open by default when a _right click_ or a _long tap_ is performed by the user on a listing row.
+
+The item listing context menu builder provides a set of methods to:
+
+* Add context menu item using a *text*, with message localization support.
+* Add context menu item using a *Component*.
+* Set the menu item *click handler*, providing an event form which to obtain the *listing item instance* of the row on which to context menu was opened and a reference to the item listing itself.
+* Configure the context menu items.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing18,indent=0]
+----
+<1> Create a context menu for the listing: a context menu builder is returned to configure the menu items
+<2> Add a menu item with given text
+<3> Configure the menu item adding the click handler
+<4> The click event provides the listing item instance of the row on which to context menu was opened
+<5> The parent item listing can be obtained from the click event
+<6> Add the context menu item to the context menu
+<7> Add another context menu item, directly providing a localizable text and the item click handler
+<8> Add a `Component` type context menu item, directly providing a `Button` and the item click handler
+<9> Add the configured context menu to the item listing
 
 [[ItemListingRowDetails]]
 ==== Manage row details components

@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.PropertyListing;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -275,6 +276,25 @@ public class ExampleListing {
 
 		String value = ID.present(1L); // <2>
 		// end::listing17b[]
+	}
+
+	public void listing18() {
+		// tag::listing18[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.contextMenu() // <1>
+				.withItem("Context menu item 1") // <2>
+				.withClickListener(e -> { // <3>
+					PropertyBox rowItem = e.getItem(); // <4>
+					e.getItemListing(); // <5>
+					Notification.show("Context menu item clicked on row id " + rowItem.getValue(ID));
+				}).add() // <6>
+				.withItem("Context menu item 2", "item.message.code", e -> {
+					/* do something */}) // <7>
+				.withItem(new Button("Context menu item 3"), e -> {
+					/* do something */}) // <8>
+				.add() // <9>
+				.build();
+		// end::listing18[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
