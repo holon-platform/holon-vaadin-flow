@@ -773,6 +773,24 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <5> Set whether the listing's height is defined by the number of its rows
 <6> Set whether the vertical scrolling is enabled
 
+[[ItemClickListener]]
+==== Listen to listing row clicks
+
+One ore more *item click listener* can be added to the listing to handle user clicks on the listing rows. The click event provides the clicked item instance and a reference to the listing on which the click occurred. 
+
+Furthermore, a set of additional click information are provided, such as the click count, the modifier keys, the screen coordinates and so on.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing11b,indent=0]
+----
+<1> Add an item click listener
+<2> Get the item instance on which the click occurred
+<3> Get the item listing reference
+<4> Get the consecutive clicks count
+<5> Get the mouse button, if available
+<6> Check whether the CTRL key was down when the click occurred
+
 [[ItemListingColumns]]
 ==== Configure the item listing columns
 
@@ -942,7 +960,33 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 [[ItemListingRowDetails]]
 ==== Manage row details components
 
-TBD
+The item listing supports *row details* components, which can be opened and closed under each listing row. 
+
+To enable the item row details, a function which provides the details content for each row has to be provided. For each row, the *listing row item* instance is provided as function argument.
+
+The item details contents can be rendered in two ways:
+
+* *As a text:* using the `itemDetailsText` builder method.
+* *As a `Component`:* using the `itemDetailsComponent` builder method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing19,indent=0]
+----
+<1> Set the item details renderer using text
+<2> Set the item details renderer using a `Component`
+
+By default, the item details are shown/hidden for each listing row *when the user clicks on a row*. This behaviour can be disabled using the `itemDetailsVisibleOnClick` builder method.
+
+In this case, the item details content should be opened or closed programmatically. For this purpose, the `setItemDetailsVisible` method of the item listing API can be use to show or hide the item details for a specific item.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing20,indent=0]
+----
+<1> Set the item details renderer using text
+<2> Disable the item details display at user click
+<3> Add an item click listener to handle the item details display, using the `setItemDetailsVisible` method
 
 [[ItemListingHeaderFooter]]
 ==== Header and footer configuration

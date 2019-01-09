@@ -194,6 +194,20 @@ public class ExampleListing {
 		// end::listing11[]
 	}
 
+	public void listing11b() {
+		// tag::listing11b[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.withItemClickListener(event -> { // <1>
+					PropertyBox clickedItem = event.getItem(); // <2>
+					PropertyListing source = event.getSource(); // <3>
+					event.getClickCount(); // <4>
+					event.getButton(); // <5>
+					event.isCtrlKey(); // <6>
+					/* other getters omitted */
+				}).build();
+		// end::listing11b[]
+	}
+
 	public void listing12() {
 		// tag::listing12[]
 		PropertyListing listing = PropertyListing.builder(SUBJECT) //
@@ -295,6 +309,26 @@ public class ExampleListing {
 				.add() // <9>
 				.build();
 		// end::listing18[]
+	}
+
+	public void listing19() {
+		// tag::listing19[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.itemDetailsText(item -> "Detail of: " + item.getValue(ID)) // <1>
+				.itemDetailsComponent(item -> new Button(item.getValue(NAME))) // <2>
+				.build();
+		// end::listing19[]
+	}
+
+	public void listing20() {
+		// tag::listing20[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.itemDetailsText(item -> "Detail of: " + item.getValue(ID)) // <1>
+				.itemDetailsVisibleOnClick(false) // <2>
+				.withItemClickListener(e -> { // <3>
+					e.getSource().setItemDetailsVisible(e.getItem(), true);
+				}).build();
+		// end::listing20[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
