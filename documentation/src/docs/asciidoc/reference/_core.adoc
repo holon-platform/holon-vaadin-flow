@@ -1508,6 +1508,8 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <8> Create an `Input` for `Date` type values
 <9> Create an `Input` for the given value type, if a suitable implementation is available
 
+NOTE: The `Components.input` API provides the same methods to obtain the input builders.
+
 A `Input` instance can be used as _value holder_ to handle the input value (see <<ValueHolder>>).
 
 [source, java]
@@ -1595,7 +1597,223 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 
 The link:{apidir}/com/holonplatform/vaadin/flow/components/SingleSelect.html[SingleSelect^] and link:{apidir}/com/holonplatform/vaadin/flow/components/MultiSelect.html[MultiSelect^] APIs are `Input` extensions which represent _selectable_ input components, i.e. input components which provide a *set of items* from which the input value can be selected, either supporting *single or multiple* selection values.
 
-TBD
+The `Input` API and the corresponding Components.input API provides methods to create `SingleSelect` and `MultiSelect` type input components, providing the *selectable value type*.
+
+For `SingleSelect` input types, the input component can be rendered either with the *options* mode (using a `RadioButtonGroup`) or the *select* mode (using a `ComboBox`).
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input9,indent=0]
+----
+<1> Create a `String` type `SingleSelect` input
+<2> Create a `String` type `SingleSelect` input using the _options_ rendering mode
+<3> Create a `String` type `MultiSelect` input
+
+The select input components can be used just like any other _value holder_ type component to set and get the selected item/s (see <<ValueHolder>>). The `MultiSelect` type input, since it allows multiple items selection, uses a `java.util.Set` to handle the input value.
+
+NOTE: The `Components.input` API provides the same methods to obtain the select type input builders.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input10,indent=0]
+----
+<1> Set the input value, i.e. select the given value
+<2> Get the input (selected) value
+<3> Clear the input value (deselect any value)
+<4> Check whether the input is empyt (no value is selected)
+<5> Set the input values, i.e. select the given values, using a `Set`
+<6> Get the input (selected) values as a `Set`
+
+Besides the `Input` API, the selectable inputs implements the link:{apidir}/com/holonplatform/vaadin/flow/components/Selectable.html[Selectable^] API, which allows to manage and obtain the selected items.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input11,indent=0]
+----
+<1> Select given value
+<2> Get the selected value
+<3> Deselect any value
+
+[[SelectDataSource]]
+===== Select items data source
+
+A select type `Input`, whether it's a `SingleSelect` or a `MultiSelect`, requires an *item set* to be configured, which represents the source for the selectable values. Only the available items will be used as valid selectable input values.
+
+The builder API provides the `items` and `addItem` methods to provides the selection items set.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input12,indent=0]
+----
+<1> Add a selection item
+<2> Add another selection item
+<3> Set the selection items, replacing any previous item set
+
+A standard Vaadin `DataProvider` can be used as items data source.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input13,indent=0]
+----
+<1> Use a `DataProvider` as items data source
+
+When *the item type does not match the selection value type*, a link:{apidir}/com/holonplatform/vaadin/flow/data/ItemConverter.html[ItemConverter^] con be used to provide the item to selection value and back conversion logic.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input14,indent=0]
+----
+<1> Create a `String` type `SingleSelect` which uses a `MyBean` class as items type, providing a suitable `ItemConverter`
+<2> Convert a `MyBean` type item into a `String` type selection value
+<3> Convert a `String` type selection value into a `MyBean` type item
+
+[[SelectPropertyDataSource]]
+===== Use the `Datastore` API as items data source
+
+When the property model is used to build a select type input, *the selection items are represented using the `PropertyBox` type by default*, and the property which represents the selection value has to be declared a construction time. 
+
+The select input type will match the *selection property type* and the value provided as selection value will be obtained using the selection property definition from the `PropertyBox` type item instances.
+
+For example, given the following property model definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=propertydef,indent=0]
+----
+
+A `SingleSelect` to select the `ID` property can be created as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input15,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property: the select input type will be `Long` like the property type
+<2> Add a `PropertyBox` type selection item
+
+When a property model bound select is used, the most simple and powerful way to provided the selection items is to use a `Datastore` as data source. The `Datastore` API makes easy and straightful to bind the select input to a backend data source.
+
+When a `Datastore` is used, a `DataTarget` definition is required to declare the data model _entity_ to use as items data source (for example a RDBMS table name, or a collection name in a document based database).
+
+A `Datastore` based data source can be configured using a standard DataProvider, through the `DatastoreDataProvider` API: see the <<DatastoreIntegration>> section to learn how to create and configure a `Datastore` based `DataProvider`.
+
+Furthermore, the select input builder APIs provides convenience methods to set and configure a data source using a `Datastore`.
+
+By default, *only the selection property is used as items property set*. To specify a different property set (i.e. a different query projection), the property set must be provided at data source configuration time.
+
+For example, given the following `DataTarget` definition;
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=target,indent=0]
+----
+
+The select of the previous example can be configured as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input16,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property
+<2> Use a `Datastore` as items data source, providing the `DataTarget` to use
+<3> Declare to use the `SUBJECT` property set as items property set (hence as query projection)
+
+The `Datastore` based data source can be configured, for example to *add query filters and sorts*. The configuration methods provided by the builder API corresponds to the ones provided by the `DatastoreDataProvider` API. See <<DatastoreQueryConfiguration>> for details.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input17,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property
+<2> Use a `Datastore` as items data source, providing the `DataTarget` to use
+<3> Add a fixed query filter
+<4> Add a fixed query sort
+<5> Add a `QueryConfigurationProvider` reference to provide dynamic query filters and sorts
+
+[[FilterableSelect]]
+===== Filterable select inputs
+
+When a `SingleSelect` in the *select* mode is used, since it is rendered using a `ComboBox` component, the selection items to select can be _suggested_ by the input component, *using the user input to filter the items set*.
+
+When a standard `DataProvider` is used, the `filteringBy*` methods can be used to provide the items filtering strategy.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input18,indent=0]
+----
+<1> Create a `String` type `SingleSelect`
+<2> Use a `DataProvider` as items data source
+<3> Set the filtering mode, in this case checking whether the item value starts with the query value
+
+When a `Datastore` based data source is used (see <<SelectPropertyDataSource>>), a function can be configured to transform the text typed by the user into the `QueryFilter` to add to the Datastore query to filter the returned items.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input19,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property
+<2> Use a `Datastore` as items data source, providing the `DataTarget` to use 
+<3> Provide the function to convert the user typed text value to a `QueryFilter`
+<4> Use the `SUBJECT` property set as items property set
+
+[[EnumSelect]]
+===== Use select inputs with enumerations
+
+The `Input` API and the `Components.input` API provides convenience methods to create *enumeration* based select inputs, automatically adding all the available enumeration values to the selection items set.
+
+A `enum` type select can be created both as a `SingleSelect` and as `MultiSelect`.
+
+For example, given the following `enum` class:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=enum1,indent=0]
+----
+
+A select type input for the enumeration values can be created as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input20,indent=0]
+----
+<1> Create a `SingleSelect` for the `MyEnum` enumeration
+<2> Create a `SingleSelect` for the `MyEnum` enumeration using the _options_ rendering mode
+<3> Create a `MultiSelect` for the `MyEnum` enumeration
+
+The link:{coreapidir}/com/holonplatform/core/i18n/Caption.html[Caption^] annotation can be used on the enumeration class values to configure the select items _caption_, with localizable messages support.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[tag=enum2,indent=0]
+----
+
+See the next section to learn how to configure the select items caption using the select input builder API.
+
+[[SelectionItemsCaption]]
+===== Selection items caption
+
+By default, the selectable items are displayed in UI *using the `toString()` representation of the item itself*.
+
+To change this behaviour, the item _captions_ can be configured either setting them explicitly using the builder API (through the `itemCaption` method), or using a `ItemCaptionGenerator` function to provide the caption for each selection item.
+
+Example using explicit item captions:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input21,indent=0]
+----
+<1> Create a `Integer` type `SingleSelect`
+<2> Set the `1` item caption
+<3> Set the `2` item caption using a localizable message
+
+Example using a `ItemCaptionGenerator`:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input22,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` selection property
+<2> Use `SUBJECT` as items property set, which includes the `NAME` property
+<3> Set the `ItemCaptionGenerator`: the `NAME` property value is used as item caption
 
 [[VaadinSessionScope]]
 == Vaadin session scope

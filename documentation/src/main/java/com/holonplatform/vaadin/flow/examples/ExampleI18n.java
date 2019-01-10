@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.examples;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.i18n.MessageProvider;
@@ -87,5 +88,20 @@ public class ExampleI18n {
 		I18NProvider i18nProvider = LocalizationContextI18NProvider.create(); // <3>
 		// end::i18nprovider2[]
 	}
+
+	// tag::enum2[]
+	enum MyEnum {
+
+		@Caption(value = "The first", messageCode = "first.message.code")
+		FIRST,
+
+		@Caption(value = "The second", messageCode = "second.message.code")
+		SECOND,
+
+		@Caption(value = "The third", messageCode = "third.message.code")
+		THIRD;
+
+	}
+	// end::enum2[]
 
 }
