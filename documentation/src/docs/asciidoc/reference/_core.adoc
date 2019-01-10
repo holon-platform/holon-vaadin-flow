@@ -1171,7 +1171,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 
 By default, the validation errors originated by the registered validators are notified to the user in the following way:
 
-* For property level validators, if the editor component supports error messages notification (using the Vaadin HasValidation `interface`), the validation errors are setted as component errors.
+* For property level validators, if the editor component supports error messages notification (using the Vaadin `HasValidation` interface), the validation errors are setted as component errors.
 * For row level validators, a Dialog is used to notify the validation errors.
 
 The validation status errors notification can be customized using the link:{apidir}/com/holonplatform/vaadin/flow/components/ValidationStatusHandler.html[ValidationStatusHandler^] interface, both at property and row level.
@@ -1864,6 +1864,203 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <1> Set the `ValidationStatusHandler` to use for the `ValidatableInput`
 
 TIP: the link:{apidir}/com/holonplatform/vaadin/flow/components/Validatable.html[Validatable^] API provides a set of `adapt` methods to use a Vaadin `com.vaadin.flow.data.binder.Validator` as a Holon Platform `Validator`.
+
+[[PropertyInputGroup]]
+==== Organize `Input` components in groups and forms
+
+A set of `Input` components can be grouped and organized using a link:{apidir}/com/holonplatform/vaadin/flow/components/PropertyInputGroup.html[PropertyInputGroup^], using the Holon Platform link:holon-core.html#Property[Property model^] to bind each `Input` to a property definition.
+
+The property definitions will be used as *references* to get and configure the `Input` instances managed by the group and to *get and set the group values* using a `PropertyBox` type.
+
+The `PropertyInputGroup` API provides method to inspect the available properties and the `Input` instances bound to each property. Through the `ValueHolder` API, the group value can be setted and managed (see <<ValueHolder>>).
+
+When a `PropertyBox` type value is setted for the group, each `Input` value bound to a property is setted according to the property value provided by the `PropertyBox` instance, if available.
+
+When a the group value is obtained using the `getValue()` method, the current `Input` values are reflected into the `PropertyBox` instance, using the property to which each `Input` is bound.
+
+To create a `PropertyInputGroup`, the *property set* to use must be provided at build time. Both the `PropertyInputGroup` API and the `Components` API (through the `Components.input` sub interface) can be used to obtain a `PropertyInputGroup` builder.
+
+By default, the property rendering architecture is used to *automatically generate* the `Input` components for each property of the group property set (see <<InputPropertyRenderer>>).
+
+For example, given the following property model definition:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=propertydef,indent=0]
+----
+
+A `PropertyInputGroup` can be created in the following way:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input27,indent=0]
+----
+<1> Create a `PropertyInputGroup` using the `SUBJECT` property set. The `Input` for each property will be automatically generated using the property renderers
+<2> Create a `PropertyInputGroup` from the `Components` API
+<3> Get the group property set 
+<4> Get the group `Input` elements
+<5> Get the group bindings, i.e. the `Input` bound to each property
+<6> Get the `Input` bound to the `NAME` property, if available
+<7> Require the `Input` bound to the `NAME` property
+<8> Set the group value using a `PropertyBox`: each property value available from the `PropertyBox` instance will be setted into the corresponding `Input`, if available
+<9> Get the current group value: the current `Input` values (which in the meanwhile could have been changed by the user) are updated into the `PropertyBox` instance, according to the property to which each `Input` is bound
+<10> Clear the group value
+<11> Check whether the group is empty, i.e. has no value
+
+To customize this behaviour and provide the `Input` component to use for one or more property, the `PropertyInputGroup` builder API provides a set of `bind` methods, which can be use to explicitly bind a `Input` instance to a property. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input28,indent=0]
+----
+<1> Create a `PropertyInputGroup` using the `SUBJECT` property set
+<2> Bind a `Input` instance to the `NAME` property
+<3> Bind a `Input` instance to the `NAME` property using a function
+
+===== Input group configuration
+
+The `PropertyInputGroup` builder API provides method to configure the group, allowing to:
+
+* Hide one or more property: the hidden property won't be bound to a `Input`
+* Add a _post processor_ to configure the `Input` instances just before the binding occurs
+* Provide a *default value* for one or more `Input` components
+* Add group value change listeners
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input29,indent=0]
+----
+<1> Create a `PropertyInputGroup` using the `SUBJECT` property set
+<2> Set the `ID` property as hidden
+<3> Set the default value supplier for the `NAME` property
+<4> Add a binding post processor
+<5> Add a value change listener
+
+[[PropertyInputForm]]
+===== Using a `PropertyInputForm` to make the group a UI component
+
+The `PropertyInputForm` API handles a group of `Input` components bound to a property set, but it is not a UI component itself. The link:{apidir}/com/holonplatform/vaadin/flow/components/PropertyInputForm.html[PropertyInputForm^] API can be used to provide a UI component for the group and use it as a _form_ in application UI.
+
+A `PropertyInputForm` extends the `HasComponent` interface to provide the actual group UI component  (see <<HasComponent>>) and the link:{apidir}/com/holonplatform/vaadin/flow/components/Composable.html[Composable^] API to declare the UI component to use as group elements container and the strategy to apply to organize the `Input` group elements into the group content area.
+
+The `Composer` API can be used to implement the composition logic, i.e. to add the available `ViewComponent` elements to the UI component declared as group content. The `Composer` function provides:
+
+* The group UI content element.
+* A reference to the group API to obtain the `Input` elements (and the corresponding property bindings) to add to the group UI content element.
+
+A default `Composer` for a `com.vaadin.flow.component.HasComponents` type UI element can be obtain using the `componentContainerComposer()` method of the `Composable` API. This composer adds the group elements sequentially to the `HasComponents` group content element, in the order they are provided from the group property set.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input30,indent=0]
+----
+<1> Create a `PropertyInputForm` using the `SUBJECT` property set, a `VerticalLayout` as group UI element
+<2> The default component container composer is used
+<3> The `getComponent()` method can be used to add the `PropertyInputForm` to a layout
+<4> Set a form value
+
+A set of convenience builder methods are available for the base Vaadin layouts:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input31,indent=0]
+----
+<1> Create a `PropertyInputForm` using the `SUBJECT` property set and a `VerticalLayout` as group UI element
+<2> Create a `PropertyInputForm` using the `SUBJECT` property set and a `HorizontalLayout` as group UI element
+<3> Create a `PropertyInputForm` using the `SUBJECT` property set and a `FormLayout` as group UI element
+
+A custom `Composer` can be used to control and customize the group element composition strategy:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input32,indent=0]
+----
+<1> Provide a custom composition logic
+
+===== Form configuration
+
+A `PropertyInputForm` can be configured using the builder API in order to:
+
+* Hide one or more property: the hidden property won't be bound to a `Input`
+* Add an _initializer_ to configure the form UI content
+* Add a _post processor_ to configure the `Input` instances just before the binding occurs
+* Add form value change listeners
+* Configure the property _captions_, i.e. to set the label to use for the `Input` bound to a property
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input33,indent=0]
+----
+<1> Create a `PropertyInputForm` using the `SUBJECT` property set and a `FormLayout`
+<2> Set the `ID` property as hidden
+<3> Set the form content initializer
+<4> Set the binding post processor
+<5> Add a value change listener 
+<6> Hide the `ID` property caption
+<7> Set the localizable caption for the `NAME` property
+
+===== Input group and form validation
+
+The `PropertyInputGroup` and the `PropertyInputForm` APIs provides `Input` validation support using the standard Holon Platform link:holon-core.html#Validator[Validator^] API. The value validation is supported:
+
+* At *property level*, to validate the single `Input` value for each property.
+* At *group level*, to validate the overall `PropertyBox` type group value.
+
+The validators can be added using the `PropertyInputGroup` and the `PropertyInputForm` builder APIs.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input34,indent=0]
+----
+<1> Create a `PropertyInputForm` using the `SUBJECT` property set
+<2> Add a validator for the `Input` component bound to the `NAME` property
+<3> Add a group value validator
+<4> Set whether to validate the `Input` values when each `Input` value changes
+
+The `PropertyInputGroup` and the `PropertyInputForm` APIs provides a set of methods to perform the group/form validation, a part of which is inherited from the link:{apidir}/com/holonplatform/vaadin/flow/components/Validatable.html[Validatable^] API.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input35,indent=0]
+----
+<1> Check whether the form is valid
+<2> Validate the form, firing both property level and group level validators
+<3> Get the form value, returning an empty `Optional` if validation fails
+<4> By default, when the form value is requested, the form validation is performed
+<5> Get the form value skipping validation
+
+===== Input groups validation status handler
+
+By default, for the `PropertyInputGroup` and the `PropertyInputForm` components, the validation errors originated by the registered validators are notified to the user in the following way:
+
+* For *property level* validators, if the `Input` component supports error messages notification (using the Vaadin `HasValidation` interface), the validation errors are setted as component errors.
+
+* For *group level* validators, a `Dialog` is used to notify the validation errors.
+
+The validation status errors notification can be customized using the link:{apidir}/com/holonplatform/vaadin/flow/components/ValidationStatusHandler.html[ValidationStatusHandler^] interface, both at property and group level.
+
+The `ValidationStatusHandler` validation event provides the validation status (valid, invalid or unresolved) and the current validation errors, if any. 
+
+To customize both the *property level* and the *group level* validation status notification, the `validationStatusHandler` builder method can be used.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input36,indent=0]
+----
+<1> Set a custom group level validation status handler
+<2> Set a custom property level validation status handler for the `NAME` property
+
+Furthermore, the link:{apidir}/com/holonplatform/vaadin/flow/components/GroupValidationStatusHandler.html[GroupValidationStatusHandler^] interface can be used to override all the validation status notification, customizing both the property level and the group level validation status notification using a single handler.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input37,indent=0]
+----
+<1> Set the `GroupValidationStatusHandler` for the form
+<2> Get the group level validation status
+<3> Get the single `Input` validation status
+<4> Get the group level validation errors
+<5> Get the single `Input` validation errors
 
 [[VaadinSessionScope]]
 == Vaadin session scope

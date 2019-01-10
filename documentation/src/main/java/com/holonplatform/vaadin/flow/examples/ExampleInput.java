@@ -19,10 +19,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
@@ -31,6 +33,7 @@ import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.BooleanProperty;
 import com.holonplatform.core.property.NumericProperty;
+import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertySet;
@@ -38,15 +41,20 @@ import com.holonplatform.core.property.PropertyValueConverter;
 import com.holonplatform.core.property.StringProperty;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.vaadin.flow.components.Components;
+import com.holonplatform.vaadin.flow.components.Composable;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
+import com.holonplatform.vaadin.flow.components.PropertyInputForm;
+import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.Autocapitalize;
 import com.vaadin.flow.component.textfield.TextField;
@@ -442,6 +450,167 @@ public class ExampleInput {
 					/* notify the validation errors */
 				}).build();
 		// end::input26[]
+	}
+
+	public void input27() {
+		// tag::input27[]
+		PropertyInputGroup group = PropertyInputGroup.builder(SUBJECT).build(); // <1>
+		group = Components.input.propertyGroup(SUBJECT).build(); // <2>
+
+		Collection<Property<?>> properties = group.getProperties(); // <3>
+		Stream<Input<?>> components = group.getElements(); // <4>
+		group.getBindings().forEach(binding -> { // <5>
+			Property<?> property = binding.getProperty();
+			Input<?> component = binding.getElement();
+		});
+
+		Optional<Input<?>> element = group.getElement(NAME); // <6>
+		Input<?> component = group.requireElement(NAME); // <7>
+
+		PropertyBox value = PropertyBox.builder(SUBJECT).set(ID, 1L).set(NAME, "One").build();
+
+		group.setValue(value); // <8>
+		value = group.getValue(); // <9>
+
+		group.clear(); // <10>
+		group.isEmpty(); // <11>
+		// end::input27[]
+	}
+
+	public void input28() {
+		// tag::input28[]
+		PropertyInputGroup group = PropertyInputGroup.builder(SUBJECT) // <1>
+				.bind(NAME, Input.string().build()) // <2>
+				.bind(NAME, property -> Input.stringArea().build()) // <3>
+				.build();
+		// end::input28[]
+	}
+
+	public void input29() {
+		// tag::input29[]
+		PropertyInputGroup group = PropertyInputGroup.builder(SUBJECT) // <1>
+				.hidden(ID) // <2>
+				.defaultValue(NAME, () -> "(no name)") // <3>
+				.withPostProcessor((property, component) -> { // <4>
+					/* Inputs configuration */
+					component.hasStyle().ifPresent(s -> s.addClassName("my-style"));
+				}) //
+				.withValueChangeListener(event -> { // <5>
+					/* handle value change */
+					PropertyBox value = event.getValue();
+				}).build();
+		// end::input29[]
+	}
+
+	public void input30() {
+		VerticalLayout myLayout = new VerticalLayout();
+		// tag::input30[]
+		PropertyInputForm form = PropertyInputForm.builder(new VerticalLayout(), SUBJECT) // <1>
+				.composer(Composable.componentContainerComposer()) // <2>
+				.build();
+
+		myLayout.add(form.getComponent()); // <3>
+
+		form.setValue(PropertyBox.builder(SUBJECT).set(ID, 1L).set(NAME, "One").build()); // <4>
+		// end::input30[]
+	}
+
+	public void input31() {
+		// tag::input31[]
+		PropertyInputForm form = PropertyInputForm.verticalLayout(SUBJECT).build(); // <1>
+		form = PropertyInputForm.horizontalLayout(SUBJECT).build(); // <2>
+		form = PropertyInputForm.formLayout(SUBJECT).build(); // <3>
+
+		// Using the Components API:
+		form = Components.input.formVertical(SUBJECT).build();
+		form = Components.input.formHorizontal(SUBJECT).build();
+		form = Components.input.form(SUBJECT).build();
+		// end::input31[]
+	}
+
+	public void input32() {
+		// tag::input32[]
+		PropertyInputForm form = PropertyInputForm.verticalLayout(SUBJECT) //
+				.composer((content, group) -> { // <1>
+					group.getBindings().forEach(binding -> {
+						content.add(binding.getElement().getComponent());
+					});
+				}).build();
+		// end::input32[]
+	}
+
+	public void input33() {
+		// tag::input33[]
+		PropertyInputForm.formLayout(SUBJECT) // <1>
+				.hidden(ID) // <2>
+				.initializer(content -> { // <3>
+					/* content configuration */
+					FormLayout fl = content;
+				}).withPostProcessor((property, component) -> { // <4>
+					/* Inputs configuration */
+					component.hasStyle().ifPresent(s -> s.addClassName("my-style"));
+				}) //
+				.withValueChangeListener(event -> { // <5>
+					/* handle value change */
+					PropertyBox value = event.getValue();
+				}) //
+				.hidePropertyCaption(ID) // <6>
+				.propertyCaption(NAME, "My name", "name.message.code") // <7>
+				.build();
+		// end::input33[]
+	}
+
+	public void input34() {
+		// tag::input34[]
+		PropertyInputForm.formLayout(SUBJECT) // <1>
+				.withValidator(NAME, Validator.max(10)) // <2>
+				.withValidator(propertyBox -> { // <3>
+					/* group value validation */
+				}).validateOnValueChange(true) // <4>
+				.build();
+		// end::input34[]
+	}
+
+	public void input35() {
+		// tag::input35[]
+		PropertyInputForm form = PropertyInputForm.formLayout(SUBJECT).build();
+
+		form.isValid(); // <1>
+		try {
+			form.validate(); // <2>
+		} catch (ValidationException e) {
+			/* value is not valid */
+		}
+
+		Optional<PropertyBox> valueIfValid = form.getValueIfValid(); // <3>
+		PropertyBox value = form.getValue(); // <4>
+		value = form.getValue(false); // <5>
+		// end::input35[]
+	}
+
+	public void input36() {
+		// tag::input36[]
+		PropertyInputForm form = PropertyInputForm.formLayout(SUBJECT) //
+				.validationStatusHandler(event -> { // <1>
+					if (event.isInvalid()) {
+						Notification.show("Validation falied: " + event.getErrorMessage());
+					}
+				}).validationStatusHandler(NAME, event -> { // <2>
+					/* omitted */
+				}).build();
+		// end::input36[]
+	}
+
+	public void input37() {
+		// tag::input37[]
+		PropertyInputForm form = PropertyInputForm.formLayout(SUBJECT) //
+				.groupValidationStatusHandler(event -> { // <1>
+					event.getGroupStatus(); // <2>
+					event.getInputsValidationStatus(); // <3>
+					event.getGroupErrorMessages(); // <4>
+					event.getInputsValidationStatus().forEach(s -> s.getErrorMessages()); // <5>
+				}).build();
+		// end::input37[]
 	}
 
 	private static Datastore getDatastore() {
