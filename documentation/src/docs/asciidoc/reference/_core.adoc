@@ -1323,6 +1323,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewCompone
 <2> Set the property localizable message
 <3> Create `ViewComponent` instance using the property renderer. The property localizable message will be used as `ViewComponent` label.
 
+[[PropertyViewGroup]]
 ==== Organize view components in groups and forms
 
 A set of `ViewComponent` type components can be grouped and organized using a link:{apidir}/com/holonplatform/vaadin/flow/components/PropertyViewGroup.html[PropertyViewGroup^], using the Holon Platform link:holon-core.html#Property[Property model^] to bind each `ViewComponent` to a property definition.
@@ -1387,6 +1388,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewCompone
 <3> Add a binding post processor
 <4> Add a value change listener
 
+[[PropertyViewForm]]
 ===== Using a `PropertyViewForm` to make the group a UI component
 
 The `PropertyViewGroup` API handles a group of view components bound to a property set, but is it not a UI component itself. The link:{apidir}/com/holonplatform/vaadin/flow/components/PropertyViewForm.html[PropertyViewForm^] API can be used to provide a UI component for the group and use it as a _form_ in application UI.
@@ -1451,6 +1453,147 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewCompone
 
 [[Input]]
 === Input components and forms
+
+The link:{apidir}/com/holonplatform/vaadin/flow/components/Input.html[Input^] API can be used to create UI components to handle *user input*, ensuring a consistent data type handling and input format patterns.
+
+The `Input` API extends:
+
+* `ValueHolder`: it handles a typed value. See <<ValueHolder>>.
+* `HasComponent`: it can used as UI component. See <<HasComponent>>.
+
+Furthermore, the `Input` API provides methods to set the UI component in *read only* mode and to display required indicators and validation errors.
+
+A `Input` instance can be created either using the `Input` API builder methods, providing the value type,  or the `Components` API, through the `Components.input` sub interface (see <<Components>>).
+
+The `Input` builder API provides methods to configure the UI component, including methods to set a localizable label for the component and a complete set of configuration methods according to the input value type.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input1,indent=0]
+----
+<1> Get a `String` type `Input` builder
+<2> Set the width to 100%
+<3> Add a CSS style class name
+<4> Set the input label
+<5> Set the input label using a localizable message
+<6> Set the input description
+<7> Set to treat blank values as `null` values. 
+<8> Set the auto-capitalize mode
+<9> Set the max characters count allowed for input
+<10> Set the input placeholder using a localizable message
+<11> Enable auto focus
+<12> Set the prefix component
+<13> Set the input tab index
+<14> Set the input as read only, preventing the user from changing the input value
+<15> Add a blur (focus lost) listener
+<16> Add value change listener
+<17> The previous value
+<18> The changed value
+
+A set of `Input` builders for the most common types are available both form the `Input` API and from the `Components.input` API.
+
+Each `Input` is rendered using a suitable UI component according to the input value type. For example, a `TextField` is used for String type inputs and a `Checkbox` for boolean type inputs.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input2,indent=0]
+----
+<1> Create an `Input` for `String` type values
+<2> Create an `Input` for `String` type values using a _text area_ to render the input component
+<3> Create an `Input` for `Boolean` type values
+<4> Create an `Input` for a numeric type value, a `Double` in this case
+<5> Create an `Input` for `LocalDate` type values
+<6> Create an `Input` for `LocalDateTime` type values
+<7> Create an `Input` for `LocalTime` type values
+<8> Create an `Input` for `Date` type values
+<9> Create an `Input` for the given value type, if a suitable implementation is available
+
+A `Input` instance can be used as _value holder_ to handle the input value (see <<ValueHolder>>).
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input3,indent=0]
+----
+<1> Create a `String` type `Input`
+<2> Add the input component to a layout using the `getComponent()` method
+<3> Set the input value
+<4> Get the input value
+<5> Get the input optional value
+<6> Clear the input value
+<7> Check if the input is empty (i.e. has no value)
+<8> Set the input as read only
+<9> Check whether the input is read only
+<10> Add a value change listener
+
+[[InputPropertyRenderer]]
+==== `Input` property renderer
+
+When the `holon-vaadin-flow` artifact is in classpath, a default `PropertyRenderer` is automatically registered to render a `Property` as an `Input`.
+
+TIP: See the link:holon-core.html#PropertyRenderer[Property renderering^] documentation for details about the property renderers architecture.
+
+So the `Input.class` type can be used to render any property as a `Input`. In this scenario, the property *localizable message* is used if available as `Input` label.
+
+The `Input` API makes available the `create(Property<T> property)` method to directly create an `Input` for a given property. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input4,indent=0]
+----
+<1> Declare a `Integer` type property
+<2> Create a `Input` to handle the `MY_PROPERTY` property value using the `Input` API
+<3> Create a `Input` to handle the `MY_PROPERTY` property value using the property renderer for the `Input` class
+
+The property renderers architecture is used *consistently across the application UI*, so when a renderer is bound to a specific property condition it is used by all the UI components with property rendering support, including input groups/forms (see <<PropertyInputGroup>>) and item listing editors (see <<ItemListingEdit>>).
+
+For example, suppose we want to use a custom `MyInput` class to render the `Input` component for the  `MY_PROPERTY` property definition. A custom property renderer can be created and registered:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input5,indent=0]
+----
+<1> Get the default `PropertyRendererRegistry`
+<2> Register a `InputPropertyRenderer`, bound to the `MY_PROPERTY` property, to provide a `MyInput` instance
+
+From now on, the `Input` component for the `MY_PROPERTY` property definition will be a `MyInput` instance.
+
+[[InputValueConversion]]
+==== Input value conversion
+
+The `Input` API provides methods to use an `Input` with a different type than the value type to handle, providing a suitable `com.vaadin.flow.data.converter.Converter` to perform the value conversions to the required type.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input6,indent=0]
+----
+<1> Create a `String` type `Input`
+<2> Create a `Integer` type `Input` from the previous one, providing the String to Integer and back converter
+
+A Holon Platform `PropertyValueConverter` can also be use to provide the value conversion logic when the input is bound to a `Property` definition.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input7,indent=0]
+----
+<1> Create a `Integer` type `Input`
+<2> Create a `Boolean` type `Input` for the `PROPERTY` property, using the previous input and a _numeric boolean_ `PropertyValueConverter`
+
+[[InputAdapters]]
+==== Input adapters for `HasValue` components
+
+The `Input` API provides methods to _adapt_ a standard Vaadin `HasValue` type input component as an `Input`, including value conversion support using a `com.vaadin.flow.data.converter.Converter`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input8,indent=0]
+----
+<1> Create a `String` type `Input` from a `TextField`
+<2> Create a `Integer` type `Input` from a `TextField`, providing the value converter
+
+[[SelectInputs]]
+==== Select type inputs
+
+The link:{apidir}/com/holonplatform/vaadin/flow/components/SingleSelect.html[SingleSelect^] and link:{apidir}/com/holonplatform/vaadin/flow/components/MultiSelect.html[MultiSelect^] APIs are `Input` extensions which represent _selectable_ input components, i.e. input components which provide a *set of items* from which the input value can be selected, either supporting *single or multiple* selection values.
 
 TBD
 
