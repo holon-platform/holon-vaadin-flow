@@ -1815,6 +1815,56 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <2> Use `SUBJECT` as items property set, which includes the `NAME` property
 <3> Set the `ItemCaptionGenerator`: the `NAME` property value is used as item caption
 
+[[ValidatableInput]]
+==== Validatable inputs
+
+The value of any `Input` component can be *validated* using the standard Holon Platform link:holon-core.html#Validator[Validator^] API, through the link:{apidir}/com/holonplatform/vaadin/flow/components/ValidatableInput.html[ValidatableInput^] API.
+
+An `Input` can be made _validatable_, adding support for `Validator` registration, using:
+
+*1.* The `validatable` builder method:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input23,indent=0]
+----
+<1> Make the input validatable
+<2> Add a input value `Validator`
+<3> Set whether to automatically validate the input value when it changes
+
+*2.* The `ValidatableInput` adapter:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input24,indent=0]
+----
+<1> Use the `ValidatableInput` builder method to create and configure a validatable input from a standard `Input`
+<2> Add a input value `Validator`
+<1> Use the `ValidatableInput` _from_ method to directly create a validatable input from a standard `Input`
+<2> Add a input value `Validator` using the `addValidator` method
+
+A `ValidatableInput` extends the link:{apidir}/com/holonplatform/vaadin/flow/components/Validatable.html[Validatable^] API, which provides method to *validate the input value* using the registered validators.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input25,indent=0]
+----
+<1> Create a `ValidatableInput`
+<2> Check whether the input value is valid
+<3> Validate the input value, throwing a `ValidationException` if the validation fails
+
+By default, the *validation errors* are notified to the user using the UI component error message, if supported by the concrete input component.
+
+The validation errors notification strategy can be customized using a `ValidationStatusHandler` function. The validation event provides the validation status (valid, invalid or unresolved) and the current validation errors, if any. 
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input26,indent=0]
+----
+<1> Set the `ValidationStatusHandler` to use for the `ValidatableInput`
+
+TIP: the link:{apidir}/com/holonplatform/vaadin/flow/components/Validatable.html[Validatable^] API provides a set of `adapt` methods to use a Vaadin `com.vaadin.flow.data.binder.Validator` as a Holon Platform `Validator`.
+
 [[VaadinSessionScope]]
 == Vaadin session scope
 

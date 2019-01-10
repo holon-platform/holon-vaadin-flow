@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.Registration;
+import com.holonplatform.core.Validator;
+import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.property.BooleanProperty;
@@ -40,6 +42,8 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -391,6 +395,53 @@ public class ExampleInput {
 				.itemCaptionGenerator(item -> item.getValue(NAME)) // <3>
 				.build();
 		// end::input22[]
+	}
+
+	public void input23() {
+		// tag::input23[]
+		ValidatableInput<String> validatableInput = Input.string() //
+				.validatable() // <1>
+				.withValidator(Validator.max(10)) // <2>
+				.validateOnValueChange(true) // <3>
+				.build();
+		// end::input23[]
+	}
+
+	public void input24() {
+		// tag::input24[]
+		Input<String> input = Input.string().build();
+
+		ValidatableInput<String> validatableInput = ValidatableInput.builder(input) // <1>
+				.withValidator(Validator.max(10)) // <2>
+				.build();
+
+		validatableInput = ValidatableInput.from(input); // <3>
+		validatableInput.addValidator(Validator.max(10)); // <4>
+		// end::input24[]
+	}
+
+	public void input25() {
+		// tag::input25[]
+		ValidatableInput<String> validatableInput = Input.string().validatable().build(); // <1>
+
+		validatableInput.isValid(); // <2>
+		try {
+			validatableInput.validate(); // <3>
+		} catch (ValidationException e) {
+			/* value is not valid */
+		}
+		// end::input25[]
+	}
+
+	public void input26() {
+		// tag::input26[]
+		ValidatableInput<String> validatableInput = Input.string().validatable() //
+				.validationStatusHandler(event -> { // <1>
+					Status validationStatus = event.getStatus();
+					String error = event.getErrorMessage();
+					/* notify the validation errors */
+				}).build();
+		// end::input26[]
 	}
 
 	private static Datastore getDatastore() {
