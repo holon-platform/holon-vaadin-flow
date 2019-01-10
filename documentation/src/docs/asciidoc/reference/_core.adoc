@@ -2065,9 +2065,46 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 [[VaadinSessionScope]]
 == Vaadin session scope
 
-TBD
+When the `holon-vaadin-flow` artifact is in classpath, a Holon Platform link:holon-core.html#Context[Context^] _scope_ bound to the current *Vaadin session* is automatically registered and available to manage context resources.
+
+The link:{apidir}/com/holonplatform/vaadin/flow/VaadinSessionScope.html[VaadinSessionScope^] API can be used to obtain the *scope name*. The `VaadinSessionScope` API also provides convenience methods to access the Vaadin session scope.
+
+The Vaadin session *attributes* are used as context resource registry and the a current `VaadinSession` must be available in order for the scope to work.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleSessionScope.java[tag=scope1,indent=0]
+----
+<1> Get the session scope using the scope name
+<2> Get the session scope using the `VaadinSessionScope` API
+<3> Require the session scope using the `VaadinSessionScope` API
+
+For example, if a `LocalizationContext` is bound to the current Vaadin session using a session attribute, it can be retrieved using the standard Holon Platform `Context` API.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleSessionScope.java[tag=scope2,indent=0]
+----
+<1> Bind a `LocalizationContext` instance to the current Vaadin session attribute
+<2> The `LocalizationContext` instance is now available as a context resource
+<3> The `getCurrent()` method will return the `LocalizationContext` instance
 
 [[DeviceInfo]]
 === Device information
 
-TBD
+The link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] API can be used to obtain information about the client device in which application is running.
+
+A `DeviceInfo` instance is bound to each application `UI` and can be obtained using the `get()` API methods.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDeviceInfo.java[tag=di1,indent=0]
+----
+<1> Get the `DeviceInfo` bound to the given UI
+<2> Get the `DeviceInfo` bound to the current UI
+<3> Require the `DeviceInfo` bound to the current UI
+<4> Get the current request `Accept` header
+<5> Get the current request `User-Agent` header
+<6> Get the device viewport width
+<7> Get the device viewport height
+<8> Check if the device is a smartphone
