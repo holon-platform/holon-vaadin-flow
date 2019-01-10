@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.examples;
 
+import java.util.Optional;
+
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.vaadin.flow.component.button.Button;
@@ -175,6 +177,31 @@ public class ExampleComponents {
 		input.hasStyle().ifPresent(s -> s.addClassName("my-style")); // <4>
 		input.hasLabel().ifPresent(l -> l.setLabel("My label")); // <5>
 		// end::hascomponent2[]
+	}
+
+	public void valueholder1() {
+		// tag::valueholder1[]
+		Input<String> input = Input.string().build(); // <1>
+
+		input.setValue("String value"); // <2>
+		String value = input.getValue(); // <3>
+		Optional<String> optionalValue = input.getValueIfPresent(); // <4>
+
+		boolean empty = input.isEmpty(); // <5>
+		input.clear(); // <6>
+		// end::valueholder1[]
+	}
+
+	public void valueholder2() {
+		// tag::valueholder2[]
+		Input<String> input = Input.string().build(); // <1>
+
+		input.addValueChangeListener(event -> { // <2>
+			String oldValue = event.getOldValue(); // <3>
+			String newValue = event.getValue(); // <4>
+			boolean byUser = event.isUserOriginated(); // <5>
+		});
+		// end::valueholder2[]
 	}
 
 }
