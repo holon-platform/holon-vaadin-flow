@@ -81,22 +81,152 @@ See <<OnShow>> for details.
 [[QueryParameterTypes]]
 ==== Built in query parameter types
 
-TBD
+By default, the following Java types are supported for query parameter values conversion from the URL query string:
+
+|===
+|Type |Sub type |Format
+
+|*String*
+|[NONE]
+|Any text
+
+|*Number*
+|`Integer`, `Long`, `Short`, `Byte`, `Float`, `Double`, `BigInteger`, `BigDecimal`
+|For decimal numbers, the *dot* (`.`) character must be used as decimal positions separator. The `-` character can be used for negative numbers. Hexadecimal representation is supported using the `0x` or `0X` prefix.
+
+|*Boolean*
+|[NONE]
+|`true` or `false`
+
+|*Enums*
+|[NONE]
+|The enumeration value *name*
+
+|*LocalDate*
+|[NONE]
+|ISO date format, for example `2019-01-11`
+
+|*LocalTime*
+|[NONE]
+|ISO time format, for example `10:15` or `10:15:30`
+
+|*LocalDateTime*
+|[NONE]
+|ISO date and time format, for example `2019-01-11T10:15:30`
+
+|*OffsetTime*
+|[NONE]
+|ISO time format with offset support, for example `10:15:30+01:00`
+
+|*OffsetDateTime*
+|[NONE]
+|ISO date and time format with offset support, for example `2019-01-11T10:15:30+01:00` or `2019-01-11T10:15:30+01:00[Europe/Paris]`
+
+|*java.util.Date*
+|[NONE]
+|ISO date and/or time format, for example `2019-01-11` or `2019-01-11T10:15:30`
+
+|===
+
+[[OptionalQueryParameter]]
+==== Optional query parameter values
+
+The `java.util.Optional` class is supported for `@QueryParameter` field type declarations.
+
+Using `Optional`, the field value will never be `null`, and when the parameter value is not available a `Optional.empty()` value is setted as field value.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation6.java[tag=route1,indent=0]
+----
+<1> `Optional` query parameter `String` type declaration
+
+[[MultipleQueryParameter]]
+==== Multiple query parameter values
+
+Multiple query parameter values are supported either using the `java.util.Set` or `java.util.List` class.
+
+For example, given the following routing target class:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation7.java[tag=route1,indent=0]
+----
+<1> Query parameter with multiple value support declaration using a `java.util.Set`
+
+For the routing URL `some/path?parameter=a&parameter=b`, the `parameter` field value will be a `java.util.Set` instance containing the `a` and `b` String values.
+
+When the URL query parameter value is not available, a empty `java.util.Set` or `java.util.List` is setted as field value.
 
 [[AddQueryParameterType]]
 ==== Adding query parameter type support
 
-TBD
+The `@QueryParameter` annotated fields supported Java types set can be *extended*, adding support for new Java types marshalling and unmarshalling, using the link:{apidir}/com/holonplatform/vaadin/flow/navigator/NavigationParameterTypeMapper.html[NavigationParameterTypeMapper^] API.
+
+To add support for a new query parameter type, a `NavigationParameterTypeMapper` instance bound to the required type can be created and automatically registered using the Java service extension architecture, i.e. providing a `com.holonplatform.vaadin.flow.navigator.NavigationParameterTypeMapper` named file in the `META-INF/services` folder of a jar, containing the `NavigationParameterTypeMapper` concrete class names to register.
+
+For example, suppose we need to handle the following `MyType` parameter type:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation8.java[tag=type,indent=0]
+----
+
+We can create a new `NavigationParameterTypeMapper` class, generalized on the `MyType` type, as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation8.java[tag=mapper,indent=0]
+----
+<1> Handled parameter type declaration
+<2> Parameter value unmarshalling to the `String` type URL query parameter value
+<3> Parameter value marshalling from the `String` type URL query parameter value
+
+An then register the `MyTypeParameterMapper` class using the Java service extension architecture, creating a suitable file under the `META-INF/services` folder:
+
+.com.holonplatform.vaadin.flow.navigator.NavigationParameterTypeMapper file
+[source, text]
+----
+my.package.MyTypeParameterMapper
+----
+
+This way, the `MyType` parameter type will be automatically handled using the `@QueryParameter` annotation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation8.java[tag=route,indent=0]
+----
+<1> The `MyType` type parameter is handled using the `MyTypeParameterMapper` class
 
 [[RequiredQueryParameter]]
 ==== Required query parameters
 
-TBD
+The `required()` attribute of the `@QueryParameter` annotation can be used to declare *required* query parameter values.
+
+When a required query parameter value is not available from the URL query string, a navigation error is fired before the navigation to the routing target occurs.
+
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/exceptions/InvalidNavigationParameterException.html[InvalidNavigationParameterException^] is used to notify the error and interrupt the navigation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation9.java[tag=route1,indent=0]
+----
+<1> The query parameter is required
+
+See <<DefaultQueryParameter>> to provide a default value for a parameter, which can be used to provide a default value for a required parameter when it is not available from the URL query string.
 
 [[DefaultQueryParameter]]
 ==== Default query parameter values
 
-TBD
+The `defaultValue()` attribute of the `@QueryParameter` annotation can be used to declare a *default value* for a query parameter. This value will be used and injected into the parameter field when the parameter value is not available from the URL query string.
+
+The `defaultValue()` attribute value is a `String`, and the format conventions described in <<QueryParameterTypes>> should be used as `String` format for the supported Java types.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation10.java[tag=route1,indent=0]
+----
+<1> Declare the parameter default value
 
 [[OnShow]]
 === Using `@OnShow` on route classes
