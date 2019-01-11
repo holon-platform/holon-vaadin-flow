@@ -29,7 +29,7 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.AnnotationUtils;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
-import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
+import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.server.ServiceInitEvent;
@@ -76,9 +76,9 @@ public class SecuredRouteServiceInitListener implements VaadinServiceInitListene
 				if (roles != null) {
 					if (!isAccessGranted(roles)) {
 						// redirect to error
-						event.rerouteToError(UnauthorizedNavigationException.class,
-								LocalizationProvider.localize(UnauthorizedNavigationException.DEFAULT_MESSAGE,
-										UnauthorizedNavigationException.DEFAULT_MESSAGE_CODE));
+						event.rerouteToError(ForbiddenNavigationException.class,
+								LocalizationProvider.localize(ForbiddenNavigationException.DEFAULT_MESSAGE,
+										ForbiddenNavigationException.DEFAULT_MESSAGE_CODE));
 					}
 				}
 			}

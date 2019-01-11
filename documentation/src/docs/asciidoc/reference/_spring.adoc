@@ -1,0 +1,42 @@
+[[VaadinSpring]]
+== Spring integration
+
+The `holon-vaadin-flow-spring` artifact provides support and integration with the https://spring.io[Spring^] framework.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-flow-spring</artifactId>
+<version>{revnumber}</version>
+----
+
+The `holon-vaadin-flow-spring` artifact includes the standard Vaadin Flow Spring integration support, including the `vaadin-spring` artifact as dependency. See the link:https://vaadin.com/docs/flow/spring/tutorial-spring-basic.html[Vaadin Spring documentation^] for information about the standard integration features and setup.
+
+[[EnableNavigator]]
+=== Provide the `Navigator` API as a Spring bean
+
+The link:{apidir}/com/holonplatform/vaadin/flow/spring/EnableNavigator.html[EnableNavigator^] annotation can be used on a Spring configuration class to made available a UI-scoped `Navigator` instance as a Spring bean.
+
+The Vaadin Spring *UI scope* must be enabled to use this configuration annotation, for example using the `com.vaadin.flow.spring.annotation.EnableVaadin` annotation or the Vaadin Spring Boot integration auto-configuration facilities.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleSpring1.java[tag=spring1,indent=0]
+----
+<1> Enable the `Navigator` API UI-scoped Spring bean configuration
+<2> Obtain the `Navigator` API instance for current UI using injection
+
+[[SpringSecurity]]
+=== Using Spring Security for authorization control
+
+The link:{apidir}/com/holonplatform/vaadin/flow/spring/EnableSecuredRoute.html[EnableSecuredRoute^] annotation can be used on a Spring configuration class to enable the Spring Security `org.springframework.security.access.annotation.Secured` annotation on routing target classes to perform a role based route authorization access control.
+
+IMPORTANT: The Spring Security dependency must be explicitly provided by the project and must be available on classpath.
+
+In order to use the `@Secured` annotation based authorization control, a `SecurityContext` must be available and properly configured.
+
+When the `javax.annotation.security.RolesAllowed` annotation is used, *any of the specified role name* must be granted to the current authenticated user in order to allow the route access.
+
+When the authorization control fails, a link:{apidir}/com/holonplatform/vaadin/flow/navigator/exceptions/ForbiddenNavigationException.html[ForbiddenNavigationException^] is used to notify the error and interrupt the navigation.
+
