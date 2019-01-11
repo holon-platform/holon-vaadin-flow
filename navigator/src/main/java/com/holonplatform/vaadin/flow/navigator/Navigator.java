@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -261,6 +262,21 @@ public interface Navigator extends Serializable {
 	default <T, C extends Component & HasUrlParameter<T>> String getUrl(Class<? extends C> navigationTarget,
 			T parameter) {
 		return getUrl(navigationTarget, Collections.singletonList(parameter));
+	}
+
+	/**
+	 * Get the registered URL for given navigation target class, including the given <code>parameters</code> in the url.
+	 * @param <T> URL parameters type
+	 * @param <C> Navigation target type
+	 * @param navigationTarget The navigation target to get url for (not null)
+	 * @param parameters The parameters to include in the generated URL (not null)
+	 * 
+	 * @return The URL for the given navigation target, including the given URL parameters
+	 */
+	@SuppressWarnings("unchecked")
+	default <T, C extends Component & HasUrlParameter<T>> String getUrl(Class<? extends C> navigationTarget,
+			T... parameters) {
+		return getUrl(navigationTarget, Arrays.asList(parameters));
 	}
 
 	/**

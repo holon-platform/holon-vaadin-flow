@@ -276,9 +276,129 @@ See <<QueryParameterTypes>> to learn about the default supported Java types for 
 
 NOTE: For information about the Vaadin Flow routing architecture, including the `@Route` annotation and route layouts, see the link:https://vaadin.com/docs/flow[Vaadin Flow documentation^].
 
-The navigation target URL can be declared either using:
+The `Navigator` API provides a set of `navigateTo(...)` methods to perform navigation towards a routing target. The routing target URL can be declared either using:
 
+* The *route path*, as declared using the `@Route` annotation.
+* The *routing target class* reference.
+* A full URL *location*, which includes the route path and the optional query part with the query parameters declaration.
 
+Each `Navigator` API `navigateTo(...)` method provides multiple versions in order to:
+
+* Specify the query parameter values, using a map of query parameter name and the corresponding value, provided as one of the *supported Java type object*. The `Navigator` API will take care of parameter value serialization to be used in the URL query part.
+
+* Specify one or more *path parameter*, if the routing target class support them through the `com.vaadin.flow.router.HasUrlParameter` interface.
+
+For example, supposing the following routing target class is registered in the application:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation12.java[tag=target,indent=0]
+----
+<1> Declares a single `Integer` type query parameter named `myparam`
+
+The `Navigator` API can be used as follows to navigate to the routing target:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation12.java[tag=navigator3,indent=0]
+----
+<1> Get the `Navigator` for the current UI
+<2> Navigate to the `View` component using the route path
+<3> Navigate to the `View` component using the route path and specifying the `myparam` query parameter value
+<4> Navigate to the `View` component using the component class
+<5> Navigate to the `View` component using the component class and specifying the `myparam` query parameter value
+<6> Navigate to the `View` component using the full location URL, including the route path and the query parameters
+
+Supposing the `View` component declares a _path parameter_ using the `com.vaadin.flow.router.HasUrlParameter` interface:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation13.java[tag=target,indent=0]
+----
+
+The `Navigator` API can be used as follows:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation13.java[tag=navigator1,indent=0]
+----
+<1> Get the `Navigator` for the current UI
+<2> Navigate to the `View` component using the component class and providing the path parameter `value`
+<3> Navigate to the `View` component using the component class and providing both the path parameter `value` and the `myparam` query parameter value
+
+Furthermore, the `Navigator` API provides provides two convenience methods:
+
+* `navigateToDefault()`: to navigate to the default route, i.e. the empty (`""`) route, if available.
+* `navigateBack()`: to navigate back in the browser navigation history.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation14.java[tag=navigator1,indent=0]
+----
+<1> Navigate to the default route
+<2> Navigate back in the browser navigation history
+
+[[NavigationBuilder]]
+==== The navigation builder API
+
+The `Navigator` API provides a *navigation URL builder API*, available through the `navigation(...)` methods, which allows to declare a routing target URL and its parameters (both _query_ and _path_ parameter types) using a _fluent_ style builder and then either perform the actual navigation or obtain the complete  location URL.
+
+The navigation builder API can be obtained either specifying the *route path* or the *routing target class* and provides methods to set the _path_ or _query_ parameters to use.
+
+The query parameter values are provided using one of the *supported Java types*, the `Navigator` API will take care of parameter value serialization to be used in the URL query part.
+
+The navigation is performed using the `navigate()` method.
+
+To obtain the complete URL location and do not perform the actual navigation, the `asLocation()` or `asLocationURL()` methods can be used, which provide the navigation URL as a `com.vaadin.flow.router.Location` object or a `String` respectively.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation15.java[tag=navigator1,indent=0]
+----
+<1> Get the `Navigator` for the current UI
+<2> Build a navigation using a route path
+<3> Add a query parameter value
+<4> Add multiple query parameter values
+<5> Perform the navigation action
+<6> Build a navigation using a route target class
+<7> Set the path parameter value
+<8> Perform the navigation action
+<9> Get the complete navigation URL as a `com.vaadin.flow.router.Location` object
+<10> Get the complete navigation URL as a `String`
+
+[[NavigationTargetURL]]
+==== Get the URL of a navigation target
+
+The `Navigator` API provides a set of `getUrl(...)` convenince methods to obtain the registered URL for a navigation target class.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation15.java[tag=navigator2,indent=0]
+----
+<1> Get the `View` routing target class base URL
+<2> Get the `View` routing target class URL with the provided path parameter value
+<3> Get the `View` routing target class URL with the provided path parameter values
+
+[[NavigationChangeListener]]
+==== Listening to navigation changes
+
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/NavigationChangeListener.html[NavigationChangeListener^] listener interface can be use to listen to navigation target changes.
+
+The navigation change event provides:
+
+* The changed URL *location*.
+* The changed *navigation target component* instance.
+
+A `NavigationChangeListener` can be registered using the `Navigator` API `addNavigationChangeListener` method and it is invoked when a routing action is performed, i.e. when the current navigation target changes.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation15.java[tag=navigator3,indent=0]
+----
+<1> Get the `Navigator` for the current UI
+<2> Register a `NavigationChangeListener`
+<3> The new navigation location
+<4> The new navigation target instance
 
 [[NavigationLink]]
 ==== Navigation links
