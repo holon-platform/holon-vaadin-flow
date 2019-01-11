@@ -144,12 +144,6 @@ public interface NavigationTargetConfiguration extends Serializable {
 		Field getField();
 
 		/**
-		 * Get the navigation target class field read method, if available.
-		 * @return Optional navigation target class field read method
-		 */
-		Optional<Method> getReadMethod();
-
-		/**
 		 * Get the navigation target class field write method, if available.
 		 * @return Optional navigation target class field write method
 		 */
@@ -166,7 +160,7 @@ public interface NavigationTargetConfiguration extends Serializable {
 		 * None
 		 */
 		NONE,
-		
+
 		/**
 		 * {@link Optional} type container
 		 */

@@ -55,6 +55,7 @@ import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget3;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget4;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget6;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget7;
+import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget8;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget9;
 import com.holonplatform.vaadin.flow.navigator.test.data.NoAuthLayout;
 import com.holonplatform.vaadin.flow.navigator.test.data.TestNavigationError;
@@ -265,6 +266,19 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertTrue(nt11.getOptionalParam().isPresent());
 		assertEquals("test", nt11.getOptionalParam().orElse(null));
 
+	}
+
+	@Test
+	public void testQueryParameterSetter() {
+
+		final Navigator navigator = Navigator.create(ui);
+		assertNotNull(navigator);
+
+		navigator.navigateToLocation("8?param1=test");
+		NavigationTarget8 nt = getNavigationComponent(NavigationTarget8.class);
+		assertNotNull(nt);
+		assertNotNull(nt.getParamValue());
+		assertEquals("!test", nt.getParamValue());
 	}
 
 	@Test

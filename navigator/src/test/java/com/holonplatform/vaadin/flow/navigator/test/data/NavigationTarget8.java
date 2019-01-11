@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
 import com.holonplatform.core.i18n.Caption;
+import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
@@ -23,5 +24,16 @@ import com.vaadin.flow.router.Route;
 @Caption(value = "test", messageCode = "test.code")
 @Route("8")
 public class NavigationTarget8 extends Div {
+
+	@QueryParameter
+	private String param1;
+
+	public void setParam1(String param1) {
+		this.param1 = (param1 == null) ? param1 : ("!" + param1);
+	}
+
+	public String getParamValue() {
+		return this.param1;
+	}
 
 }

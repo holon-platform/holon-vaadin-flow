@@ -87,7 +87,6 @@ public class TestViewConfiguration {
 		assertFalse(d.isRequired());
 		assertFalse(d.getDefaultValue().isPresent());
 		assertNotNull(d.getField());
-		assertFalse(d.getReadMethod().isPresent());
 		assertFalse(d.getWriteMethod().isPresent());
 
 		d = cfg.getQueryParameters().get("param2");
@@ -98,7 +97,6 @@ public class TestViewConfiguration {
 		assertFalse(d.isRequired());
 		assertFalse(d.getDefaultValue().isPresent());
 		assertNotNull(d.getField());
-		assertFalse(d.getReadMethod().isPresent());
 		assertFalse(d.getWriteMethod().isPresent());
 
 		d = cfg.getQueryParameters().get("param3");
@@ -109,9 +107,7 @@ public class TestViewConfiguration {
 		assertTrue(d.isRequired());
 		assertFalse(d.getDefaultValue().isPresent());
 		assertNotNull(d.getField());
-		assertTrue(d.getReadMethod().isPresent());
 		assertTrue(d.getWriteMethod().isPresent());
-		assertEquals("getParam3", d.getReadMethod().get().getName());
 		assertEquals("setParam3", d.getWriteMethod().get().getName());
 
 		d = cfg.getQueryParameters().get("param4");
@@ -123,7 +119,6 @@ public class TestViewConfiguration {
 		assertTrue(d.getDefaultValue().isPresent());
 		assertEquals("dft", d.getDefaultValue().get());
 		assertNotNull(d.getField());
-		assertFalse(d.getReadMethod().isPresent());
 		assertFalse(d.getWriteMethod().isPresent());
 
 		d = cfg.getQueryParameters().get("param5");
@@ -134,7 +129,6 @@ public class TestViewConfiguration {
 		assertFalse(d.isRequired());
 		assertFalse(d.getDefaultValue().isPresent());
 		assertNotNull(d.getField());
-		assertFalse(d.getReadMethod().isPresent());
 		assertFalse(d.getWriteMethod().isPresent());
 
 		d = cfg.getQueryParameters().get("param6");
@@ -145,7 +139,6 @@ public class TestViewConfiguration {
 		assertFalse(d.isRequired());
 		assertFalse(d.getDefaultValue().isPresent());
 		assertNotNull(d.getField());
-		assertFalse(d.getReadMethod().isPresent());
 		assertFalse(d.getWriteMethod().isPresent());
 
 	}
@@ -248,7 +241,9 @@ public class TestViewConfiguration {
 		assertEquals("8", cfg.getRoutePath().get());
 		assertFalse(cfg.getAuthentication().isPresent());
 		assertTrue(cfg.getAuthorization().isEmpty());
-		assertTrue(cfg.getQueryParameters().isEmpty());
+		assertFalse(cfg.getQueryParameters().isEmpty());
+		assertEquals(1, cfg.getQueryParameters().size());
+		assertTrue(cfg.getQueryParameters().containsKey("param1"));
 		assertTrue(cfg.getOnShowMethods().isEmpty());
 		assertTrue(cfg.getCaption().isPresent());
 		assertEquals("test", cfg.getCaption().get().getMessage());

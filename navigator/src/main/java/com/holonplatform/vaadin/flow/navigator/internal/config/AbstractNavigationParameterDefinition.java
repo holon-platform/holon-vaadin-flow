@@ -38,7 +38,6 @@ public abstract class AbstractNavigationParameterDefinition implements Navigatio
 
 	private boolean required = false;
 	private Object defaultValue = null;
-	private Method readMethod = null;
 	private Method writeMethod = null;
 
 	public AbstractNavigationParameterDefinition(Class<?> type, ParameterContainerType containerType, Field field) {
@@ -110,17 +109,6 @@ public abstract class AbstractNavigationParameterDefinition implements Navigatio
 	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition#
-	 * getReadMethod()
-	 */
-	@Override
-	public Optional<Method> getReadMethod() {
-		return Optional.ofNullable(readMethod);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration.NavigationParameterDefinition#
 	 * getWriteMethod()
 	 */
 	@Override
@@ -142,14 +130,6 @@ public abstract class AbstractNavigationParameterDefinition implements Navigatio
 	 */
 	public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
-	}
-
-	/**
-	 * Set the parameter read method.
-	 * @param readMethod the method to set
-	 */
-	public void setReadMethod(Method readMethod) {
-		this.readMethod = readMethod;
 	}
 
 	/**

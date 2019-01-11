@@ -354,10 +354,6 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		// getter and setter
 		if (propertyDescriptor != null) {
 			// check methods parameter consistency
-			if (propertyDescriptor.getReadMethod() != null
-					&& TypeUtils.isAssignable(propertyDescriptor.getReadMethod().getReturnType(), field.getType())) {
-				definition.setReadMethod(propertyDescriptor.getReadMethod());
-			}
 			if (propertyDescriptor.getWriteMethod() != null
 					&& propertyDescriptor.getWriteMethod().getParameterTypes().length == 1 && TypeUtils.isAssignable(
 							propertyDescriptor.getWriteMethod().getParameterTypes()[0], field.getType())) {
