@@ -1,0 +1,94 @@
+[[Navigator]]
+== Routing and navigation
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-flow-navigator</artifactId>
+<version>{revnumber}</version>
+----
+
+The `holon-vaadin-flow-navigator` artifact provides URL query parameters marshalling and unmarshalling between URL representation and Java types using the `@QueryParameter` annotation and a `Navigator` API which can be used to handle the application UI _views_ routing
+
+Furthermore, a complete support for view _authentication_ and _authorization_ is provided, using the Holon Platform core authentication APIs.
+
+[[NavigationParameters]]
+=== Navigation parameters handling
+
+When the `holon-vaadin-flow-navigator` artifact is in classpath, the URL query parameters marshalling and unmarshalling for application _routes_ is automatically enabled and setted up at application bootstrap.
+
+The URL query parameters value handling can thus be implemented using the link:{apidir}/com/holonplatform/vaadin/flow/navigator/annotations/QueryParameter.html[QueryParameter^] annotation on _route components_ (i.e. UI components annotated with `@Route`) class *fields*.
+
+NOTE: For information about the Vaadin Flow routing architecture, including the `@Route` annotation and route layouts, see the link:https://vaadin.com/docs/flow[Vaadin Flow documentation^].
+
+When a route class field is annotated with `@QueryParameter`, *its value will be automatically setted using the corresponding URL query parameter value*, if available, just before the component is rendered in application UI. 
+
+The `String` type URL query parameter value will be *converted to the required Java type* declared by the field type. See <<QueryParameterTypes>> for the Java types supported by default and <<AddQueryParameterType>> to extend the supported Java types.
+
+By default, the URL query parameter name bound to a `@QueryParameter` field is equal to the *field name*.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1.java[tag=route1,indent=0]
+----
+<1> The bound URL query parameter name is the field name, i.e. `parameter`. For example, when the route `some/path?parameter=1` is used, the `parameter` field value will be setted to the `1` Integer value.
+
+The `value()` annotation attribute can be used to *declare the URL query parameter name* to which the field is bound, if you don't want to use the field name.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation2.java[tag=route1,indent=0]
+----
+<1> The URL query parameter name bound to the `parameter` field is `myparam`. For example, when the route `some/path?myparam=1` is used, the `parameter` field value will be setted to the `1` Integer value.
+
+
+
+[[QueryParameterTypes]]
+==== Built in query parameter types
+
+TBD
+
+[[AddQueryParameterType]]
+==== Adding query parameter type support
+
+TBD
+
+[[RequiredQueryParameter]]
+==== Required query parameters
+
+TBD
+
+[[DefaultQueryParameter]]
+==== Default query parameter values
+
+TBD
+
+[[OnShow]]
+=== Using `@OnShow` on route classes
+
+TBD
+
+[[NavigatorAPI]]
+=== The `Navigator` API
+
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/Navigator.html[Navigator^] API can be used to handle application routing.
+
+TBD
+
+[[NavigationLink]]
+==== Navigation links
+
+TBD
+
+[[RouteAuthentication]]
+=== Authentication support for UI routes
+
+TBD
+
+[[RouteAuthorization]]
+=== Authorization support for UI routes
+
+TBD
+
+
