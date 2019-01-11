@@ -229,9 +229,23 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1
 <1> Declare the parameter default value
 
 [[OnShow]]
-=== Using `@OnShow` on route classes
+=== Using `@OnShow` on route target classes
 
-TBD
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/annotations/OnShow.html[OnShow^] annotation can be used un *route target class methods* to handle the _*after navigation*_ routing lifecycle event, i.e. to execute code when the routing target component instance is added to the UI.
+
+A method annotation with `@OnShow`:
+
+* Must be `public`.
+* Can declare either no parameters or a single  parameter of type `com.vaadin.flow.router.AfterNavigationEvent`, to obtain the event which triggered the method invocation.
+
+Any valid `@OnShow` annotated method (including super classes) in invoked at the _after navigation_ phase of the routing target component. No invocation order is guaranteed.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation11.java[tag=route1,indent=0]
+----
+<1> Declare the method to be invoked just after the navigation to this routing target
+<2> Declare the method to be invoked just after the navigation to this routing target, providing the  `AfterNavigationEvent` type event
 
 [[NavigatorAPI]]
 === The `Navigator` API
