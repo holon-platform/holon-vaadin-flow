@@ -11,7 +11,7 @@ _Maven coordinates_:
 <version>{revnumber}</version>
 ----
 
-The `holon-vaadin-flow-spring` artifact includes the standard Vaadin Flow Spring integration support, including the `vaadin-spring` artifact as dependency. See the link:https://vaadin.com/docs/flow/spring/tutorial-spring-basic.html[Vaadin Spring documentation^] for information about the standard integration features and setup.
+The `holon-vaadin-flow-spring` artifact includes the standard Vaadin Flow Spring integration support, declaring the `vaadin-spring` artifact as dependency. See the link:https://vaadin.com/docs/flow/spring/tutorial-spring-basic.html[Vaadin Spring documentation^] for information about the standard integration features and setup.
 
 [[EnableNavigator]]
 === Provide the `Navigator` API as a Spring bean
@@ -39,4 +39,61 @@ In order to use the `@Secured` annotation based authorization control, a `Securi
 When the `javax.annotation.security.RolesAllowed` annotation is used, *any of the specified role name* must be granted to the current authenticated user in order to allow the route access.
 
 When the authorization control fails, a link:{apidir}/com/holonplatform/vaadin/flow/navigator/exceptions/ForbiddenNavigationException.html[ForbiddenNavigationException^] is used to notify the error and interrupt the navigation.
+
+[[VaadinSpringBoot]]
+== Spring Boot integration
+
+The `holon-vaadin-flow-spring-boot` artifact provides integration with https://projects.spring.io/spring-boot[Spring Boot^], dealing with `Navigator` API and `LocalizationContext` integration auto configuration.
+
+To enable the Spring Boot auto-configuration the following artifact must be included in your project dependencies:
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-vaadin-flow-spring-boot</artifactId>
+<version>{revnumber}</version>
+----
+
+The `holon-vaadin-flow-spring-boot` artifact includes the standard Vaadin Flow Spring Boot integration, declaring the `vaadin-spring` artifact as dependency. See the link:https://vaadin.com/docs/flow/spring/tutorial-spring-basic.html[Vaadin Spring documentation^] for information about the standard integration features and setup.
+
+[[NavigatorAutoConfiguration]]
+=== `Navigator` API auto-configuration
+
+The `Navigator` API auto configuration provides automatic setup of a *UI-scoped* `Navigator` bean, if a `Navigator` type bean is not already available in application context. See <<EnableNavigator>>.
+
+Furthermore, two default navigation error notification UI components are registered: 
+
+* One for the `UnauthorizedNavigationException`: see link:{apidir}/com/holonplatform/vaadin/flow/navigator/errors/UnauthorizedNavigationError.html[UnauthorizedNavigationError^].
+
+* One for the `ForbiddenNavigationException`: see link:{apidir}/com/holonplatform/vaadin/flow/navigator/errors/ForbiddenNavigationError.html[ForbiddenNavigationError^].
+
+The `holon.vaadin.navigator.errors.enabled` application configuration property can be setted to `false` to disable the error components registration.
+
+[[LocalizationContextAutoConfiguration]]
+=== `LocalizationContext` integration auto configuration
+
+The `LocalizationContext` integration auto-configuration provides the following features:
+
+*1. Localization context localization synchronization:* 
+
+If a `LocalizationContext` type bean is available in context, and its scope is either *UI* (`vaadin-ui`) or *Session* (`session`) or *Vaadin session* (`vaadin-session`), when the `LocalizationContext` localization changes, the changed `Locale` is reflected to the current Vaadin UI or Vaadin session, according to bean scope.
+
+This feature can be disabled setting the application configuration property `holon.vaadin.localization-context.reflect-locale` to `false`.
+
+*2. Localization context initialization:*
+
+If a `LocalizationContext` type bean is available in context, and its scope is either *UI* (`vaadin-ui`) or *Session* (`session`) or *Vaadin session* (`vaadin-session`), the initial `Locale` detected at session/UI initialization (according to bean scope) is setted to the `LocalizationContext` instance.
+
+This feature can be disabled setting the application configuration property `holon.vaadin.localization-context.auto-init` to `false`.
+
+*3. Localization context `I18NProvider` integration:*
+
+If a `LocalizationContext` type bean is available in context, and a `I18NProvider` type bean is not available, the detected `LocalizationContext` is used as `I18NProvider` and registered as a Spring bean using the `LocalizationContextI18NProvider` API.
+
+See <<I18NProvider>>.
+
+This feature can be disabled setting the application configuration property `holon.vaadin.localization-context.i18nprovider` to `false`.
+
+
 

@@ -255,6 +255,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleI18n.java[t
 <2> Get the localization for the given `Localizable` message using the current `Locale`
 <3> Get the localization for the given `message.localization.code` message code using the current `Locale`: the default `Default message` message is returned if the message localization or the current `Locale` is not available
 
+[[I18NProvider]]
 ==== Use a LocalizationContext as I18NProvider
 
 The Holon Platform `LocalizationContext` can be used as a standard Vaadin Flow `I18NProvider` through the link:{apidir}/com/holonplatform/vaadin/flow/i18n/LocalizationContextI18NProvider.html[LocalizationContextI18NProvider^] API.
