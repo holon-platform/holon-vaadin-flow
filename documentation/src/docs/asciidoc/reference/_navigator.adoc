@@ -403,16 +403,77 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1
 [[NavigationLink]]
 ==== Navigation links
 
-TBD
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/NavigationLink.html[NavigationLink^] API represents a *navigation link component*, which handles navigation internally instead of loading a new page in the browser.
+
+The `NavigationLink` API provides a builder API to configure the navigation target URL, either specifying a route path or a routing target class, and providing any _path_ or _query_ parameter value.
+
+The query parameter values are provided using one of the *supported Java types*, the link implementation will take care of parameter value serialization to be used in the URL query part.
+
+The `NavigationLink` API extends `HasComponent`, allowing to use it as a UI component through the `getComponent()` method. See <<HasComponent>>.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=navigator1,indent=0]
+----
+<1> Build a `NavigationLink` using a route path
+<2> Add a query parameter value
+<3> Set the link text
+<4> Build a `NavigationLink` using a routing target class
+<5> Add a query parameter value
+<6> Add a path parameter value
+<7> Set the link text
+<8> Add the link component to a layout
 
 [[RouteAuthentication]]
 === Authentication support for UI routes
 
-TBD
+When the `holon-vaadin-flow-navigator` artifact is in classpath, the link:{coreapidir}/com/holonplatform/core/auth/annotations/Authenticate.html[Authenticate^] annotation can be used on routing target classes to provide *authentication support* to the routing infrastructure.
+
+A routing target class annotated with `@Authenticate` is under authentication control: only authenticated users can access the corresponding route.
+
+An link:{coreapidir}/com/holonplatform/core/auth/AuthContext.html[AuthContext^] definition is required in order to enable the authentication support and the `AuthContext` to use must be available as a _context_ resource, for example bound to the Vaddin session.
+
+NOTE: See the Holon Platform link:holon-core.html#AuthContext[AuthContext^] documentation for information about the authentication context and the link:holon-core.html#Realm[Realm^] documentation for information about the authentication configuration.
+
+The `redirectURI()` attribute of the `@Authenticate` annotation can be used to specify a *redirection URL* to use when a not authenticated request is performed against an authentication protected route.
+
+When a redirect URI is not provided and the authentication is not available for an authentication protected route, a link:{apidir}/com/holonplatform/vaadin/flow/navigator/exceptions/UnauthorizedNavigationException.html[UnauthorizedNavigationException^] is used to notify the error and interrupt the navigation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=auth1,indent=0]
+----
+<1> The `View1` routing target class, and so the `some/path` route path, can be accessed only by an authenticated user 
+<1> The `View2` routing target class, and so the `some/path` route path, can be accessed only by an authenticated user and a `login` redirect URI is specified and will be used to redirect the user navigation when the authentication is not available
+
+The `@Authenticate` annotation can be also used on a *routing layout class*: any routing target class child of the layout will inherit the `@Authenticate` annotation definition.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=auth2,indent=0]
+----
+<1> The `@Authenticate` is declared on a `RouterLayout`: any child routing target class will inherit the authentication control declaration
+<2> The `View` routing target class declares `MainLayout` as parent layout, so it will be under authentication control
 
 [[RouteAuthorization]]
 === Authorization support for UI routes
 
-TBD
+When the `holon-vaadin-flow-navigator` artifact is in classpath, the `javax.annotation.security.RolesAllowed` and `javax.annotation.security.PermitAll` annotations can be used on routing target classes to perform a *role based authorization access control* on routing targets.
 
+An link:{coreapidir}/com/holonplatform/core/auth/AuthContext.html[AuthContext^] definition is required in order to enable the authorization support and the `AuthContext` to use must be available as a _context_ resource, for example bound to the Vaddin session.
 
+NOTE: See the Holon Platform link:holon-core.html#AuthContext[AuthContext^] documentation for information about the authentication context and the link:holon-core.html#Realm[Realm^] documentation for information about the authentication configuration.
+
+The user roles check is performed using the current `Authentication` permissions, provided by the `AuthContext`.
+
+NOTE: See the Holon Platform link:holon-core.html#RealmAuthorization[Authorization^] documentation for information about the permissions configuration and control.
+
+When the `javax.annotation.security.RolesAllowed` annotation is used, *any of the specified role name* must be granted to the current authenticated user in order to allow the route access.
+
+When the authorization control fails, a link:{apidir}/com/holonplatform/vaadin/flow/navigator/exceptions/ForbiddenNavigationException.html[ForbiddenNavigationException^] is used to notify the error and interrupt the navigation.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation18.java[tag=authz,indent=0]
+----
+<1> The `View` routing target class, and so the `some/path` route path, is under authorization control and can be accessed only if either the `ROLE1` or `ROLE2` role name is granted to the authenticated user 
