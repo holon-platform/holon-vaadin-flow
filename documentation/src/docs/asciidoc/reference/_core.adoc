@@ -2091,7 +2091,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleSessionScop
 <3> The `getCurrent()` method will return the `LocalizationContext` instance
 
 [[DeviceInfo]]
-=== Device information
+== Device information
 
 The link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] API can be used to obtain information about the client device in which application is running.
 
