@@ -34,6 +34,7 @@ import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetC
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
+import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.router.Location;
 
 /**
@@ -42,6 +43,7 @@ import com.vaadin.flow.router.Location;
  * 
  * @since 5.2.0
  */
+@ListenerPriority(Integer.MAX_VALUE)
 public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavigationTargetListener
 		implements AfterNavigationListener {
 

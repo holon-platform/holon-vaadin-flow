@@ -279,6 +279,9 @@ public class TestNavigator extends AbstractNavigatorTest {
 		assertNotNull(nt);
 		assertNotNull(nt.getParamValue());
 		assertEquals("!test", nt.getParamValue());
+
+		assertNotNull(nt.getAfterNavigation());
+		assertEquals("!test", nt.getAfterNavigation());
 	}
 
 	@Test

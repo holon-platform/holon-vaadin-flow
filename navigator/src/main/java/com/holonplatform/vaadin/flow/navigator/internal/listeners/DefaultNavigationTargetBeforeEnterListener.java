@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetC
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.QueryParameterDefinition;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterListener;
+import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 
@@ -43,6 +44,7 @@ import com.vaadin.flow.server.VaadinService;
  * 
  * @since 5.2.0
  */
+@ListenerPriority(Integer.MAX_VALUE)
 public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigationTargetListener
 		implements BeforeEnterListener {
 
