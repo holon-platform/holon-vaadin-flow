@@ -250,9 +250,35 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1
 [[NavigatorAPI]]
 === The `Navigator` API
 
-The link:{apidir}/com/holonplatform/vaadin/flow/navigator/Navigator.html[Navigator^] API can be used to handle application routing.
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/Navigator.html[Navigator^] API can be used to handle the application routing, i.e. the navigation between the UI components which represent the application _views_.
 
-TBD
+Each `Navigator` is bound to a UI and the `Navigator` API for the current UI can be obtained using the `get()` static method. This method checks if a `Navigator` instance is available as a _context_ resource and if not uses an internal registry to obtain the instance bound to the current UI, creating a new instance if none was bound to the UI yet.
+
+TIP: See the Holon Platform link:holon-core.html#Context[Context^] documentation for information about the context resources management.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation12.java[tag=navigator1,indent=0]
+----
+<1> Get the `Navigator` API for the current UI
+
+A `Navigator` instance can also be directly created for a specific UI using the `create` static method.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation12.java[tag=navigator2,indent=0]
+----
+<1> Create a `Navigator` for the given UI
+
+The `Navigator` API makes available a set of methods to handle the routing between the application's declared route targets, ensuring a *consistent query parameters* management with Java types marshalling support (see <<NavigationParameters>>) and providing suitable *routing URL builders* using the supported Java types to provide the query parameters value.
+
+See <<QueryParameterTypes>> to learn about the default supported Java types for query parameters declaration and <<AddQueryParameterType>> to learn how to add support for additional Java types.
+
+NOTE: For information about the Vaadin Flow routing architecture, including the `@Route` annotation and route layouts, see the link:https://vaadin.com/docs/flow[Vaadin Flow documentation^].
+
+The navigation target URL can be declared either using:
+
+
 
 [[NavigationLink]]
 ==== Navigation links
