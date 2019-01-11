@@ -42,7 +42,15 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation2
 ----
 <1> The URL query parameter name bound to the `parameter` field is `myparam`. For example, when the route `some/path?myparam=1` is used, the `parameter` field value will be setted to the `1` Integer value.
 
+The route class field declaration (event `private`) it's enough to enable the the query parameter value handling, but the standard Java Beans convention can be also used, providing a *setter method* to set the field value.
 
+If a filed setter method is available in the route class, it will be used to set the query parameter field value. This allows, for example, to perform some operations one the query parameter value before it is setted as field value.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation3.java[tag=route1,indent=0]
+----
+<1> The setter method will be used to set the `parameter` query parameter field value
 
 [[QueryParameterTypes]]
 ==== Built in query parameter types

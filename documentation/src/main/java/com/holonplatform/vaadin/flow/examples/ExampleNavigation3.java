@@ -29,11 +29,7 @@ public class ExampleNavigation3 {
 		@QueryParameter
 		private Integer parameter;
 
-		public Integer getParameter() { // <1>
-			return parameter;
-		}
-
-		public void setParameter(Integer parameter) { // <2>
+		public void setParameter(Integer parameter) { // <1>
 			this.parameter = parameter;
 		}
 
