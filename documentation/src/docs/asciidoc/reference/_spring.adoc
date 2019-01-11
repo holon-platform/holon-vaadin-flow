@@ -95,5 +95,32 @@ See <<I18NProvider>>.
 
 This feature can be disabled setting the application configuration property `holon.vaadin.localization-context.i18nprovider` to `false`.
 
+[[Starters]]
+=== Spring Boot starters
 
+The following _starter_ artifacts are available to provide a quick project configuration setup using Maven dependency system:
 
+*1.* The *Vaadin Flow starter* provides the dependencies to the Vaadin Flow Spring Boot integration artifact `holon-vaadin-flow-spring-boot`, in addition to:
+
+* The link:holon-core.html#SpringBoot[Holon Platform Core Module Spring Boot integration^] base starter (`holon-starter`).
+* The Spring Boot `spring-boot-starter-web` starter, which includes the embedded *Tomcat* auto-configuration.
+
+See the link:https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[Spring Boot starters documentation^] for details on Spring Boot _starters_.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-starter-vaadin-flow</artifactId>
+<version>{revnumber}</version>
+----
+
+*2.* The *Vaadin Flow starter using Undertow* provides the same dependencies as the previous starter, but uses *Undertow* instead of Tomcat as embedded servlet container.
+
+_Maven coordinates_:
+[source, xml, subs="attributes+"]
+----
+<groupId>com.holon-platform.vaadin</groupId>
+<artifactId>holon-starter-vaadin-flow-undertow</artifactId>
+<version>{revnumber}</version>
+----
