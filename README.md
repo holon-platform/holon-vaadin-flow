@@ -1,9 +1,12 @@
 # Holon platform Vaadin Flow module
 
+> Latest release: [5.2.0](#obtain-the-artifacts)
+
 This is the __Vaadin Flow UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin Flow](https://vaadin.com/flow) web applications platform, focusing on the user interface components, navigation and data binding features.
 
 * A Java API to build (using _fluent_ builders), manage and use the web application UI components.
 * Integration with the platform foundation architecture, such as the `Property` model and the `Datastore` API, the authentication, authorization and localization support.
+* Routing targets query parameters injection using the `@QueryParameter` annotation, with extensible Java type conversion support.
 * A `Navigator` API to manage the web application routing, with query parameters support.
 * __Spring__ and __Spring Boot__ integration.
 
@@ -13,12 +16,95 @@ Just like any other platform module, this artifact is part of the [Holon Platfor
 
 See [Getting started](#getting-started) and the [platform documentation](https://docs.holon-platform.com/current/reference) for further details.
 
-> THIS MODULE IS UNDER DEVELOPMENT.
-> The module documentation and usage guide will be available when the first stable release will be published.
-
 ## At-a-glance overview
 
-TBD
+_Component builders:_
+```java
+Div label = Components.label()
+  .text("Label text")
+  .width("200px")
+  .build();
+```
+
+_Dialog:_
+```java
+Components.dialog.question(confirm -> {
+    // handle user response (true/false)
+  }).text("Default text", "message.code")
+  .open();
+```
+
+_Item listing:_
+```java
+PropertyListing listing = PropertyListing.builder(SUBJECT) 
+  .dataSource(datastore, TARGET)
+  .withQueryFilter(NAME.isNotNull())
+  .withQuerySort(ID.asc())
+  .frozenColumns(1) 
+  .withComponentColumn(item -> new Button(item.getValue(NAME)))
+    .sortUsing(NAME)
+    .displayAsFirst()
+    .add()
+  .multiSelect()
+  .withSelectionListener(event -> {
+    // ...
+  })
+  .build();
+  
+listing.refresh();
+```
+
+_Input components and forms:_
+```java
+Input<String> input = Input.string()
+  .label("My label", "label.message.code")
+  .maxLength(50)
+  .build();
+  
+SingleSelect<String> singleSelect = Input.singleSelect(ID)
+  .dataSource(datastore, TARGET, SUBJECT)
+  .build();
+  
+PropertyInputForm form = PropertyInputForm.formLayout(SUBJECT)
+  .hidden(ID)
+  .propertyCaption(NAME, "My name", "name.message.code")
+  .build();
+  
+form.validate();
+
+PropertyBox value = form.getValue();
+```
+
+_Query parameters injection:_
+```java
+@Route("some/path")
+public class View extends Div {
+
+  @QueryParameter
+  private String parameter1;
+  
+  @QueryParameter("myparam2")
+  private Integer parameter2;
+  
+  @QueryParameter(value = "myparam3", required = true)
+  private LocalDate parameter3;
+
+}
+```
+
+_Navigator API:_
+```java
+Navigator navigator = Navigator.get();
+
+navigator.navigateTo("some/path");
+
+navigator.navigateBack();
+
+navigator.navigation(View.class)
+  .withQueryParameter("myparam", new Integer(1))
+  .withQueryParameter("multi", "a", "b", "c")
+  .navigate();
+```
 
 ## Code structure
 
@@ -46,7 +132,7 @@ _Maven BOM:_
     <dependency>
         <groupId>com.holon-platform.vaadin</groupId>
         <artifactId>holon-vaadin-flow-bom</artifactId>
-        <version>5.2.0-beta1-SNAPSHOT</version>
+        <version>5.2.0</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency>
