@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -59,7 +61,7 @@
 		<bintray.package>holon-vaadin-flow</bintray.package>
 
 		<!-- Holon core -->
-		<holon.core.version>5.2.0-rc3-SNAPSHOT</holon.core.version>
+		<holon.core.version>5.2.0</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>12.0.3</vaadin.version>
@@ -70,7 +72,7 @@
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test JDBC Datastore -->
-		<holon.jdbc.datastore.version>5.2.0-rc2</holon.jdbc.datastore.version>
+		<holon.jdbc.datastore.version>5.2.0</holon.jdbc.datastore.version>
 		<!-- Mockito (test) -->
 		<mockito.version>2.23.0</mockito.version>
 
