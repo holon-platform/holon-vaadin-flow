@@ -16,6 +16,13 @@ Just like any other platform module, this artifact is part of the [Holon Platfor
 
 See [Getting started](#getting-started) and the [platform documentation](https://docs.holon-platform.com/current/reference) for further details.
 
+## Previous Vaadin versions
+
+The Holon platform Vaadin module is also available for previous Vaadin platform versions:
+
+* [Vaadin 8 series](https://github.com/holon-platform/holon-vaadin)
+* [Vaadin 7 series](https://github.com/holon-platform/holon-vaadin7)
+
 ## At-a-glance overview
 
 _Component builders:_
