@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -64,20 +66,74 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	}
 
 	/**
-	 * Sets the flex grow property of the components inside the layout. The flex grow property specifies what amount of
-	 * the available space inside the layout the component should take up, proportionally to the other components.
+	 * Sets the flex grow property of the components inside the layout.
+	 * <p>
+	 * The flex grow property specifies what amount of the available space inside the layout the component should take
+	 * up, proportionally to the other components.
+	 * </p>
 	 * <p>
 	 * For example, if all components have a flex grow property value set to 1, the remaining space in the layout will
 	 * be distributed equally to all components inside the layout. If you set a flex grow property of one component to
 	 * 2, that component will take twice the available space as the other components, and so on.
+	 * </p>
 	 * <p>
 	 * Setting to flex grow property value 0 disables the expansion of the element container. Negative values are not
 	 * allowed.
+	 * </p>
 	 * @param flexGrow the proportion of the available space the element container should take up
 	 * @param elementContainers the containers (components) to apply the flex grow property
 	 * @return this
 	 */
 	C flexGrow(double flexGrow, HasElement... elementContainers);
+
+	/**
+	 * Adds the given component as child of this component and set the flex grow property for the component.
+	 * <p>
+	 * The flex grow property specifies what amount of the available space inside the layout the component should take
+	 * up, proportionally to the other components.
+	 * </p>
+	 * <p>
+	 * For example, if all components have a flex grow property value set to 1, the remaining space in the layout will
+	 * be distributed equally to all components inside the layout. If you set a flex grow property of one component to
+	 * 2, that component will take twice the available space as the other components, and so on.
+	 * </p>
+	 * <p>
+	 * Setting to flex grow property value 0 disables the expansion of the element container. Negative values are not
+	 * allowed.
+	 * </p>
+	 * @param component The component to add
+	 * @param flexGrow the proportion of the available space the element container should take up
+	 * @return this
+	 */
+	default C addAndExpand(Component component, double flexGrow) {
+		add(component);
+		return flexGrow(flexGrow, component);
+	}
+
+	/**
+	 * Adds the component of given {@link HasComponent} as child of this component and set the flex grow property for
+	 * the component.
+	 * <p>
+	 * The flex grow property specifies what amount of the available space inside the layout the component should take
+	 * up, proportionally to the other components.
+	 * </p>
+	 * <p>
+	 * For example, if all components have a flex grow property value set to 1, the remaining space in the layout will
+	 * be distributed equally to all components inside the layout. If you set a flex grow property of one component to
+	 * 2, that component will take twice the available space as the other components, and so on.
+	 * </p>
+	 * <p>
+	 * Setting to flex grow property value 0 disables the expansion of the element container. Negative values are not
+	 * allowed.
+	 * </p>
+	 * @param component The {@link HasComponent} to add
+	 * @param flexGrow the proportion of the available space the element container should take up
+	 * @return this
+	 */
+	default C addAndExpand(HasComponent component, double flexGrow) {
+		ObjectUtils.argumentNotNull(component, "Component to add must be not null");
+		return addAndExpand(component.getComponent(), flexGrow);
+	}
 
 	/**
 	 * Gets the {@link JustifyContentMode} used by this layout.
