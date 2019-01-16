@@ -244,6 +244,54 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 		DatastorePropertySelectModeSingleSelectInputBuilder<T> filterConverter(
 				Function<String, QueryFilter> filterConverter);
 
+		/**
+		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
+		 * providing a filter to check if the property value <em>contains</em> the user filter text, ignoring case.
+		 * @param property The property to use for the query filter (not null)
+		 * @return this
+		 * @see #filterConverter(Function)
+		 */
+		default DatastorePropertySelectModeSingleSelectInputBuilder<T> filterByContains(Property<String> property) {
+			return filterByContains(property, true);
+		}
+
+		/**
+		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
+		 * providing a filter to check if the property value <em>contains</em> the user filter text.
+		 * @param property The property to use for the query filter (not null)
+		 * @param ignoreCase Whether to ignore case
+		 * @return this
+		 * @see #filterConverter(Function)
+		 */
+		default DatastorePropertySelectModeSingleSelectInputBuilder<T> filterByContains(Property<String> property,
+				boolean ignoreCase) {
+			return filterConverter(text -> QueryFilter.contains(property, text, ignoreCase));
+		}
+
+		/**
+		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
+		 * providing a filter to check if the property value <em>starts with</em> the user filter text, ignoring case.
+		 * @param property The property to use for the query filter (not null)
+		 * @return this
+		 * @see #filterConverter(Function)
+		 */
+		default DatastorePropertySelectModeSingleSelectInputBuilder<T> filterByStarts(Property<String> property) {
+			return filterByStarts(property, true);
+		}
+
+		/**
+		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
+		 * providing a filter to check if the property value <em>starts with</em> the user filter text.
+		 * @param property The property to use for the query filter (not null)
+		 * @param ignoreCase Whether to ignore case
+		 * @return this
+		 * @see #filterConverter(Function)
+		 */
+		default DatastorePropertySelectModeSingleSelectInputBuilder<T> filterByStarts(Property<String> property,
+				boolean ignoreCase) {
+			return filterConverter(text -> QueryFilter.startsWith(property, text, ignoreCase));
+		}
+
 	}
 
 	// builders
