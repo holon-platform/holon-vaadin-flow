@@ -178,6 +178,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private final AtomicInteger columnKeySuffix = new AtomicInteger(0);
 
 	/**
+	 * Property for which to expand the corresponding column
+	 */
+	private P propertyToExpand;
+
+	/**
 	 * Whether the listing is editable
 	 */
 	private boolean editable = false;
@@ -627,6 +632,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
+	 * Get the property for which to expand the corresponding column.
+	 * @return the property to expand
+	 */
+	protected P getPropertyToExpand() {
+		return propertyToExpand;
+	}
+
+	/**
+	 * Set the property for which to expand the corresponding column.
+	 * @param propertyToExpand the property to set
+	 */
+	protected void setPropertyToExpand(P propertyToExpand) {
+		this.propertyToExpand = propertyToExpand;
+	}
+
+	/**
 	 * Build the listing, adding a Grid column for each item property and setting up the item editor if
 	 * <code>editable</code> is <code>true</code>.
 	 * @param editable Whether the listing is editable
@@ -672,7 +693,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		column.setFrozen(configuration.isFrozen());
 		// width
 		configuration.getWidth().ifPresent(w -> column.setWidth(w));
-		column.setFlexGrow(configuration.getFlexGrow());
+		// flex grow
+		if (getPropertyToExpand() != null) {
+			if (property.equals(getPropertyToExpand())) {
+				column.setFlexGrow(1);
+			} else {
+				column.setFlexGrow(0);
+			}
+		} else {
+			column.setFlexGrow(configuration.getFlexGrow());
+		}
 		// alignment
 		configuration.getAlignment().ifPresent(a -> column.setTextAlign(asColumnTextAlign(a)));
 		// sort
@@ -2017,6 +2047,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C flexGrow(P property, int flexGrow) {
 			instance.getColumnConfiguration(property).setFlexGrow(flexGrow);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
+		 */
+		@Override
+		public C expand(P property) {
+			instance.setPropertyToExpand(property);
 			return getConfigurator();
 		}
 

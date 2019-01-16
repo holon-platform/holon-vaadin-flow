@@ -246,6 +246,17 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C flexGrow(P property, int flexGrow);
 
 	/**
+	 * Expand the column which corresponds to given property, taking all the available space.
+	 * <p>
+	 * The flew grow value for the provided column will be set to <code>1</code>, while the other columns flew grow
+	 * value will be set to <code>0</code>.
+	 * </p>
+	 * @param property The property which identifies the column to expand
+	 * @return this
+	 */
+	C expand(P property);
+
+	/**
 	 * Sets the text alignment for the column which corresponds to given property.
 	 * <p>
 	 * Default is {@link ColumnAlignment#LEFT}.

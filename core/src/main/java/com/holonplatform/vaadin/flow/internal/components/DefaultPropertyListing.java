@@ -804,6 +804,16 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder expand(Property<?> property) {
+			builder.expand(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
 		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment)
 		 */

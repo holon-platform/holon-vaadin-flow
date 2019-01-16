@@ -720,6 +720,16 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> expand(String property) {
+			builder.expand(property);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
 		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment)
 		 */
