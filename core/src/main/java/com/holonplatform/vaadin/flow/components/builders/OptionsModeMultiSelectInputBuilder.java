@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.holonplatform.core.datastore.DataTarget;
@@ -134,7 +135,8 @@ public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsMo
 	 */
 	public interface PropertyOptionsModeMultiSelectInputBuilder<T>
 			extends OptionsModeMultiSelectInputBuilder<T, PropertyBox, PropertyOptionsModeMultiSelectInputBuilder<T>>,
-			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeMultiSelectInputBuilder<T>, PropertyOptionsModeMultiSelectInputBuilder<T>> {
+			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeMultiSelectInputBuilder<T>, PropertyOptionsModeMultiSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<Set<T>, T, PropertyOptionsModeMultiSelectInputBuilder<T>> {
 
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
@@ -160,7 +162,8 @@ public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsMo
 	 */
 	public interface DatastorePropertyOptionsModeMultiSelectInputBuilder<T> extends
 			OptionsModeMultiSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>> {
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<Set<T>, T, DatastorePropertyOptionsModeMultiSelectInputBuilder<T>> {
 
 	}
 

@@ -282,8 +282,12 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 		final List<QueryFilter> filters = new LinkedList<>();
 
 		// data provider filter
-		query.getFilter().ifPresent(f -> filters.add(Optional.ofNullable(filterConverter.apply(f)).orElseThrow(
-				() -> new IllegalStateException("The query filter converter returned a null filter for [" + f + "]"))));
+		query.getFilter().ifPresent(f -> {
+			QueryFilter filter = filterConverter.apply(f);
+			if (filter != null) {
+				filters.add(filter);
+			}
+		});
 
 		// provided filters
 		queryConfigurationProviders.forEach(p -> {

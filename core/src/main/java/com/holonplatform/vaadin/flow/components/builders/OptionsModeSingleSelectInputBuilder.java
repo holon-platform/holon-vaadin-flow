@@ -149,7 +149,8 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 */
 	public interface PropertyOptionsModeSingleSelectInputBuilder<T>
 			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, PropertyOptionsModeSingleSelectInputBuilder<T>>,
-			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>> {
+			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<T, T, PropertyOptionsModeSingleSelectInputBuilder<T>> {
 
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
@@ -175,7 +176,8 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 */
 	public interface DatastorePropertyOptionsModeSingleSelectInputBuilder<T> extends
 			OptionsModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<T, T, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
 
 	}
 

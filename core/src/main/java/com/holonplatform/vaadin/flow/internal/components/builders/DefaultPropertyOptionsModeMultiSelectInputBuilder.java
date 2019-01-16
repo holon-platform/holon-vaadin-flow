@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -158,6 +159,17 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 			ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 		builder.itemCaptionGenerator(itemCaptionGenerator);
 		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+	 * holonplatform.core.property.Property)
+	 */
+	@Override
+	public PropertyOptionsModeMultiSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return itemCaptionGenerator(item -> Objects.toString(item.getValue(property), ""));
 	}
 
 	/*
@@ -481,6 +493,18 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> itemCaptionGenerator(
 				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+		 * holonplatform.core.property.Property)
+		 */
+		@Override
+		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
+			builder.itemCaptionProperty(property);
 			return this;
 		}
 

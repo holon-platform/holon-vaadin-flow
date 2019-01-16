@@ -414,6 +414,15 @@ public class ExampleInput {
 		// end::input22[]
 	}
 
+	public void input22b() {
+		// tag::input22b[]
+		SingleSelect<Long> singleSelect = Input.singleSelect(ID) // <1>
+				.dataSource(getDatastore(), TARGET, SUBJECT) // <2>
+				.itemCaptionProperty(NAME) // <3>
+				.build();
+		// end::input22b[]
+	}
+
 	public void input23() {
 		// tag::input23[]
 		ValidatableInput<String> validatableInput = Input.string() //

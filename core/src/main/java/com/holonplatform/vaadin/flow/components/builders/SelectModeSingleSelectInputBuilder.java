@@ -158,7 +158,8 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 */
 	public interface PropertySelectModeSingleSelectInputBuilder<T>
 			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, PropertySelectModeSingleSelectInputBuilder<T>>,
-			HasPropertyBoxDatastoreFilterableDataProviderConfigurator<String, DatastorePropertySelectModeSingleSelectInputBuilder<T>, PropertySelectModeSingleSelectInputBuilder<T>> {
+			HasPropertyBoxDatastoreFilterableDataProviderConfigurator<String, DatastorePropertySelectModeSingleSelectInputBuilder<T>, PropertySelectModeSingleSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<T, T, PropertySelectModeSingleSelectInputBuilder<T>> {
 
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
@@ -230,7 +231,8 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 */
 	public interface DatastorePropertySelectModeSingleSelectInputBuilder<T> extends
 			SelectModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>> {
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>>,
+			PropertySelectInputConfigurator<T, T, DatastorePropertySelectModeSingleSelectInputBuilder<T>> {
 
 		/**
 		 * Set the function to use to convert the {@link String} type user filter into a {@link QueryFilter} type, to be

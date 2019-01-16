@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -235,6 +236,17 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 			ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 		builder.itemCaptionGenerator(itemCaptionGenerator);
 		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+	 * holonplatform.core.property.Property)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return itemCaptionGenerator(item -> Objects.toString(item.getValue(property), ""));
 	}
 
 	/*
@@ -640,6 +652,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		public DatastorePropertySelectModeSingleSelectInputBuilder<T> itemCaptionGenerator(
 				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+		 * holonplatform.core.property.Property)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
+			builder.itemCaptionProperty(property);
 			return this;
 		}
 

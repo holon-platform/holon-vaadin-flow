@@ -1830,6 +1830,16 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <2> Use `SUBJECT` as items property set, which includes the `NAME` property
 <3> Set the `ItemCaptionGenerator`: the `NAME` property value is used as item caption
 
+For `Property` bound selectable inputs, a convenience `itemCaptionProperty` builder method is available to provide the property to use to obtain the item value which will be used as items caption.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input22b,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` selection property
+<2> Use `SUBJECT` as items property set, which includes the `NAME` property
+<3> The `NAME` property value is used as item caption
+
 [[ValidatableInput]]
 ==== Validatable inputs
 
