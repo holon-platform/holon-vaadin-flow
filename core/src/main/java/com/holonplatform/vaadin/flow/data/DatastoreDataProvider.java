@@ -92,6 +92,18 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	 */
 	void setQuerySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter);
 
+	/**
+	 * Get the function to use to convert the data provider filter type to a {@link QueryFilter} type.
+	 * @return The filter converter
+	 */
+	Function<F, QueryFilter> getFilterConverter();
+
+	/**
+	 * Set the function to use to convert the data provider filter type to a {@link QueryFilter} type.
+	 * @param filterConverter The filter converter to set (not null)
+	 */
+	void setFilterConverter(Function<F, QueryFilter> filterConverter);
+
 	// ------- builders
 
 	/**

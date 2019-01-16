@@ -232,6 +232,16 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 			SelectModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>>,
 			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertySelectModeSingleSelectInputBuilder<T>> {
 
+		/**
+		 * Set the function to use to convert the {@link String} type user filter into a {@link QueryFilter} type, to be
+		 * used with a Datastore query. The {@link String} type user filter represents the user text input which can be
+		 * used to filter the select suggestions within the available item set.
+		 * @param filterConverter The {@link String} type user filter to {@link QueryFilter} converter (not null)
+		 * @return this
+		 */
+		DatastorePropertySelectModeSingleSelectInputBuilder<T> filterConverter(
+				Function<String, QueryFilter> filterConverter);
+
 	}
 
 	// builders

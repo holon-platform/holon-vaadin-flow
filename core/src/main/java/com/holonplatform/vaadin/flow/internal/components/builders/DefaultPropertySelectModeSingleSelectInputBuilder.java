@@ -608,6 +608,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.
+		 * DatastorePropertySelectModeSingleSelectInputBuilder#filterConverter(java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> filterConverter(
+				Function<String, QueryFilter> filterConverter) {
+			this.datastoreDataProvider.setFilterConverter(filterConverter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#renderer(com.vaadin.flow
 		 * .data.renderer.Renderer)

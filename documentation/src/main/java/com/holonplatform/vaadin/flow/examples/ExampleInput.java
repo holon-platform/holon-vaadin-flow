@@ -369,6 +369,15 @@ public class ExampleInput {
 		// end::input19[]
 	}
 
+	public void input19b() {
+		// tag::input19b[]
+		SingleSelect<Long> singleSelect = Input.singleSelect(ID) // <1>
+				.dataSource(getDatastore(), TARGET, SUBJECT) // <2>
+				.filterConverter(text -> NAME.contains(text)) // <3>
+				.build();
+		// end::input19b[]
+	}
+
 	// tag::enum1[]
 	enum MyEnum {
 

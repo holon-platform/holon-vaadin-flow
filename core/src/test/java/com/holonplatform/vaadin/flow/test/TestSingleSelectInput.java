@@ -874,6 +874,21 @@ public class TestSingleSelectInput {
 		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
 		assertEquals(1, pitems.size());
 		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
+		
+		input4 = Input.singleSelect(CODE)
+				.dataSource(datastore, TARGET1, CODE, DESCRIPTION)
+				.filterConverter(f -> DESCRIPTION.endsWith(f))
+				.build();
+		assertNotNull(input4);
+
+		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
+		assertNotNull(dp4);
+
+		assertEquals(2, dp4.size(new Query<>()));
+
+		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
+		assertEquals(1, pitems.size());
+		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
 
 		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, f -> DESCRIPTION.endsWith(f), TEST1)
 				.withQueryFilter(CODE.eq("A")).build();

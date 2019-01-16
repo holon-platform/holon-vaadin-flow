@@ -78,7 +78,7 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	/**
 	 * Query filter converter
 	 */
-	private final Function<F, QueryFilter> filterConverter;
+	private Function<F, QueryFilter> filterConverter;
 
 	/**
 	 * Query sort order converter
@@ -142,6 +142,25 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	@Override
 	public void setItemIdentifier(Function<T, Object> itemIdentifier) {
 		this.itemIdentifier = itemIdentifier;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getFilterConverter()
+	 */
+	@Override
+	public Function<F, QueryFilter> getFilterConverter() {
+		return filterConverter;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setFilterConverter(java.util.function.Function)
+	 */
+	@Override
+	public void setFilterConverter(Function<F, QueryFilter> filterConverter) {
+		ObjectUtils.argumentNotNull(filterConverter, "The filter converter function must be not null");
+		this.filterConverter = filterConverter;
 	}
 
 	/*

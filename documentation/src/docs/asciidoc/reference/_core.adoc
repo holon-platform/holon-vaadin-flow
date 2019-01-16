@@ -1747,6 +1747,10 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 
 When a `Datastore` based data source is used (see <<SelectPropertyDataSource>>), a function can be configured to transform the text typed by the user into the `QueryFilter` to add to the Datastore query to filter the returned items.
 
+The filter converter function can be configured either using:
+
+*1.* The `dataSource` builder method version which accepts the filter converter function:
+
 [source, java]
 ----
 include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input19,indent=0]
@@ -1755,6 +1759,16 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <2> Use a `Datastore` as items data source, providing the `DataTarget` to use 
 <3> Provide the function to convert the user typed text value to a `QueryFilter`
 <4> Use the `SUBJECT` property set as items property set
+
+*1.* The `filterConverter` builder method:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input19b,indent=0]
+----
+<1> Create a `SingleSelect` using the `ID` property as selection property
+<2> Use a `Datastore` as items data source, providing the `DataTarget` to use and `SUBJECT` as items property set
+<3> Provide the function to convert the user typed text value to a `QueryFilter`
 
 [[EnumSelect]]
 ===== Use select inputs with enumerations
