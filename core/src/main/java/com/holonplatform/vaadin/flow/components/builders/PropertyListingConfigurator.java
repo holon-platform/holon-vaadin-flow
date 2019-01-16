@@ -67,7 +67,7 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
 	 */
 	ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, C> withComponentColumn(
-			VirtualProperty<Component> property);
+			VirtualProperty<? extends Component> property);
 
 	/**
 	 * Set the {@link PropertyRenderer} to provide the {@link Input} to use as given <code>property</code> column

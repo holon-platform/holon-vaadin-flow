@@ -393,7 +393,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
-				VirtualProperty<Component> property) {
+				VirtualProperty<? extends Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
 			final ItemListingColumn<Property<?>, PropertyBox, ?> column = getInstance().addPropertyColumn(property);
 			column.setRenderer(new ComponentRenderer<>(item -> property.getValueProvider().getPropertyValue(item)));
@@ -531,9 +531,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withComponentColumn(
-				VirtualProperty<Component> property) {
+				VirtualProperty<? extends Component> property) {
 			ObjectUtils.argumentNotNull(property, "VirtualProperty must be not null");
-			builder.getInstance().addPropertyColumn(property);
+			final ItemListingColumn<Property<?>, PropertyBox, ?> column = builder.getInstance()
+					.addPropertyColumn(property);
+			column.setRenderer(new ComponentRenderer<>(item -> property.getValueProvider().getPropertyValue(item)));
 			return new DefaultItemListingColumnBuilder<>(property, builder.getInstance(), this);
 		}
 
