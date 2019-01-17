@@ -72,6 +72,7 @@ import com.vaadin.flow.component.grid.editor.EditorCloseListener;
 import com.vaadin.flow.component.grid.editor.EditorOpenListener;
 import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -106,6 +107,15 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		for (Property<?> property : propertySet) {
 			addPropertyColumn(property);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemSet#getDataProvider()
+	 */
+	@Override
+	public DataProvider<PropertyBox, ?> getDataProvider() {
+		return getGrid().getDataProvider();
 	}
 
 	/*

@@ -23,6 +23,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.data.provider.DataProvider;
 
 /**
  * A component to display a set of items as tabular data, using the item properties as column ids.
@@ -159,6 +160,12 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void refreshEditingItem();
+
+	/**
+	 * Get the {@link DataProvider} used by this item listing as data source.
+	 * @return The {@link DataProvider} used as data source
+	 */
+	DataProvider<T, ?> getDataProvider();
 
 	// ------- listing sections handlers
 
