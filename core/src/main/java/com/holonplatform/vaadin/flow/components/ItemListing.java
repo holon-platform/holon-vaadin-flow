@@ -53,6 +53,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * Get the header text of the column identified by given property id, if available.
 	 * @param property The column property id (not null)
 	 * @return Optional header text of the column identified by given property id
+	 * @since 5.2.2
 	 */
 	Optional<String> getColumnHeader(P property);
 
@@ -171,6 +172,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Get the {@link DataProvider} used by this item listing as data source.
 	 * @return The {@link DataProvider} used as data source
+	 * @since 5.2.2
 	 */
 	DataProvider<T, ?> getDataProvider();
 
