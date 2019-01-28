@@ -173,6 +173,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private final Map<P, ItemListingColumn<P, T, ?>> propertyColumns = new HashMap<>();
 
 	/**
+	 * Column headers.
+	 */
+	private final Map<P, String> columnsHeaders = new HashMap<>();
+
+	/**
 	 * Column key suffix generator to ensure unique column names
 	 */
 	private final AtomicInteger columnKeySuffix = new AtomicInteger(0);
@@ -467,6 +472,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 				.setVisible(visible);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getColumnHeader(java.lang.Object)
+	 */
+	@Override
+	public Optional<String> getColumnHeader(P property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return Optional.ofNullable(columnsHeaders.get(property));
+	}
+
 	/**
 	 * Add an item property to be rendered as a listing column.
 	 * @param property The item property id to add (not null)
@@ -656,6 +671,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		this.editable = editable;
 		// remove all columns
 		getGrid().getColumns().forEach(column -> getGrid().removeColumn(column));
+		columnsHeaders.clear();
 		// add a column for each visible property
 		getVisibleColumnProperties().forEach(property -> addGridColumn(property));
 		// check init editor
@@ -678,8 +694,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		// configure the column
 		column.setKey(configuration.getColumnKey());
 		// header
-		getColumnHeader(configuration).flatMap(t -> LocalizationProvider.localize(t))
-				.ifPresent(h -> column.setHeader(h));
+		getColumnHeader(configuration).flatMap(t -> LocalizationProvider.localize(t)).ifPresent(h -> {
+			column.setHeader(h);
+			columnsHeaders.put(property, h);
+		});
 		configuration.getHeaderComponent().ifPresent(c -> column.setHeader(c));
 		// footer
 		configuration.getFooterText().flatMap(t -> LocalizationProvider.localize(t))

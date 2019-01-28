@@ -50,6 +50,13 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	void setColumnVisible(P property, boolean visible);
 
 	/**
+	 * Get the header text of the column identified by given property id, if available.
+	 * @param property The column property id (not null)
+	 * @return Optional header text of the column identified by given property id
+	 */
+	Optional<String> getColumnHeader(P property);
+
+	/**
 	 * Gets whether the row details component for given <code>item</code> is visible.
 	 * @param item Item to check whether the row details component is visible (not null)
 	 * @return <code>true</code> if row details component is visible for given item, <code>false</code> otherwise
