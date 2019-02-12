@@ -670,7 +670,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> visible(String property, boolean visible) {
-			builder.visible(visible);
+			builder.visible(property, visible);
 			return this;
 		}
 

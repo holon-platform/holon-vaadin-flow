@@ -754,7 +754,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 */
 		@Override
 		public DatastorePropertyListingBuilder visible(Property<?> property, boolean visible) {
-			builder.visible(visible);
+			builder.visible(property, visible);
 			return this;
 		}
 
