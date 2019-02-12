@@ -276,6 +276,18 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C renderer(P property, Renderer<T> renderer);
 
 	/**
+	 * Render the column which corresponds to given property as a {@link Component}, using given function to provide the
+	 * component for each listing item.
+	 * @param property The property to configure (not null)
+	 * @param renderer The function to use to provide the component for each listing item (not null)
+	 * @return this
+	 */
+	default <R extends Component> C componentRenderer(P property, Function<T, R> renderer) {
+		ObjectUtils.argumentNotNull(renderer, "Renderer function must be not null");
+		return renderer(property, new ComponentRenderer<>(item -> renderer.apply(item)));
+	}
+
+	/**
 	 * Sets the {@link ValueProvider} to use to obtain the text to display in the column which corresponds to given
 	 * property.
 	 * @param property The property to configure (not null)
