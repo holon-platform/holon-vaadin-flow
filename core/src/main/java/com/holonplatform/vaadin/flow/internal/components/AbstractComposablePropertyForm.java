@@ -238,7 +238,7 @@ public abstract class AbstractComposablePropertyForm<C extends Component, E exte
 						LocalizationProvider.localize(propertyCaptions.get(property))
 								.ifPresent(message -> hasLabel.setLabel(message));
 					} else {
-						if (hasLabel.getLabel() == null) {
+						if (hasLabel.getLabel() == null || hasLabel.getLabel().trim().equals("")) {
 							// default behaviour
 							hasLabel.setLabel(
 									LocalizationProvider.localize(property).orElseGet(() -> property.getName()));
