@@ -15,16 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
-import java.util.Optional;
-
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
 
 /**
  * Default {@link ValidatableInputBuilder}.
@@ -33,27 +29,16 @@ import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
  *
  * @since 5.2.0
  */
-public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilder<T, ValidatableInput<T>> {
+public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilder<T> {
 
 	private final ValidatableInput<T> instance;
 
-	private boolean required = false;
-
-	private Validator<T> requiredValidator;
-
-	private Localizable requiredMessage;
+	private final DefaultValidatableInputConfigurator<T> validatableInputConfigurator;
 
 	public DefaultValidatableInputBuilder(Input<T> input) {
 		super();
 		this.instance = ValidatableInput.from(input);
-	}
-
-	protected Optional<Validator<T>> getRequiredValidator() {
-		return Optional.ofNullable(requiredValidator);
-	}
-
-	protected Optional<Localizable> getRequiredMessage() {
-		return Optional.ofNullable(requiredMessage);
+		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 
 	/*
@@ -61,9 +46,8 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * @see com.holonplatform.vaadin.components.ValidatableInput.Builder#withValidator(com.holonplatform.core.Validator)
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> withValidator(Validator<T> validator) {
-		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
-		instance.addValidator(validator);
+	public ValidatableInputBuilder<T> withValidator(Validator<T> validator) {
+		validatableInputConfigurator.withValidator(validator);
 		return this;
 	}
 
@@ -73,10 +57,9 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> validationStatusHandler(
+	public ValidatableInputBuilder<T> validationStatusHandler(
 			ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
-		ObjectUtils.argumentNotNull(validationStatusHandler, "ValidationStatusHandler must be not null");
-		instance.setValidationStatusHandler(validationStatusHandler);
+		validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 		return this;
 	}
 
@@ -85,8 +68,8 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * @see com.holonplatform.vaadin.components.ValidatableInput.Builder#validateOnValueChange(boolean)
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> validateOnValueChange(boolean validateOnValueChange) {
-		instance.setValidateOnValueChange(validateOnValueChange);
+	public ValidatableInputBuilder<T> validateOnValueChange(boolean validateOnValueChange) {
+		validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 		return this;
 	}
 
@@ -95,8 +78,8 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * @see com.holonplatform.vaadin.components.ValidatableInput.Builder#required()
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> required() {
-		this.required = true;
+	public ValidatableInputBuilder<T> required() {
+		validatableInputConfigurator.required();
 		return this;
 	}
 
@@ -105,9 +88,8 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * @see com.holonplatform.vaadin.components.ValidatableInput.Builder#required(com.holonplatform.core.Validator)
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> required(Validator<T> validator) {
-		this.required = true;
-		this.requiredValidator = validator;
+	public ValidatableInputBuilder<T> required(Validator<T> validator) {
+		validatableInputConfigurator.required(validator);
 		return this;
 	}
 
@@ -117,9 +99,8 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 * Localizable)
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> required(Localizable message) {
-		this.required = true;
-		this.requiredMessage = message;
+	public ValidatableInputBuilder<T> required(Localizable message) {
+		validatableInputConfigurator.required(message);
 		return this;
 	}
 
@@ -129,14 +110,7 @@ public class DefaultValidatableInputBuilder<T> implements ValidatableInputBuilde
 	 */
 	@Override
 	public ValidatableInput<T> build() {
-		// check required
-		if (required) {
-			instance.setRequired(true);
-			// add required validator
-			instance.addValidator(getRequiredValidator().orElse(new RequiredInputValidator<>(instance,
-					getRequiredMessage().orElse(RequiredInputValidator.DEFAULT_REQUIRED_ERROR))));
-		}
-		return instance;
+		return validatableInputConfigurator.configure(instance);
 	}
 
 }

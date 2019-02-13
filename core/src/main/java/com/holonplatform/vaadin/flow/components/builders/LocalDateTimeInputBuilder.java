@@ -18,15 +18,17 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.time.LocalDateTime;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultLocalDateTimeInputBuilder;
 
 /**
- * A {@link BaseDateInputBuilder} to create {@link LocalDateTime} type {@link Input} components.
+ * {@link LocalDateTime} type {@link Input} components builder.
  *
  * @since 5.2.0
  */
-public interface LocalDateTimeInputBuilder extends BaseDateInputBuilder<LocalDateTime, LocalDateTimeInputBuilder>,
-		HasTimeInputConfigurator<LocalDateTimeInputBuilder> {
+public interface LocalDateTimeInputBuilder extends LocalDateTimeInputConfigurator<LocalDateTimeInputBuilder>,
+		InputBuilder<LocalDateTime, ValueChangeEvent<LocalDateTime>, Input<LocalDateTime>, ValidatableInput<LocalDateTime>, LocalDateTimeInputBuilder, ValidatableLocalDateTimeInputBuilder> {
 
 	/**
 	 * Create a new {@link LocalDateTimeInputBuilder}.

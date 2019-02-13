@@ -15,26 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
-import com.holonplatform.vaadin.flow.components.ValidatableInput;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
-import com.holonplatform.vaadin.flow.components.events.ClickEvent;
-import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
-import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
-import com.vaadin.flow.component.BlurNotifier;
-import com.vaadin.flow.component.BlurNotifier.BlurEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.FocusNotifier;
-import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.holonplatform.vaadin.flow.components.builders.ValidatableBooleanInputBuilder;
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 /**
@@ -42,25 +25,11 @@ import com.vaadin.flow.component.checkbox.Checkbox;
  *
  * @since 5.2.0
  */
-public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConfigurator<Checkbox, BooleanInputBuilder>
+public class DefaultBooleanInputBuilder extends AbstractBooleanInputBuilder<BooleanInputBuilder>
 		implements BooleanInputBuilder {
 
-	private final List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners = new LinkedList<>();
-
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
-	protected final DefaultHasLabelConfigurator<Checkbox> labelConfigurator;
-
 	public DefaultBooleanInputBuilder() {
-		super(new Checkbox());
-
-		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
-		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
-			getComponent().setLabel(label);
-		}, this);
+		super();
 	}
 
 	/*
@@ -70,60 +39,6 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 	@Override
 	protected BooleanInputBuilder getConfigurator() {
 		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
-	 */
-	@Override
-	public Input<Boolean> build() {
-		return Input.builder(getComponent()).labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
-				.withValueChangeListeners(valueChangeListeners).focusOperation(f -> f.focus())
-				.hasEnabledSupplier(f -> f).build();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
-	 */
-	@Override
-	public ValidatableInputBuilder<Boolean, ValidatableInput<Boolean>> validatable() {
-		return ValidatableInputBuilder.create(build());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
-	 */
-	@Override
-	public BooleanInputBuilder readOnly(boolean readOnly) {
-		getComponent().setReadOnly(readOnly);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
-	 */
-	@Override
-	public BooleanInputBuilder withValue(Boolean value) {
-		getComponent().setValue(value);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public BooleanInputBuilder withValueChangeListener(
-			ValueChangeListener<Boolean, ValueChangeEvent<Boolean>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
-		return getConfigurator();
 	}
 
 	/*
@@ -138,134 +53,20 @@ public class DefaultBooleanInputBuilder extends AbstractLocalizableComponentConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 	 */
 	@Override
-	public BooleanInputBuilder width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
+	public Input<Boolean> build() {
+		return buildAsInput();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
-	public BooleanInputBuilder height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public BooleanInputBuilder styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public BooleanInputBuilder styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
-	 */
-	@Override
-	public BooleanInputBuilder autofocus(boolean autofocus) {
-		getComponent().setAutofocus(autofocus);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
-	 */
-	@Override
-	public BooleanInputBuilder tabIndex(int tabIndex) {
-		getComponent().setTabIndex(tabIndex);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
-	 */
-	@SuppressWarnings("serial")
-	@Override
-	public BooleanInputBuilder withFocusListener(ComponentEventListener<FocusEvent<Component>> listener) {
-		getComponent().addFocusListener(new ComponentEventListener<FocusNotifier.FocusEvent<Checkbox>>() {
-
-			@Override
-			public void onComponentEvent(FocusEvent<Checkbox> event) {
-				listener.onComponentEvent(new FocusEvent<Component>(event.getSource(), event.isFromClient()));
-			}
-
-		});
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
-	 */
-	@SuppressWarnings("serial")
-	@Override
-	public BooleanInputBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
-		getComponent().addBlurListener(new ComponentEventListener<BlurNotifier.BlurEvent<Checkbox>>() {
-
-			@Override
-			public void onComponentEvent(BlurEvent<Checkbox> event) {
-				listener.onComponentEvent(new BlurEvent<Component>(event.getSource(), event.isFromClient()));
-			}
-
-		});
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
-	 */
-	@Override
-	public BooleanInputBuilder label(Localizable label) {
-		labelConfigurator.label(label);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
-	 * vaadin.flow.components.events.ClickEventListener)
-	 */
-	@Override
-	public BooleanInputBuilder withClickListener(
-			ClickEventListener<Checkbox, ClickEvent<Checkbox>> clickEventListener) {
-		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public BooleanInputBuilder enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
+	public ValidatableBooleanInputBuilder validatable() {
+		return new DefaultValidatableBooleanInputBuilder(getComponent(), getValueChangeListeners());
 	}
 
 }

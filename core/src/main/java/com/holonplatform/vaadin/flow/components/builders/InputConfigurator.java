@@ -83,9 +83,7 @@ public interface InputConfigurator<T, E extends ValueChangeEvent<T>, C extends I
 	 * </ul>
 	 * @return this
 	 */
-	default C required() {
-		return required(true);
-	}
+	C required();
 
 	/**
 	 * Base {@link InputConfigurator}.

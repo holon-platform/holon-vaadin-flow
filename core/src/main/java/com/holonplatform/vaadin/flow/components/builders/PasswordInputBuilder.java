@@ -16,34 +16,17 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPasswordInputBuilder;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link String} type {@link Input} components.
  * 
  * @since 5.2.0
  */
-public interface PasswordInputBuilder
-		extends InputBuilder<String, ValueChangeEvent<String>, Input<String>, PasswordInputBuilder>,
-		InputValueConfigurator<String, ValueChangeEvent<String>, PasswordInputBuilder>,
-		TextInputConfigurator<PasswordInputBuilder>, HasSizeConfigurator<PasswordInputBuilder>,
-		HasStyleConfigurator<PasswordInputBuilder>, HasAutofocusConfigurator<PasswordInputBuilder>,
-		FocusableConfigurator<Component, PasswordInputBuilder>, HasPrefixAndSuffixConfigurator<PasswordInputBuilder>,
-		CompositionNotifierConfigurator<PasswordInputBuilder>, HasPlaceholderConfigurator<PasswordInputBuilder>,
-		HasLabelConfigurator<PasswordInputBuilder>, HasTitleConfigurator<PasswordInputBuilder>,
-		HasPatternConfigurator<PasswordInputBuilder>,
-		HasThemeVariantConfigurator<TextFieldVariant, PasswordInputBuilder>,
-		DeferrableLocalizationConfigurator<PasswordInputBuilder> {
-
-	/**
-	 * Set to <code>false</code> to hide the eye icon which toggles the password visibility.
-	 * @param revealButtonVisible <code>true</code> to set the button visible, <code>false</code> otherwise
-	 * @return this
-	 */
-	PasswordInputBuilder revealButtonVisible(boolean revealButtonVisible);
+public interface PasswordInputBuilder extends PasswordInputConfigurator<PasswordInputBuilder>,
+		InputBuilder<String, ValueChangeEvent<String>, Input<String>, ValidatableInput<String>, PasswordInputBuilder, ValidatablePasswordInputBuilder> {
 
 	/**
 	 * Get a new {@link PasswordInputBuilder} to create a {@link String} type {@link Input}.

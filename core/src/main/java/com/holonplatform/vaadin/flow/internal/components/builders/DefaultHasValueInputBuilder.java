@@ -21,7 +21,6 @@ import java.util.function.Function;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.PropertyHandler;
-import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
@@ -91,7 +90,7 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
-	public ValidatableInputBuilder<T, ValidatableInput<T>> validatable() {
+	public ValidatableInputBuilder<T> validatable() {
 		return ValidatableInputBuilder.create(build());
 	}
 
@@ -125,6 +124,15 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	public HasValueInputBuilder<T, H, C> required(boolean required) {
 		getInstance().setRequired(required);
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+	 */
+	@Override
+	public HasValueInputBuilder<T, H, C> required() {
+		return required(true);
 	}
 
 	/*

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Axioma srl.
+ * Copyright 2016-2019 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,22 +15,17 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.Set;
+import java.util.Date;
 
-import com.holonplatform.vaadin.flow.components.MultiSelect;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
 
 /**
- * {@link MultiSelect} inputs builder.
+ * Validatable {@link Date} type {@link Input} builder.
  * 
- * @param <T> Value type
- * @param <ITEM> Item type
- * @param <B> Concrete builder type
- *
- * @since 5.2.0
+ * @since 5.2.2
  */
-public interface MultiSelectInputBuilder<T, ITEM, B extends MultiSelectInputBuilder<T, ITEM, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<Set<T>, ValueChangeEvent<Set<T>>, MultiSelect<T>, B>,
-		SelectableInputConfigurator<Set<T>, T, B> {
+public interface ValidatableDateInputBuilder extends DateInputConfigurator<ValidatableDateInputBuilder>,
+		BaseValidatableInputBuilder<Date, ValidatableInput<Date>, ValidatableDateInputBuilder> {
 
 }

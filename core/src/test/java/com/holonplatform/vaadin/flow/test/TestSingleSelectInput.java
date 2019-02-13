@@ -32,8 +32,11 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.holonplatform.core.Validator;
+import com.holonplatform.core.Validator.ValidationException;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
@@ -46,6 +49,7 @@ import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
@@ -874,11 +878,9 @@ public class TestSingleSelectInput {
 		pitems = dp4.fetch(new Query<>("B")).collect(Collectors.toSet());
 		assertEquals(1, pitems.size());
 		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
-		
-		input4 = Input.singleSelect(CODE)
-				.dataSource(datastore, TARGET1, CODE, DESCRIPTION)
-				.filterConverter(f -> DESCRIPTION.endsWith(f))
-				.build();
+
+		input4 = Input.singleSelect(CODE).dataSource(datastore, TARGET1, CODE, DESCRIPTION)
+				.filterConverter(f -> DESCRIPTION.endsWith(f)).build();
 		assertNotNull(input4);
 
 		dp4 = (DataProvider<PropertyBox, String>) ((ComboBox<PropertyBox>) input4.getComponent()).getDataProvider();
@@ -915,6 +917,38 @@ public class TestSingleSelectInput {
 		assertEquals(1, pitems.stream().filter(i -> "A".equals(i.getValue(CODE))).count());
 		assertEquals(1, pitems.stream().filter(i -> "B".equals(i.getValue(CODE))).count());
 
+	}
+
+	@Test
+	public void testValidatable() {
+		
+		ValidatableSingleSelect<String> input = Input.singleSelect(String.class).validatable()
+				.label("test").withValidator(Validator.notNull()).id("testid").addItem("a").addItem("b").build();
+		
+		assertEquals("test", ComponentTestUtils.getLabel(input));
+		assertTrue(input.getComponent().getId().isPresent());
+		assertEquals("testid", input.getComponent().getId().get());
+		
+		Assertions.assertThrows(ValidationException.class, () -> input.validate());
+		
+		ValidatableSingleSelect<String> input2 = Input.singleSelect(String.class).validatable()
+				.label("test2").required().addItem("a").addItem("b").build();
+		
+		assertEquals("test2", ComponentTestUtils.getLabel(input2));
+		
+		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
+		
+		input2.setValue("a");
+		Assertions.assertDoesNotThrow(() -> input2.validate());
+		
+		input2.clear();
+		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
+		
+		input2.select("b");
+		Assertions.assertDoesNotThrow(() -> input2.validate());
+		
+		input2.clear();
+		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
 	}
 
 	private class StringValue {

@@ -28,24 +28,24 @@ import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 
 /**
- * Base builder to create date type {@link Input} components.
+ * Base temporal type {@link Input} components configurator.
  * 
  * @param <D> Actual date value type
- * @param <B> Concrete builder type
+ * @param <C> Concrete configurator type
  * 
  * @since 5.2.0
  */
-public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
-		extends InputBuilder<D, ValueChangeEvent<D>, Input<D>, B>, InputValueConfigurator<D, ValueChangeEvent<D>, B>,
-		HasSizeConfigurator<B>, HasStyleConfigurator<B>, HasEnabledConfigurator<B>, FocusableConfigurator<Component, B>,
-		HasPlaceholderConfigurator<B>, HasLabelConfigurator<B>, DeferrableLocalizationConfigurator<B> {
+public interface BaseTemporalInputConfigurator<D, C extends BaseTemporalInputConfigurator<D, C>>
+		extends InputValueConfigurator<D, ValueChangeEvent<D>, C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>,
+		HasEnabledConfigurator<C>, FocusableConfigurator<Component, C>, HasPlaceholderConfigurator<C>,
+		HasLabelConfigurator<C>, DeferrableLocalizationConfigurator<C> {
 
 	/**
 	 * Set the {@link Locale} to use. The displayed date will be matched to the format used in that locale.
 	 * @param locale The locale to set (not null)
 	 * @return this
 	 */
-	B locale(Locale locale);
+	C locale(Locale locale);
 
 	/**
 	 * Set whether to update the {@link Locale} when the component is attached to a parent layout, using the current
@@ -54,7 +54,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 * @return this
 	 * @see LocalizationProvider
 	 */
-	B updateLocaleOnAttach(boolean updateLocaleOnAttach);
+	C updateLocaleOnAttach(boolean updateLocaleOnAttach);
 
 	/**
 	 * Sets the minimum date that is allowed to be selected.
@@ -62,7 +62,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 *        constraints
 	 * @return this
 	 */
-	B min(D min);
+	C min(D min);
 
 	/**
 	 * Sets the maximum date that is allowed to be selected.
@@ -70,14 +70,14 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 *        constraints
 	 * @return this
 	 */
-	B max(D max);
+	C max(D max);
 
 	/**
 	 * Set the date which should be visible when there is no value selected.
 	 * @param initialPosition the initial position to set
 	 * @return this
 	 */
-	B initialPosition(D initialPosition);
+	C initialPosition(D initialPosition);
 
 	/**
 	 * Set the visible week numbers.
@@ -87,7 +87,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 * @param weekNumbersVisible Whether the week numbers are visible
 	 * @return this
 	 */
-	B weekNumbersVisible(boolean weekNumbersVisible);
+	C weekNumbersVisible(boolean weekNumbersVisible);
 
 	/**
 	 * Set the Date Input calendar localization messages.
@@ -97,7 +97,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 * @param localization Calendar localization messages
 	 * @return this
 	 */
-	B localization(CalendarLocalization localization);
+	C localization(CalendarLocalization localization);
 
 	/**
 	 * Get a builder to setup the Date Input calendar localization messages.
@@ -107,7 +107,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 	 * </p>
 	 * @return A {@link CalendarLocalizationBuilder} to setup the Date Input calendar localization messages
 	 */
-	CalendarLocalizationBuilder<D, B> localization();
+	CalendarLocalizationBuilder<D, C> localization();
 
 	// calendar localization
 
@@ -175,7 +175,13 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 
 	}
 
-	public interface CalendarLocalizationBuilder<D, B extends BaseDateInputBuilder<D, B>> {
+	/**
+	 * Calendar popup configuration builder.
+	 *
+	 * @param <D> Temporal data type
+	 * @param <C> Parent configurator type
+	 */
+	public interface CalendarLocalizationBuilder<D, C extends BaseTemporalInputConfigurator<D, C>> {
 
 		/**
 		 * Set the {@link Localizable} messages to use to display the month names, starting from January and ending on
@@ -183,7 +189,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param monthNames The month names
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> monthNames(List<Localizable> monthNames);
+		CalendarLocalizationBuilder<D, C> monthNames(List<Localizable> monthNames);
 
 		/**
 		 * Set the {@link Localizable} messages to use to display the month names, starting from January and ending on
@@ -191,7 +197,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param monthNames The month names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> monthNames(Localizable... monthNames) {
+		default CalendarLocalizationBuilder<D, C> monthNames(Localizable... monthNames) {
 			return monthNames(Arrays.asList(monthNames));
 		}
 
@@ -200,7 +206,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param monthNames The month names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> monthNames(String... monthNames) {
+		default CalendarLocalizationBuilder<D, C> monthNames(String... monthNames) {
 			return monthNames(Arrays.asList(monthNames).stream().map(n -> Localizable.builder().message(n).build())
 					.collect(Collectors.toList()));
 		}
@@ -211,7 +217,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDays The week day names
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> weekDays(List<Localizable> weekDays);
+		CalendarLocalizationBuilder<D, C> weekDays(List<Localizable> weekDays);
 
 		/**
 		 * Set the {@link Localizable} messages to use to display the week days names, starting from Sunday and ending
@@ -219,7 +225,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDays The week day names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> weekDays(Localizable... weekDays) {
+		default CalendarLocalizationBuilder<D, C> weekDays(Localizable... weekDays) {
 			return weekDays(Arrays.asList(weekDays));
 		}
 
@@ -228,7 +234,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDays The week day names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> weekDays(String... weekDays) {
+		default CalendarLocalizationBuilder<D, C> weekDays(String... weekDays) {
 			return weekDays(Arrays.asList(weekDays).stream().map(n -> Localizable.builder().message(n).build())
 					.collect(Collectors.toList()));
 		}
@@ -239,7 +245,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDaysShort The short week day names
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> weekDaysShort(List<Localizable> weekDaysShort);
+		CalendarLocalizationBuilder<D, C> weekDaysShort(List<Localizable> weekDaysShort);
 
 		/**
 		 * Set the {@link Localizable} messages to use to display the short week days names, starting from Sunday and
@@ -247,7 +253,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDaysShort The short week day names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> weekDaysShort(Localizable... weekDaysShort) {
+		default CalendarLocalizationBuilder<D, C> weekDaysShort(Localizable... weekDaysShort) {
 			return weekDaysShort(Arrays.asList(weekDaysShort));
 		}
 
@@ -256,7 +262,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param weekDaysShort The short week day names
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> weekDaysShort(String... weekDaysShort) {
+		default CalendarLocalizationBuilder<D, C> weekDaysShort(String... weekDaysShort) {
 			return weekDaysShort(Arrays.asList(weekDaysShort).stream()
 					.map(n -> Localizable.builder().message(n).build()).collect(Collectors.toList()));
 		}
@@ -269,21 +275,21 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param firstDayOfWeek the index of the first day of the week
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> firstDayOfWeek(int firstDayOfWeek);
+		CalendarLocalizationBuilder<D, C> firstDayOfWeek(int firstDayOfWeek);
 
 		/**
 		 * Set the {@link Localizable} message to use for the word <code>week</code>.
 		 * @param message the {@link Localizable} message to use
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> week(Localizable message);
+		CalendarLocalizationBuilder<D, C> week(Localizable message);
 
 		/**
 		 * Set the message to use for the word <code>week</code>.
 		 * @param message the message to use
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> week(String message) {
+		default CalendarLocalizationBuilder<D, C> week(String message) {
 			return week(Localizable.builder().message(message).build());
 		}
 
@@ -294,7 +300,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param arguments Optional message translation arguments
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> week(String defaultMessage, String messageCode, Object... arguments) {
+		default CalendarLocalizationBuilder<D, C> week(String defaultMessage, String messageCode, Object... arguments) {
 			return week(Localizable.builder().message(defaultMessage).messageCode(messageCode)
 					.messageArguments(arguments).build());
 		}
@@ -304,14 +310,14 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param message the {@link Localizable} message to use
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> calendar(Localizable message);
+		CalendarLocalizationBuilder<D, C> calendar(Localizable message);
 
 		/**
 		 * Set the message to use for the word <code>calendar</code>.
 		 * @param message the message to use
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> calendar(String message) {
+		default CalendarLocalizationBuilder<D, C> calendar(String message) {
 			return calendar(Localizable.builder().message(message).build());
 		}
 
@@ -322,7 +328,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param arguments Optional message translation arguments
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> calendar(String defaultMessage, String messageCode,
+		default CalendarLocalizationBuilder<D, C> calendar(String defaultMessage, String messageCode,
 				Object... arguments) {
 			return calendar(Localizable.builder().message(defaultMessage).messageCode(messageCode)
 					.messageArguments(arguments).build());
@@ -333,14 +339,14 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param message the {@link Localizable} message to use
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> clear(Localizable message);
+		CalendarLocalizationBuilder<D, C> clear(Localizable message);
 
 		/**
 		 * Set the message to use for the word <code>clear</code>.
 		 * @param message the message to use
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> clear(String message) {
+		default CalendarLocalizationBuilder<D, C> clear(String message) {
 			return clear(Localizable.builder().message(message).build());
 		}
 
@@ -351,7 +357,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param arguments Optional message translation arguments
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> clear(String defaultMessage, String messageCode,
+		default CalendarLocalizationBuilder<D, C> clear(String defaultMessage, String messageCode,
 				Object... arguments) {
 			return clear(Localizable.builder().message(defaultMessage).messageCode(messageCode)
 					.messageArguments(arguments).build());
@@ -362,14 +368,14 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param message the {@link Localizable} message to use
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> today(Localizable message);
+		CalendarLocalizationBuilder<D, C> today(Localizable message);
 
 		/**
 		 * Set the message to use for the word <code>today</code>.
 		 * @param message the message to use
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> today(String message) {
+		default CalendarLocalizationBuilder<D, C> today(String message) {
 			return today(Localizable.builder().message(message).build());
 		}
 
@@ -380,7 +386,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param arguments Optional message translation arguments
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> today(String defaultMessage, String messageCode,
+		default CalendarLocalizationBuilder<D, C> today(String defaultMessage, String messageCode,
 				Object... arguments) {
 			return today(Localizable.builder().message(defaultMessage).messageCode(messageCode)
 					.messageArguments(arguments).build());
@@ -391,14 +397,14 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param message the {@link Localizable} message to use
 		 * @return this
 		 */
-		CalendarLocalizationBuilder<D, B> cancel(Localizable message);
+		CalendarLocalizationBuilder<D, C> cancel(Localizable message);
 
 		/**
 		 * Set the message to use for the word <code>cancel</code>.
 		 * @param message the message to use
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> cancel(String message) {
+		default CalendarLocalizationBuilder<D, C> cancel(String message) {
 			return cancel(Localizable.builder().message(message).build());
 		}
 
@@ -409,7 +415,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * @param arguments Optional message translation arguments
 		 * @return this
 		 */
-		default CalendarLocalizationBuilder<D, B> cancel(String defaultMessage, String messageCode,
+		default CalendarLocalizationBuilder<D, C> cancel(String defaultMessage, String messageCode,
 				Object... arguments) {
 			return cancel(Localizable.builder().message(defaultMessage).messageCode(messageCode)
 					.messageArguments(arguments).build());
@@ -419,7 +425,7 @@ public interface BaseDateInputBuilder<D, B extends BaseDateInputBuilder<D, B>>
 		 * Set the calendar localization settings for the Date Input.
 		 * @return The parent Input builder
 		 */
-		B set();
+		C set();
 
 	}
 

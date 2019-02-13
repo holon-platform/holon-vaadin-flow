@@ -15,28 +15,20 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.time.ZoneId;
 import java.util.Date;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultDateInputBuilder;
 
 /**
- * A {@link BaseDateInputBuilder} to create {@link Date} type {@link Input} components.
+ * {@link Date} type {@link Input} components builder.
  *
  * @since 5.2.0
  */
-public interface DateInputBuilder extends BaseDateInputBuilder<Date, DateInputBuilder> {
-
-	/**
-	 * Set the time zone id to use.
-	 * <p>
-	 * If not set, the system default time zone is used.
-	 * </p>
-	 * @param zone the time zone id to use
-	 * @return this
-	 */
-	DateInputBuilder timeZone(ZoneId zone);
+public interface DateInputBuilder extends DateInputConfigurator<DateInputBuilder>,
+		InputBuilder<Date, ValueChangeEvent<Date>, Input<Date>, ValidatableInput<Date>, DateInputBuilder, ValidatableDateInputBuilder> {
 
 	/**
 	 * Create a new {@link DateInputBuilder}.

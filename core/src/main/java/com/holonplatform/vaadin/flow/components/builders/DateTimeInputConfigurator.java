@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Axioma srl.
+ * Copyright 2016-2019 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,20 +15,29 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.vaadin.flow.components.SingleSelect;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import java.time.ZoneId;
+import java.util.Date;
+
+import com.holonplatform.vaadin.flow.components.Input;
 
 /**
- * {@link SingleSelect} inputs builder.
+ * {@link Date} with time type {@link Input} components configurator.
  * 
- * @param <T> Value type
- * @param <ITEM> Item type
- * @param <B> Concrete builder type
- *
- * @since 5.2.0
+ * @param <C> Concrete configurator type
+ * 
+ * @since 5.2.2
  */
-public interface SingleSelectInputBuilder<T, ITEM, B extends SingleSelectInputBuilder<T, ITEM, B>>
-		extends ItemSetConfigurator<B>, InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, B>,
-		SelectableInputConfigurator<T, T, B> {
+public interface DateTimeInputConfigurator<C extends DateTimeInputConfigurator<C>>
+		extends BaseTemporalInputConfigurator<Date, C>, HasTimeInputConfigurator<C> {
+
+	/**
+	 * Set the time zone id to use.
+	 * <p>
+	 * If not set, the system default time zone is used.
+	 * </p>
+	 * @param zone the time zone id to use
+	 * @return this
+	 */
+	C timeZone(ZoneId zone);
 
 }

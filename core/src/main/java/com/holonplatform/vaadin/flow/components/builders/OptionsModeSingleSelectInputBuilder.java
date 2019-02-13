@@ -26,6 +26,8 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
+import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemOptionsModeSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyOptionsModeSingleSelectInputBuilder;
@@ -44,7 +46,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @since 5.2.0
  */
 public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputBuilder<T, ITEM, B>, HasLabelConfigurator<B> {
+		extends SingleSelectInputConfigurator<T, ITEM, B>, HasLabelConfigurator<B> {
 
 	/**
 	 * Sets the {@link ComponentRenderer} responsible to render the individual items in the list of possible choices.
@@ -115,42 +117,45 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 */
 	B dataSource(ListDataProvider<ITEM> dataProvider);
 
-	// specific builders
+	// ------- specific configurators
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 * {@link SingleSelect} input configurator for the <em>options</em> rendering mode.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
+	 * @param <D> Datastore data source configurator type
+	 * @param <C> Concrete configurator type
 	 */
-	public interface ItemOptionsModeSingleSelectInputBuilder<T, ITEM>
-			extends OptionsModeSingleSelectInputBuilder<T, ITEM, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
-			HasBeanDatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface ItemOptionsModeSingleSelectInputConfigurator<T, ITEM, D extends DatastoreDataProviderConfigurator<ITEM, D>, C extends ItemOptionsModeSingleSelectInputConfigurator<T, ITEM, D, C>>
+			extends OptionsModeSingleSelectInputBuilder<T, ITEM, C>,
+			HasBeanDatastoreDataProviderConfigurator<ITEM, D, C> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link SingleSelect} input configurator for the <em>options</em> rendering mode with
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
+	 * @param <C> Concrete configurator type
 	 */
-	public interface DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
-			OptionsModeSingleSelectInputBuilder<T, ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
-			DatastoreDataProviderConfigurator<ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface DatastoreItemOptionsModeSingleSelectInputConfigurator<T, ITEM, C extends DatastoreItemOptionsModeSingleSelectInputConfigurator<T, ITEM, C>>
+			extends OptionsModeSingleSelectInputBuilder<T, ITEM, C>, DatastoreDataProviderConfigurator<ITEM, C> {
 
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 * {@link Property} model based {@link SingleSelect} input configurator for the <em>options</em> rendering mode.
 	 *
 	 * @param <T> Value type
+	 * @param <D> Datastore data source configurator type
+	 * @param <C> Concrete configurator type
 	 */
-	public interface PropertyOptionsModeSingleSelectInputBuilder<T>
-			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, PropertyOptionsModeSingleSelectInputBuilder<T>>,
-			HasPropertyBoxDatastoreDataProviderConfigurator<DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>>,
-			PropertySelectInputConfigurator<T, T, PropertyOptionsModeSingleSelectInputBuilder<T>> {
+	public interface PropertyOptionsModeSingleSelectInputConfigurator<T, D extends DatastoreDataProviderConfigurator<PropertyBox, D>, C extends PropertyOptionsModeSingleSelectInputConfigurator<T, D, C>>
+			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, C>,
+			HasPropertyBoxDatastoreDataProviderConfigurator<D, C>, PropertySelectInputConfigurator<T, T, C> {
 
 		/**
 		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
@@ -164,7 +169,109 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 		 *         {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
-		DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target);
+		D dataSource(Datastore datastore, DataTarget<?> target);
+
+	}
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input configurator for the <em>options</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 * @param <C> Concrete configurator type
+	 */
+	public interface DatastorePropertyOptionsModeSingleSelectInputConfigurator<T, C extends DatastorePropertyOptionsModeSingleSelectInputConfigurator<T, C>>
+			extends OptionsModeSingleSelectInputBuilder<T, PropertyBox, C>,
+			DatastoreDataProviderConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
+
+	}
+
+	// ------- actual builders
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with validation support.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface ValidatableItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
+			ItemOptionsModeSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ValidatableItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with validation and
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
+			DatastoreItemOptionsModeSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface ItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
+			ItemOptionsModeSingleSelectInputConfigurator<T, ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ValidatableItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	/**
+	 * {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 * @param <ITEM> Item type
+	 */
+	public interface DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
+			DatastoreItemOptionsModeSingleSelectInputConfigurator<T, ITEM, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>, ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM>> {
+
+	}
+
+	// ------- builders using property model
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * validation support.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> extends
+			PropertyOptionsModeSingleSelectInputConfigurator<T, ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T>, ValidatablePropertyOptionsModeSingleSelectInputBuilder<T>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatablePropertyOptionsModeSingleSelectInputBuilder<T>> {
+
+	}
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode with
+	 * validation and {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> extends
+			DatastorePropertyOptionsModeSingleSelectInputConfigurator<T, ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
+
+	}
+
+	/**
+	 * {@link Property} model based {@link SingleSelect} input builder for the <em>options</em> rendering mode.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface PropertyOptionsModeSingleSelectInputBuilder<T> extends
+			PropertyOptionsModeSingleSelectInputConfigurator<T, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, PropertyOptionsModeSingleSelectInputBuilder<T>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, PropertyOptionsModeSingleSelectInputBuilder<T>, ValidatablePropertyOptionsModeSingleSelectInputBuilder<T>> {
 
 	}
 
@@ -175,13 +282,12 @@ public interface OptionsModeSingleSelectInputBuilder<T, ITEM, B extends OptionsM
 	 * @param <T> Value type
 	 */
 	public interface DatastorePropertyOptionsModeSingleSelectInputBuilder<T> extends
-			OptionsModeSingleSelectInputBuilder<T, PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
-			PropertySelectInputConfigurator<T, T, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
+			DatastorePropertyOptionsModeSingleSelectInputConfigurator<T, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastorePropertyOptionsModeSingleSelectInputBuilder<T>, ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T>> {
 
 	}
 
-	// builders
+	// ------- builders
 
 	/**
 	 * Create a new {@link ItemOptionsModeSingleSelectInputBuilder}.

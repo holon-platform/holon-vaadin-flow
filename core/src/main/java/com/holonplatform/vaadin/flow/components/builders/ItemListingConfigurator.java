@@ -278,6 +278,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Render the column which corresponds to given property as a {@link Component}, using given function to provide the
 	 * component for each listing item.
+	 * @param <R> Component type
 	 * @param property The property to configure (not null)
 	 * @param renderer The function to use to provide the component for each listing item (not null)
 	 * @return this

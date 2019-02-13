@@ -116,7 +116,7 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	 * @param input Concrete input component (not null)
 	 * @return {@link ValidatableInput} builder
 	 */
-	static <T> ValidatableInputBuilder<T, ValidatableInput<T>> builder(Input<T> input) {
+	static <T> ValidatableInputBuilder<T> builder(Input<T> input) {
 		return new DefaultValidatableInputBuilder<>(input);
 	}
 

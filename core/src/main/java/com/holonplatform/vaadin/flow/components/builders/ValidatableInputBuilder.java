@@ -15,100 +15,19 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.core.Validator;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
-import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultValidatableInputBuilder;
 
 /**
  * {@link ValidatableInput} builder.
  * 
  * @param <T> Value type
- * @param <C> Concrete input type
  *
  * @since 5.0.0
  */
-public interface ValidatableInputBuilder<T, C extends ValidatableInput<T>> {
-
-	/**
-	 * Adds a {@link Validator} to the {@link Input} bound to given <code>property</code>.
-	 * @param validator Validator to add (not null)
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> withValidator(Validator<T> validator);
-
-	/**
-	 * Set the {@link ValidationStatusHandler} to use to input validation status changes.
-	 * @param validationStatusHandler the {@link ValidationStatusHandler} to set (not null)
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> validationStatusHandler(
-			ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler);
-
-	/**
-	 * Sets whether to validate the {@link Input} component value every time the {@link Input} value changes.
-	 * <p>
-	 * Default is <code>true</code>.
-	 * </p>
-	 * @param validateOnValueChange <code>true</code> to perform value validation every time the {@link Input} value
-	 *        changes, <code>false</code> if not
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> validateOnValueChange(boolean validateOnValueChange);
-
-	/**
-	 * Sets the {@link Input} as required. Required inputs must filled by the user, and its validation will fail when
-	 * empty.
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> required();
-
-	/**
-	 * Set the {@link Input} as required, using given {@link Validator} to check the input value. Required inputs must
-	 * filled by the user, and its validation will fail when empty.
-	 * @param validator The {@link Validator} to use to check the required input value (not null)
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> required(Validator<T> validator);
-
-	/**
-	 * Sets the {@link Input} as required, using given message as validation error message. Required inputs must filled
-	 * by the user, and its validation will fail when empty.
-	 * @param message The message to use to notify the required validation failure
-	 * @return this
-	 */
-	ValidatableInputBuilder<T, C> required(Localizable message);
-
-	/**
-	 * Sets the {@link Input} as required, using given message as validation error message. Required inputs must filled
-	 * by the user, and its validation will fail when empty.
-	 * @param message The default message to use to notify the required validation failure
-	 * @param messageCode The message localization code
-	 * @param arguments Optional message translation arguments
-	 * @return this
-	 */
-	default ValidatableInputBuilder<T, C> required(String message, String messageCode, Object... arguments) {
-		return required(
-				Localizable.builder().message(message).messageCode(messageCode).messageArguments(arguments).build());
-	}
-
-	/**
-	 * Sets the {@link Input} as required, using given message as validation error message. Required inputs must filled
-	 * by the user, and its validation will fail when empty.
-	 * @param message The default message to use to notify the required validation failure
-	 * @return this
-	 */
-	default ValidatableInputBuilder<T, C> required(String message) {
-		return required(Localizable.builder().message(message).build());
-	}
-
-	/**
-	 * Build the {@link ValidatableInput} instance.
-	 * @return the {@link ValidatableInput} instance
-	 */
-	C build();
+public interface ValidatableInputBuilder<T>
+		extends BaseValidatableInputBuilder<T, ValidatableInput<T>, ValidatableInputBuilder<T>> {
 
 	/**
 	 * Get a builder to create and setup a {@link ValidatableInput} from given {@link Input}.
@@ -116,7 +35,7 @@ public interface ValidatableInputBuilder<T, C extends ValidatableInput<T>> {
 	 * @param input The Input instance (not null)
 	 * @return A new {@link ValidatableInput} builder
 	 */
-	static <T> ValidatableInputBuilder<T, ValidatableInput<T>> create(Input<T> input) {
+	static <T> ValidatableInputBuilder<T> create(Input<T> input) {
 		return new DefaultValidatableInputBuilder<>(input);
 	}
 

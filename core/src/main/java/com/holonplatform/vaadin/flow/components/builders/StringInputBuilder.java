@@ -16,26 +16,16 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultStringInputBuilder;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link String} type {@link Input} components.
  * 
  * @since 5.2.0
  */
-public interface StringInputBuilder
-		extends InputBuilder<String, ValueChangeEvent<String>, Input<String>, StringInputBuilder>,
-		InputValueConfigurator<String, ValueChangeEvent<String>, StringInputBuilder>,
-		TextInputConfigurator<StringInputBuilder>, HasSizeConfigurator<StringInputBuilder>,
-		HasStyleConfigurator<StringInputBuilder>, HasAutofocusConfigurator<StringInputBuilder>,
-		FocusableConfigurator<Component, StringInputBuilder>, HasPrefixAndSuffixConfigurator<StringInputBuilder>,
-		CompositionNotifierConfigurator<StringInputBuilder>, HasPlaceholderConfigurator<StringInputBuilder>,
-		HasLabelConfigurator<StringInputBuilder>, HasTitleConfigurator<StringInputBuilder>,
-		HasPatternConfigurator<StringInputBuilder>, HasThemeVariantConfigurator<TextFieldVariant, StringInputBuilder>,
-		DeferrableLocalizationConfigurator<StringInputBuilder> {
+public interface StringInputBuilder extends StringInputConfigurator<StringInputBuilder>, InputBuilder<String, ValueChangeEvent<String>, Input<String>, ValidatableInput<String>, StringInputBuilder, ValidatableStringInputBuilder> {
 
 	/**
 	 * Get a new {@link StringInputBuilder} to create a {@link String} type {@link Input}.

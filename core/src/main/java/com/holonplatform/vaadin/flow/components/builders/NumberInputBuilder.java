@@ -15,94 +15,18 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultNumberInputBuilder;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Builder to create {@link Number} type {@link Input} components.
  * 
  * @since 5.2.0
  */
-public interface NumberInputBuilder<T extends Number>
-		extends InputBuilder<T, ValueChangeEvent<T>, Input<T>, NumberInputBuilder<T>>,
-		InputValueConfigurator<T, ValueChangeEvent<T>, NumberInputBuilder<T>>,
-		HasEnabledConfigurator<NumberInputBuilder<T>>, InputNotifierConfigurator<NumberInputBuilder<T>>,
-		KeyNotifierConfigurator<NumberInputBuilder<T>>, HasValueChangeModeConfigurator<NumberInputBuilder<T>>,
-		HasAutocompleteConfigurator<NumberInputBuilder<T>>, HasSizeConfigurator<NumberInputBuilder<T>>,
-		HasStyleConfigurator<NumberInputBuilder<T>>, HasAutofocusConfigurator<NumberInputBuilder<T>>,
-		FocusableConfigurator<Component, NumberInputBuilder<T>>, HasPrefixAndSuffixConfigurator<NumberInputBuilder<T>>,
-		CompositionNotifierConfigurator<NumberInputBuilder<T>>, HasPlaceholderConfigurator<NumberInputBuilder<T>>,
-		HasLabelConfigurator<NumberInputBuilder<T>>, HasTitleConfigurator<NumberInputBuilder<T>>,
-		HasPatternConfigurator<NumberInputBuilder<T>>,
-		HasThemeVariantConfigurator<TextFieldVariant, NumberInputBuilder<T>>,
-		DeferrableLocalizationConfigurator<NumberInputBuilder<T>> {
-
-	/**
-	 * Set the {@link Locale} to use to represent and convert number values.
-	 * <p>
-	 * The provided {@link Locale} will be always used to obtain the {@link NumberFormat} to represent and convert the
-	 * values, regardless of the current {@link Locale}.
-	 * </p>
-	 * @param locale the {@link Locale} to set
-	 * @return this
-	 */
-	NumberInputBuilder<T> locale(Locale locale);
-
-	/**
-	 * Sets the {@link NumberFormat} to use to represent and convert number values.
-	 * <p>
-	 * The provided {@link NumberFormat} will be always used, regardless of the current {@link Locale} or the
-	 * {@link Locale} configured through {@link #locale(Locale)}.
-	 * </p>
-	 * @param numberFormat the {@link NumberFormat} to set
-	 * @return this
-	 */
-	NumberInputBuilder<T> numberFormat(NumberFormat numberFormat);
-
-	/**
-	 * Sets the number format pattern to use to represent and convert number values.
-	 * <p>
-	 * The pattern style must be consistent with the {@link DecimalFormat} pattern conventions.
-	 * </p>
-	 * <p>
-	 * The grouping and decimals separator symbols used will be obtained from the current {@link Locale} o from the
-	 * {@link Locale} configured through {@link #locale(Locale)}.
-	 * </p>
-	 * @param numberFormatPattern the number format pattern to set
-	 * @return this
-	 */
-	NumberInputBuilder<T> numberFormatPattern(String numberFormatPattern);
-
-	/**
-	 * Sets whether to allow negative numbers.
-	 * <p>
-	 * Default is <code>true</code>.
-	 * </p>
-	 * @param allowNegative <code>true</code> to allow negative numbers, <code>false</code> otherwise
-	 * @return this
-	 */
-	NumberInputBuilder<T> allowNegative(boolean allowNegative);
-
-	/**
-	 * Sets the minimum number of digits allowed in the fraction portion of a number.
-	 * @param minDecimals the minimum decimal digits, <code>-1</code> for no limit
-	 * @return this
-	 */
-	NumberInputBuilder<T> minDecimals(int minDecimals);
-
-	/**
-	 * Sets the maximum number of digits allowed in the fraction portion of a number.
-	 * @param maxDecimals the maximum decimal digits, <code>-1</code> for no limit
-	 * @return this
-	 */
-	NumberInputBuilder<T> maxDecimals(int maxDecimals);
+public interface NumberInputBuilder<T extends Number> extends NumberInputConfigurator<T, NumberInputBuilder<T>>,
+		InputBuilder<T, ValueChangeEvent<T>, Input<T>, ValidatableInput<T>, NumberInputBuilder<T>, ValidatableNumberInputBuilder<T>> {
 
 	/**
 	 * Get a new {@link NumberInputBuilder} to create a numeric type {@link Input}.

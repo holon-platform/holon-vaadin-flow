@@ -25,11 +25,13 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
  * @param <T> Value type
  * @param <E> Value change event type
  * @param <C> Input type
+ * @param <I> Validatable input type
  * @param <B> Concrete builder type
+ * @param <V> Validatable input builder type
  * 
  * @since 5.2.0
  */
-public interface InputBuilder<T, E extends ValueChangeEvent<T>, C extends Input<T>, B extends InputBuilder<T, E, C, B>>
+public interface InputBuilder<T, E extends ValueChangeEvent<T>, C extends Input<T>, I extends ValidatableInput<T>, B extends InputBuilder<T, E, C, I, B, V>, V extends BaseValidatableInputBuilder<T, I, V>>
 		extends InputConfigurator<T, E, B> {
 
 	/**
@@ -42,6 +44,6 @@ public interface InputBuilder<T, E extends ValueChangeEvent<T>, C extends Input<
 	 * Build a {@link ValidatableInput} component.
 	 * @return A {@link ValidatableInput} builder
 	 */
-	ValidatableInputBuilder<T, ValidatableInput<T>> validatable();
+	V validatable();
 
 }
