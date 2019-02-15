@@ -94,7 +94,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 	/**
 	 * Group value validation status handler
 	 */
-	private ValidationStatusHandler<PropertyInputGroup> validationStatusHandler;
+	private ValidationStatusHandler<PropertyInputGroup> validationStatusHandler = ValidationStatusHandler.dialog();
 
 	/**
 	 * Whether to validate inputs at value change

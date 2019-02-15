@@ -104,7 +104,10 @@ public interface InputGroupConfigurator<P, T, G extends BoundComponentGroup<P, I
 
 	/**
 	 * Set the {@link ValidationStatusHandler} to use to track the group validation status changes.
-	 * @param validationStatusHandler the group {@link ValidationStatusHandler} to set (not null)
+	 * <p>
+	 * By default the {@link ValidationStatusHandler#dialog()} is used.
+	 * </p>
+	 * @param validationStatusHandler the group {@link ValidationStatusHandler} to set
 	 * @return this
 	 */
 	C validationStatusHandler(ValidationStatusHandler<G> validationStatusHandler);

@@ -15,9 +15,12 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import com.holonplatform.core.i18n.Localizable;
+import java.util.List;
+
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
+import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.ConfirmDialogBuilder;
+import com.vaadin.flow.component.html.Div;
 
 /**
  * A {@link ValidationStatusHandler} which opens a dialog when validation fails.
@@ -39,8 +42,27 @@ public class DialogValidationStatusHandler<S> implements ValidationStatusHandler
 	@Override
 	public void validationStatusChange(ValidationStatusEvent<S> statusChangeEvent) {
 		if (statusChangeEvent.isInvalid()) {
-			Components.dialog.confirm().styleName("dialog-validation-status-error")
-					.text(statusChangeEvent.getError().orElse(Localizable.of("Validation failed"))).open();
+
+			final ConfirmDialogBuilder builder = Components.dialog.confirm()
+					.styleName("dialog-validation-status-error");
+
+			final List<String> messages = statusChangeEvent.getErrorMessages();
+			if (messages.isEmpty()) {
+				builder.text("Validation failed");
+			} else {
+				builder.text(messages.get(0));
+				if (messages.size() > 1) {
+					for (int i = 1; i < messages.size(); i++) {
+						final String text = messages.get(i);
+						final Div message = new Div();
+						message.addClassName("message");
+						message.setText((text != null) ? text : "");
+						builder.withComponent(message);
+					}
+				}
+			}
+
+			builder.open();
 		}
 	}
 
