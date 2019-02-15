@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal;
 
+import javax.annotation.Priority;
+
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
@@ -26,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.ViewComponent;
  *
  * @since 5.2.0
  */
+@Priority(Integer.MAX_VALUE)
 @SuppressWarnings("rawtypes")
 public class DefaultViewComponentPropertyRenderer<T> implements PropertyRenderer<ViewComponent, T> {
 
