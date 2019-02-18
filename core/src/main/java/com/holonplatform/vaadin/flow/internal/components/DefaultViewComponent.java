@@ -15,53 +15,33 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.presentation.StringValuePresenter;
-import com.holonplatform.vaadin.flow.components.HasLabel;
-import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
-import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
-import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.HasEnabled;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 
 /**
  * Default {@link ViewComponent} implementation.
+ * 
+ * @param <T> Value type
  *
  * @since 5.2.0
  */
-public class DefaultViewComponent<T> extends Composite<Div>
-		implements ViewComponent<T>, HasSize, HasStyle, HasEnabled, HasText, ClickNotifier<Component> {
+public class DefaultViewComponent<T> extends AbstractViewComponent<Div, T> {
 
 	private static final long serialVersionUID = 7748055782623326295L;
 
 	private static final PropertyDescriptor<String, String> innerHtmlDescriptor = PropertyDescriptors
 			.propertyWithDefault("innerHTML", "");
 
-	private final Label label;
-	private final Div text;
-
 	private final Function<T, String> stringValueConverter;
 
-	private boolean html;
-
-	private T value;
-
-	private final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
+	private boolean html = false;
 
 	/**
 	 * Constructor which uses a {@link StringValuePresenter} as value converter.
@@ -76,33 +56,11 @@ public class DefaultViewComponent<T> extends Composite<Div>
 	 * @param stringValueConverter Value converter
 	 */
 	public DefaultViewComponent(Function<T, String> stringValueConverter) {
-		super();
+		super(new Div());
 		ObjectUtils.argumentNotNull(stringValueConverter, "String value converter must be non null");
 		this.stringValueConverter = stringValueConverter;
 
-		this.label = new Label();
-		this.label.addClassName("caption");
-		this.text = new Div();
-
 		getContent().addClassName("h-viewcomponent");
-		getContent().add(label, text);
-	}
-
-	/**
-	 * Get the component {@link Label} element.
-	 * @return the label element
-	 */
-	protected Label getLabel() {
-		return label;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.HasComponent#getComponent()
-	 */
-	@Override
-	public Component getComponent() {
-		return this;
 	}
 
 	/**
@@ -115,128 +73,10 @@ public class DefaultViewComponent<T> extends Composite<Div>
 
 	/**
 	 * Set whether the view component is in HTML content mode.
-	 * @param html <code>true</code> to set the view component is in HTML content mode, <code>false</code> to set it is
-	 *        plain text mode
+	 * @param html whether the view component is in HTML content mode
 	 */
 	public void setHtml(boolean html) {
-		boolean wasHtml = this.html;
 		this.html = html;
-		// update text contents
-		if (html && !wasHtml) {
-			setText(this.text.getText());
-		} else if (!html && wasHtml) {
-			setText(get(innerHtmlDescriptor));
-		}
-	}
-
-	/**
-	 * Set the component label text.
-	 * @param label The label text to set
-	 */
-	public void setLabelText(String label) {
-		getLabel().setText(label);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.MayHaveLabel#hasLabel()
-	 */
-	@Override
-	public Optional<HasLabel> hasLabel() {
-		return Optional.of(HasLabel.create(() -> getLabel().getText(), label -> getLabel().setText(label)));
-	}
-
-	/**
-	 * Set the component title text.
-	 * @param title The title text to set
-	 */
-	public void setTitle(String title) {
-		getElement().setAttribute("title", (title != null) ? title : "");
-	}
-
-	/**
-	 * Get the component title text.
-	 * @return the component title
-	 */
-	public String getTitle() {
-		return getElement().getAttribute("title");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.MayHaveTitle#hasTitle()
-	 */
-	@Override
-	public Optional<HasTitle> hasTitle() {
-		return Optional.of(HasTitle.create(() -> getTitle(), title -> setTitle(title)));
-	}
-
-	/**
-	 * Sets the component value.
-	 * @param value the value to set
-	 * @param fireEvent Whether to fire a value change event
-	 */
-	public void setValue(T value, boolean fireEvent) {
-		T oldValue = this.value;
-		this.value = value;
-		// update internal component
-		updateTextValue(value);
-		if (fireEvent) {
-			// fire value change
-			fireValueChange(oldValue, value);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#setValue(java.lang.Object)
-	 */
-	@Override
-	public void setValue(T value) {
-		setValue(value, true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#getValue()
-	 */
-	@Override
-	public T getValue() {
-		return value;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
-	 * components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		valueChangeListeners.add(listener);
-		return () -> valueChangeListeners.remove(listener);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.flow.component.HasText#setText(java.lang.String)
-	 */
-	@Override
-	public void setText(String text) {
-		if (!isHtml() || text == null || text.trim().equals("")) {
-			this.text.setText(text);
-		} else {
-			set(innerHtmlDescriptor, text);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.vaadin.flow.component.HasText#getText()
-	 */
-	@Override
-	public String getText() {
-		return isHtml() ? get(innerHtmlDescriptor) : this.text.getText();
 	}
 
 	/**
@@ -248,22 +88,27 @@ public class DefaultViewComponent<T> extends Composite<Div>
 	}
 
 	/**
-	 * Update the text value of the component, using {@link #getStringValueConverter()} to obtain the value conversion
-	 * function.
-	 * @param value The value to update
+	 * Set the content text.
+	 * @param text The text to set
 	 */
-	protected void updateTextValue(T value) {
-		setText(getStringValueConverter().apply(value));
+	protected void setText(String text) {
+		getInternalContent().ifPresent(content -> {
+			if (!isHtml() || text == null || text.trim().equals("")) {
+				content.setText(text);
+			} else {
+				innerHtmlDescriptor.set(content, text);
+			}
+		});
 	}
 
-	/**
-	 * Emits the value change event
-	 * @param oldValue the old value
-	 * @param value the changed value
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractViewComponent#updateValue(java.lang.Object)
 	 */
-	protected void fireValueChange(T oldValue, T value) {
-		final ValueChangeEvent<T> valueChangeEvent = new DefaultValueChangeEvent<>(this, oldValue, value, false);
-		valueChangeListeners.forEach(l -> l.valueChange(valueChangeEvent));
+	@Override
+	protected Optional<Div> updateValue(T value) {
+		setText(getStringValueConverter().apply(value));
+		return getInternalContent();
 	}
 
 }

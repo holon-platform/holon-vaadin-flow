@@ -17,18 +17,13 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.function.Function;
 
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.presentation.StringValuePresenter;
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
-import com.holonplatform.vaadin.flow.components.events.ClickEvent;
-import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.DefaultViewComponent;
-import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
+import com.vaadin.flow.component.html.Div;
 
 /**
  * Default {@link ViewComponentBuilder} implementation.
@@ -38,14 +33,8 @@ import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickL
  * @since 5.2.0
  */
 public class DefaultViewComponentBuilder<T>
-		extends AbstractLocalizableComponentConfigurator<DefaultViewComponent<T>, ViewComponentBuilder<T>>
+		extends AbstractViewComponentBuilder<Div, T, DefaultViewComponent<T>, ViewComponentBuilder<T>>
 		implements ViewComponentBuilder<T> {
-
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
-	protected final DefaultHasLabelConfigurator<ViewComponent<T>> labelConfigurator;
-	protected final DefaultHasTitleConfigurator<DefaultViewComponent<T>> titleConfigurator;
 
 	/**
 	 * Constructor which uses a {@link StringValuePresenter} as value converter.
@@ -72,14 +61,6 @@ public class DefaultViewComponentBuilder<T>
 	 */
 	public DefaultViewComponentBuilder(Function<T, String> stringValueConverter) {
 		super(new DefaultViewComponent<>(stringValueConverter));
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		this.enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
-		this.labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(),
-				label -> getComponent().setLabelText(label), this);
-		this.titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
-			getComponent().getElement().setAttribute("title", (title != null) ? title : "");
-		}, this);
 	}
 
 	/*
@@ -93,109 +74,11 @@ public class DefaultViewComponentBuilder<T>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder#html(boolean)
 	 */
 	@Override
-	public ViewComponentBuilder<T> width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public ViewComponentBuilder<T> height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public ViewComponentBuilder<T> styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public ViewComponentBuilder<T> styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
-	 * Localizable)
-	 */
-	@Override
-	public ViewComponentBuilder<T> title(Localizable title) {
-		titleConfigurator.title(title);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public ViewComponentBuilder<T> enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
-	 */
-	@Override
-	public ViewComponentBuilder<T> label(Localizable label) {
-		labelConfigurator.label(label);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickListener(com.holonplatform.
-	 * vaadin.flow.components.events.ClickEventListener)
-	 */
-	@Override
-	public ViewComponentBuilder<T> withClickListener(
-			ClickEventListener<ViewComponent<T>, ClickEvent<ViewComponent<T>>> clickEventListener) {
-		getComponent()
-				.addClickListener(ComponentClickListenerAdapter.forClickNotifier(getComponent(), clickEventListener));
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder#withValue(java.lang.Object)
-	 */
-	@Override
-	public ViewComponentBuilder<T> withValue(T value) {
-		getComponent().setValue(value, false);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		getComponent().addValueChangeListener(listener);
+	public ViewComponentBuilder<T> html(boolean html) {
+		getComponent().setHtml(html);
 		return getConfigurator();
 	}
 

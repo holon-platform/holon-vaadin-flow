@@ -38,6 +38,7 @@ import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.textfield.TextField;
 
 public class TestViewComponent {
 
@@ -455,9 +456,74 @@ public class TestViewComponent {
 
 	}
 
+	@Test
+	public void testAdapter() {
+
+		final TextField tf = new TextField();
+
+		ViewComponent<String> vc = ViewComponent.adapt(String.class, tf, (field, value) -> {
+			field.setValue((value != null) ? value : "");
+		}).build();
+
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+		assertTrue(tf.isEmpty());
+
+		vc.setValue("test");
+		assertFalse(vc.isEmpty());
+		assertFalse(tf.isEmpty());
+		assertEquals("test", vc.getValue());
+		assertEquals("test", tf.getValue());
+
+		vc.clear();
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+		assertTrue(tf.isEmpty());
+
+		final TextFieldValue tfv = new TextFieldValue();
+
+		vc = ViewComponent.adapt(String.class, value -> {
+			if (value != null) {
+				TextField t = new TextField();
+				t.setValue(value);
+				tfv.value = t;
+				return t;
+			}
+			return null;
+		}).build();
+
+		assertNull(vc.getValue());
+		assertTrue(vc.isEmpty());
+		assertNull(tfv.value);
+
+		vc.setValue("test");
+		assertFalse(vc.isEmpty());
+		assertEquals("test", vc.getValue());
+		assertNotNull(tfv.value);
+		assertEquals("test", tfv.value.getValue());
+	}
+
+	@Test
+	public void testAdapterBuilder() {
+
+		ViewComponent<String> vc = ViewComponent.adapt(String.class, new TextField(), (field, value) -> {
+			field.setValue((value != null) ? value : "");
+		}).width("50em").label("test").enabled(false).build();
+
+		assertEquals("50em", ComponentTestUtils.getWidth(vc));
+		assertEquals("test", ComponentTestUtils.getLabel(vc));
+		assertFalse(ComponentTestUtils.isEnabled(vc));
+	}
+
 	private class StringValue {
 
 		String value;
+
+	}
+
+	private class TextFieldValue {
+
+		TextField value;
 
 	}
 

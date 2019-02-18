@@ -18,10 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.util.function.Function;
 
 import com.holonplatform.core.property.Property;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
-import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
-import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultViewComponentBuilder;
 
 /**
@@ -31,24 +28,14 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultViewCom
  * 
  * @since 5.2.0
  */
-public interface ViewComponentBuilder<T> extends HtmlComponentConfigurator<ViewComponentBuilder<T>>,
-		HasEnabledConfigurator<ViewComponentBuilder<T>>, HasLabelConfigurator<ViewComponentBuilder<T>>,
-		ClickNotifierConfigurator<ViewComponent<T>, ClickEvent<ViewComponent<T>>, ViewComponentBuilder<T>>,
-		DeferrableLocalizationConfigurator<ViewComponentBuilder<T>> {
+public interface ViewComponentBuilder<T> extends ViewComponentConfigurator<T, ViewComponentBuilder<T>> {
 
 	/**
-	 * Sets an initial value for the component.
-	 * @param value The initial value to set
+	 * Sets whether the view component supports HTML type content.
+	 * @param html whether the view component supports HTML type content
 	 * @return this
 	 */
-	ViewComponentBuilder<T> withValue(T value);
-
-	/**
-	 * Add a {@link ValueChangeListener} to the component.
-	 * @param listener The ValueChangeListener to add
-	 * @return this
-	 */
-	ViewComponentBuilder<T> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener);
+	ViewComponentBuilder<T> html(boolean html);
 
 	/**
 	 * Build the {@link ViewComponent} instance.

@@ -1307,6 +1307,44 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewCompone
 <1> The `ViewComponent` instance will use the new presenter to render the `MY_PROPERTY` property value
 <2> Any other property presentation service will use the new presenter for the `MY_PROPERTY` property value. In this example, the `MY_PROPERTY` property is directly used to present the `1` value and the result will be the String `#1`.
 
+==== Create a `ViewComponent` from a generic `Component`
+
+You can use the `ViewComponent` API `adapt` static methods to transform any `Component` into a `ViewComponent`. The `Component` will be used as `ViewComponent` content and a suitable function must be provided to setup the `Component` instance each time the value changes, for example to display the value using the custom `Component` instance.
+
+A generic `Component` can be turn into a `ViewComponent` either providing:
+
+*1.* The `Component` to use a `ViewComponent` content and a _consumer_ function to setup the `Component` instance each time the value changes:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewComponent.java[tag=vc14,indent=0]
+----
+<1> A `Span` is used as `String` type `ViewComponent` content, setting the Span text with the provided value each time the `ViewComponent` value changes
+
+*2.* A function to provided a custom `Component` instance each time the value changes, to be used as  `ViewComponent` content:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewComponent.java[tag=vc15,indent=0]
+----
+<1> Each time the value changes, a new `RouterLink` is created and used as `ViewComponent` content
+
+The `adapt` methods return a builder API consistent with the default `ViewComponent` builder API, allowing to configure the `ViewComponent` component.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewComponent.java[tag=vc16,indent=0]
+----
+<1> Create a `ViewComponent` which shows a `RouterLink` each time the value changes
+<2> Set the component width to 100%
+<3> Add a CSS style class name
+<4> Set the label
+<5> Set the label using a localizable message
+<6> Set the description
+<7> Add a click handler
+<8> Set an initial value
+<9> Add value change listener
+
 [[ViewComponentPropertyRenderer]]
 ==== `ViewComponent` property renderer
 

@@ -16,13 +16,16 @@
 package com.holonplatform.vaadin.flow.components;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.builders.ViewComponentAdapterBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
+import com.vaadin.flow.component.Component;
 
 /**
  * A {@link ValueHolder} component to display a value in UI.
@@ -34,6 +37,12 @@ import com.holonplatform.vaadin.flow.components.builders.ViewComponentBuilder;
 public interface ViewComponent<V> extends ValueHolder<V, ValueChangeEvent<V>>, ValueComponent<V> {
 
 	/**
+	 * Get the component which acts as {@link ViewComponent} content, if available.
+	 * @return Optional content component
+	 */
+	Optional<? extends Component> getContentComponent();
+
+	/**
 	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.
 	 * @return If this component supports a title, return the {@link HasTitle} reference. An empty Optional is returned
 	 *         otherwise.
@@ -41,6 +50,8 @@ public interface ViewComponent<V> extends ValueHolder<V, ValueChangeEvent<V>>, V
 	default Optional<HasTitle> hasTitle() {
 		return Optional.empty();
 	}
+
+	// ------- builders
 
 	/**
 	 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given value type.
@@ -94,6 +105,45 @@ public interface ViewComponent<V> extends ValueHolder<V, ValueChangeEvent<V>>, V
 	static <T> ViewComponent<T> create(Property<T> property) {
 		return builder(property).build();
 	}
+
+	// ------- adapters
+
+	/**
+	 * Create a new {@link ViewComponentAdapterBuilder} to configure and create a {@link ViewComponent} from a custom
+	 * {@link Component}.
+	 * <p>
+	 * The {@link ViewComponent} content will be replaced by the {@link Component} provided by the given function each
+	 * time the value changes.
+	 * </p>
+	 * @param <T> Value type
+	 * @param <C> View component content type
+	 * @param type Value type
+	 * @param componentProvider The function to provide the {@link ViewComponent} content component each time the value
+	 *        changes (not null)
+	 * @return A new {@link ViewComponentAdapterBuilder}
+	 */
+	static <T, C extends Component> ViewComponentAdapterBuilder<T> adapt(Class<T> type,
+			Function<T, C> componentProvider) {
+		return ViewComponentAdapterBuilder.create(type, componentProvider);
+	}
+
+	/**
+	 * Create a new {@link ViewComponentAdapterBuilder} to configure and create a {@link ViewComponent} from a custom
+	 * {@link Component}.
+	 * @param <T> Value type
+	 * @param <C> View component content type
+	 * @param type Value type
+	 * @param content The {@link ViewComponent} content component to use (not null)
+	 * @param valueConsumer The consumer to use to configure the content component each time the value changes (not
+	 *        null)
+	 * @return A new {@link ViewComponentAdapterBuilder}
+	 */
+	static <T, C extends Component> ViewComponentAdapterBuilder<T> adapt(Class<T> type, C content,
+			BiConsumer<C, T> valueConsumer) {
+		return ViewComponentAdapterBuilder.create(type, content, valueConsumer);
+	}
+
+	// ------- renderer
 
 	/**
 	 * A {@link PropertyRenderer} for the {@link ViewComponent} rendering type.

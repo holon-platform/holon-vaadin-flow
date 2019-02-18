@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
@@ -41,9 +42,11 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.internal.components.RequiredInputValidator;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestPropertyInputGroup {
 
@@ -455,6 +458,10 @@ public class TestPropertyInputGroup {
 
 	@Test
 	public void testValidators() {
+		
+		final UI ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
 
 		final PropertyInputGroup group1 = PropertyInputGroup.builder(SET).build();
 		assertTrue(group1.isValid());
@@ -485,6 +492,8 @@ public class TestPropertyInputGroup {
 		assertTrue(group4.isValid());
 		group4.setValue(PropertyBox.builder(SET).set(ID, 0L).set(NAME, "abc").build());
 		assertFalse(group4.isValid());
+		
+		CurrentInstance.set(UI.class, null);
 
 	}
 

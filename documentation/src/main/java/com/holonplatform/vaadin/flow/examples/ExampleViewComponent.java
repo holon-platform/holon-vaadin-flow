@@ -32,7 +32,12 @@ import com.holonplatform.vaadin.flow.components.PropertyViewForm;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.RouterLink;
 
 @SuppressWarnings("unused")
 public class ExampleViewComponent {
@@ -225,6 +230,57 @@ public class ExampleViewComponent {
 				.propertyCaption(NAME, "My name", "name.message.code") // <7>
 				.build();
 		// end::vc13[]
+	}
+
+	public void vc14() {
+		// tag::vc14[]
+		ViewComponent<String> viewComponent = ViewComponent.adapt(String.class, new Span(), (span, value) -> {
+			span.setText(value);
+		}).build(); // <1>
+		// end::vc14[]
+	}
+
+	public void vc15() {
+		// tag::vc15[]
+		ViewComponent<String> viewComponent = ViewComponent.adapt(String.class, value -> {
+			if (value != null) {
+				return new RouterLink(value, MyView.class, value); // <1>
+			}
+			return null;
+		}).build();
+		// end::vc15[]
+	}
+
+	public void vc16() {
+		// tag::vc16[]
+		ViewComponent<String> viewComponent = ViewComponent.adapt(String.class, value -> {
+			if (value != null) {
+				return new RouterLink(value, MyView.class, value); // <1>
+			}
+			return null;
+		}) // <1>
+				.fullWidth() // <2>
+				.styleName("my-style") // <3>
+				.label("My label") // <4>
+				.label("My label", "label.message.code") // <5>
+				.description("My description") // <6>
+				.onClick(event -> { // <7>
+					/* handle the click event */
+				}).withValue("Initial value") // <8>
+				.withValueChangeListener(event -> { // <9>
+					String oldValue = event.getOldValue();
+					String newValue = event.getValue();
+				}).build();
+		// end::vc16[]
+	}
+
+	@SuppressWarnings("serial")
+	private static class MyView extends Div implements HasUrlParameter<String> {
+
+		@Override
+		public void setParameter(BeforeEvent event, String parameter) {
+		}
+
 	}
 
 }
