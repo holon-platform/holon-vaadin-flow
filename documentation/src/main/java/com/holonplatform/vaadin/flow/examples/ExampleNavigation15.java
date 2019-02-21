@@ -85,4 +85,14 @@ public class ExampleNavigation15 {
 		// end::navigator3[]
 	}
 
+	public void navigator4() {
+		// tag::navigator4[]
+		Navigator.get().navigation("some/path") // <1>
+				.withQueryParameter("myparam", new Integer(1)) // <2>
+				.withQueryParameter("multi", "a", "b", "c") // <3>
+				.encodeQueryParameters(false) // <4>
+				.navigate(); // <5>
+		// end::navigator4[]
+	}
+
 }

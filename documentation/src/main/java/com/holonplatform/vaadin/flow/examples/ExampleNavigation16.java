@@ -59,4 +59,15 @@ public class ExampleNavigation16 {
 		// end::navigator1[]
 	}
 
+	@SuppressWarnings("unused")
+	public void navigator2() {
+		// tag::navigator2[]
+		NavigationLink link = NavigationLink.builder("some/path") // <1>
+				.withQueryParameter("myparam", 123) // <2>
+				.encodeQueryParameters(false) // <3>
+				.text("Link text") // <4>
+				.build();
+		// end::navigator2[]
+	}
+
 }

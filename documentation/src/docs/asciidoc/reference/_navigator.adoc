@@ -52,6 +52,17 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation3
 ----
 <1> The setter method will be used to set the `parameter` query parameter field value
 
+[[ParameterURLEncodingDecoding]]
+==== Query parameter URL encoding and decoding
+
+By default, all the navigation related APIs automatically handle the query parameter names and values  *encoding*, when serialized to a URL, and *decoding*, when deserialized from a URL.
+
+The query parameter names and values encoding and decoding is performed using the `application/x-www-form-urlencoded` MIME type and the default `UTF-8` charset.
+
+Each API which handles URL query parameters provides method to skip the query parameter names and values encoding and decoding, if required.
+
+See the specific API documentation below for further details.
+
 [[UseParameterValues]]
 ==== Using the injected parameter values
 
@@ -77,6 +88,45 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation5
 <1> When a `@OnShow` annotated method in invoked, all the `@QueryParameter` fields values are consistent and already injected using the URL query parameters
 
 See <<OnShow>> for details.
+
+[[DirectParameterValuesDeserialization]]
+==== Direct query parameter values deserialization
+
+The link:{apidir}/com/holonplatform/vaadin/flow/navigator/NavigationParameters.html[NavigationParameters^] API can be used to directly deserialize URL query parameter values into the supported Java types.
+
+The `NavigationParameters` API provides a set of builder methods to create a `NavigationParameters` handler instance from a `Map` of query parameter name and values, from a `com.vaadin.flow.router.QueryParameters` instance or from a `com.vaadin.flow.router.Location` reference.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigationParameters.java[tag=np1,indent=0]
+----
+<1> Create a `NavigationParameters` from a `Map` of query parameter name and values
+<2> Create a `NavigationParameters` from a `com.vaadin.flow.router.QueryParameters` instance
+<3> Create a `NavigationParameters` from a `com.vaadin.flow.router.Location` reference
+
+By default, the query parameter names and values are *decoded from the URL representation*, using the `application/x-www-form-urlencoded` MIME type and the default `UTF-8` charset.
+
+To skip query parameter names and values decoding, the `NavigationParameters` API builder methods provides a `decode` parameter which can be set to `false`.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigationParameters.java[tag=np2,indent=0]
+----
+<1> Set the `decode` parameter to `false` to skip the query parameter names and values decoding
+
+The `NavigationParameters` API provides a set of methods to obtain the query parameter values, *deserialized to the required Java type*, if supported. 
+
+TIP: See <<QueryParameterTypes>> for the Java types supported by default and <<AddQueryParameterType>> to extend the supported Java types.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigationParameters.java[tag=np3,indent=0]
+----
+<1> Create a `NavigationParameters` handler
+<2> Check if a parameter named `myparam` is present and has a value
+<3> Get the values of the parameter named `myparam`, deserialized using the `Integer` type
+<4> Get the single value of the parameter named `myparam`, deserialized using the `Integer` type, if available
+<5> Get the single value of the parameter named `myparam`, deserialized using the `Integer` type, or the default `0` value
 
 [[QueryParameterTypes]]
 ==== Built in query parameter types
@@ -366,6 +416,20 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1
 <9> Get the complete navigation URL as a `com.vaadin.flow.router.Location` object
 <10> Get the complete navigation URL as a `String`
 
+By default, the query parameter names and values are *encoded to the URL representation*, using the `application/x-www-form-urlencoded` MIME type and the default `UTF-8` charset.
+
+To skip the query parameter names and values encoding, the `encodeQueryParameters` builder method can be used:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation15.java[tag=navigator4,indent=0]
+----
+<1> Build a navigation using a route path
+<2> Add a query parameter value
+<3> Add multiple query parameter values
+<4> Disable the query parameters URL encoding
+<5> Perform the navigation action
+
 [[NavigationTargetURL]]
 ==== Get the URL of a navigation target
 
@@ -423,6 +487,19 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation1
 <6> Add a path parameter value
 <7> Set the link text
 <8> Add the link component to a layout
+
+By default, the query parameter names and values are *encoded to the URL representation*, using the `application/x-www-form-urlencoded` MIME type and the default `UTF-8` charset.
+
+To skip the query parameter names and values encoding, the `encodeQueryParameters` builder method can be used:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=navigator2,indent=0]
+----
+<1> Build a `NavigationLink` using a route path
+<2> Add a query parameter value
+<3> Disable the query parameters URL encoding
+<4> Set the link text
 
 [[RouteAuthentication]]
 === Authentication support for UI routes
