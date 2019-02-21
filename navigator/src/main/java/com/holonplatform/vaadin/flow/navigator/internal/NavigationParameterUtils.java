@@ -16,6 +16,10 @@
 package com.holonplatform.vaadin.flow.navigator.internal;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
+import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
 
 /**
  * Navigation parameters serialization utility class.
@@ -38,7 +43,103 @@ public final class NavigationParameterUtils implements Serializable {
 
 	private static final Pattern QUERY_PARAMETER_SEPARATOR_PATTERN = Pattern.compile("&");
 
+	private static final String ENCODE_DECODE_CHARSET = StandardCharsets.UTF_8.toString();
+
 	private NavigationParameterUtils() {
+	}
+
+	/**
+	 * Encode given parameter name or value to obtain a URL-safe representation, using the
+	 * {@link #ENCODE_DECODE_CHARSET} charset.
+	 * @param nameOrValue The parameter name or value to encode
+	 * @return Encoded parameter name or value
+	 * @throws InvalidNavigationParameterException If an encoding error occurs
+	 */
+	public static String encodeParameter(String nameOrValue) {
+		if (nameOrValue != null) {
+			try {
+				return URLEncoder.encode(nameOrValue, ENCODE_DECODE_CHARSET);
+			} catch (UnsupportedEncodingException e) {
+				throw new InvalidNavigationParameterException(
+						"Failed to encode parameter name or value [" + nameOrValue + "]", e);
+			}
+		}
+		return nameOrValue;
+	}
+
+	/**
+	 * Encode given parameter values to obtain a URL-safe representation, using the {@link #ENCODE_DECODE_CHARSET}
+	 * charset.
+	 * @param values The parameter values to encode
+	 * @return Encoded parameter values
+	 * @throws InvalidNavigationParameterException If an encoding error occurs
+	 */
+	public static List<String> encodeParameterValues(List<String> values) {
+		if (values != null) {
+			return values.stream().map(v -> encodeParameter(v)).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Encode given parameter names and values map to obtain a URL-safe representation, using the
+	 * {@link #ENCODE_DECODE_CHARSET} charset.
+	 * @param parameters The parameter names and values map to encode
+	 * @return Encoded parameters
+	 * @throws InvalidNavigationParameterException If an encoding error occurs
+	 */
+	public static Map<String, List<String>> encodeParameters(Map<String, List<String>> parameters) {
+		if (parameters != null) {
+			return parameters.entrySet().stream().filter(entry -> entry.getKey() != null).collect(Collectors
+					.toMap(entry -> encodeParameter(entry.getKey()), entry -> encodeParameterValues(entry.getValue())));
+		}
+		return Collections.emptyMap();
+	}
+
+	/**
+	 * Decode given parameter name or value from a URL representation, using the {@link #ENCODE_DECODE_CHARSET} charset.
+	 * @param nameOrValue The parameter name or value to decode
+	 * @return Decoded parameter name or value
+	 * @throws InvalidNavigationParameterException If a decoding error occurs
+	 */
+	public static String decodeParameter(String nameOrValue) {
+		if (nameOrValue != null) {
+			try {
+				return URLDecoder.decode(nameOrValue, ENCODE_DECODE_CHARSET);
+			} catch (UnsupportedEncodingException e) {
+				throw new InvalidNavigationParameterException(
+						"Failed to decode parameter name or value [" + nameOrValue + "]", e);
+			}
+		}
+		return nameOrValue;
+	}
+
+	/**
+	 * Decode given parameter values from a URL representation, using the {@link #ENCODE_DECODE_CHARSET} charset.
+	 * @param values The parameter values to decode
+	 * @return Decoded parameter values
+	 * @throws InvalidNavigationParameterException If a decoding error occurs
+	 */
+	public static List<String> decodeParameterValues(List<String> values) {
+		if (values != null) {
+			return values.stream().map(v -> decodeParameter(v)).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Decode given parameter names and values map from a URL representation, using the {@link #ENCODE_DECODE_CHARSET}
+	 * charset.
+	 * @param parameters The parameter names and values map to decode
+	 * @return Decoded parameters
+	 * @throws InvalidNavigationParameterException If a decoding error occurs
+	 */
+	public static Map<String, List<String>> decodeParameters(Map<String, List<String>> parameters) {
+		if (parameters != null) {
+			return parameters.entrySet().stream().filter(entry -> entry.getKey() != null).collect(Collectors
+					.toMap(entry -> decodeParameter(entry.getKey()), entry -> decodeParameterValues(entry.getValue())));
+		}
+		return Collections.emptyMap();
 	}
 
 	/**

@@ -66,4 +66,14 @@ public interface NavigationURLBuilder<B extends NavigationURLBuilder<B>> extends
 	 */
 	<T> B withPathParameter(T pathParameter);
 
+	/**
+	 * Set whether to URL-encode the query parameter names and values, using the <code>UTF-8</code> charset.
+	 * <p>
+	 * Default is <code>true</code>.
+	 * </p>
+	 * @param encode Whether to URL-encode the query parameter
+	 * @return this
+	 */
+	B encodeQueryParameters(boolean encode);
+
 }

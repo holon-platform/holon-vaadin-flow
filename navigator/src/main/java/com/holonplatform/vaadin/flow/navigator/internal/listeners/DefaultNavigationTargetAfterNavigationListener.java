@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
 import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.InvalidNavigationParameterException;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationParameterUtils;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.NavigationParameterDefinition;
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration.ParameterContainerType;
@@ -85,8 +86,11 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	 */
 	private static void setQueryParameterValues(HasElement navigationTargetInstance,
 			NavigationTargetConfiguration configuration, Location location) {
-		final Map<String, List<String>> queryParameters = location.getQueryParameters().getParameters();
+		// get and decode query paremeters
+		final Map<String, List<String>> queryParameters = NavigationParameterUtils
+				.decodeParameters(location.getQueryParameters().getParameters());
 		configuration.getQueryParameters().forEach((name, definition) -> {
+			// process parameter definition
 			LOGGER.debug(() -> "Process query parameter [" + name + "] for navigation target ["
 					+ navigationTargetInstance.getClass().getName() + "]");
 			final List<String> queryParameterValues = queryParameters.get(name);

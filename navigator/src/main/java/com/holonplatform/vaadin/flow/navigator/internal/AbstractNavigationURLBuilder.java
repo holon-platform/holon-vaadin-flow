@@ -43,6 +43,8 @@ public abstract class AbstractNavigationURLBuilder<B extends NavigationURLBuilde
 
 	protected final Map<String, List<Object>> queryParameters = new HashMap<>(8);
 
+	protected boolean encodeQueryParameters = true;
+
 	/**
 	 * Constructor.
 	 * @param path The navigation path
@@ -90,8 +92,19 @@ public abstract class AbstractNavigationURLBuilder<B extends NavigationURLBuilde
 	 * @return The location
 	 */
 	protected Location getLocation() {
-		return new Location(path.toString(),
-				new QueryParameters(NavigationParameterUtils.serializeQueryParameters(getQueryParameters())));
+		return getLocation(encodeQueryParameters);
+	}
+
+	/**
+	 * Get the {@link Location} using current path and query parameters.
+	 * @param encode Whether to URL-encode the query parameters
+	 * @return The location
+	 */
+	protected Location getLocation(boolean encode) {
+		final Map<String, List<String>> queryParameters = NavigationParameterUtils
+				.serializeQueryParameters(getQueryParameters());
+		return new Location(path.toString(), new QueryParameters(
+				encode ? NavigationParameterUtils.encodeParameters(queryParameters) : queryParameters));
 	}
 
 	/*
@@ -122,6 +135,16 @@ public abstract class AbstractNavigationURLBuilder<B extends NavigationURLBuilde
 			path.append("/");
 			path.append(p);
 		});
+		return getBuilder();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.NavigationURLBuilder#encodeQueryParameters(boolean)
+	 */
+	@Override
+	public B encodeQueryParameters(boolean encode) {
+		this.encodeQueryParameters = encode;
 		return getBuilder();
 	}
 
