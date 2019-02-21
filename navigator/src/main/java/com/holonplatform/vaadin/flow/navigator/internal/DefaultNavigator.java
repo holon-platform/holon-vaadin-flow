@@ -26,7 +26,6 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.holonplatform.vaadin.flow.navigator.NavigationChangeListener;
 import com.holonplatform.vaadin.flow.navigator.Navigator;
-import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
@@ -80,8 +79,8 @@ public class DefaultNavigator implements Navigator {
 	@Override
 	public void navigateToLocation(String location) {
 		final ViewLocation viewLocation = getViewLocation(location);
-		navigate(viewLocation.getPath().orElse(""),
-				viewLocation.getQuery().map(q -> LocationUtils.getQueryParameters(q)).orElse(Collections.emptyMap()));
+		navigate(viewLocation.getPath().orElse(""), viewLocation.getQuery()
+				.map(q -> NavigationParameterUtils.getQueryParameters(q)).orElse(Collections.emptyMap()));
 	}
 
 	/*

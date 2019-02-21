@@ -16,11 +16,13 @@
 package com.holonplatform.vaadin.flow.navigator.internal;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
@@ -33,6 +35,8 @@ import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
 public final class NavigationParameterUtils implements Serializable {
 
 	private static final long serialVersionUID = -4902803574414314795L;
+
+	private static final Pattern QUERY_PARAMETER_SEPARATOR_PATTERN = Pattern.compile("&");
 
 	private NavigationParameterUtils() {
 	}
@@ -66,6 +70,30 @@ public final class NavigationParameterUtils implements Serializable {
 					.flatMap(List::stream).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Get the given URI query part as a map of query parameter name and values.
+	 * @param queryPart The query part (excluding the <code>?</code> character)
+	 * @return A map of query parameter name and values, empty if none
+	 */
+	public static Map<String, List<String>> getQueryParameters(String queryPart) {
+		if (queryPart != null) {
+			return QUERY_PARAMETER_SEPARATOR_PATTERN.splitAsStream(queryPart.trim())
+					.map(s -> Arrays.copyOf(s.split("="), 2)).filter(pair -> {
+						if (pair.length < 2) {
+							return false;
+						}
+						if (pair[0] == null || pair[0].trim().equals("")) {
+							return false;
+						}
+						if (pair[1] == null || pair[1].trim().equals("")) {
+							return false;
+						}
+						return true;
+					}).collect(Collectors.groupingBy(s -> s[0], Collectors.mapping(s -> s[1], Collectors.toList())));
+		}
+		return Collections.emptyMap();
 	}
 
 }

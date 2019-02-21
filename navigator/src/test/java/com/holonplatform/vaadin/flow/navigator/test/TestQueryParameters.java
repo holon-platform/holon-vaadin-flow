@@ -40,7 +40,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.vaadin.flow.navigator.NavigationParameterMapper;
-import com.holonplatform.vaadin.flow.navigator.internal.utils.LocationUtils;
+import com.holonplatform.vaadin.flow.navigator.internal.NavigationParameterUtils;
 import com.holonplatform.vaadin.flow.navigator.test.data.TestParameterType;
 
 public class TestQueryParameters {
@@ -49,32 +49,32 @@ public class TestQueryParameters {
 	public void testQueryParametersFromLocation() {
 
 		String query = null;
-		Map<String, List<String>> parameters = LocationUtils.getQueryParameters(query);
+		Map<String, List<String>> parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertTrue(parameters.isEmpty());
 
 		query = "";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertTrue(parameters.isEmpty());
 
 		query = " ";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertTrue(parameters.isEmpty());
 
 		query = "test";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertTrue(parameters.isEmpty());
 
 		query = "test=";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertTrue(parameters.isEmpty());
 
 		query = "test=val";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(1, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -85,7 +85,7 @@ public class TestQueryParameters {
 		assertEquals("val", values.get(0));
 
 		query = "test=val&";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(1, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -96,7 +96,7 @@ public class TestQueryParameters {
 		assertEquals("val", values.get(0));
 
 		query = "test=val&test2";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(1, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -107,7 +107,7 @@ public class TestQueryParameters {
 		assertEquals("val", values.get(0));
 
 		query = "test=val&test2=";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(1, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -118,7 +118,7 @@ public class TestQueryParameters {
 		assertEquals("val", values.get(0));
 
 		query = "test=val&test2=val2";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(2, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -135,7 +135,7 @@ public class TestQueryParameters {
 		assertEquals("val2", values.get(0));
 
 		query = "test=val1&test=val2";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(1, parameters.size());
 		assertTrue(parameters.containsKey("test"));
@@ -147,7 +147,7 @@ public class TestQueryParameters {
 		assertTrue(values.contains("val2"));
 
 		query = "test=val1&test2=valx&test=val2";
-		parameters = LocationUtils.getQueryParameters(query);
+		parameters = NavigationParameterUtils.getQueryParameters(query);
 		assertNotNull(parameters);
 		assertEquals(2, parameters.size());
 		assertTrue(parameters.containsKey("test"));
