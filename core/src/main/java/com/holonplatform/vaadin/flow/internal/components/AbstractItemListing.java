@@ -85,7 +85,6 @@ import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemList
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
-import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -103,6 +102,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridContextMenu;
 import com.vaadin.flow.component.grid.GridContextMenu.GridContextMenuItemClickEvent;
+import com.vaadin.flow.component.grid.GridNoneSelectionModel;
+import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.editor.Editor;
@@ -234,6 +235,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private T oldEditorValue;
 
 	/**
+	 * Selection listeners
+	 */
+	private final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
+
+	/**
+	 * Selection listener registrations
+	 */
+	private final Map<SelectionListener<T>, com.vaadin.flow.shared.Registration> selectionListenerRegistrations = new HashMap<>(
+			2);
+
+	/**
+	 * Whether the listing was built
+	 */
+	private boolean built = false;
+
+	/**
 	 * Constructor.
 	 */
 	public AbstractItemListing() {
@@ -248,6 +265,14 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		super();
 		ObjectUtils.argumentNotNull(grid, "Grid must be not null");
 		this.grid = grid;
+	}
+
+	/**
+	 * Get whether the listing was built.
+	 * @return Whether the listing was built
+	 */
+	protected boolean isBuilt() {
+		return built;
 	}
 
 	/**
@@ -674,10 +699,14 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		columnsHeaders.clear();
 		// add a column for each visible property
 		getVisibleColumnProperties().forEach(property -> addGridColumn(property));
+		// selection listeners
+		setupSelectionListeners();
 		// check init editor
 		if (editable) {
 			initEditor(getVisibleColumnProperties());
 		}
+		// built
+		this.built = true;
 	}
 
 	/**
@@ -871,28 +900,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.Selectable#getSelectionMode()
-	 */
-	@Override
-	public SelectionMode getSelectionMode() {
-		return selectionMode;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#setSelectionMode(com.holonplatform.vaadin.flow.components.
-	 * Selectable.SelectionMode)
-	 */
-	@Override
-	public void setSelectionMode(SelectionMode selectionMode) {
-		ObjectUtils.argumentNotNull(selectionMode, "Selection mode must be not null");
-		this.selectionMode = selectionMode;
-		getGrid().setSelectionMode(asGridSelectionMode(selectionMode));
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.Selectable#getSelectedItems()
 	 */
 	@Override
@@ -946,6 +953,32 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.Selectable#getSelectionMode()
+	 */
+	@Override
+	public SelectionMode getSelectionMode() {
+		return selectionMode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.ItemListing#setSelectionMode(com.holonplatform.vaadin.flow.components.
+	 * Selectable.SelectionMode)
+	 */
+	@Override
+	public void setSelectionMode(SelectionMode selectionMode) {
+		ObjectUtils.argumentNotNull(selectionMode, "Selection mode must be not null");
+		this.selectionMode = selectionMode;
+		getGrid().setSelectionMode(asGridSelectionMode(selectionMode));
+		// check built
+		if (isBuilt()) {
+			setupSelectionListeners();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.components.Selectable#addSelectionListener(com.holonplatform.vaadin.flow.components
 	 * .Selectable.SelectionListener)
@@ -953,9 +986,58 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	@Override
 	public Registration addSelectionListener(SelectionListener<T> selectionListener) {
 		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
-		return RegistrationAdapter.adapt(getGrid().addSelectionListener(e -> {
+		this.selectionListeners.add(selectionListener);
+		// check built
+		if (isBuilt() && isSelectableSelectionModel()) {
+			addAndRegisterSelectionListener(selectionListener);
+		}
+		return () -> {
+			final com.vaadin.flow.shared.Registration registration = this.selectionListenerRegistrations
+					.get(selectionListener);
+			if (registration != null) {
+				registration.remove();
+			}
+		};
+	}
+
+	/**
+	 * Setup and register selection listeners for current selection model.
+	 */
+	protected void setupSelectionListeners() {
+		this.selectionListenerRegistrations.values().forEach(r -> {
+			if (r != null) {
+				r.remove();
+			}
+		});
+		this.selectionListenerRegistrations.clear();
+		if (isSelectableSelectionModel()) {
+			this.selectionListeners.forEach(selectionListener -> {
+				addAndRegisterSelectionListener(selectionListener);
+			});
+		}
+	}
+
+	/**
+	 * Get whether the current selection model is valid and is not <code>NONE</code>.
+	 * @return Whether the current selection model is valid and is not <code>NONE</code>
+	 */
+	private boolean isSelectableSelectionModel() {
+		final GridSelectionModel<T> selectionModel = getGrid().getSelectionModel();
+		if (selectionModel != null && !(selectionModel instanceof GridNoneSelectionModel)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Add the selection listener to the current Grid selection model.
+	 * @param selectionListener The selection listener to add
+	 */
+	private void addAndRegisterSelectionListener(SelectionListener<T> selectionListener) {
+		final com.vaadin.flow.shared.Registration registration = getGrid().addSelectionListener(e -> {
 			selectionListener.onSelectionChange(new DefaultSelectionEvent<>(e.getAllSelectedItems(), e.isFromClient()));
-		}));
+		});
+		this.selectionListenerRegistrations.put(selectionListener, registration);
 	}
 
 	/*

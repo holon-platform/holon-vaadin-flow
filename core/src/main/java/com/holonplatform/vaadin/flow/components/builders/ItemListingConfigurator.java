@@ -499,6 +499,14 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
+	 * Set the listing selection mode as {@link SelectionMode#NONE}.
+	 * @return this
+	 */
+	default C notSelectable() {
+		return selectionMode(SelectionMode.NONE);
+	}
+
+	/**
 	 * Add a {@link SelectionListener} to listen to items selection changes.
 	 * <p>
 	 * {@link SelectionListener}s are triggred only when listing is selectable, i.e. (i.e. {@link SelectionMode} is not
