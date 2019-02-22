@@ -238,12 +238,10 @@ public class DefaultLocalizationProvider implements LocalizationProvider {
 		// check I18nProvider
 		final Locale currentLocale = getCurrentLocale().orElse(null);
 		if (currentLocale != null && getCurrentI18nProvider().isPresent()) {
-			return Optional
-					.ofNullable(
-							getCurrentI18nProvider()
-									.map(p -> p.getTranslation(localizable.getMessageCode(), currentLocale,
-											localizable.getMessageArguments()))
-									.orElseGet(() -> localizable.getMessage()));
+			return Optional.ofNullable(getCurrentI18nProvider()
+					.map(p -> p.getTranslation(localizable.getMessageCode(), currentLocale,
+							localizable.getMessageArguments()))
+					.orElseGet(() -> LocalizationContext.translate(localizable, true)));
 		}
 		// check LocalizationContext
 		return Optional.ofNullable(LocalizationContext.translate(localizable, true));
