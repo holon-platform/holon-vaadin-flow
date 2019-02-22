@@ -101,8 +101,8 @@ public abstract class AbstractViewComponent<C extends Component, T> extends Comp
 	 * @see com.holonplatform.vaadin.flow.components.ViewComponent#getContentComponent()
 	 */
 	@Override
-	public Optional<? extends Component> getContentComponent() {
-		return getInternalContent();
+	public Optional<Component> getContentComponent() {
+		return Optional.ofNullable(content);
 	}
 
 	/*

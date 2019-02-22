@@ -966,6 +966,30 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <1> The `PropertyListing` instance will use the new presenter to render the `ID` property column value (so the `ID` column cells will show `#1`, `#2` and so on)
 <2> Any other property presentation service will use the new presenter for the `ID` property value. In this example, the `ID` property is directly used to present the `1` value (declared as a Long) and the result will be the String `#1`.
 
+[[ColumnComponentRendering]]
+==== Render columns using Components
+
+The `PropertyListing` builder makes available helper methods to render a column using a `Component`, providing the function to use to obtain the `Component` instance for each cell, given the current row `PropertyBox` item.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing17c,indent=0]
+----
+<1> Render the column identified by the `NAME` property as a `Component`. In this example, a `Button` is returned, with button text setted as the current item `NAME` property value
+
+[[ColumnViewComponentRendering]]
+==== Render columns using a `ViewComponent`
+
+A `PropertyListing` column can be rendered using a `ViewComponent`, leveraging the `ViewComponent` rendering architecture and thus providing a consistent data rendering strategy across all the application UI components.
+
+See <<View>> for information about `ViewComponent` purpose and configuration.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing17d,indent=0]
+----
+<1> The column identified by the `NAME` property will be rendered using a `ViewComponent`
+
 [[ItemListingContextMenu]]
 ==== Add a context menu
 
@@ -1307,6 +1331,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleViewCompone
 <1> The `ViewComponent` instance will use the new presenter to render the `MY_PROPERTY` property value
 <2> Any other property presentation service will use the new presenter for the `MY_PROPERTY` property value. In this example, the `MY_PROPERTY` property is directly used to present the `1` value and the result will be the String `#1`.
 
+[[ViewComponentAdapter]]
 ==== Create a `ViewComponent` from a generic `Component`
 
 You can use the `ViewComponent` API `adapt` static methods to transform any `Component` into a `ViewComponent`. The `Component` will be used as `ViewComponent` content and a suitable function must be provided to setup the `Component` instance each time the value changes, for example to display the value using the custom `Component` instance.

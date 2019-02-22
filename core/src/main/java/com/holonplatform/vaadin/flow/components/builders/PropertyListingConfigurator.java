@@ -21,15 +21,18 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertyRenderer;
+import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.PropertyValueProvider;
 import com.holonplatform.core.property.VirtualProperty;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
 import com.holonplatform.vaadin.flow.components.PropertyListing;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.data.converter.Converter;
 
 /**
@@ -150,6 +153,37 @@ public interface PropertyListingConfigurator<C extends PropertyListingConfigurat
 	default <T, V, F extends Component & HasValue<?, V>> C editorField(Property<T> property, F field,
 			Converter<V, T> converter) {
 		return editor(property, Input.from(field, converter));
+	}
+
+	/**
+	 * Render the column associated to given <code>property</code> using a {@link ViewComponent}.
+	 * <p>
+	 * The current {@link PropertyRendererRegistry} is used, if available, to render the property as a
+	 * {@link ViewComponent}.
+	 * </p>
+	 * <p>
+	 * By default, the {@link ViewComponent#getContentComponent()} method is used to obtain the Component with which to
+	 * render the cell contents, in order to exclude any {@link ViewComponent} label.
+	 * </p>
+	 * <p>
+	 * If a {@link ViewComponent} is not available or it ha not content Component, and empty {@link Div} is returned as
+	 * cell content.
+	 * </p>
+	 * @param <T> Property type
+	 * @param property The property to render as a {@link ViewComponent} (not null)
+	 * @return this
+	 */
+	@SuppressWarnings("unchecked")
+	default <T> C renderAsViewComponent(Property<T> property) {
+		ObjectUtils.argumentNotNull(property, "Property must be not null");
+		return componentRenderer(property, item -> {
+			final ViewComponent<T> viewComponent = property.renderIfAvailable(ViewComponent.class)
+					.orElseGet(() -> ViewComponent.builder(property).build());
+			if (item.contains(property)) {
+				viewComponent.setValue(item.getValue(property));
+			}
+			return viewComponent.getContentComponent().orElseGet(() -> new Div());
+		});
 	}
 
 }

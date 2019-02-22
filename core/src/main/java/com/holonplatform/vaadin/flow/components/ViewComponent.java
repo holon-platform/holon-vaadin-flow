@@ -40,7 +40,9 @@ public interface ViewComponent<V> extends ValueHolder<V, ValueChangeEvent<V>>, V
 	 * Get the component which acts as {@link ViewComponent} content, if available.
 	 * @return Optional content component
 	 */
-	Optional<? extends Component> getContentComponent();
+	default Optional<Component> getContentComponent() {
+		return Optional.ofNullable(getComponent());
+	}
 
 	/**
 	 * Checks whether this component supports a title, which text can be handled using the {@link HasTitle} interface.

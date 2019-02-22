@@ -305,6 +305,23 @@ public class ExampleListing {
 		// end::listing17b[]
 	}
 
+	public void listing17c() {
+		// tag::listing17c[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.componentRenderer(NAME, item -> { // <1>
+					return new Button(item.getValue(NAME));
+				}).build();
+		// end::listing17c[]
+	}
+
+	public void listing17d() {
+		// tag::listing17d[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.renderAsViewComponent(NAME) // <1>
+				.build();
+		// end::listing17d[]
+	}
+
 	public void listing18() {
 		// tag::listing18[]
 		PropertyListing listing = PropertyListing.builder(SUBJECT) //
