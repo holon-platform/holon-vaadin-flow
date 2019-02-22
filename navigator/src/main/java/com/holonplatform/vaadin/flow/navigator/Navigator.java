@@ -210,6 +210,18 @@ public interface Navigator extends Serializable {
 	void navigateBack();
 
 	/**
+	 * Navigates to the previous route, if available. If a previous route is not available, navigates to the default
+	 * route.
+	 * <p>
+	 * This method can be used to navigate back in the route targets sequence handled by the UI Router or Navigator, it
+	 * has not the same effect and purpose of the {@link #navigateBack()} method, which can be used to navigate back in
+	 * the browser history.
+	 * </p>
+	 * @see #navigateToDefault()
+	 */
+	void navigateToPrevious();
+
+	/**
 	 * Gets a {@link NavigationBuilder} to fluently build a navigation location for the given <code>path</code>,
 	 * including any URL query parameter.
 	 * <p>

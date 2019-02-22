@@ -48,6 +48,12 @@ public class DefaultNavigator implements Navigator {
 	private final UI ui;
 
 	/**
+	 * Locations tracking
+	 */
+	private Location previousLocation;
+	private Location currentLocation;
+
+	/**
 	 * Constructor using the current UI.
 	 */
 	public DefaultNavigator() {
@@ -62,6 +68,11 @@ public class DefaultNavigator implements Navigator {
 		super();
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
 		this.ui = ui;
+		// previous location tracker
+		ui.addAfterNavigationListener(e -> {
+			previousLocation = currentLocation;
+			currentLocation = e.getLocation();
+		});
 	}
 
 	/**
@@ -70,6 +81,21 @@ public class DefaultNavigator implements Navigator {
 	 */
 	protected UI getUI() {
 		return ui;
+	}
+
+	/**
+	 * Get the previous location, if available.
+	 * @return Optional previous location
+	 */
+	protected Optional<Location> getPreviousLocation() {
+		return Optional.ofNullable(previousLocation);
+	}
+
+	/**
+	 * @param previousLocation the previousLocation to set
+	 */
+	public void setPreviousLocation(Location previousLocation) {
+		this.previousLocation = previousLocation;
 	}
 
 	/*
@@ -108,6 +134,22 @@ public class DefaultNavigator implements Navigator {
 	@Override
 	public void navigateBack() {
 		getUI().getPage().getHistory().back();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.navigator.Navigator#navigateToPrevious()
+	 */
+	@Override
+	public void navigateToPrevious() {
+		if (getPreviousLocation().isPresent()) {
+			final Location location = getPreviousLocation().get();
+			navigate(location.getPath(),
+					(location.getQueryParameters() != null) ? location.getQueryParameters().getParameters()
+							: Collections.emptyMap());
+		} else {
+			navigateToDefault();
+		}
 	}
 
 	/*
