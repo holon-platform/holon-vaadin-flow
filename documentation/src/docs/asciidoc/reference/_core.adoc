@@ -788,6 +788,45 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <2> Configure the `Datastore` data provider adding a query filter
 <3> Configure the `Datastore` data provider adding a query sort
 
+[[ItemListingFrozenState]]
+==== Item listing _frozen_ data source modality
+
+The item listing data source can be set in a _frozen_ state using the item listing API:
+
+* When the item listing is in _frozen_ state, it *never shows any item* and *no fetch is performed* from the data provider.
+* When the item listing `refresh()` method is invoked, the _frozen_ state is automatically disabled, allowing the listing to fetch and display the items.
+
+The _frozen_ state can be useful when you don't want to fetch the items just after the listing is displayed in UI, maybe because it involves an onerous backend query. The backend query is only performed when the `refresh()` method is called, typically by a user explicit action.
+
+The item listing _frozen_ state can be configured either from the buider API or from the `ItemListing` API:
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing31,indent=0]
+----
+<1> Use the builder API to set the listing in _frozen_ state
+<2> Use the listing API to set the listing in _frozen_ state
+<3> Check whether the listing is in _frozen_ state
+<4> Calling `refresh()` will disable the _frozen_ state, allowing the listing to fetch and display the items
+
+[[ItemListingAdditionalItems]]
+==== Item listing data source additional items
+
+The `ItemListing` API supports _additional_ data source items. Additional items can be added using the `ItemListing` API and they will appear as conventional listing items, even they are not part of the items returned by the concrete data source.
+
+Additional items can be used, for example, to allow the user to *add* an item to the listing, edit its data and then saving the item in the concrete datastore. At this point, the additional item can be removed, since the saved item will now be returned by the data source query.
+
+The `ItemListing` API provides method to manage additional items: add an additional item, remove an additional item, remove all additional items and obtain the current additional items.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.java[tag=listing32,indent=0]
+----
+<1> Add an additional item
+<2> Get the current additional items
+<3> Remove the additional item
+<4> Remove all the additional items
+
 [[ItemListingConfiguration]]
 ==== Item listing configuration
 

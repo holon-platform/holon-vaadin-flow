@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.examples;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -494,6 +495,35 @@ public class ExampleListing {
 					event.getValue();
 				}).build();
 		// end::listing30[]
+	}
+
+	public void listing31() {
+		// tag::listing31[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT) //
+				.frozen(true) // <1>
+				.build();
+
+		listing.setFrozen(true); // <2>
+
+		boolean frozen = listing.isFrozen(); // <3>
+
+		listing.refresh(); // <4>
+		// end::listing31[]
+	}
+
+	public void listing32() {
+		final PropertyBox myItem = PropertyBox.create(SUBJECT);
+		// tag::listing32[]
+		PropertyListing listing = PropertyListing.builder(SUBJECT).build();
+
+		listing.addAdditionalItem(myItem); // <1>
+
+		List<PropertyBox> additionalItems = listing.getAdditionalItems(); // <2>
+
+		listing.removeAdditionalItem(myItem); // <3>
+
+		listing.removeAdditionalItems(); // <4>
+		// end::listing32[]
 	}
 
 	private static DataProvider<PropertyBox, ?> getDataProvider() {
