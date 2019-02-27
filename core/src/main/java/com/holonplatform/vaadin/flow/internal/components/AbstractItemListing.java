@@ -66,6 +66,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
+import com.holonplatform.vaadin.flow.data.ItemListingDataProviderAdapter;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
@@ -157,6 +158,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 * Grid
 	 */
 	private final Grid<T> grid;
+
+	/**
+	 * Data provider
+	 */
+	private ItemListingDataProviderAdapter<T, ?> dataProvider;
 
 	/**
 	 * A list of the item properties which correspond to a listing column, in the display order
@@ -281,6 +287,54 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 */
 	protected Grid<T> getGrid() {
 		return grid;
+	}
+
+	/**
+	 * Set the {@link DataProvider} to use for the backing Grid.
+	 * @param dataProvider The data provider to set
+	 */
+	protected void setDataProvider(DataProvider<T, ?> dataProvider) {
+		ObjectUtils.argumentNotNull(dataProvider, "DataProvider must be not null");
+		this.dataProvider = ItemListingDataProviderAdapter.adapt(dataProvider);
+		getGrid().setDataProvider(this.dataProvider);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getDataProvider()
+	 */
+	@Override
+	public DataProvider<T, ?> getDataProvider() {
+		if (this.dataProvider != null) {
+			return this.dataProvider;
+		}
+		return getGrid().getDataProvider();
+	}
+
+	/**
+	 * Get the {@link ItemListingDataProviderAdapter} type data provider, if available.
+	 * @return Optional data provider
+	 */
+	protected Optional<ItemListingDataProviderAdapter<T, ?>> getItemListingDataProvider() {
+		if (this.dataProvider != null) {
+			return Optional.ofNullable(this.dataProvider);
+		}
+		DataProvider<T, ?> gridDataProvider = getGrid().getDataProvider();
+		if (gridDataProvider != null && gridDataProvider instanceof ItemListingDataProviderAdapter) {
+			return Optional.of((ItemListingDataProviderAdapter<T, ?>) gridDataProvider);
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Requires an {@link ItemListingDataProviderAdapter} type data provider
+	 * @return The {@link ItemListingDataProviderAdapter} type data provider
+	 * @throws IllegalStateException If a data provider is not available or it is not a
+	 *         {@link ItemListingDataProviderAdapter} data provider type
+	 */
+	protected ItemListingDataProviderAdapter<T, ?> requireItemListingDataProvider() {
+		return getItemListingDataProvider().orElseThrow(() -> new IllegalStateException(
+				"No suitable DataProvider available. The DataProvider should be a ItemListingDataProviderAdapter."));
 	}
 
 	/*
@@ -881,6 +935,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		if (isEditable()) {
 			cancelEditing();
 		}
+		// check frozen
+		getItemListingDataProvider().ifPresent(p -> {
+			p.setFrozen(false);
+		});
+		// refresh
 		getGrid().getDataProvider().refreshAll();
 	}
 
@@ -896,6 +955,63 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		}
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		getGrid().getDataProvider().refreshItem(item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isFrozen()
+	 */
+	@Override
+	public boolean isFrozen() {
+		return getItemListingDataProvider().map(p -> p.isFrozen()).orElse(false);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#setFrozen(boolean)
+	 */
+	@Override
+	public void setFrozen(boolean frozen) {
+		requireItemListingDataProvider().setFrozen(frozen);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getAdditionalItems()
+	 */
+	@Override
+	public List<T> getAdditionalItems() {
+		return requireItemListingDataProvider().getAdditionalItems();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#addAdditionalItem(java.lang.Object)
+	 */
+	@Override
+	public void addAdditionalItem(T item) {
+		requireItemListingDataProvider().addAdditionalItem(item);
+		// ensure item key is created and registered
+		// this allows to handle the new item without errors, for example to use it in grid editor just after it's added
+		getGrid().getDataCommunicator().getKeyMapper().key(item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItem(java.lang.Object)
+	 */
+	@Override
+	public boolean removeAdditionalItem(T item) {
+		return requireItemListingDataProvider().removeAdditionalItem(item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItems()
+	 */
+	@Override
+	public void removeAdditionalItems() {
+		requireItemListingDataProvider().removeAdditionalItems();
 	}
 
 	/*
@@ -1775,6 +1891,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		private Consumer<EditableItemListingSection<P>> headerConfigurator;
 		private Consumer<EditableItemListingSection<P>> footerConfigurator;
 
+		private boolean frozen;
+
 		public AbstractItemListingConfigurator(I instance) {
 			super(instance.getGrid());
 			this.instance = instance;
@@ -1804,7 +1922,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 			// items
 			if (!items.isEmpty()) {
-				instance.getGrid().setItems(items);
+				instance.setDataProvider(DataProvider.ofCollection(items));
 			}
 
 			// refresh listeners
@@ -1838,6 +1956,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			}
 			if (footerConfigurator != null) {
 				footerConfigurator.accept(instance.getFooterSection());
+			}
+
+			if (frozen) {
+				instance.getItemListingDataProvider().ifPresent(p -> p.setFrozen(frozen));
 			}
 
 			return instance;
@@ -1952,7 +2074,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C dataSource(DataProvider<T, ?> dataProvider) {
 			ObjectUtils.argumentNotNull(dataProvider, "DataProvider must be not null");
-			instance.getGrid().setDataProvider(dataProvider);
+			instance.setDataProvider(dataProvider);
 			return getConfigurator();
 		}
 
@@ -2653,6 +2775,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		public C withValueChangeListener(
 				ValueChangeListener<T, GroupValueChangeEvent<T, P, Input<?>, EditorComponentGroup<P, T>>> listener) {
 			instance.addValueChangeListener(listener);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(boolean)
+		 */
+		@Override
+		public C frozen(boolean frozen) {
+			this.frozen = frozen;
 			return getConfigurator();
 		}
 

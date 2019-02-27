@@ -74,7 +74,6 @@ import com.vaadin.flow.component.grid.editor.EditorCloseListener;
 import com.vaadin.flow.component.grid.editor.EditorOpenListener;
 import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -128,15 +127,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 	 */
 	protected Class<T> getBeanType() {
 		return beanType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ItemSet#getDataProvider()
-	 */
-	@Override
-	public DataProvider<T, ?> getDataProvider() {
-		return getGrid().getDataProvider();
 	}
 
 	/*
@@ -431,7 +421,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 				Function<PropertyBox, T> itemConverter, Iterable<P> properties) {
 			final DatastoreDataProvider<T, QueryFilter> datastoreDataProvider = DatastoreDataProvider.create(datastore,
 					target, DatastoreDataProvider.asPropertySet(properties), itemConverter, Function.identity());
-			getInstance().getGrid().setDataProvider(datastoreDataProvider);
+			getInstance().setDataProvider(datastoreDataProvider);
 			return new DefaultDatastoreBeanListingBuilder<>(this, datastoreDataProvider);
 		}
 
@@ -444,7 +434,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		public DatastoreBeanListingBuilder<T> dataSource(Datastore datastore, DataTarget<?> target) {
 			final DatastoreDataProvider<T, QueryFilter> datastoreDataProvider = DatastoreDataProvider.create(datastore,
 					target, getInstance().getBeanType());
-			getInstance().getGrid().setDataProvider(datastoreDataProvider);
+			getInstance().setDataProvider(datastoreDataProvider);
 			return new DefaultDatastoreBeanListingBuilder<>(this, datastoreDataProvider);
 		}
 
@@ -1423,6 +1413,16 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public DatastoreBeanListingBuilder<T> withThemeVariants(GridVariant... variants) {
 			builder.withThemeVariants(variants);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(boolean)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> frozen(boolean frozen) {
+			builder.frozen(frozen);
 			return this;
 		}
 

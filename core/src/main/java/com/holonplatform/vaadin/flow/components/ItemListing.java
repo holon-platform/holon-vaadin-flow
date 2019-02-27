@@ -176,6 +176,76 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 */
 	DataProvider<T, ?> getDataProvider();
 
+	/**
+	 * Get whether the listing is <em>frozen</em>.
+	 * <p>
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * </p>
+	 * @return Whether the listing is <em>frozen</em>
+	 * @since 5.2.2
+	 */
+	boolean isFrozen();
+
+	/**
+	 * Set whether the listing is <em>frozen</em>.
+	 * <p>
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * </p>
+	 * <p>
+	 * When the {@link #refresh()} method is called, the frozen state is automatically set to <code>false</code>.
+	 * </p>
+	 * @param frozen Whether the listing is <em>frozen</em>
+	 * @since 5.2.2
+	 */
+	void setFrozen(boolean frozen);
+
+	/**
+	 * Get the current additional items, if any.
+	 * <p>
+	 * Additional items are provided in addition to the ones returned by the concrete data provider, for example from a
+	 * backend service. They are always provided before any other item, and do not take part in filters and sorts.
+	 * </p>
+	 * @return The additional items, in the order they were added. An empty list if none. The list is not modifiable.
+	 * @see #addAdditionalItem(Object)
+	 * @since 5.2.2
+	 */
+	List<T> getAdditionalItems();
+
+	/**
+	 * Add an additional item to the listing.
+	 * <p>
+	 * Additional items are provided in addition to the ones returned by the concrete data provider, for example from a
+	 * backend service. They are always provided before any other item, and do not take part in filters and sorts.
+	 * </p>
+	 * <p>
+	 * The additional items should be used, for example, to edit item values before saving into the backend. Then they
+	 * should be removed from the listing.
+	 * </p>
+	 * <p>
+	 * NOTE: Additional items are identified in the same way than any other item, using the
+	 * {@link DataProvider#getId(Object)} method. So the id providing logic should be consistent with any other item.
+	 * </p>
+	 * @param item The item to add (not null)
+	 * @see #removeAdditionalItem(Object)
+	 */
+	void addAdditionalItem(T item);
+
+	/**
+	 * Remove an additional item from the listing.
+	 * @param item The item to remove (not null)
+	 * @return <code>true</code> if given item was an additional item and it's been removed, <code>false</code>
+	 *         otherwise
+	 * @see #addAdditionalItem(Object)
+	 * @see #removeAdditionalItems()
+	 */
+	boolean removeAdditionalItem(T item);
+
+	/**
+	 * Remove all the additional items from the listing.
+	 * @see #addAdditionalItem(Object)
+	 */
+	void removeAdditionalItems();
+
 	// ------- listing sections handlers
 
 	/**

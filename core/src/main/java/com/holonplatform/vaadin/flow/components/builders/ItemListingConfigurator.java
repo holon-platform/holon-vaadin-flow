@@ -653,6 +653,21 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 */
 	C withEditorCloseListener(EditorCloseListener<T> listener);
 
+	/**
+	 * Set whether the listing is <em>frozen</em>.
+	 * <p>
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * </p>
+	 * <p>
+	 * When the {@link ItemListing#refresh()} method is called, the frozen state is automatically set to
+	 * <code>false</code>.
+	 * </p>
+	 * @param frozen Whether the listing is <em>frozen</em>
+	 * @since 5.2.2
+	 * @return this
+	 */
+	C frozen(boolean frozen);
+
 	// -------
 
 	/**
