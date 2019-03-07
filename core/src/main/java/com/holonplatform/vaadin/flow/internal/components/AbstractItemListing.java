@@ -311,6 +311,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		return getGrid().getDataProvider();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getColumnSorts()
+	 */
+	@Override
+	public List<QuerySortOrder> getColumnSorts() {
+		List<QuerySortOrder> sortProperties = new LinkedList<>();
+		getGrid().getSortOrder().stream().map(order -> order.getSorted().getSortOrder(order.getDirection()))
+				.forEach(s -> s.forEach(sortProperties::add));
+		return sortProperties;
+	}
+
 	/**
 	 * Get the {@link ItemListingDataProviderAdapter} type data provider, if available.
 	 * @return Optional data provider

@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 
 /**
  * A component to display a set of items as tabular data, using the item properties as column ids.
@@ -175,6 +176,13 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 * @since 5.2.2
 	 */
 	DataProvider<T, ?> getDataProvider();
+
+	/**
+	 * Get the current column sorts, if any.
+	 * @return The current column sorts, empty if none
+	 * @since 5.2.3
+	 */
+	List<QuerySortOrder> getColumnSorts();
 
 	/**
 	 * Get whether the listing is <em>frozen</em>.
