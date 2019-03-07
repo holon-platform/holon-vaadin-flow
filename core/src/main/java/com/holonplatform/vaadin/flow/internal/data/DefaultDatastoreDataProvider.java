@@ -271,23 +271,21 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	 */
 	protected com.holonplatform.core.query.Query _query(Query<?, F> query, boolean withSorts) {
 
-		if (query == null) {
-			return datastore.query(target);
-		}
-
-		// build a neq query using configured target
+		// build a new query using configured target
 		com.holonplatform.core.query.Query q = datastore.query(target);
 
 		// filters
 		final List<QueryFilter> filters = new LinkedList<>();
 
 		// data provider filter
-		query.getFilter().ifPresent(f -> {
-			QueryFilter filter = filterConverter.apply(f);
-			if (filter != null) {
-				filters.add(filter);
-			}
-		});
+		if (query != null) {
+			query.getFilter().ifPresent(f -> {
+				QueryFilter filter = filterConverter.apply(f);
+				if (filter != null) {
+					filters.add(filter);
+				}
+			});
+		}
 
 		// provided filters
 		queryConfigurationProviders.forEach(p -> {
@@ -303,11 +301,13 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 			final List<QuerySort> sorts = new LinkedList<>();
 
 			// data provider sorts
-			List<QuerySortOrder> orders = query.getSortOrders();
-			if (orders != null && !orders.isEmpty()) {
-				orders.forEach(order -> sorts.add(Optional.ofNullable(querySortOrderConverter.apply(order))
-						.orElseThrow(() -> new IllegalStateException(
-								"The query sort converter returned a null sort for [" + order + "]"))));
+			if (query != null) {
+				List<QuerySortOrder> orders = query.getSortOrders();
+				if (orders != null && !orders.isEmpty()) {
+					orders.forEach(order -> sorts.add(Optional.ofNullable(querySortOrderConverter.apply(order))
+							.orElseThrow(() -> new IllegalStateException(
+									"The query sort converter returned a null sort for [" + order + "]"))));
+				}
 			}
 
 			// default sort
@@ -337,9 +337,11 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 		});
 
 		// paging
-		if (query.getLimit() < Integer.MAX_VALUE) {
-			q.limit(query.getLimit());
-			q.offset(query.getOffset());
+		if (query != null) {
+			if (query.getLimit() < Integer.MAX_VALUE) {
+				q.limit(query.getLimit());
+				q.offset(query.getOffset());
+			}
 		}
 
 		return q;
