@@ -40,9 +40,10 @@ import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.grid.GridContextMenu;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
+import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
 import com.vaadin.flow.component.grid.editor.EditorCancelListener;
 import com.vaadin.flow.component.grid.editor.EditorCloseListener;
 import com.vaadin.flow.component.grid.editor.EditorOpenListener;
@@ -886,7 +887,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 */
 	public interface ItemListingContextMenuBuilder<T, P, L extends ItemListing<T, P>, B extends ItemListingConfigurator<T, P, L, B>>
 			extends
-			ContextMenuConfigurator<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, B>> {
+			ContextMenuConfigurator<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, ItemListingContextMenuBuilder<T, P, L, B>> {
 
 		/**
 		 * Add the context menu to the item listing.

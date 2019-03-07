@@ -20,13 +20,16 @@ import com.holonplatform.vaadin.flow.internal.components.events.DefaultClickEven
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 
 /**
  * Default {@link ContextMenuBuilder} implementation.
  *
  * @since 5.2.0
  */
-public class DefaultContextMenuBuilder extends AbstractContextMenuConfigurator<ContextMenu, ContextMenuBuilder>
+public class DefaultContextMenuBuilder
+		extends AbstractContextMenuConfigurator<ContextMenu, MenuItem, SubMenu, ContextMenuBuilder>
 		implements ContextMenuBuilder {
 
 	public DefaultContextMenuBuilder() {

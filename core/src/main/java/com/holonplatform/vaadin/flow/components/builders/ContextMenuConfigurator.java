@@ -25,17 +25,21 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
+import com.vaadin.flow.component.contextmenu.MenuItemBase;
+import com.vaadin.flow.component.contextmenu.SubMenuBase;
 
 /**
  * {@link ContextMenu} component configurator.
  * 
  * @param <L> Menu item click listener type
  * @param <M> Concrete ContextMenu component type
+ * @param <I> Menu item type
+ * @param <S> Sub menu type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public interface ContextMenuConfigurator<L extends EventListener, M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<L, M, C>>
+public interface ContextMenuConfigurator<L extends EventListener, M extends ContextMenuBase<M, I, S>, I extends MenuItemBase<M, I, S>, S extends SubMenuBase<M, I, S>, C extends ContextMenuConfigurator<L, M, I, S, C>>
 		extends ComponentConfigurator<C>, HasStyleConfigurator<C> {
 
 	/**
@@ -47,7 +51,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 * @see LocalizationProvider
 	 */
-	MenuItemBuilder<L, M, C> withItem(Localizable text);
+	MenuItemBuilder<L, M, I, S, C> withItem(Localizable text);
 
 	/**
 	 * Create a new menu item with the given text content.
@@ -57,7 +61,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @param text Menu item text content
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 */
-	default MenuItemBuilder<L, M, C> withItem(String text) {
+	default MenuItemBuilder<L, M, I, S, C> withItem(String text) {
 		return withItem(Localizable.builder().message(text).build());
 	}
 
@@ -73,7 +77,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 * @see LocalizationProvider
 	 */
-	default MenuItemBuilder<L, M, C> withItem(String defaultText, String messageCode, Object... arguments) {
+	default MenuItemBuilder<L, M, I, S, C> withItem(String defaultText, String messageCode, Object... arguments) {
 		return withItem(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)
 				.messageArguments(arguments).build());
 	}
@@ -86,7 +90,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * @param component The menu item component (not null)
 	 * @return A {@link MenuItemBuilder} to configure and add the menu item
 	 */
-	MenuItemBuilder<L, M, C> withItem(Component component);
+	MenuItemBuilder<L, M, I, S, C> withItem(Component component);
 
 	/**
 	 * Add a new menu item using given localizable text content and a {@link ClickEventListener} for menu item clicks.
@@ -156,26 +160,29 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 * 
 	 * @param <L> Click listener type
 	 * @param <M> Concrete ContextMenu component type
+	 * @param <I> Menu item type
+	 * @param <S> Sub menu type
 	 * @param <B> Parent configurator type
 	 *
 	 * @since 5.2.0
 	 */
-	public interface MenuItemBuilder<L extends EventListener, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<L, M, B>>
-			extends HasEnabledConfigurator<MenuItemBuilder<L, M, B>>, HasTextConfigurator<MenuItemBuilder<L, M, B>> {
+	public interface MenuItemBuilder<L extends EventListener, M extends ContextMenuBase<M, I, S>, I extends MenuItemBase<M, I, S>, S extends SubMenuBase<M, I, S>, B extends ContextMenuConfigurator<L, M, I, S, B>>
+			extends HasEnabledConfigurator<MenuItemBuilder<L, M, I, S, B>>,
+			HasTextConfigurator<MenuItemBuilder<L, M, I, S, B>> {
 
 		/**
 		 * Sets the id of the root element of the menu item.
 		 * @param id the id to set
 		 * @return this
 		 */
-		MenuItemBuilder<L, M, B> id(String id);
+		MenuItemBuilder<L, M, I, S, B> id(String id);
 
 		/**
 		 * Register a menu item click event listener.
 		 * @param menuItemClickListener The listener to add (not null)
 		 * @return this
 		 */
-		MenuItemBuilder<L, M, B> withClickListener(L menuItemClickListener);
+		MenuItemBuilder<L, M, I, S, B> withClickListener(L menuItemClickListener);
 
 		/**
 		 * Register a menu item click event listener.
@@ -185,7 +192,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 		 * @param menuItemClickListener The listener to add (not null)
 		 * @return this
 		 */
-		default MenuItemBuilder<L, M, B> onClick(L menuItemClickListener) {
+		default MenuItemBuilder<L, M, I, S, B> onClick(L menuItemClickListener) {
 			return withClickListener(menuItemClickListener);
 		}
 

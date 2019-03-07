@@ -95,18 +95,18 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
-import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
-import com.vaadin.flow.component.grid.GridContextMenu;
-import com.vaadin.flow.component.grid.GridContextMenu.GridContextMenuItemClickEvent;
 import com.vaadin.flow.component.grid.GridNoneSelectionModel;
 import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu.GridContextMenuItemClickEvent;
+import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
+import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.grid.editor.EditorCancelListener;
 import com.vaadin.flow.component.grid.editor.EditorCloseListener;
@@ -2872,10 +2872,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * i18n.Localizable)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
 				Localizable text) {
 			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
-			final MenuItem item = getComponent().addItem(LocalizationProvider.localize(text).orElse(""), handler);
+			final GridMenuItem<T> item = getComponent().addItem(LocalizationProvider.localize(text).orElse(""),
+					handler);
 			return new ItemListingContextMenuItemBuilder<>(getConfigurator(), item, handler);
 		}
 
@@ -2886,10 +2887,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * Component)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, GridContextMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, ItemListingContextMenuBuilder<T, P, L, C>> withItem(
 				Component component) {
 			final ContextMenuItemListenerHandler<T, P> handler = new ContextMenuItemListenerHandler<>(itemListing);
-			final MenuItem item = getComponent().addItem(component, handler);
+			final GridMenuItem<T> item = getComponent().addItem(component, handler);
 			return new ItemListingContextMenuItemBuilder<>(getConfigurator(), item, handler);
 		}
 
@@ -2915,14 +2916,15 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	}
 
-	private static class ItemListingContextMenuItemBuilder<T, P, M extends ContextMenuBase<M>, B extends ContextMenuConfigurator<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B>>
-			implements MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> {
+	private static class ItemListingContextMenuItemBuilder<T, P, B extends ContextMenuConfigurator<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B>>
+			implements
+			MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> {
 
 		private final B parentBuilder;
-		private final MenuItem menuItem;
+		private final GridMenuItem<T> menuItem;
 		private final ContextMenuItemListenerHandler<T, P> handler;
 
-		public ItemListingContextMenuItemBuilder(B parentBuilder, MenuItem menuItem,
+		public ItemListingContextMenuItemBuilder(B parentBuilder, GridMenuItem<T> menuItem,
 				ContextMenuItemListenerHandler<T, P> handler) {
 			super();
 			ObjectUtils.argumentNotNull(parentBuilder, "Parent builder must be not null");
@@ -2937,7 +2939,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> id(
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> id(
 				String id) {
 			menuItem.setId(id);
 			return this;
@@ -2948,7 +2950,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> enabled(
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> enabled(
 				boolean enabled) {
 			menuItem.setEnabled(enabled);
 			return this;
@@ -2960,7 +2962,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * Localizable)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> text(
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> text(
 				Localizable text) {
 			menuItem.setText(LocalizationProvider.localize(text).orElse(""));
 			return this;
@@ -2973,8 +2975,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * java.util.EventListener)
 		 */
 		@Override
-		public MenuItemBuilder<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>, M, B> withClickListener(
-				ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>> menuItemClickListener) {
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> withClickListener(
+				ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>> menuItemClickListener) {
 			ObjectUtils.argumentNotNull(menuItemClickListener, "Click listener must be not null");
 			handler.addListener(menuItemClickListener);
 			return this;
@@ -2995,7 +2997,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private static class ContextMenuItemListenerHandler<T, P>
 			implements ComponentEventListener<GridContextMenuItemClickEvent<T>> {
 
-		private final List<ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>>> listeners = new LinkedList<>();
+		private final List<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>> listeners = new LinkedList<>();
 		private final ItemListing<T, P> itemListing;
 
 		public ContextMenuItemListenerHandler(ItemListing<T, P> itemListing) {
@@ -3003,7 +3005,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			this.itemListing = itemListing;
 		}
 
-		public void addListener(ItemEventListener<MenuItem, T, ItemListingItemEvent<MenuItem, T, P>> listener) {
+		public void addListener(
+				ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>> listener) {
 			this.listeners.add(listener);
 		}
 

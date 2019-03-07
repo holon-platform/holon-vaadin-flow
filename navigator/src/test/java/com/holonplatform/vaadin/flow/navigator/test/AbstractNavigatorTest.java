@@ -55,10 +55,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
+import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.InvalidRouteConfigurationException;
+import com.vaadin.flow.server.RouteRegistry;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -66,7 +69,7 @@ import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
-import com.vaadin.flow.server.startup.RouteRegistry;
+import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 
 public abstract class AbstractNavigatorTest {
 
@@ -124,14 +127,30 @@ public abstract class AbstractNavigatorTest {
 		router = null;
 	}
 
+	@SuppressWarnings("serial")
+	private static class TestVaadinService extends VaadinServletService {
+
+		public RouteRegistry getServiceRouteRegistry() {
+			return routeRegistry;
+		}
+
+		@Override
+		protected RouteRegistry getRouteRegistry() {
+			return getServiceRouteRegistry();
+		}
+
+	}
+
 	protected VaadinService createVaadinService() throws Exception {
-		VaadinServletService vaadinService = mock(VaadinServletService.class);
+		TestVaadinService vaadinService = mock(TestVaadinService.class);
 		when(vaadinService.getDeploymentConfiguration())
 				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
 		when(vaadinService.getRouter()).thenReturn(router);
 		when(vaadinService.getInstantiator()).thenReturn(new DefaultInstantiator(vaadinService));
+		when(vaadinService.getServiceRouteRegistry()).thenCallRealMethod();
+		when(vaadinService.getRouteRegistry()).thenReturn(routeRegistry);
 		return vaadinService;
 	}
 
@@ -184,12 +203,15 @@ public abstract class AbstractNavigatorTest {
 	}
 
 	@SuppressWarnings("serial")
-	static class TestRouteRegistry extends RouteRegistry {
+	static class TestRouteRegistry extends ApplicationRouteRegistry {
 
 		public TestRouteRegistry(List<Class<? extends Component>> navigationTargets,
 				List<Class<? extends Component>> errors) throws InvalidRouteConfigurationException {
 			super();
-			setNavigationTargets(navigationTargets.stream().collect(Collectors.toSet()));
+			navigationTargets.forEach(navigationTarget -> {
+				String route = RouteUtil.getRoutePath(navigationTarget, navigationTarget.getAnnotation(Route.class));
+				setRoute(route, navigationTarget, RouteUtil.getParentLayouts(navigationTarget, route));
+			});
 			setErrorNavigationTargets(errors.stream().collect(Collectors.toSet()));
 		}
 

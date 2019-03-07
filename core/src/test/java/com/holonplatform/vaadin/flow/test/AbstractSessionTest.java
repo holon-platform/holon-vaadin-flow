@@ -20,23 +20,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
-import com.vaadin.flow.server.InvalidRouteConfigurationException;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -44,7 +40,6 @@ import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
-import com.vaadin.flow.server.startup.RouteRegistry;
 
 public abstract class AbstractSessionTest {
 
@@ -137,18 +132,6 @@ public abstract class AbstractSessionTest {
 		Properties properties = new Properties();
 		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
 		return properties;
-	}
-
-	@SuppressWarnings("serial")
-	static class TestRouteRegistry extends RouteRegistry {
-
-		public TestRouteRegistry(List<Class<? extends Component>> navigationTargets,
-				List<Class<? extends Component>> errors) throws InvalidRouteConfigurationException {
-			super();
-			setNavigationTargets(navigationTargets.stream().collect(Collectors.toSet()));
-			setErrorNavigationTargets(errors.stream().collect(Collectors.toSet()));
-		}
-
 	}
 
 }

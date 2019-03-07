@@ -29,6 +29,7 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinService;
@@ -101,7 +102,10 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 			this("");
 			ObjectUtils.argumentNotNull(navigationTarget, "The navigation target class must be not null");
 			final Router r = (router != null) ? router : getRouter();
-			path.append(r.getUrlBase(navigationTarget));
+			final String route = RouteConfiguration.forRegistry(r.getRegistry()).getUrlBase(navigationTarget)
+					.orElseThrow(() -> new IllegalArgumentException(
+							"No route registered for target [" + navigationTarget.getName() + "]"));
+			path.append(route);
 		}
 
 		/**

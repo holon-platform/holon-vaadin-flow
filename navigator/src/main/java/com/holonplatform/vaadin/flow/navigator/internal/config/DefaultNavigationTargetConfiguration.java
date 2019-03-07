@@ -56,9 +56,8 @@ import com.holonplatform.vaadin.flow.navigator.annotations.QueryParameter;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.router.internal.RouterUtil;
+import com.vaadin.flow.router.internal.RouteUtil;
 
 /**
  * Default {@link NavigationTargetConfiguration} implementation.
@@ -99,7 +98,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 		this.authorization = roles.orElse(Collections.emptySet());
 		this.authenticationRequired = (this.authenticate != null) || roles.isPresent();
 		if (navigationTarget.isAnnotationPresent(Route.class)) {
-			this.routePath = Router.resolve(navigationTarget, navigationTarget.getAnnotation(Route.class));
+			this.routePath = RouteUtil.resolve(navigationTarget, navigationTarget.getAnnotation(Route.class));
 		} else {
 			this.routePath = null;
 		}
@@ -197,7 +196,12 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 			return navigationTarget.getAnnotation(Authenticate.class);
 		}
 		// check parent layouts
-		List<Class<? extends RouterLayout>> layouts = RouterUtil.getParentLayouts(navigationTarget);
+		final String route = navigationTarget.isAnnotationPresent(Route.class)
+				? RouteUtil.getRoutePath(navigationTarget, navigationTarget.getAnnotation(Route.class))
+				: null;
+		final List<Class<? extends RouterLayout>> layouts = (route != null)
+				? RouteUtil.getParentLayouts(navigationTarget, route)
+				: RouteUtil.getParentLayoutsForNonRouteTarget(navigationTarget);
 		for (Class<? extends RouterLayout> layout : layouts) {
 			if (layout.isAnnotationPresent(Authenticate.class)) {
 				return layout.getAnnotation(Authenticate.class);

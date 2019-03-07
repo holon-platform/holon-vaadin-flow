@@ -29,18 +29,22 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
 import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.MenuItemBase;
+import com.vaadin.flow.component.contextmenu.SubMenuBase;
 
 /**
  * Abstract {@link ContextMenuConfigurator}.
  *
  * @param <M> Concrete ContextMenu component type
+ * @param <I> Menu item type
+ * @param <S> Sub menu type
  * @param <C> Concrete configurator type
  *
  * @since 5.2.0
  */
-public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<M>, C extends ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C>>
+public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<M, I, S>, I extends MenuItemBase<M, I, S>, S extends SubMenuBase<M, I, S>, C extends ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, C>>
 		extends AbstractComponentConfigurator<M, C>
-		implements ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> {
+		implements ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, C> {
 
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 
@@ -95,7 +99,7 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 	 * Localizable)
 	 */
 	@Override
-	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> withItem(Localizable text) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, C> withItem(Localizable text) {
 		ObjectUtils.argumentNotNull(text, "Text must be not null");
 		return new DefaultContextMenuItemBuilder<>(getConfigurator(),
 				textMenuItemProvider.apply(instance, LocalizationProvider.localize(text).orElse("")),
@@ -109,7 +113,8 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 	 * Component)
 	 */
 	@Override
-	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, C> withItem(Component component) {
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, C> withItem(
+			Component component) {
 		ObjectUtils.argumentNotNull(component, "Component must be not null");
 		return new DefaultContextMenuItemBuilder<>(getConfigurator(),
 				componentMenuItemProvider.apply(instance, component), clickEventConverter);

@@ -21,6 +21,7 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultContext
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 
 /**
  * {@link ContextMenu} component builder.
@@ -28,7 +29,7 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
  * @since 5.2.0
  */
 public interface ContextMenuBuilder extends
-		ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, ContextMenu, ContextMenuBuilder> {
+		ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, ContextMenu, MenuItem, SubMenu, ContextMenuBuilder> {
 
 	/**
 	 * Build the {@link ContextMenu} and bind it to the given <code>target</code> component.
