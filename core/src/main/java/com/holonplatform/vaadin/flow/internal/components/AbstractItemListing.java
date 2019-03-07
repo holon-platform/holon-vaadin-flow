@@ -2257,6 +2257,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 */
 		@Override
 		public C width(P property, String width) {
+			if (width != null) {
+				instance.getColumnConfiguration(property).setFlexGrow(0);
+			}
 			instance.getColumnConfiguration(property).setWidth(width);
 			return getConfigurator();
 		}
@@ -3068,6 +3071,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 */
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> width(String width) {
+			if (width != null) {
+				listing.getColumnConfiguration(property).setFlexGrow(0);
+			}
 			listing.getColumnConfiguration(property).setWidth(width);
 			return this;
 		}
