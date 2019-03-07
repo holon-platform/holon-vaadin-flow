@@ -220,6 +220,18 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	void setValueProvider(ValueProvider<T, String> valueProvider);
 
 	/**
+	 * Get the style class name generator.
+	 * @return Optional style class name generator
+	 */
+	Optional<Function<T, String>> getStyleNameGenerator();
+
+	/**
+	 * Set the style class name generator.
+	 * @param styleNameGenerator the style class name generator to set
+	 */
+	void setStyleNameGenerator(Function<T, String> styleNameGenerator);
+
+	/**
 	 * Gest the column sort mode.
 	 * @return the column sort mode
 	 */

@@ -720,6 +720,29 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.util.
+		 * function.Function)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> styleNameGenerator(Function<T, String> styleNameGenerator) {
+			builder.styleNameGenerator(styleNameGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.lang.
+		 * Object, java.util.function.Function)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> styleNameGenerator(String property,
+				Function<T, String> styleNameGenerator) {
+			builder.styleNameGenerator(property, styleNameGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
 		 */
 		@Override

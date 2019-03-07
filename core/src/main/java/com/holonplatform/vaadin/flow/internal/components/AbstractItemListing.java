@@ -816,6 +816,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		} else {
 			column.setFlexGrow(configuration.getFlexGrow());
 		}
+		// style class name
+		configuration.getStyleNameGenerator().ifPresent(g -> column.setClassNameGenerator(item -> g.apply(item)));
 		// alignment
 		configuration.getAlignment().ifPresent(a -> column.setTextAlign(asColumnTextAlign(a)));
 		// sort
@@ -2289,6 +2291,30 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.util.
+		 * function.Function)
+		 */
+		@Override
+		public C styleNameGenerator(Function<T, String> styleNameGenerator) {
+			if (styleNameGenerator != null) {
+				instance.getGrid().setClassNameGenerator(item -> styleNameGenerator.apply(item));
+			}
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.lang.
+		 * Object, java.util.function.Function)
+		 */
+		@Override
+		public C styleNameGenerator(P property, Function<T, String> styleNameGenerator) {
+			instance.getColumnConfiguration(property).setStyleNameGenerator(styleNameGenerator);
+			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
 		 */
 		@Override
@@ -3101,6 +3127,17 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> flexGrow(int flexGrow) {
 			listing.getColumnConfiguration(property).setFlexGrow(flexGrow);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnConfigurator#
+		 * styleNameGenerator(java.util.function.Function)
+		 */
+		@Override
+		public ItemListingColumnBuilder<T, P, L, B> styleNameGenerator(Function<T, String> styleNameGenerator) {
+			listing.getColumnConfiguration(property).setStyleNameGenerator(styleNameGenerator);
 			return this;
 		}
 

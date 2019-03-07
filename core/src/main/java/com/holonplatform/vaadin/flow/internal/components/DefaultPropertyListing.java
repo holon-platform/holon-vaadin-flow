@@ -804,6 +804,29 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.util.
+		 * function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder styleNameGenerator(Function<PropertyBox, String> styleNameGenerator) {
+			builder.styleNameGenerator(styleNameGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.lang.
+		 * Object, java.util.function.Function)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder styleNameGenerator(Property<?> property,
+				Function<PropertyBox, String> styleNameGenerator) {
+			builder.styleNameGenerator(property, styleNameGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
 		 */
 		@Override

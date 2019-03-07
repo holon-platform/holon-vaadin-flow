@@ -68,6 +68,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private Component footerComponent;
 	private Renderer<T> renderer;
 	private ValueProvider<T, String> valueProvider;
+	private Function<T, String> styleNameGenerator;
 	private Comparator<T> comparator;
 	private SortOrderProvider sortOrderProvider;
 	private List<P> sortProperties;
@@ -359,6 +360,25 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public void setValueProvider(ValueProvider<T, String> valueProvider) {
 		this.valueProvider = valueProvider;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#getStyleNameGenerator()
+	 */
+	@Override
+	public Optional<Function<T, String>> getStyleNameGenerator() {
+		return Optional.ofNullable(styleNameGenerator);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn#setStyleNameGenerator(java.util.
+	 * function.Function)
+	 */
+	@Override
+	public void setStyleNameGenerator(Function<T, String> styleNameGenerator) {
+		this.styleNameGenerator = styleNameGenerator;
 	}
 
 	/*
