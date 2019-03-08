@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import java.util.function.Function;
+import java.time.Duration;
 
 /**
  * Configurator for input component which supports a date with time.
@@ -34,13 +34,6 @@ public interface HasTimeInputConfigurator<C extends HasTimeInputConfigurator<C>>
 	C spacing(boolean spacing);
 
 	/**
-	 * Set the time separator character.
-	 * @param timeSeparator the time separator to set
-	 * @return this
-	 */
-	C timeSeparator(char timeSeparator);
-
-	/**
 	 * Set the time input width.
 	 * @param timeInputWidth the time input width to set
 	 * @return this
@@ -48,13 +41,23 @@ public interface HasTimeInputConfigurator<C extends HasTimeInputConfigurator<C>>
 	C timeInputWidth(String timeInputWidth);
 
 	/**
-	 * Sets the function to use to display the time input placeholder text.
+	 * Sets the time <em>step</em> using duration. It specifies the intervals for the displayed items in the time input
+	 * dropdown and also the displayed time format.
 	 * <p>
-	 * The time separator character is provider as function argument.
+	 * The set step needs to evenly divide a day or an hour and has to be larger than 0 milliseconds. By default, the
+	 * format is <code>hh:mm</code> (same as <code>Duration.ofHours(1)</code>).
 	 * </p>
-	 * @param timePlaceholder the function to use to display the time input placeholder text
+	 * <p>
+	 * If the step is less than 60 seconds, the format will be changed to <code>hh:mm:ss</code> and it can be in
+	 * <code>hh:mm:ss.fff</code> format, when the step is less than 1 second.
+	 * </p>
+	 * <p>
+	 * <em>NOTE:</em> If the step is less than 900 seconds, the dropdown is hidden.
+	 * </p>
+	 * @param step the step to set, not <code>null</code> and should divide a day or an hour evenly
 	 * @return this
+	 * @since 5.2.3
 	 */
-	C timePlaceholder(Function<Character, String> timePlaceholder);
+	C timeStep(Duration step);
 
 }

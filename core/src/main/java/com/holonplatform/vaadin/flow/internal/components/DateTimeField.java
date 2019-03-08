@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +26,6 @@ import java.util.Optional;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
-import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
@@ -45,6 +45,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -58,80 +59,27 @@ public class DateTimeField extends Composite<HorizontalLayout>
 
 	private static final long serialVersionUID = -6960232589608854521L;
 
-	public static final String DEFAULT_TIME_SEPARATOR = ":";
-
-	public static final String DEFAULT_TIME_INPUTS_WIDTH = "3.3em";
+	public static final String DEFAULT_TIME_INPUT_WIDTH = "8em";
 
 	private final DatePicker date;
-	private Input<LocalTime> time;
-
-	private String timeInputWidth;
+	private final TimePicker time;
 
 	private final List<ValueChangeListener<ComponentValueChangeEvent<DateTimeField, LocalDateTime>>> valueChangeListeners = new LinkedList<>();
 
 	/**
-	 * Default constructor.
+	 * Constructor.
 	 */
 	public DateTimeField() {
-		this(new DatePicker(), Input.localTime().build());
-	}
-
-	/**
-	 * Constructor.
-	 * @param time The time input (not null)
-	 */
-	public DateTimeField(Input<LocalTime> time) {
-		this(new DatePicker(), time);
-	}
-
-	/**
-	 * Constructor
-	 * @param date The date input (not null)
-	 * @param time The time input (not null)
-	 */
-	public DateTimeField(DatePicker date, Input<LocalTime> time) {
 		super();
-		ObjectUtils.argumentNotNull(date, "LocalDate input must be not null");
-		ObjectUtils.argumentNotNull(time, "LocalTime input must be not null");
-		this.date = date;
-		this.time = time;
-		this.timeInputWidth = time.hasSize().map(s -> s.getWidth()).orElse(null);
+		this.date = new DatePicker();
+		this.time = new TimePicker();
+
+		this.time.setWidth(DEFAULT_TIME_INPUT_WIDTH);
+
 		getContent().setSpacing(false);
 		getContent().setAlignItems(Alignment.BASELINE);
 		getContent().add(this.date);
-		getContent().add(this.time.getComponent());
-	}
-
-	/**
-	 * Get the time input.
-	 * @return the time input
-	 */
-	public Input<LocalTime> getTimeInput() {
-		return time;
-	}
-
-	/**
-	 * Replace the current time input with the given one.
-	 * @param time the time input to set (not null)
-	 */
-	public void setTimeInput(Input<LocalTime> time) {
-		ObjectUtils.argumentNotNull(time, "LocalTime input must be not null");
-		Input<LocalTime> previous = this.time;
-		this.time = time;
-		this.time.setRequired(previous.isRequired());
-		this.time.setReadOnly(previous.isReadOnly());
-		if (this.timeInputWidth != null) {
-			this.time.hasSize().ifPresent(s -> s.setWidth(timeInputWidth));
-		}
-		this.valueChangeListeners.forEach(listener -> {
-			this.time.addValueChangeListener(e -> {
-				if (e.isUserOriginated()) {
-					listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
-							getDateValue().map(date -> LocalDateTime.of(date, e.getOldValue())).orElse(null),
-							e.isUserOriginated()));
-				}
-			});
-		});
+		getContent().add(this.time);
 	}
 
 	/*
@@ -173,8 +121,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 * @param timeInputWidth the time input width to set
 	 */
 	public void setTimeInputWidth(String timeInputWidth) {
-		this.timeInputWidth = timeInputWidth;
-		this.time.hasSize().ifPresent(s -> s.setWidth(timeInputWidth));
+		this.time.setWidth(timeInputWidth);
 	}
 
 	/**
@@ -182,7 +129,35 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 * @return the time input width
 	 */
 	public String getTimeInputWidth() {
-		return timeInputWidth;
+		return this.time.getWidth();
+	}
+
+	/**
+	 * Sets the time <em>step</em> using duration. It specifies the intervals for the displayed items in the time input
+	 * dropdown and also the displayed time format.
+	 * <p>
+	 * The set step needs to evenly divide a day or an hour and has to be larger than 0 milliseconds. By default, the
+	 * format is <code>hh:mm</code> (same as <code>Duration.ofHours(1)</code>).
+	 * </p>
+	 * <p>
+	 * If the step is less than 60 seconds, the format will be changed to <code>hh:mm:ss</code> and it can be in
+	 * <code>hh:mm:ss.fff</code> format, when the step is less than 1 second.
+	 * </p>
+	 * <p>
+	 * <em>NOTE:</em> If the step is less than 900 seconds, the dropdown is hidden.
+	 * </p>
+	 * @param step the step to set, not <code>null</code> and should divide a day or an hour evenly
+	 */
+	public void setTimeStep(Duration step) {
+		this.time.setStep(step);
+	}
+
+	/**
+	 * Get the time input step.
+	 * @return the step duration
+	 */
+	public Duration getTimeStep() {
+		return this.time.getStep();
 	}
 
 	/**
@@ -209,7 +184,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 * @param placeholder The placeholder to set
 	 */
 	public void setTimePlaceholder(String placeholder) {
-		this.time.hasPlaceholder().ifPresent(p -> p.setPlaceholder(placeholder));
+		this.time.setPlaceholder(placeholder);
 	}
 
 	/**
@@ -217,7 +192,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 * @return The time input placeholder
 	 */
 	public String getTimePlaceholder() {
-		return this.time.hasPlaceholder().map(p -> p.getPlaceholder()).orElse(null);
+		return this.time.getPlaceholder();
 	}
 
 	/**
@@ -391,11 +366,11 @@ public class DateTimeField extends Composite<HorizontalLayout>
 						e.isFromClient()));
 			}
 		});
-		final com.holonplatform.core.Registration tl = this.time.addValueChangeListener(e -> {
-			if (e.isUserOriginated()) {
+		final Registration tl = this.time.addValueChangeListener(e -> {
+			if (e.isFromClient()) {
 				listener.valueChanged(new ComponentValueChangeEvent<>(DateTimeField.this, DateTimeField.this,
 						getDateValue().map(date -> LocalDateTime.of(date, e.getOldValue())).orElse(null),
-						e.isUserOriginated()));
+						e.isFromClient()));
 			}
 		});
 		return () -> {
@@ -420,7 +395,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		this.date.setErrorMessage(errorMessage);
-		this.time.hasValidation().ifPresent(v -> v.setErrorMessage(null));
+		this.time.setErrorMessage(null);
 	}
 
 	/*
@@ -433,7 +408,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 		if (this.date.getErrorMessage() != null) {
 			sb.append(this.date.getErrorMessage());
 		}
-		final String timeError = this.time.hasValidation().map(v -> v.getErrorMessage()).orElse(null);
+		final String timeError = this.time.getErrorMessage();
 		if (timeError != null && !timeError.equals(this.date.getErrorMessage())) {
 			if (sb.length() > 0) {
 				sb.append(";");
@@ -450,7 +425,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	@Override
 	public void setInvalid(boolean invalid) {
 		this.date.setInvalid(invalid);
-		this.time.hasValidation().ifPresent(v -> v.setInvalid(invalid));
+		this.time.setInvalid(invalid);
 	}
 
 	/*
@@ -459,7 +434,7 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	 */
 	@Override
 	public boolean isInvalid() {
-		if (this.date.isInvalid() || this.time.hasValidation().map(v -> v.isInvalid()).orElse(false)) {
+		if (this.date.isInvalid() || this.time.isInvalid()) {
 			return true;
 		}
 		return false;

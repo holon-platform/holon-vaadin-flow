@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -23,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -165,33 +165,11 @@ public abstract class AbstractDateTimeInputBuilder<C extends DateTimeInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeSeparator(char)
-	 */
-	@Override
-	public C timeSeparator(char timeSeparator) {
-		localDateTimeInputBuilder.timeSeparator(timeSeparator);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeInputWidth(java.lang.String)
 	 */
 	@Override
 	public C timeInputWidth(String timeInputWidth) {
 		localDateTimeInputBuilder.timeInputWidth(timeInputWidth);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timePlaceholder(java.util.function.
-	 * Function)
-	 */
-	@Override
-	public C timePlaceholder(Function<Character, String> timePlaceholder) {
-		localDateTimeInputBuilder.timePlaceholder(timePlaceholder);
 		return getConfigurator();
 	}
 
@@ -549,6 +527,16 @@ public abstract class AbstractDateTimeInputBuilder<C extends DateTimeInputConfig
 	@Override
 	public C label(Localizable label) {
 		localDateTimeInputBuilder.label(label);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeStep(java.time.Duration)
+	 */
+	@Override
+	public C timeStep(Duration step) {
+		localDateTimeInputBuilder.timeStep(step);
 		return getConfigurator();
 	}
 

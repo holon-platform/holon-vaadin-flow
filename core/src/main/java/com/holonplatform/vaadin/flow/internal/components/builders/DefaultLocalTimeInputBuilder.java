@@ -68,9 +68,7 @@ public class DefaultLocalTimeInputBuilder extends AbstractLocalTimeInputBuilder<
 	 */
 	@Override
 	public ValidatableLocalTimeInputBuilder validatable() {
-		return new DefaultValidatableLocalTimeInputBuilder(getComponent(), getConverter(), getPlaceholderProvider(),
-				getFixedTimeSeparator(), getFixedLocale(), getInitialValue(), isWidthUndefined(),
-				getValueChangeListeners());
+		return new DefaultValidatableLocalTimeInputBuilder(getComponent(), getValueChangeListeners());
 	}
 
 }

@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.holonplatform.core.Context;
+import com.holonplatform.core.config.ConfigProperty;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.core.property.Property;
@@ -110,6 +112,23 @@ import com.vaadin.flow.server.VaadinService;
  * @since 5.2.0
  */
 public interface Components {
+
+	// Property configuration
+
+	/**
+	 * Configuration property which can be used for a {@link LocalTime} type {@link Property} to configure the
+	 * <em>steps</em> to show for the {@link Input} component bound to the property, i.e. the intervals for the
+	 * displayed items in the time input dropdown.
+	 * <p>
+	 * If the step is less than 60 seconds, the format will be changed to <code>hh:mm:ss</code> and it can be in
+	 * <code>hh:mm:ss.fff</code> format, when the step is less than 1 second.
+	 * </p>
+	 * <p>
+	 * If the step is less than 900 seconds, the dropdown is hidden.
+	 * </p>
+	 */
+	public static final ConfigProperty<Duration> TIME_INPUT_STEP = ConfigProperty
+			.create(Components.class.getName() + ".time-input-step", Duration.class);
 
 	// Configurators
 

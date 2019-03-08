@@ -337,14 +337,6 @@ public class TestLocalDateTimeInput {
 	}
 
 	@Test
-	public void testTimePlaceholder() {
-
-		Input<LocalDateTime> input = Input.localDateTime().timePlaceholder(c -> "test").build();
-		assertEquals("test", ((DateTimeField) input.getComponent()).getTimePlaceholder());
-
-	}
-
-	@Test
 	public void testConfiguration() {
 
 		Input<LocalDateTime> input = Input.localDateTime().locale(Locale.ITALIAN).build();
@@ -388,9 +380,6 @@ public class TestLocalDateTimeInput {
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
 			assertEquals("TestUS", ((DateTimeField) input3.getComponent()).getI18n().getToday());
 		});
-
-		input = Input.localDateTime().timeSeparator('-').build();
-		assertEquals("HH-MM", ((DateTimeField) input.getComponent()).getTimePlaceholder());
 
 		input = Input.localDateTime().spacing(true).build();
 		assertTrue(((DateTimeField) input.getComponent()).isSpacing());

@@ -26,11 +26,12 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
@@ -38,17 +39,30 @@ import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.textfield.Autocomplete;
-import com.vaadin.flow.component.textfield.HasAutocomplete;
-import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.HasValueChangeMode;
-import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestLocalTimeInput {
+
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -96,6 +110,8 @@ public class TestLocalTimeInput {
 		input = Input.localTime().withAttachListener(e -> {
 			attached.set(true);
 		}).build();
+		
+		UI.getCurrent().add(input.getComponent());
 
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
@@ -216,6 +232,7 @@ public class TestLocalTimeInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<LocalTime> input2 = Input.localTime().deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -263,6 +280,7 @@ public class TestLocalTimeInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<LocalTime> input2 = Input.localTime().deferLocalization().title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
 		});
@@ -272,6 +290,7 @@ public class TestLocalTimeInput {
 					.title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
@@ -333,15 +352,9 @@ public class TestLocalTimeInput {
 	public void testFocus() {
 
 		Input<LocalTime> input = Input.localTime().tabIndex(77).build();
-		assertTrue(input.getComponent() instanceof TextField);
+		assertTrue(input.getComponent() instanceof TimePicker);
 
-		assertEquals(77, ((TextField) input.getComponent()).getTabIndex());
-
-		input = Input.localTime().autofocus(false).build();
-		assertFalse(((TextField) input.getComponent()).isAutofocus());
-
-		input = Input.localTime().autofocus(true).build();
-		assertTrue(((TextField) input.getComponent()).isAutofocus());
+		assertEquals(77, ((TimePicker) input.getComponent()).getTabIndex());
 
 	}
 
@@ -374,35 +387,10 @@ public class TestLocalTimeInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<LocalTime> input2 = Input.localTime().deferLocalization().placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
-
-	}
-
-	@Test
-	public void testPrefixAndSuffix() {
-
-		final Icon prefix = VaadinIcon.PICTURE.create();
-		final Button suffix = new Button("suffix");
-
-		Input<LocalTime> input = Input.localTime().prefixComponent(prefix).suffixComponent(suffix).build();
-		assertTrue(input.getComponent() instanceof HasPrefixAndSuffix);
-		assertEquals(prefix, ((HasPrefixAndSuffix) input.getComponent()).getPrefixComponent());
-		assertEquals(suffix, ((HasPrefixAndSuffix) input.getComponent()).getSuffixComponent());
-
-	}
-
-	@Test
-	public void testTextInput() {
-
-		Input<LocalTime> input = Input.localTime().valueChangeMode(ValueChangeMode.ON_BLUR).build();
-		assertTrue(input.getComponent() instanceof HasValueChangeMode);
-		assertEquals(ValueChangeMode.ON_BLUR, ((HasValueChangeMode) input.getComponent()).getValueChangeMode());
-
-		input = Input.localTime().autocomplete(Autocomplete.USERNAME).build();
-		assertTrue(input.getComponent() instanceof HasAutocomplete);
-		assertEquals(Autocomplete.USERNAME, ((HasAutocomplete) input.getComponent()).getAutocomplete());
 
 	}
 
@@ -429,37 +417,6 @@ public class TestLocalTimeInput {
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
-
-	}
-
-	@Test
-	public void testTimeSeparator() {
-
-		Input<LocalTime> input = Input.localTime().timeSeparator('-').build();
-		assertEquals("HH-MM", ComponentTestUtils.getPlaceholder(input));
-
-		input = Input.localTime().locale(Locale.US).build();
-		assertEquals("HH:MM", ComponentTestUtils.getPlaceholder(input));
-
-		input = Input.localTime().locale(Locale.ITALY).build();
-		assertEquals("HH.MM", ComponentTestUtils.getPlaceholder(input));
-
-		LocalizationTestUtils.withTestLocalizationContext(() -> {
-			Input<LocalTime> input2 = Input.localTime().build();
-			assertEquals("HH:MM", ComponentTestUtils.getPlaceholder(input2));
-		});
-
-		final Input<LocalTime> input3 = Input.localTime().build();
-		assertEquals("HH:MM", ComponentTestUtils.getPlaceholder(input3));
-
-		Context.get().executeThreadBound(LocalizationContext.CONTEXT_KEY,
-				LocalizationContext.builder().withInitialLocale(Locale.ITALY).build(), () -> {
-					ComponentUtil.onComponentAttach(input3.getComponent(), true);
-					assertEquals("HH.MM", ComponentTestUtils.getPlaceholder(input3));
-				});
-
-		input = Input.localTime().locale(Locale.ITALY).timeSeparator(';').build();
-		assertEquals("HH;MM", ComponentTestUtils.getPlaceholder(input));
 
 	}
 

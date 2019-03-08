@@ -406,9 +406,6 @@ public class TestDateTimeInput {
 			assertEquals("TestUS", ((DateTimeField) input3.getComponent()).getI18n().getToday());
 		});
 
-		input = Input.dateTime().timeSeparator('-').build();
-		assertEquals("HH-MM", ((DateTimeField) input.getComponent()).getTimePlaceholder());
-
 		input = Input.dateTime().spacing(true).build();
 		assertTrue(((DateTimeField) input.getComponent()).isSpacing());
 		input = Input.dateTime().spacing(false).build();

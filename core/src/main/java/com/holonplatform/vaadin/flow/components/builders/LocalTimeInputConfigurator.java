@@ -15,14 +15,13 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Locale;
-import java.util.function.Function;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * {@link LocalTime} type {@link Input} components configurator.
@@ -33,40 +32,35 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
  */
 public interface LocalTimeInputConfigurator<C extends LocalTimeInputConfigurator<C>>
 		extends InputValueConfigurator<LocalTime, ValueChangeEvent<LocalTime>, C>, HasEnabledConfigurator<C>,
-		InputNotifierConfigurator<C>, KeyNotifierConfigurator<C>, HasValueChangeModeConfigurator<C>,
-		HasAutocompleteConfigurator<C>, HasSizeConfigurator<C>, HasStyleConfigurator<C>, HasAutofocusConfigurator<C>,
-		FocusableConfigurator<Component, C>, HasPrefixAndSuffixConfigurator<C>, CompositionNotifierConfigurator<C>,
-		HasPlaceholderConfigurator<C>, HasLabelConfigurator<C>, HasTitleConfigurator<C>, HasPatternConfigurator<C>,
-		HasThemeVariantConfigurator<TextFieldVariant, C>, DeferrableLocalizationConfigurator<C> {
+		HasSizeConfigurator<C>, HasStyleConfigurator<C>, FocusableConfigurator<Component, C>,
+		HasPlaceholderConfigurator<C>, HasLabelConfigurator<C>, HasTitleConfigurator<C>,
+		DeferrableLocalizationConfigurator<C> {
 
 	/**
-	 * Set the {@link Locale} to use to represent and convert {@link LocalTime} values.
-	 * <p>
-	 * The provided {@link Locale} will be always used to obtain time separator character to use.
-	 * </p>
+	 * Set the {@link Locale} to use to represent the {@link LocalTime} values.
 	 * @param locale the {@link Locale} to set
 	 * @return this
 	 */
 	C locale(Locale locale);
 
 	/**
-	 * Sets the time separator character to use.
+	 * Sets the <em>step</em> using duration. It specifies the intervals for the displayed items in the time input
+	 * dropdown and also the displayed time format.
 	 * <p>
-	 * The provided character will be always as time separator, regardless of the current {@link Locale}.
+	 * The set step needs to evenly divide a day or an hour and has to be larger than 0 milliseconds. By default, the
+	 * format is <code>hh:mm</code> (same as <code>Duration.ofHours(1)</code>).
 	 * </p>
-	 * @param timeSeparator the time separator character to set
-	 * @return this
-	 */
-	C timeSeparator(char timeSeparator);
-
-	/**
-	 * Sets the function to use to display the default input placeholder text.
 	 * <p>
-	 * The time separator character is provider as function argument.
+	 * If the step is less than 60 seconds, the format will be changed to <code>hh:mm:ss</code> and it can be in
+	 * <code>hh:mm:ss.fff</code> format, when the step is less than 1 second.
 	 * </p>
-	 * @param placeholderProvider the function to use to display the default input placeholder text
+	 * <p>
+	 * <em>NOTE:</em> If the step is less than 900 seconds, the dropdown is hidden.
+	 * </p>
+	 * @param step the step to set, not <code>null</code> and should divide a day or an hour evenly
 	 * @return this
+	 * @since 5.2.3
 	 */
-	C defaultPlaceholder(Function<Character, String> placeholderProvider);
+	C step(Duration step);
 
 }

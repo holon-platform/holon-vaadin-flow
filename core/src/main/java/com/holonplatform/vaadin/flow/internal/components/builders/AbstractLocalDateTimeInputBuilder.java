@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -33,7 +33,6 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputConfigurator;
-import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
@@ -69,25 +68,19 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	private CalendarLocalization localization;
 
-	private Character timeSeparator;
-	private Function<Character, String> timePlaceholder;
-
 	private LocalDateTime initialValue;
 
 	public AbstractLocalDateTimeInputBuilder() {
-		this(new DateTimeField(), null, null, null, null, null, Collections.emptyList());
+		this(new DateTimeField(), null, null, null, Collections.emptyList());
 	}
 
 	public AbstractLocalDateTimeInputBuilder(DateTimeField component, Registration contextLocaleOnAttachRegistration,
-			CalendarLocalization localization, Character timeSeparator, Function<Character, String> timePlaceholder,
-			LocalDateTime initialValue,
+			CalendarLocalization localization, LocalDateTime initialValue,
 			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners) {
 		super(component);
 
 		this.contextLocaleOnAttachRegistration = contextLocaleOnAttachRegistration;
 		this.localization = localization;
-		this.timeSeparator = timeSeparator;
-		this.timePlaceholder = timePlaceholder;
 		this.initialValue = initialValue;
 		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
 
@@ -109,14 +102,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	protected CalendarLocalization getLocalization() {
 		return localization;
-	}
-
-	protected Character getTimeSeparator() {
-		return timeSeparator;
-	}
-
-	protected Function<Character, String> getTimePlaceholder() {
-		return timePlaceholder;
 	}
 
 	protected LocalDateTime getInitialValue() {
@@ -159,18 +144,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 			}
 		}
 
-		// time input configuration
-		if (timeSeparator != null || timePlaceholder != null) {
-			LocalTimeInputBuilder timeBuilder = Input.localTime();
-			if (timeSeparator != null) {
-				timeBuilder = timeBuilder.timeSeparator(timeSeparator);
-			}
-			if (timePlaceholder != null) {
-				timeBuilder = timeBuilder.defaultPlaceholder(timePlaceholder);
-			}
-			component.setTimeInput(timeBuilder.build());
-		}
-
 		// initial value
 		if (initialValue != null) {
 			component.setValue(initialValue);
@@ -203,16 +176,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeSeparator(char)
-	 */
-	@Override
-	public C timeSeparator(char timeSeparator) {
-		this.timeSeparator = timeSeparator;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeInputWidth(java.lang.String)
 	 */
 	@Override
@@ -223,13 +186,11 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timePlaceholder(java.util.function.
-	 * Function)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#timeStep(java.time.Duration)
 	 */
 	@Override
-	public C timePlaceholder(Function<Character, String> timePlaceholder) {
-		this.timePlaceholder = timePlaceholder;
+	public C timeStep(Duration step) {
+		getComponent().setTimeStep(step);
 		return getConfigurator();
 	}
 

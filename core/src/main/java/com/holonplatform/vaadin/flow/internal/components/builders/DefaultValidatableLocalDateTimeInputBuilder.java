@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
@@ -41,11 +40,10 @@ public class DefaultValidatableLocalDateTimeInputBuilder
 	private final DefaultValidatableInputConfigurator<LocalDateTime> validatableInputConfigurator;
 
 	public DefaultValidatableLocalDateTimeInputBuilder(DateTimeField component,
-			Registration contextLocaleOnAttachRegistration, CalendarLocalization localization, Character timeSeparator,
-			Function<Character, String> timePlaceholder, LocalDateTime initialValue,
+			Registration contextLocaleOnAttachRegistration, CalendarLocalization localization,
+			LocalDateTime initialValue,
 			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners) {
-		super(component, contextLocaleOnAttachRegistration, localization, timeSeparator, timePlaceholder, initialValue,
-				valueChangeListeners);
+		super(component, contextLocaleOnAttachRegistration, localization, initialValue, valueChangeListeners);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

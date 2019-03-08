@@ -29,7 +29,9 @@ import com.holonplatform.core.presentation.StringValuePresenter;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;
 import com.holonplatform.core.temporal.TemporalType;
+import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.internal.converters.DateToLocalTimeConverter;
 
@@ -195,7 +197,11 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalTime> renderLocalTime(Property<? extends T> property) {
-		return Input.localTime().label(property).readOnly(property.isReadOnly()).build();
+		final LocalTimeInputBuilder builder = Input.localTime().label(property).readOnly(property.isReadOnly());
+		property.getConfiguration().getParameter(Components.TIME_INPUT_STEP).ifPresent(s -> {
+			builder.step(s);
+		});
+		return builder.build();
 	}
 
 	/**
