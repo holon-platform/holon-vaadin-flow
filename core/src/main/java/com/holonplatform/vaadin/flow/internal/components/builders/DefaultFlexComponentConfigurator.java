@@ -146,6 +146,46 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+	 */
+	@Override
+	public DefaultFlexComponentConfigurator<C> minWidth(String minWidth) {
+		sizeConfigurator.minWidth(minWidth);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+	 */
+	@Override
+	public DefaultFlexComponentConfigurator<C> maxWidth(String maxWidth) {
+		sizeConfigurator.maxWidth(maxWidth);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+	 */
+	@Override
+	public DefaultFlexComponentConfigurator<C> minHeight(String minHeight) {
+		sizeConfigurator.minHeight(minHeight);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+	 */
+	@Override
+	public DefaultFlexComponentConfigurator<C> maxHeight(String maxHeight) {
+		sizeConfigurator.maxHeight(maxHeight);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignItems(com.vaadin.flow.component.
 	 * orderedlayout.FlexComponent.Alignment)

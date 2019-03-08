@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -26,6 +27,9 @@ import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -46,8 +50,6 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 		extends AbstractComponentConfigurator<M, C>
 		implements ContextMenuConfigurator<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, C> {
 
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-
 	private final M instance;
 	private final BiFunction<M, String, MenuItem> textMenuItemProvider;
 	private final BiFunction<M, Component, MenuItem> componentMenuItemProvider;
@@ -61,7 +63,21 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 		this.textMenuItemProvider = textMenuItemProvider;
 		this.componentMenuItemProvider = componentMenuItemProvider;
 		this.clickEventConverter = clickEventConverter;
-		this.styleConfigurator = new DefaultHasStyleConfigurator(instance);
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.empty();
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/**
@@ -70,26 +86,6 @@ public abstract class AbstractContextMenuConfigurator<M extends ContextMenuBase<
 	 */
 	protected M getInstance() {
 		return instance;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
 	}
 
 	/*

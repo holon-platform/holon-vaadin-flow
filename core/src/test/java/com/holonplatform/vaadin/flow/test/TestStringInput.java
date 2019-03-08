@@ -46,6 +46,7 @@ import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.ElementConstants;
 
 public class TestStringInput {
 
@@ -168,6 +169,21 @@ public class TestStringInput {
 		assertEquals("100%", ComponentTestUtils.getWidth(input));
 		assertEquals("100%", ComponentTestUtils.getHeight(input));
 
+	}
+
+	@Test
+	public void testMinMaxSize() {
+		Input<String> input = Input.string().minWidth("10em").build();
+		assertEquals("10em", ComponentTestUtils.getStyleAttribute(input, ElementConstants.STYLE_MIN_WIDTH));
+
+		input = Input.string().maxWidth("10em").build();
+		assertEquals("10em", ComponentTestUtils.getStyleAttribute(input, ElementConstants.STYLE_MAX_WIDTH));
+
+		input = Input.string().minHeight("10em").build();
+		assertEquals("10em", ComponentTestUtils.getStyleAttribute(input, ElementConstants.STYLE_MIN_HEIGHT));
+
+		input = Input.string().maxHeight("10em").build();
+		assertEquals("10em", ComponentTestUtils.getStyleAttribute(input, ElementConstants.STYLE_MAX_HEIGHT));
 	}
 
 	@Test

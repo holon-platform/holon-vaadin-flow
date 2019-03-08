@@ -58,4 +58,40 @@ public class DefaultHasSizeConfigurator implements HasSizeConfigurator<DefaultHa
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+	 */
+	@Override
+	public DefaultHasSizeConfigurator minWidth(String minWidth) {
+		component.setMinWidth(minWidth);
+		return this;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+	 */
+	@Override
+	public DefaultHasSizeConfigurator maxWidth(String maxWidth) {
+		component.setMaxWidth(maxWidth);
+		return this;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+	 */
+	@Override
+	public DefaultHasSizeConfigurator minHeight(String minHeight) {
+		component.setMinHeight(minHeight);
+		return this;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+	 */
+	@Override
+	public DefaultHasSizeConfigurator maxHeight(String maxHeight) {
+		component.setMaxHeight(maxHeight);
+		return this;
+	}
+
 }

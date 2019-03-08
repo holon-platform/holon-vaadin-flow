@@ -1918,7 +1918,26 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public abstract C getConfigurator();
 
+		/**
+		 * Get the listing instance.
+		 * @return The listing instance
+		 */
 		protected abstract L getItemListing();
+
+		@Override
+		protected Optional<HasSize> hasSize() {
+			return Optional.of(getComponent());
+		}
+
+		@Override
+		protected Optional<HasStyle> hasStyle() {
+			return Optional.of(getComponent());
+		}
+
+		@Override
+		protected Optional<HasEnabled> hasEnabled() {
+			return Optional.of(getComponent());
+		}
 
 		/**
 		 * Get the listing instance.
@@ -2846,6 +2865,21 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			this.parentBuilder = parentBuilder;
 			this.styleConfigurator = new DefaultHasStyleConfigurator(contextMenu);
 
+		}
+
+		@Override
+		protected Optional<HasSize> hasSize() {
+			return Optional.empty();
+		}
+
+		@Override
+		protected Optional<HasStyle> hasStyle() {
+			return Optional.of(getComponent());
+		}
+
+		@Override
+		protected Optional<HasEnabled> hasEnabled() {
+			return Optional.of(getComponent());
 		}
 
 		/*

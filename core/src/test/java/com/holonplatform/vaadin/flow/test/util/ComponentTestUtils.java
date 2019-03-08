@@ -21,6 +21,7 @@ import java.util.Set;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.vaadin.flow.component.HasElement;
 
 public final class ComponentTestUtils {
 
@@ -34,6 +35,10 @@ public final class ComponentTestUtils {
 
 	public static boolean isEnabled(HasComponent component) {
 		return component.hasEnabled().map(c -> c.isEnabled()).orElse(false);
+	}
+	
+	public static String getStyleAttribute(HasElement component, String attribute) {
+		return component.getElement().getStyle().get(attribute);
 	}
 
 	public static String getWidth(HasComponent component) {

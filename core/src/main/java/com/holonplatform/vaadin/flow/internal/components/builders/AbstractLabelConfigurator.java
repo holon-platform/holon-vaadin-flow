@@ -15,12 +15,17 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.ClickNotifier;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HtmlContainer;
 
 /**
@@ -35,18 +40,12 @@ import com.vaadin.flow.component.HtmlContainer;
 public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickNotifier, C extends LabelConfigurator<L, C>>
 		extends AbstractLocalizableComponentConfigurator<L, C> implements LabelConfigurator<L, C> {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasTextConfigurator textConfigurator;
 	protected final DefaultHasHtmlTextConfigurator htmlTextConfigurator;
 	protected final DefaultHasTitleConfigurator<L> titleConfigurator;
 
 	public AbstractLabelConfigurator(L component) {
 		super(component);
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(component);
-		this.styleConfigurator = new DefaultHasStyleConfigurator(component);
-		this.enabledConfigurator = new DefaultHasEnabledConfigurator(component);
 		this.textConfigurator = new DefaultHasTextConfigurator(component, this);
 		this.htmlTextConfigurator = new DefaultHasHtmlTextConfigurator(component, this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(component, title -> {
@@ -54,44 +53,19 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 		}, this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
 	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
 	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
 	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -102,16 +76,6 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	@Override
 	public C title(Localizable title) {
 		titleConfigurator.title(title);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public C enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 

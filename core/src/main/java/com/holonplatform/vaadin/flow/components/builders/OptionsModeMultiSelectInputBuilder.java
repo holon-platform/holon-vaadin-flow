@@ -124,7 +124,7 @@ public interface OptionsModeMultiSelectInputBuilder<T, ITEM, B extends OptionsMo
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
-	 * @param <ITEM> Item type param 
+	 * @param <ITEM> Item type param
 	 * @param <C> Concrete configurator type
 	 */
 	public interface DatastoreItemOptionsModeMultiSelectInputConfigurator<T, ITEM, C extends DatastoreItemOptionsModeMultiSelectInputConfigurator<T, ITEM, C>>

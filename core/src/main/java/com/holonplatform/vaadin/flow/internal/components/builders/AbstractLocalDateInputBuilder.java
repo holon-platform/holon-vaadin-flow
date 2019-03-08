@@ -41,6 +41,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.shared.Registration;
@@ -57,9 +60,6 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	private final List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> valueChangeListeners = new LinkedList<>();
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<DatePicker> labelConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<DatePicker> placeholderConfigurator;
 
@@ -80,9 +80,6 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		this.localization = localization;
 		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
 
-		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -101,6 +98,21 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	protected CalendarLocalization getLocalization() {
 		return localization;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/**
@@ -182,56 +194,6 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	@Override
 	public C required() {
 		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
-	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public C enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
 	}
 
 	/*

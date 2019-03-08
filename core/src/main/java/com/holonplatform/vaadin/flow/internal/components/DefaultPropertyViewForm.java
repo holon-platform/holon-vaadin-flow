@@ -34,6 +34,9 @@ import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 
 /**
  * Default {@link PropertyViewForm} implementation.
@@ -87,6 +90,21 @@ public class DefaultPropertyViewForm<C extends Component>
 			if (content instanceof HasComponents) {
 				instance.setComposer((Composer) Composable.componentContainerComposer());
 			}
+		}
+
+		@Override
+		protected Optional<HasSize> hasSize() {
+			return Optional.empty();
+		}
+
+		@Override
+		protected Optional<HasStyle> hasStyle() {
+			return Optional.empty();
+		}
+
+		@Override
+		protected Optional<HasEnabled> hasEnabled() {
+			return Optional.empty();
 		}
 
 		@Override

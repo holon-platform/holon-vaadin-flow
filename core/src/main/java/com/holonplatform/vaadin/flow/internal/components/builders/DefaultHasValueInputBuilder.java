@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -57,6 +58,21 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 	public DefaultHasValueInputBuilder(H field, C component) {
 		super(component);
 		this.instance = new InputAdapter<>(field, component);
+	}
+	
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.empty();
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.empty();
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.empty();
 	}
 
 	/**

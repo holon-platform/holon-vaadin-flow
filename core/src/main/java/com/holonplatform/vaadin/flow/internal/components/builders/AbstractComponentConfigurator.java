@@ -15,14 +15,22 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.dom.DomEventListener;
 
 /**
@@ -40,6 +48,10 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 
 	private final DefaultComponentConfigurator componentConfigurator;
 
+	private HasSizeConfigurator<?> sizeConfigurator;
+	private HasStyleConfigurator<?> styleConfigurator;
+	private HasEnabledConfigurator<?> enabledConfigurator;
+
 	/**
 	 * Constructor.
 	 * @param component The component instance (not null)
@@ -52,10 +64,67 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 	}
 
 	/**
+	 * If the component supports {@link HasSize}, return the component as {@link HasSize}.
+	 * @return Optional component as {@link HasSize}, if supported
+	 */
+	protected abstract Optional<HasSize> hasSize();
+
+	/**
+	 * If the component supports {@link HasStyle}, return the component as {@link HasStyle}.
+	 * @return Optional component as {@link HasStyle}, if supported
+	 */
+	protected abstract Optional<HasStyle> hasStyle();
+
+	/**
+	 * If the component supports {@link HasEnabled}, return the component as {@link HasEnabled}.
+	 * @return Optional component as {@link HasEnabled}, if supported
+	 */
+	protected abstract Optional<HasEnabled> hasEnabled();
+
+	/**
 	 * Get the actual configurator.
 	 * @return the actual configurator
 	 */
 	protected abstract B getConfigurator();
+
+	/**
+	 * Get the {@link HasSize} configurator, if available.
+	 * @return Optional {@link HasSize} configurator
+	 */
+	protected Optional<HasSizeConfigurator<?>> getSizeConfigurator() {
+		if (this.sizeConfigurator == null) {
+			hasSize().ifPresent(h -> {
+				this.sizeConfigurator = new DefaultHasSizeConfigurator(h);
+			});
+		}
+		return Optional.ofNullable(this.sizeConfigurator);
+	}
+
+	/**
+	 * Get the {@link HasStyle} configurator, if available.
+	 * @return Optional {@link HasStyle} configurator
+	 */
+	protected Optional<HasStyleConfigurator<?>> getStyleConfigurator() {
+		if (this.styleConfigurator == null) {
+			hasStyle().ifPresent(h -> {
+				this.styleConfigurator = new DefaultHasStyleConfigurator(h);
+			});
+		}
+		return Optional.ofNullable(this.styleConfigurator);
+	}
+
+	/**
+	 * Get the {@link HasEnabled} configurator, if available.
+	 * @return Optional {@link HasEnabled} configurator
+	 */
+	protected Optional<HasEnabledConfigurator<?>> getEnabledConfigurator() {
+		if (this.enabledConfigurator == null) {
+			hasEnabled().ifPresent(h -> {
+				this.enabledConfigurator = new DefaultHasEnabledConfigurator(h);
+			});
+		}
+		return Optional.ofNullable(this.enabledConfigurator);
+	}
 
 	/**
 	 * Get the component instance.
@@ -144,6 +213,93 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 	@Override
 	public B withThemeName(String themName) {
 		getComponentConfigurator().withThemeName(themName);
+		return getConfigurator();
+	}
+
+	// ------ size
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+	 */
+	public B width(String width) {
+		getSizeConfigurator().ifPresent(c -> c.width(width));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+	 */
+	public B height(String height) {
+		getSizeConfigurator().ifPresent(c -> c.height(height));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+	 */
+	public B minWidth(String minWidth) {
+		getSizeConfigurator().ifPresent(c -> c.minWidth(minWidth));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+	 */
+	public B maxWidth(String maxWidth) {
+		getSizeConfigurator().ifPresent(c -> c.maxWidth(maxWidth));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+	 */
+	public B minHeight(String minHeight) {
+		getSizeConfigurator().ifPresent(c -> c.minHeight(minHeight));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+	 */
+	public B maxHeight(String maxHeight) {
+		getSizeConfigurator().ifPresent(c -> c.maxHeight(maxHeight));
+		return getConfigurator();
+	}
+
+	// ------- style
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+	 */
+	public B styleNames(String... styleNames) {
+		getStyleConfigurator().ifPresent(c -> c.styleNames(styleNames));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+	 */
+	public B styleName(String styleName) {
+		getStyleConfigurator().ifPresent(c -> c.styleName(styleName));
+		return getConfigurator();
+	}
+
+	// ------- enabled
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+	 */
+	public B enabled(boolean enabled) {
+		getEnabledConfigurator().ifPresent(c -> c.enabled(enabled));
 		return getConfigurator();
 	}
 

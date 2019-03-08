@@ -1424,6 +1424,46 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertyListingBuilder maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override

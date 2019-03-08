@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -35,6 +36,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 /**
@@ -49,9 +53,6 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 
 	private final List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners = new LinkedList<>();
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<Checkbox> labelConfigurator;
 
 	public AbstractBooleanInputBuilder() {
@@ -64,12 +65,24 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 
 		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
 
-		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	protected List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> getValueChangeListeners() {
@@ -124,46 +137,6 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	public C withValueChangeListener(ValueChangeListener<Boolean, ValueChangeEvent<Boolean>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
-	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
 
@@ -245,16 +218,6 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	@Override
 	public C withClickListener(ClickEventListener<Checkbox, ClickEvent<Checkbox>> clickEventListener) {
 		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public C enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 

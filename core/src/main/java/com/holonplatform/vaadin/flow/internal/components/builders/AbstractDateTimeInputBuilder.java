@@ -402,6 +402,46 @@ public abstract class AbstractDateTimeInputBuilder<C extends DateTimeInputConfig
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+	 */
+	@Override
+	public C minWidth(String minWidth) {
+		localDateTimeInputBuilder.minWidth(minWidth);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+	 */
+	@Override
+	public C maxWidth(String maxWidth) {
+		localDateTimeInputBuilder.maxWidth(maxWidth);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+	 */
+	@Override
+	public C minHeight(String minHeight) {
+		localDateTimeInputBuilder.minHeight(minHeight);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+	 */
+	@Override
+	public C maxHeight(String maxHeight) {
+		localDateTimeInputBuilder.maxHeight(maxHeight);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override

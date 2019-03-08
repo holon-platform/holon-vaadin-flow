@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -39,6 +40,9 @@ import com.vaadin.flow.component.CompositionStartEvent;
 import com.vaadin.flow.component.CompositionUpdateEvent;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.InputEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyDownEvent;
@@ -74,9 +78,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 
 	private StringToTimeConverter converter;
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasAutocompleteConfigurator autocompleteConfigurator;
 	protected final DefaultHasPrefixAndSuffixConfigurator prefixAndSuffixConfigurator;
 	protected final DefaultCompositionNotifierConfigurator compositionNotifierConfigurator;
@@ -108,9 +109,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 		getComponent().setAutocorrect(false);
 		getComponent().setAutocomplete(Autocomplete.OFF);
 
-		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		autocompleteConfigurator = new DefaultHasAutocompleteConfigurator(getComponent());
 		prefixAndSuffixConfigurator = new DefaultHasPrefixAndSuffixConfigurator(getComponent());
 		compositionNotifierConfigurator = new DefaultCompositionNotifierConfigurator(getComponent());
@@ -165,6 +163,21 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 
 	protected List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> getValueChangeListeners() {
 		return valueChangeListeners;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/**
@@ -226,6 +239,16 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 	 */
 	protected ValidatableInput<LocalTime> buildAsValidatableInput() {
 		return ValidatableInput.from(buildAsInput());
+	}
+
+	/* (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#width(java.lang.String)
+	 */
+	@Override
+	public C width(String width) {
+		getSizeConfigurator().ifPresent(c -> c.width(width));
+		widthUndefined = (width == null);
+		return getConfigurator();
 	}
 
 	/*
@@ -343,16 +366,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public C enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.InputNotifierConfigurator#withInputListener(com.vaadin.flow.
 	 * component.ComponentEventListener)
@@ -442,47 +455,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 	@Override
 	public C valueChangeMode(ValueChangeMode valueChangeMode) {
 		valueChangeModeConfigurator.valueChangeMode(valueChangeMode);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
-	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		widthUndefined = (width == null);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
 		return getConfigurator();
 	}
 

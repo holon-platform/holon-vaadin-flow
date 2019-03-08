@@ -15,12 +15,17 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.DialogConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.DefaultDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
 
@@ -34,57 +39,28 @@ import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
 public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>>
 		extends AbstractLocalizableComponentConfigurator<DefaultDialog, C> implements DialogConfigurator<C> {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
 	private final MessageLocalizationSupportConfigurator<DefaultDialog> messageConfigurator;
 
 	public AbstractDialogConfigurator() {
 		super(new DefaultDialog());
 
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
 		this.messageConfigurator = new MessageLocalizationSupportConfigurator<>(getComponent(),
 				text -> getComponent().setMessage(text), this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
 	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
 	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
 	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*

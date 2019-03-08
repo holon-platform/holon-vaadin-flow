@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,6 +54,9 @@ import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallo
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -73,8 +77,6 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		AbstractLocalizableComponentConfigurator<CheckboxGroup<ITEM>, ItemOptionsModeMultiSelectInputBuilder<T, ITEM>>
 		implements ItemOptionsModeMultiSelectInputBuilder<T, ITEM> {
 
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<CheckboxGroup<ITEM>> labelConfigurator;
 
 	protected final List<ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>>> valueChangeListeners = new LinkedList<>();
@@ -107,8 +109,6 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		this.itemType = itemType;
 		this.itemConverter = itemConverter;
 
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -120,6 +120,21 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 
 	protected Class<ITEM> getItemType() {
 		return itemType;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -367,36 +382,6 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	@Override
 	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> required() {
 		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
 	}
 
 	/*

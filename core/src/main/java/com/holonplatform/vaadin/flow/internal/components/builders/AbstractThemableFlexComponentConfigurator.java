@@ -15,9 +15,14 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.orderedlayout.BoxSizing;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
@@ -39,6 +44,21 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 		super(component);
 		flexComponentConfigurator = new DefaultFlexComponentConfigurator<>(component);
 		themableLayoutConfigurator = new DefaultThemableLayoutConfigurator(component);
+	}
+	
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*

@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
@@ -22,6 +24,9 @@ import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickL
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.NativeButton;
 
 /**
@@ -32,21 +37,30 @@ import com.vaadin.flow.component.html.NativeButton;
 public class DefaultNativeButtonBuilder extends
 		AbstractLocalizableComponentConfigurator<NativeButton, NativeButtonBuilder> implements NativeButtonBuilder {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasTextConfigurator textConfigurator;
 	protected final DefaultHasTitleConfigurator<NativeButton> titleConfigurator;
 
 	public DefaultNativeButtonBuilder() {
 		super(new NativeButton());
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		this.enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		this.textConfigurator = new DefaultHasTextConfigurator(getComponent(), this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
 			getComponent().setTitle(title);
 		}, this);
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -60,62 +74,12 @@ public class DefaultNativeButtonBuilder extends
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
-	@Override
-	public NativeButtonBuilder width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public NativeButtonBuilder height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public NativeButtonBuilder styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public NativeButtonBuilder styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */
 	@Override
 	public NativeButtonBuilder title(Localizable title) {
 		titleConfigurator.title(title);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public NativeButtonBuilder enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 

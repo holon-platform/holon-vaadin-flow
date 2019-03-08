@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
@@ -24,6 +26,9 @@ import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -39,61 +44,30 @@ import com.vaadin.flow.component.icon.IronIcon;
 public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>>
 		extends AbstractLocalizableComponentConfigurator<Button, C> implements ButtonConfigurator<C> {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasTextConfigurator textConfigurator;
 	protected final DefaultHasTitleConfigurator<Button> titleConfigurator;
 
 	public AbstractButtonConfigurator(Button component) {
 		super(component);
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(component);
-		this.styleConfigurator = new DefaultHasStyleConfigurator(component);
-		this.enabledConfigurator = new DefaultHasEnabledConfigurator(component);
 		this.textConfigurator = new DefaultHasTextConfigurator(component, this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(component, title -> {
 			component.getElement().setAttribute("title", (title != null) ? title : "");
 		}, this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
 	@Override
-	public C width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
 	@Override
-	public C height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
 	@Override
-	public C styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public C styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -150,16 +124,6 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 	@Override
 	public C text(Localizable text) {
 		textConfigurator.text(text);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public C enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
 		return getConfigurator();
 	}
 

@@ -131,4 +131,44 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 		return height(null);
 	}
 
+	/**
+	 * Set the min-width of the component.
+	 * <p>
+	 * The width should be in a format understood by the browser, e.g. "100px" or "2.5em".
+	 * <p>
+	 * @param minWidth the min width to set, may be <code>null</code>
+	 * @return this
+	 */
+	C minWidth(String minWidth);
+
+	/**
+	 * Set the max-width of the component.
+	 * <p>
+	 * The width should be in a format understood by the browser, e.g. "100px" or "2.5em".
+	 * <p>
+	 * @param maxWidth the max width to set, may be <code>null</code>
+	 * @return this
+	 */
+	C maxWidth(String maxWidth);
+
+	/**
+	 * Set the min-height of the component.
+	 * <p>
+	 * The height should be in a format understood by the browser, e.g. "100px" or "2.5em".
+	 * <p>
+	 * @param minHeight the min height to set, may be <code>null</code>
+	 * @return this
+	 */
+	C minHeight(String minHeight);
+
+	/**
+	 * Set the max-height of the component.
+	 * <p>
+	 * The height should be in a format understood by the browser, e.g. "100px" or "2.5em".
+	 * <p>
+	 * @param maxHeight the max height to set, may be <code>null</code>
+	 * @return this
+	 */
+	C maxHeight(String maxHeight);
+
 }

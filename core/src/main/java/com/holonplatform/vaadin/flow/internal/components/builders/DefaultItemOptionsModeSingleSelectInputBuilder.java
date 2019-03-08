@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -53,6 +54,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
@@ -76,8 +80,6 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 		AbstractLocalizableComponentConfigurator<RadioButtonGroup<ITEM>, ItemOptionsModeSingleSelectInputBuilder<T, ITEM>>
 		implements ItemOptionsModeSingleSelectInputBuilder<T, ITEM> {
 
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<RadioButtonGroup<ITEM>> labelConfigurator;
 
 	protected final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
@@ -110,8 +112,6 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 		this.itemType = itemType;
 		this.itemConverter = itemConverter;
 
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -123,6 +123,21 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 
 	protected Class<ITEM> getItemType() {
 		return itemType;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.empty();
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -380,36 +395,6 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 	@Override
 	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> required() {
 		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public ItemOptionsModeSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
 	}
 
 	/*

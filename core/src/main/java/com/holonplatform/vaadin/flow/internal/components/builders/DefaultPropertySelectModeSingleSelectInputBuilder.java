@@ -422,6 +422,46 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> minWidth(String minWidth) {
+		builder.minWidth(minWidth);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> maxWidth(String maxWidth) {
+		builder.maxWidth(maxWidth);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> minHeight(String minHeight) {
+		builder.minHeight(minHeight);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> maxHeight(String maxHeight) {
+		builder.maxHeight(maxHeight);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 	 */
 	@Override
@@ -937,6 +977,46 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		@Override
 		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> height(String height) {
 			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
 			return this;
 		}
 
@@ -1495,6 +1575,46 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
 		 * Localizable)
@@ -1988,6 +2108,46 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		@Override
 		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> height(String height) {
 			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
 			return this;
 		}
 

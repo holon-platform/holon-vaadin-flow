@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -57,6 +58,9 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
@@ -79,8 +83,6 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		AbstractLocalizableComponentConfigurator<ComboBox<ITEM>, ItemSelectModeSingleSelectInputBuilder<T, ITEM>>
 		implements ItemSelectModeSingleSelectInputBuilder<T, ITEM> {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<ComboBox<ITEM>> labelConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<ComboBox<ITEM>> placeholderConfigurator;
@@ -117,8 +119,6 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 		getComponent().setAllowCustomValue(false);
 
-		sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
 		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
@@ -134,6 +134,21 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 	protected Class<ITEM> getItemType() {
 		return itemType;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -392,46 +407,6 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 	@Override
 	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> required() {
 		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public ItemSelectModeSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
 	}
 
 	/*
@@ -828,6 +803,46 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> height(String height) {
 			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
 			return this;
 		}
 
@@ -1361,6 +1376,46 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
 		 * Localizable)
@@ -1792,6 +1847,46 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> height(String height) {
 			builder.height(height);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 */
+		@Override
+		public ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
 			return this;
 		}
 

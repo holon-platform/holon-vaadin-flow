@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.Optional;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
@@ -25,6 +27,9 @@ import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.AbstractViewComponent;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 
 /**
  * Base {@link ViewComponent} builder.
@@ -39,9 +44,6 @@ import com.vaadin.flow.component.Component;
 public abstract class AbstractViewComponentBuilder<C extends Component, T, V extends AbstractViewComponent<C, T>, B extends ViewComponentConfigurator<T, B>>
 		extends AbstractLocalizableComponentConfigurator<V, B> implements ViewComponentConfigurator<T, B> {
 
-	protected final DefaultHasSizeConfigurator sizeConfigurator;
-	protected final DefaultHasStyleConfigurator styleConfigurator;
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<V> labelConfigurator;
 	protected final DefaultHasTitleConfigurator<V> titleConfigurator;
 
@@ -51,9 +53,6 @@ public abstract class AbstractViewComponentBuilder<C extends Component, T, V ext
 	 */
 	public AbstractViewComponentBuilder(V component) {
 		super(component);
-		this.sizeConfigurator = new DefaultHasSizeConfigurator(getComponent());
-		this.styleConfigurator = new DefaultHasStyleConfigurator(getComponent());
-		this.enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 		this.labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(),
 				label -> getComponent().setLabelText(label), this);
 		this.titleConfigurator = new DefaultHasTitleConfigurator<>(getComponent(), title -> {
@@ -61,44 +60,19 @@ public abstract class AbstractViewComponentBuilder<C extends Component, T, V ext
 		}, this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
-	 */
 	@Override
-	public B width(String width) {
-		sizeConfigurator.width(width);
-		return getConfigurator();
+	protected Optional<HasSize> hasSize() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
-	 */
 	@Override
-	public B height(String height) {
-		sizeConfigurator.height(height);
-		return getConfigurator();
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
 	@Override
-	public B styleNames(String... styleNames) {
-		styleConfigurator.styleNames(styleNames);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public B styleName(String styleName) {
-		styleConfigurator.styleName(styleName);
-		return getConfigurator();
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
@@ -114,32 +88,12 @@ public abstract class AbstractViewComponentBuilder<C extends Component, T, V ext
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public B enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.ViewComponentConfigurator#labelVisible(boolean)
 	 */
 	@Override
 	public B labelVisible(boolean visible) {
 		getComponent().setLabelVisible(visible);
 		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
-	 */
-	@Override
-	protected B getConfigurator() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/*
