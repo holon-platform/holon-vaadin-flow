@@ -138,6 +138,7 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * <p>
 	 * @param minWidth the min width to set, may be <code>null</code>
 	 * @return this
+	 * @since 5.2.3
 	 */
 	C minWidth(String minWidth);
 
@@ -148,6 +149,7 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * <p>
 	 * @param maxWidth the max width to set, may be <code>null</code>
 	 * @return this
+	 * @since 5.2.3
 	 */
 	C maxWidth(String maxWidth);
 
@@ -158,6 +160,7 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * <p>
 	 * @param minHeight the min height to set, may be <code>null</code>
 	 * @return this
+	 * @since 5.2.3
 	 */
 	C minHeight(String minHeight);
 
@@ -168,6 +171,7 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * <p>
 	 * @param maxHeight the max height to set, may be <code>null</code>
 	 * @return this
+	 * @since 5.2.3
 	 */
 	C maxHeight(String maxHeight);
 

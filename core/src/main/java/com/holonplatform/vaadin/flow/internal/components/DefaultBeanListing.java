@@ -78,6 +78,7 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.ValueProvider;
 
 /**
@@ -1280,6 +1281,17 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public DatastoreBeanListingBuilder<T> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public DatastoreBeanListingBuilder<T> elementConfiguration(Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 

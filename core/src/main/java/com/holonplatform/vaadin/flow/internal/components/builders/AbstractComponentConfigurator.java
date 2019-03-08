@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -32,6 +33,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 
 /**
  * Base {@link ComponentConfigurator}.
@@ -159,6 +161,19 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 	@Override
 	public B visible(boolean visible) {
 		getComponentConfigurator().visible(visible);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
+	 * Consumer)
+	 */
+	@Override
+	public B elementConfiguration(Consumer<Element> element) {
+		ObjectUtils.argumentNotNull(element, "Element consumer must be not null");
+		element.accept(getComponent().getElement());
 		return getConfigurator();
 	}
 

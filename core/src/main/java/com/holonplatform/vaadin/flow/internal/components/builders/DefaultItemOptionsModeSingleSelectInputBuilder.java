@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
@@ -66,6 +67,7 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -544,6 +546,18 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatableItemOptionsModeSingleSelectInputBuilder<T, ITEM> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
 		 * component.ComponentEventListener)
@@ -983,6 +997,18 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public DatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
 		 * component.ComponentEventListener)
@@ -1312,6 +1338,18 @@ public class DefaultItemOptionsModeSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatableDatastoreItemOptionsModeSingleSelectInputBuilder<T, ITEM> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 

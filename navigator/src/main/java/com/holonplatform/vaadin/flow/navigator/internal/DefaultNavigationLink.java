@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal;
 
+import java.util.function.Consumer;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultComponentConfigurator;
@@ -29,6 +31,7 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.RouterLink;
@@ -169,6 +172,17 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 		@Override
 		public Builder visible(boolean visible) {
 			componentConfigurator.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public Builder elementConfiguration(Consumer<Element> element) {
+			componentConfigurator.elementConfiguration(element);
 			return this;
 		}
 

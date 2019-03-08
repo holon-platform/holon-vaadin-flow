@@ -187,6 +187,14 @@ public class TestStringInput {
 	}
 
 	@Test
+	public void testElementConfigurator() {
+		Input<String> input = Input.string().elementConfiguration(element -> {
+			element.getStyle().set(ElementConstants.STYLE_COLOR, "#fff");
+		}).build();
+		assertEquals("#fff", ComponentTestUtils.getStyleAttribute(input, ElementConstants.STYLE_COLOR));
+	}
+
+	@Test
 	public void testEnabled() {
 
 		Input<String> input = Input.string().build();

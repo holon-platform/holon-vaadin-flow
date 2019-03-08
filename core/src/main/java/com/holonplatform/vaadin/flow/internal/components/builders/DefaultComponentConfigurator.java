@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
+import java.util.function.Consumer;
+
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator.BaseComponentConfigurator;
@@ -23,6 +25,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 
 /**
  * Default {@link ComponentConfigurator} implementation.
@@ -60,6 +63,19 @@ public class DefaultComponentConfigurator implements BaseComponentConfigurator {
 	@Override
 	public DefaultComponentConfigurator visible(boolean visible) {
 		component.setVisible(visible);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
+	 * Consumer)
+	 */
+	@Override
+	public BaseComponentConfigurator elementConfiguration(Consumer<Element> element) {
+		ObjectUtils.argumentNotNull(element, "Element consumer must be not null");
+		element.accept(component.getElement());
 		return this;
 	}
 

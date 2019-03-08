@@ -15,11 +15,14 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.function.Consumer;
+
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultComponentConfigurator;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.dom.Element;
 
 /**
  * Interface to configure a {@link Component}.
@@ -67,6 +70,14 @@ public interface ComponentConfigurator<C extends ComponentConfigurator<C>> exten
 	default C hidden() {
 		return visible(false);
 	}
+
+	/**
+	 * Configure the component {@link Element}.
+	 * @param element The consumer to use to configure the component {@link Element} (not null)
+	 * @return this
+	 * @since 5.2.3
+	 */
+	C elementConfiguration(Consumer<Element> element);
 
 	/**
 	 * Add an {@link AttachEvent} {@link ComponentEventListener} to the component, called after the component is

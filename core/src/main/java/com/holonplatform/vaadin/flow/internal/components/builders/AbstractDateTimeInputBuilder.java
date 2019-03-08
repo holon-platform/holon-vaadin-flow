@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -41,6 +42,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.LocalDateTimeToDateConverter;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 
 /**
  * Base {@link DateTimeInputConfigurator}.
@@ -323,6 +325,18 @@ public abstract class AbstractDateTimeInputBuilder<C extends DateTimeInputConfig
 	@Override
 	public C visible(boolean visible) {
 		localDateTimeInputBuilder.visible(visible);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
+	 * Consumer)
+	 */
+	@Override
+	public C elementConfiguration(Consumer<Element> element) {
+		localDateTimeInputBuilder.elementConfiguration(element);
 		return getConfigurator();
 	}
 

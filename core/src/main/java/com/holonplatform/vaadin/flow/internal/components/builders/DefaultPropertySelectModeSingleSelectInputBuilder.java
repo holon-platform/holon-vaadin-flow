@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.TypedExpression;
@@ -55,6 +56,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializableFunction;
 
 /**
@@ -339,6 +341,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 	@Override
 	public PropertySelectModeSingleSelectInputBuilder<T> visible(boolean visible) {
 		builder.visible(visible);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
+	 * Consumer)
+	 */
+	@Override
+	public PropertySelectModeSingleSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
+		builder.elementConfiguration(element);
 		return this;
 	}
 
@@ -842,6 +856,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		@Override
 		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatablePropertySelectModeSingleSelectInputBuilder<T> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 
@@ -1428,6 +1454,17 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public DatastorePropertySelectModeSingleSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
+			builder.elementConfiguration(element);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
 		 * component.ComponentEventListener)
@@ -1973,6 +2010,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		@Override
 		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 

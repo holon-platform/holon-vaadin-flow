@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.holonplatform.core.Validator;
@@ -51,6 +52,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -262,6 +264,18 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 	@Override
 	public PropertyOptionsModeMultiSelectInputBuilder<T> visible(boolean visible) {
 		builder.visible(visible);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
+	 * Consumer)
+	 */
+	@Override
+	public PropertyOptionsModeMultiSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
+		builder.elementConfiguration(element);
 		return this;
 	}
 
@@ -599,6 +613,18 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 		@Override
 		public ValidatablePropertyOptionsModeMultiSelectInputBuilder<T> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatablePropertyOptionsModeMultiSelectInputBuilder<T> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 
@@ -1039,6 +1065,17 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 
 		/*
 		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public DatastorePropertyOptionsModeMultiSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
+			builder.elementConfiguration(element);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
 		 * component.ComponentEventListener)
@@ -1354,6 +1391,18 @@ public class DefaultPropertyOptionsModeMultiSelectInputBuilder<T>
 		@Override
 		public ValidatableDatastorePropertyOptionsModeMultiSelectInputBuilder<T> visible(boolean visible) {
 			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
+		 * function.Consumer)
+		 */
+		@Override
+		public ValidatableDatastorePropertyOptionsModeMultiSelectInputBuilder<T> elementConfiguration(
+				Consumer<Element> element) {
+			builder.elementConfiguration(element);
 			return this;
 		}
 
