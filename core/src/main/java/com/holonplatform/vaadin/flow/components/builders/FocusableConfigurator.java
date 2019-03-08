@@ -20,6 +20,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 
 /**
  * Configurator for {@link Focusable} type components.
@@ -64,5 +66,31 @@ public interface FocusableConfigurator<T extends Component, C extends FocusableC
 	 * @return this
 	 */
 	C withBlurListener(ComponentEventListener<BlurEvent<T>> listener);
+
+	/**
+	 * Adds a shortcut which focuses the component when the provided key is pressed.
+	 * @param key Primary {@link Key} used to trigger the shortcut (not null)
+	 * @param keyModifiers Optional key modifier(s) that need to be pressed along with the <code>key</code> for the
+	 *        shortcut to trigger
+	 * @return this
+	 * @since 5.2.3
+	 * @see #withFocusShortcut(Key)
+	 */
+	default C withFocusShortcutKey(Key key, KeyModifier... keyModifiers) {
+		return withFocusShortcut(key).modifiers(keyModifiers).add();
+	}
+
+	/**
+	 * Adds a shortcut which focuses the component when the provided key is pressed.
+	 * <p>
+	 * A {@link ShortcutConfigurator} API is returned to further configure the shortcut listener. The
+	 * {@link ShortcutConfigurator#add()} method should be used to add the shortcut listener and go back to the parent
+	 * builder.
+	 * </p>
+	 * @param key Primary {@link Key} used to trigger the shortcut (not null)
+	 * @return A {@link ShortcutConfigurator}
+	 * @since 5.2.3
+	 */
+	ShortcutConfigurator<C> withFocusShortcut(Key key);
 
 }

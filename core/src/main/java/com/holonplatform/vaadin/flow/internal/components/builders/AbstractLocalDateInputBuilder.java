@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
@@ -44,6 +45,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.shared.Registration;
@@ -242,6 +244,16 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		});
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
 	}
 
 	/*

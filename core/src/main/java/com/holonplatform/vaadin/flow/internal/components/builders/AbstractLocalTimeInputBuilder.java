@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.converters.StringToTimeConverter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -241,8 +242,10 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 		return ValidatableInput.from(buildAsInput());
 	}
 
-	/* (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#width(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#width(java.lang.String)
 	 */
 	@Override
 	public C width(String width) {
@@ -514,6 +517,16 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 
 		});
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
 	}
 
 	/*

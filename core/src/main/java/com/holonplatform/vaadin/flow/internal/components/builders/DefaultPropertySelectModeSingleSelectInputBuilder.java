@@ -42,6 +42,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -51,6 +52,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -669,6 +671,16 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<PropertySelectModeSingleSelectInputBuilder<T>> withFocusShortcut(Key key) {
+		return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
+	}
+
 	// ------- extended builders
 
 	static class DefaultValidatablePropertySelectModeSingleSelectInputBuilder<T>
@@ -1135,6 +1147,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 				ComponentEventListener<BlurEvent<Component>> listener) {
 			builder.withBlurListener(listener);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<ValidatablePropertySelectModeSingleSelectInputBuilder<T>> withFocusShortcut(
+				Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
 		}
 
 		/*
@@ -1742,6 +1766,17 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<DatastorePropertySelectModeSingleSelectInputBuilder<T>> withFocusShortcut(Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
@@ -2289,6 +2324,18 @@ public class DefaultPropertySelectModeSingleSelectInputBuilder<T>
 				ComponentEventListener<BlurEvent<Component>> listener) {
 			builder.withBlurListener(listener);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T>> withFocusShortcut(
+				Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
 		}
 
 		/*

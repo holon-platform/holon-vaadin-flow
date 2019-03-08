@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
@@ -29,6 +30,8 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -162,6 +165,29 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key, com.vaadin.flow.component.KeyModifier[])
+	 */
+	@Override
+	public C withClickShortcutKey(Key key, KeyModifier... keyModifiers) {
+		getComponent().addClickShortcut(key, keyModifiers);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withClickShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addClickShortcut(key), getConfigurator());
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
 	 */
 	@Override
@@ -190,6 +216,26 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 	public C withBlurListener(ComponentEventListener<BlurEvent<Button>> listener) {
 		getComponent().addBlurListener(listener);
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
+	 */
+	@Override
+	protected C getConfigurator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

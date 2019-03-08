@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.StringInputConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputIsEmptySupplier;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputValueSupplier;
@@ -459,6 +460,16 @@ public abstract class AbstractStringInputBuilder<C extends StringInputConfigurat
 
 		});
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
 	}
 
 	/*

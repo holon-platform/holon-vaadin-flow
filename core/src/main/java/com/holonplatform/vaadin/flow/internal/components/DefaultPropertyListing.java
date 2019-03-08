@@ -50,6 +50,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
@@ -57,6 +58,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemSort;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
 import com.vaadin.flow.component.AttachEvent;
@@ -65,6 +67,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.editor.EditorCancelListener;
@@ -1537,6 +1540,17 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		public DatastorePropertyListingBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
 			builder.withBlurListener(listener);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<DatastorePropertyListingBuilder> withFocusShortcut(Key key) {
+			return new DefaultShortcutConfigurator<>(builder.getInstance().getGrid().addFocusShortcut(key), this);
 		}
 
 		/*

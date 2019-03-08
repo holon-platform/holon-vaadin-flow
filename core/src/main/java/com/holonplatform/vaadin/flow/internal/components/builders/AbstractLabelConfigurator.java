@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
@@ -27,6 +28,8 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HtmlContainer;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 
 /**
  * Base {@link LabelConfigurator} implementation.
@@ -113,6 +116,29 @@ public abstract class AbstractLabelConfigurator<L extends HtmlContainer & ClickN
 	public C withClickListener(ClickEventListener<L, ClickEvent<L>> clickEventListener) {
 		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key, com.vaadin.flow.component.KeyModifier[])
+	 */
+	@Override
+	public C withClickShortcutKey(Key key, KeyModifier... keyModifiers) {
+		getComponent().addClickShortcut(key, keyModifiers);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withClickShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addClickShortcut(key), getConfigurator());
 	}
 
 }

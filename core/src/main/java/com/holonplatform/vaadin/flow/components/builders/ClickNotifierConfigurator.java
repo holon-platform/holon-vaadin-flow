@@ -17,6 +17,8 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 
 /**
  * Configurator for components which support {@link ClickEventListener} registration.
@@ -47,5 +49,29 @@ public interface ClickNotifierConfigurator<S, E extends ClickEvent<S>, C extends
 	default C onClick(ClickEventListener<S, E> clickEventListener) {
 		return withClickListener(clickEventListener);
 	}
+
+	/**
+	 * Adds a shortcut to perform a <em>click</em> action for this component when the provided key is pressed.
+	 * @param key Primary {@link Key} used to trigger the shortcut (not null)
+	 * @param keyModifiers Optional key modifier(s) that need to be pressed along with the <code>key</code> for the
+	 *        shortcut to trigger
+	 * @return this
+	 * @since 5.2.3
+	 * @see #withClickShortcut(Key)
+	 */
+	C withClickShortcutKey(Key key, KeyModifier... keyModifiers);
+
+	/**
+	 * Adds a shortcut to perform a <em>click</em> action for this component when the provided key is pressed.
+	 * <p>
+	 * A {@link ShortcutConfigurator} API is returned to further configure the shortcut listener. The
+	 * {@link ShortcutConfigurator#add()} method should be used to add the shortcut listener and go back to the parent
+	 * builder.
+	 * </p>
+	 * @param key Primary {@link Key} used to trigger the shortcut (not null)
+	 * @return A {@link ShortcutConfigurator}
+	 * @since 5.2.3
+	 */
+	ShortcutConfigurator<C> withClickShortcut(Key key);
 
 }

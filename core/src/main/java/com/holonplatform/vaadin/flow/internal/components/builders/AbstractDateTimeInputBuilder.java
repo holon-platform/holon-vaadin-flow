@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.DateTimeInputConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractLocalDateTimeInputBuilder.DefaultCalendarLocalizationBuilder;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -39,6 +40,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.LocalDateTimeToDateConverter;
 import com.vaadin.flow.dom.DomEventListener;
@@ -514,6 +516,17 @@ public abstract class AbstractDateTimeInputBuilder<C extends DateTimeInputConfig
 	public C withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
 		localDateTimeInputBuilder.withBlurListener(listener);
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(localDateTimeInputBuilder.getComponent().addFocusShortcut(key),
+				getConfigurator());
 	}
 
 	/*

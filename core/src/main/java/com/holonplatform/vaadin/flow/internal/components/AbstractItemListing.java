@@ -60,6 +60,7 @@ import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.EditableItemListingSection;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
@@ -74,6 +75,7 @@ import com.holonplatform.vaadin.flow.internal.components.builders.AbstractCompon
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValidationStatusEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
@@ -95,6 +97,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
@@ -2096,6 +2099,17 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 			});
 			return getConfigurator();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+			return new DefaultShortcutConfigurator<>(instance.getGrid().addFocusShortcut(key), getConfigurator());
 		}
 
 		/*

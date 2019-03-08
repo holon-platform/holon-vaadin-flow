@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
@@ -62,6 +63,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.converter.Converter;
@@ -524,6 +526,16 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 		return getConfigurator();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<ItemSelectModeSingleSelectInputBuilder<T, ITEM>> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
+	}
+
 	// ------- extended builders
 
 	static class DefaultValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM>
@@ -949,6 +961,18 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 				ComponentEventListener<BlurEvent<Component>> listener) {
 			builder.withBlurListener(listener);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM>> withFocusShortcut(
+				Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
 		}
 
 		/*
@@ -1533,6 +1557,18 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 
 		/*
 		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>> withFocusShortcut(
+				Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
+		}
+
+		/*
+		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
@@ -2018,6 +2054,18 @@ public class DefaultItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
 				ComponentEventListener<BlurEvent<Component>> listener) {
 			builder.withBlurListener(listener);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+		 * component.Key)
+		 */
+		@Override
+		public ShortcutConfigurator<ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>> withFocusShortcut(
+				Key key) {
+			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
 		}
 
 		/*

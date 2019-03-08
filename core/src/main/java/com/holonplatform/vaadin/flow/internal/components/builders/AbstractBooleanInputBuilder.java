@@ -27,6 +27,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BooleanInputConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
@@ -39,6 +40,8 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 /**
@@ -200,6 +203,16 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addFocusShortcut(key), getConfigurator());
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */
@@ -219,6 +232,29 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	public C withClickListener(ClickEventListener<Checkbox, ClickEvent<Checkbox>> clickEventListener) {
 		getComponent().addClickListener(new ComponentClickListenerAdapter<>(clickEventListener));
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key, com.vaadin.flow.component.KeyModifier[])
+	 */
+	@Override
+	public C withClickShortcutKey(Key key, KeyModifier... keyModifiers) {
+		getComponent().addClickShortcut(key, keyModifiers);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<C> withClickShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addClickShortcut(key), getConfigurator());
 	}
 
 	/*

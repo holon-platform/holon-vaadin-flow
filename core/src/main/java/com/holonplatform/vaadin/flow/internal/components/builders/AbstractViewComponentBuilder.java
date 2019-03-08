@@ -21,6 +21,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.ViewComponent;
+import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ViewComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
@@ -30,6 +31,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 
 /**
  * Base {@link ViewComponent} builder.
@@ -118,6 +121,29 @@ public abstract class AbstractViewComponentBuilder<C extends Component, T, V ext
 		getComponent()
 				.addClickListener(ComponentClickListenerAdapter.forClickNotifier(getComponent(), clickEventListener));
 		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key, com.vaadin.flow.component.KeyModifier[])
+	 */
+	@Override
+	public B withClickShortcutKey(Key key, KeyModifier... keyModifiers) {
+		getComponent().addClickShortcut(key, keyModifiers);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#withClickShortcut(com.vaadin.flow.
+	 * component.Key)
+	 */
+	@Override
+	public ShortcutConfigurator<B> withClickShortcut(Key key) {
+		return new DefaultShortcutConfigurator<>(getComponent().addClickShortcut(key), getConfigurator());
 	}
 
 	/*
