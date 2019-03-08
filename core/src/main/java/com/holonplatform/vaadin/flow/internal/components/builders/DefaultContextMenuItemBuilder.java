@@ -79,6 +79,30 @@ public class DefaultContextMenuItemBuilder<M extends ContextMenuBase<M, I, S>, I
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#checkable(boolean)
+	 */
+	@Override
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, B> checkable(
+			boolean checkable) {
+		menuItem.setCheckable(checkable);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#checked(boolean)
+	 */
+	@Override
+	public MenuItemBuilder<ClickEventListener<MenuItem, ClickEvent<MenuItem>>, M, I, S, B> checked(boolean checked) {
+		if (checked && !menuItem.isCheckable()) {
+			menuItem.setCheckable(true);
+		}
+		menuItem.setChecked(checked);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(com.holonplatform.core.i18n.
 	 * Localizable)
 	 */

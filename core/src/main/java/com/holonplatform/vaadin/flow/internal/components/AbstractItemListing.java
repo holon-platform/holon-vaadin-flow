@@ -3045,6 +3045,33 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		/*
 		 * (non-Javadoc)
 		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#checkable(boolean)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> checkable(
+				boolean checkable) {
+			menuItem.setCheckable(checkable);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#checked(boolean)
+		 */
+		@Override
+		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> checked(
+				boolean checked) {
+			if (checked && !menuItem.isCheckable()) {
+				menuItem.setCheckable(true);
+			}
+			menuItem.setChecked(checked);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.MenuItemBuilder#withClickListener(
 		 * java.util.EventListener)
 		 */

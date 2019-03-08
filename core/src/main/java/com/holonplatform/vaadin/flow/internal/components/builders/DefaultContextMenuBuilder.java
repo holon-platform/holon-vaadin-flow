@@ -56,7 +56,7 @@ public class DefaultContextMenuBuilder
 	public ContextMenu build(Component target) {
 		ContextMenu menu = getInstance();
 		if (target != null) {
-			menu.setTarget(menu);
+			menu.setTarget(target);
 		}
 		return menu;
 	}

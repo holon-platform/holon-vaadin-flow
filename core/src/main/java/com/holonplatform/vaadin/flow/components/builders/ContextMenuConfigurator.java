@@ -178,6 +178,44 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 		MenuItemBuilder<L, M, I, S, B> id(String id);
 
 		/**
+		 * Set whether the menu item is checkable.
+		 * <p>
+		 * A checkable item toggles a checkmark icon when clicked.
+		 * </p>
+		 * <p>
+		 * Changes in the checked state can be handled in the item's click handler with <code>isChecked()</code>.
+		 * <p>
+		 * @param checkable Whether the menu item is checkable
+		 * @return this
+		 * @since 5.2.3
+		 */
+		MenuItemBuilder<L, M, I, S, B> checkable(boolean checkable);
+		
+		/**
+		 * Set the menu as checkable.
+		 * <p>
+		 * A checkable item toggles a checkmark icon when clicked.
+		 * </p>
+		 * <p>
+		 * Changes in the checked state can be handled in the item's click handler with <code>isChecked()</code>.
+		 * <p>
+		 * @return this
+		 * @since 5.2.3
+		 */
+		default MenuItemBuilder<L, M, I, S, B> checkable() {
+			return checkable(true);
+		}
+
+		/**
+		 * Set whether a checkable menu item is checked.
+		 * @param checked Whether the menu item is checked
+		 * @return this
+		 * @see #checkable(boolean)
+		 * @since 5.2.3
+		 */
+		MenuItemBuilder<L, M, I, S, B> checked(boolean checked);
+
+		/**
 		 * Register a menu item click event listener.
 		 * @param menuItemClickListener The listener to add (not null)
 		 * @return this
