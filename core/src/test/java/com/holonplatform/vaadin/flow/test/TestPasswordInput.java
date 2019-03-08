@@ -347,6 +347,25 @@ public class TestPasswordInput {
 		input = Input.password().autofocus(true).build();
 		assertTrue(((PasswordField) input.getComponent()).isAutofocus());
 
+		input = Input.password().autoselect(true).build();
+		assertTrue(((PasswordField) input.getComponent()).isAutoselect());
+
+		input = Input.password().autoselect(false).build();
+		assertFalse(((PasswordField) input.getComponent()).isAutoselect());
+
+		input = Input.password().autoselect().build();
+		assertTrue(((PasswordField) input.getComponent()).isAutoselect());
+
+	}
+
+	@Test
+	public void testClearButton() {
+		Input<String> input = Input.password().clearButtonVisible(true).build();
+		assertTrue(input.getComponent() instanceof PasswordField);
+		assertTrue(((PasswordField) input.getComponent()).isClearButtonVisible());
+
+		input = Input.password().clearButtonVisible(false).build();
+		assertFalse(((PasswordField) input.getComponent()).isClearButtonVisible());
 	}
 
 	@Test

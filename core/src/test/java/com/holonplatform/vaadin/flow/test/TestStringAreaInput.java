@@ -285,6 +285,25 @@ public class TestStringAreaInput {
 		input = Input.stringArea().autofocus(true).build();
 		assertTrue(((TextArea) input.getComponent()).isAutofocus());
 
+		input = Input.stringArea().autoselect(true).build();
+		assertTrue(((TextArea) input.getComponent()).isAutoselect());
+
+		input = Input.stringArea().autoselect(false).build();
+		assertFalse(((TextArea) input.getComponent()).isAutoselect());
+
+		input = Input.stringArea().autoselect().build();
+		assertTrue(((TextArea) input.getComponent()).isAutoselect());
+
+	}
+
+	@Test
+	public void testClearButton() {
+		Input<String> input = Input.stringArea().clearButtonVisible(true).build();
+		assertTrue(input.getComponent() instanceof TextArea);
+		assertTrue(((TextArea) input.getComponent()).isClearButtonVisible());
+
+		input = Input.stringArea().clearButtonVisible(false).build();
+		assertFalse(((TextArea) input.getComponent()).isClearButtonVisible());
 	}
 
 	@Test

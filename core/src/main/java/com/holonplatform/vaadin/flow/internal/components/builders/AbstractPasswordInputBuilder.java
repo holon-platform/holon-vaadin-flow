@@ -186,6 +186,26 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#autoselect(boolean)
+	 */
+	@Override
+	public C autoselect(boolean autoselect) {
+		getComponent().setAutoselect(autoselect);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#clearButtonVisible(boolean)
+	 */
+	@Override
+	public C clearButtonVisible(boolean clearButtonVisible) {
+		getComponent().setClearButtonVisible(clearButtonVisible);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override

@@ -64,4 +64,30 @@ public interface TextInputConfigurator<C extends TextInputConfigurator<C>> exten
 	 */
 	C blankValuesAsNull(boolean blankValuesAsNull);
 
+	/**
+	 * Set whether to automatically select the input value when the input component gains focus.
+	 * @param autoselect <code>true</code> to automatically select the input value when the input component gains focus,
+	 *        <code>false</code> otherwise
+	 * @return this
+	 * @since 5.2.3
+	 */
+	C autoselect(boolean autoselect);
+
+	/**
+	 * Automatically select the input value when the input component gains focus.
+	 * @return this
+	 * @since 5.2.3
+	 */
+	default C autoselect() {
+		return autoselect(true);
+	}
+
+	/**
+	 * Set whether to show a <em>clear</em> button which can be used to clear the input value.
+	 * @param clearButtonVisible <code>true</code> to show the clear button, <code>false</code> to hide it
+	 * @return this
+	 * @since 5.2.3
+	 */
+	C clearButtonVisible(boolean clearButtonVisible);
+
 }

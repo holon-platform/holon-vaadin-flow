@@ -366,6 +366,25 @@ public class TestStringInput {
 		input = Input.string().autofocus(true).build();
 		assertTrue(((TextField) input.getComponent()).isAutofocus());
 
+		input = Input.string().autoselect(true).build();
+		assertTrue(((TextField) input.getComponent()).isAutoselect());
+
+		input = Input.string().autoselect(false).build();
+		assertFalse(((TextField) input.getComponent()).isAutoselect());
+
+		input = Input.string().autoselect().build();
+		assertTrue(((TextField) input.getComponent()).isAutoselect());
+
+	}
+
+	@Test
+	public void testClearButton() {
+		Input<String> input = Input.string().clearButtonVisible(true).build();
+		assertTrue(input.getComponent() instanceof TextField);
+		assertTrue(((TextField) input.getComponent()).isClearButtonVisible());
+
+		input = Input.string().clearButtonVisible(false).build();
+		assertFalse(((TextField) input.getComponent()).isClearButtonVisible());
 	}
 
 	@Test
