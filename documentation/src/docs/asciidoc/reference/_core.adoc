@@ -1702,7 +1702,11 @@ The link:{apidir}/com/holonplatform/vaadin/flow/components/SingleSelect.html[Sin
 
 The `Input` API and the corresponding Components.input API provides methods to create `SingleSelect` and `MultiSelect` type input components, providing the *selectable value type*.
 
-For `SingleSelect` input types, the input component can be rendered either with the *options* mode (using a `RadioButtonGroup`) or the *select* mode (using a `ComboBox`).
+For `SingleSelect` input types, the input component can be rendered as:
+
+* *Simple select*: a Vaadin `Select` component is used as input component.
+* *Filterable select*: a Vaadin `ComboBox` component is used as input component.
+* *Options select*: a `RadioButtonGroup` component is used as input component.
 
 [source, java]
 ----
@@ -1835,7 +1839,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 [[FilterableSelect]]
 ===== Filterable select inputs
 
-When a `SingleSelect` in the *select* mode is used, since it is rendered using a `ComboBox` component, the selection items to select can be _suggested_ by the input component, *using the user input to filter the items set*.
+When a `SingleSelect` in the *filterable select* mode is used, since it is rendered using a `ComboBox` component, the selection items to select can be _suggested_ by the input component, *using the user input to filter the items set*.
 
 When a standard `DataProvider` is used, the `filteringBy*` methods can be used to provide the items filtering strategy.
 
