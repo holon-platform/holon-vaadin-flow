@@ -64,7 +64,7 @@
 		<holon.core.version>5.2.1</holon.core.version>
 
 		<!-- Vaadin -->
-		<vaadin.version>13.0.0</vaadin.version>
+		<vaadin.version>13.0.1</vaadin.version>
 		<vaadin.spring.version>11.0.0</vaadin.spring.version>
 
 		<!-- Servlet API -->
