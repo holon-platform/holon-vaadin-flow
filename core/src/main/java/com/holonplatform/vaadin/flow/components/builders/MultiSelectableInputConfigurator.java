@@ -19,6 +19,7 @@ import java.util.Set;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 /**
  * {@link MultiSelect} type {@link Input} configurator.
@@ -29,7 +30,14 @@ import com.holonplatform.vaadin.flow.components.MultiSelect;
  *
  * @since 5.2.0
  */
-public interface MultiSelectInputConfigurator<T, ITEM, C extends MultiSelectInputConfigurator<T, ITEM, C>>
-		extends ItemSetConfigurator<C>, SelectableInputConfigurator<Set<T>, T, C> {
+public interface MultiSelectableInputConfigurator<T, ITEM, C extends MultiSelectableInputConfigurator<T, ITEM, C>> extends
+		ItemSetConfigurator<C>, SelectableInputConfigurator<Set<T>, T, C>, HasItemCaptionConfigurator<ITEM, C> {
+
+	/**
+	 * Set the items data provider using a {@link ListDataProvider}.
+	 * @param dataProvider The data provider to set
+	 * @return this
+	 */
+	C dataSource(ListDataProvider<ITEM> dataProvider);
 
 }

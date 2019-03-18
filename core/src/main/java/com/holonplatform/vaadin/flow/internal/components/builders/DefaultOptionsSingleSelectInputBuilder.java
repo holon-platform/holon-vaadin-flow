@@ -17,22 +17,28 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -40,165 +46,108 @@ import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.OptionsSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
+import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
+import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
+import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.Element;
-import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * Default {@link PropertyOptionsModeSingleSelectInputBuilder} implementation.
- * 
+ * Default {@link OptionsSingleSelectInputBuilder} implementation.
+ *
  * @param <T> Value type
+ * @param <ITEM> Item type
  *
  * @since 5.2.0
  */
-public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
-		implements PropertyOptionsModeSingleSelectInputBuilder<T> {
+public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
+		AbstractLocalizableComponentConfigurator<RadioButtonGroup<ITEM>, OptionsSingleSelectInputBuilder<T, ITEM>>
+		implements OptionsSingleSelectInputBuilder<T, ITEM> {
 
-	private final ItemOptionsModeSingleSelectInputBuilder<T, PropertyBox> builder;
+	protected final DefaultHasLabelConfigurator<RadioButtonGroup<ITEM>> labelConfigurator;
 
-	private final Property<T> selectionProperty;
+	protected final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
+	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
-	private PropertyItemConverter<T> propertyItemConverter;
+	private final Class<? extends T> type;
+	private final Class<ITEM> itemType;
 
-	/**
-	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 */
-	public DefaultPropertyOptionsModeSingleSelectInputBuilder(final Property<T> selectionProperty) {
-		this(selectionProperty, new PropertyItemConverter<>(selectionProperty));
-	}
+	protected final ItemConverter<T, ITEM> itemConverter;
 
-	/**
-	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param itemConverter The function to use to convert a selection value into the corresponding selection item
-	 */
-	public DefaultPropertyOptionsModeSingleSelectInputBuilder(Property<T> selectionProperty,
-			Function<T, Optional<PropertyBox>> itemConverter) {
-		this(selectionProperty, new PropertyItemConverter<>(selectionProperty, itemConverter));
-	}
+	protected Set<ITEM> items = new HashSet<>();
+
+	protected final Map<ITEM, Localizable> itemCaptions = new HashMap<>();
+
+	protected boolean customItemCaptionGenerator = false;
 
 	/**
 	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param type Selection value type (not null)
+	 * @param itemType Selection items type
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	protected DefaultPropertyOptionsModeSingleSelectInputBuilder(Property<T> selectionProperty,
-			ItemConverter<T, PropertyBox> itemConverter) {
-		super();
-		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
-		this.selectionProperty = selectionProperty;
-		this.builder = new DefaultItemOptionsModeSingleSelectInputBuilder<>(selectionProperty.getType(),
-				PropertyBox.class, itemConverter);
-		this.builder.itemCaptionGenerator(item -> {
-			if (item != null) {
-				return selectionProperty.present(item.getValue(selectionProperty));
-			}
-			return String.valueOf(item);
-		});
-		if (itemConverter instanceof PropertyItemConverter) {
-			this.propertyItemConverter = (PropertyItemConverter<T>) itemConverter;
-		}
+	public DefaultOptionsSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
+			ItemConverter<T, ITEM> itemConverter) {
+		super(new RadioButtonGroup<>());
+		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
+		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
+		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
+		this.type = type;
+		this.itemType = itemType;
+		this.itemConverter = itemConverter;
+
+		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
+			getComponent().setLabel(label);
+		}, this);
 	}
 
-	/**
-	 * Setup a item converter function if the current item converter is a {@link PropertyItemConverter}, using the
-	 * selection property to retrieve an item.
-	 * @param datastore The datastore
-	 * @param target The query target
-	 * @param propertySet The query projection
-	 */
-	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
-		if (propertyItemConverter != null && propertyItemConverter.getToItemConverter() == null) {
-			propertyItemConverter.setToItemConverter(value -> {
-				return (value == null) ? Optional.empty()
-						: datastore.query(target).filter(QueryFilter.eq(selectionProperty, value)).findOne(propertySet);
-			});
-		}
+	protected Class<? extends T> getType() {
+		return type;
+	}
+
+	protected Class<ITEM> getItemType() {
+		return itemType;
+	}
+
+	@Override
+	protected Optional<HasSize> hasSize() {
+		return Optional.empty();
+	}
+
+	@Override
+	protected Optional<HasStyle> hasStyle() {
+		return Optional.of(getComponent());
+	}
+
+	@Override
+	protected Optional<HasEnabled> hasEnabled() {
+		return Optional.of(getComponent());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
-	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withSelectionListener(
-			SelectionListener<T> selectionListener) {
-		builder.withSelectionListener(selectionListener);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#renderer(com.vaadin.flow.
-	 * data.renderer.ComponentRenderer)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> renderer(
-			ComponentRenderer<? extends Component, PropertyBox> renderer) {
-		builder.renderer(renderer);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.
-	 * vaadin.flow.function.SerializablePredicate)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> itemEnabledProvider(
-			SerializablePredicate<PropertyBox> itemEnabledProvider) {
-		builder.itemEnabledProvider(itemEnabledProvider);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
-	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionGenerator(
-			ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
-		builder.itemCaptionGenerator(itemCaptionGenerator);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
-	 * holonplatform.core.property.Property)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
-		ObjectUtils.argumentNotNull(property, "Property must be not null");
-		return itemCaptionGenerator(item -> Objects.toString(item.getValue(property), ""));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
-	 * Object, com.holonplatform.core.i18n.Localizable)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> itemCaption(PropertyBox item, Localizable caption) {
-		builder.itemCaption(item, caption);
+	protected OptionsSingleSelectInputBuilder<T, ITEM> getConfigurator() {
 		return this;
 	}
 
@@ -208,228 +157,136 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 */
 	@Override
 	public SingleSelect<T> build() {
-		return builder.build();
+		final RadioButtonGroup<ITEM> component = getComponent();
+
+		// check DataProvider
+		if (!new ExceptionSwallowingSupplier<>(() -> component.getDataProvider()).get().isPresent()) {
+			// default data provider
+			component.setDataProvider(DataProvider.ofCollection(Collections.emptySet()));
+		}
+
+		// configure captions
+		if (!customItemCaptionGenerator && !itemCaptions.isEmpty()) {
+			component.setRenderer(new TextRenderer<>(
+					new DeferrableItemLabelGenerator<>(itemCaptions, component, isDeferredLocalizationEnabled())));
+		}
+
+		// items
+		if (!items.isEmpty()) {
+			component.setItems(items);
+		}
+
+		final Input<ITEM> itemInput = Input.builder(component)
+				.requiredPropertyHandler((f, c) -> f.isRequired(), (f, c, v) -> f.setRequired(v))
+				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).hasEnabledSupplier(f -> f)
+				.hasValidationSupplier(f -> f).build();
+
+		final Input<T> input = Input.from(itemInput, Converter.from(item -> Result.ok(itemConverter.getValue(item)),
+				value -> itemConverter.getItem(value).orElse(null)));
+		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
+
+		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
+				() -> component.getDataProvider().refreshAll());
+		selectionListeners.forEach(listener -> select.addSelectionListener(listener));
+		return select;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 	 */
 	@Override
-	public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> validatable() {
-		return new DefaultValidatablePropertyOptionsModeSingleSelectInputBuilder<>(this);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> readOnly(boolean readOnly) {
-		builder.readOnly(readOnly);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> withSelectionListener(SelectionListener<T> selectionListener) {
+		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
+		selectionListeners.add(selectionListener);
+		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
+	 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#renderer(com.vaadin.flow.
+	 * data.renderer.ComponentRenderer)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withValueChangeListener(
-			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		builder.withValueChangeListener(listener);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> required(boolean required) {
-		builder.required(required);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> required() {
-		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> id(String id) {
-		builder.id(id);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> visible(boolean visible) {
-		builder.visible(visible);
-		return this;
+	public com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.OptionsSingleSelectInputBuilder<T, ITEM> renderer(
+			ComponentRenderer<? extends Component, ITEM> renderer) {
+		getComponent().setRenderer(renderer);
+		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
-	 * Consumer)
+	 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.
+	 * vaadin.flow.function.SerializablePredicate)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
-		builder.elementConfiguration(element);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withAttachListener(
-			ComponentEventListener<AttachEvent> listener) {
-		builder.withAttachListener(listener);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withDetachListener(
-			ComponentEventListener<DetachEvent> listener) {
-		builder.withDetachListener(listener);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withThemeName(String themeName) {
-		builder.withThemeName(themeName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-	 * com.vaadin.flow.dom.DomEventListener)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
-			DomEventListener listener) {
-		builder.withEventListener(eventType, listener);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-	 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType, DomEventListener listener,
-			String filter) {
-		builder.withEventListener(eventType, listener, filter);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> styleNames(String... styleNames) {
-		builder.styleNames(styleNames);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> styleName(String styleName) {
-		builder.styleName(styleName);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
-	 */
-	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> enabled(boolean enabled) {
-		builder.enabled(enabled);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
+		ObjectUtils.argumentNotNull(itemEnabledProvider, "Item enabled predicate must be not null");
+		getComponent().setItemEnabledProvider(item -> itemEnabledProvider.test(item));
+		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization(
-	 * boolean)
+	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
+	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> withDeferredLocalization(boolean deferredLocalization) {
-		builder.withDeferredLocalization(deferredLocalization);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+			ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
+		getComponent().setRenderer(new TextRenderer<>(item -> itemCaptionGenerator.getItemCaption(item)));
+		this.customItemCaptionGenerator = true;
+		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
+	 * Object, com.holonplatform.core.i18n.Localizable)
 	 */
 	@Override
-	public boolean isDeferredLocalizationEnabled() {
-		return builder.isDeferredLocalizationEnabled();
+	public OptionsSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		ObjectUtils.argumentNotNull(item, "Item must be not null");
+		if (caption == null) {
+			itemCaptions.remove(item);
+		} else {
+			itemCaptions.put(item, caption);
+		}
+		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(com.
-	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreDataProviderConfigurator#dataSource(com.
+	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.util.function.Function,
+	 * java.lang.Iterable)
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public <P extends Property> DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-			DataTarget<?> target, Iterable<P> properties) {
-		final DatastoreDataProvider<PropertyBox, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore,
-				target, DatastoreDataProvider.asPropertySet(properties));
-		builder.dataSource(datastoreDataProvider);
-		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
-		return new DefaultDatastorePropertyOptionsModeSingleSelectInputBuilder<>(this, datastoreDataProvider);
+	public <P extends Property> DatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+			DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter, Iterable<P> properties) {
+		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
+				DatastoreDataProvider.asPropertySet(properties), itemConverter, f -> null);
+		getComponent().setDataProvider(datastoreDataProvider);
+		return new DefaultDatastoreOptionsSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.
-	 * PropertyOptionsModeSingleSelectInputBuilder#dataSource(com.holonplatform.core.datastore.Datastore,
-	 * com.holonplatform.core.datastore.DataTarget)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreDataProviderConfigurator#dataSource(com.
+	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 	 */
 	@Override
-	public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-			DataTarget<?> target) {
-		return dataSource(datastore, target, Collections.singletonList(selectionProperty));
+	public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore, DataTarget<?> target) {
+		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
+				getItemType());
+		getComponent().setDataProvider(datastoreDataProvider);
+		return new DefaultDatastoreOptionsSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
@@ -439,8 +296,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * provider.DataProvider)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> dataSource(DataProvider<PropertyBox, ?> dataProvider) {
-		builder.dataSource(dataProvider);
+	public OptionsSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
+		getComponent().setDataProvider(dataProvider);
 		return this;
 	}
 
@@ -448,8 +305,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Object[])
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> items(PropertyBox... items) {
+	public OptionsSingleSelectInputBuilder<T, ITEM> items(ITEM... items) {
 		return items(Arrays.asList(items));
 	}
 
@@ -460,9 +318,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * data.provider.ListDataProvider)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> dataSource(ListDataProvider<PropertyBox> dataProvider) {
-		builder.dataSource(dataProvider);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
+		getComponent().setDataProvider(dataProvider);
+		return getConfigurator();
 	}
 
 	/*
@@ -470,9 +328,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(java.lang.Iterable)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> items(Iterable<PropertyBox> items) {
-		builder.items(items);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
+		this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
+		return getConfigurator();
 	}
 
 	/*
@@ -480,9 +338,62 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#addItem(java.lang.Object)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> addItem(PropertyBox item) {
-		builder.addItem(item);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> addItem(ITEM item) {
+		ObjectUtils.argumentNotNull(item, "Item must be not null");
+		this.items.add(item);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+	 */
+	@Override
+	public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> validatable() {
+		return new DefaultValidatableOptionsSingleSelectInputBuilder<>(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+	 */
+	@Override
+	public OptionsSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		getComponent().setReadOnly(readOnly);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
+	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
+	 */
+	@Override
+	public OptionsSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
+			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
+		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
+		this.valueChangeListeners.add(listener);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+	 */
+	@Override
+	public OptionsSingleSelectInputBuilder<T, ITEM> required(boolean required) {
+		getComponent().setRequired(required);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+	 */
+	@Override
+	public OptionsSingleSelectInputBuilder<T, ITEM> required() {
+		return required(true);
 	}
 
 	/*
@@ -491,37 +402,23 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 	 * Localizable)
 	 */
 	@Override
-	public PropertyOptionsModeSingleSelectInputBuilder<T> label(Localizable label) {
-		builder.label(label);
-		return this;
+	public OptionsSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
+		labelConfigurator.label(label);
+		return getConfigurator();
 	}
 
 	// ------- extended builders
 
-	static class DefaultValidatablePropertyOptionsModeSingleSelectInputBuilder<T>
-			implements ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> {
+	static class DefaultValidatableOptionsSingleSelectInputBuilder<T, ITEM>
+			implements ValidatableOptionsSingleSelectInputBuilder<T, ITEM> {
 
-		private final PropertyOptionsModeSingleSelectInputBuilder<T> builder;
+		private final OptionsSingleSelectInputBuilder<T, ITEM> builder;
 		private final DefaultValidatableInputConfigurator<T> validatableInputConfigurator;
 
-		public DefaultValidatablePropertyOptionsModeSingleSelectInputBuilder(
-				PropertyOptionsModeSingleSelectInputBuilder<T> builder) {
+		public DefaultValidatableOptionsSingleSelectInputBuilder(OptionsSingleSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.
-		 * PropertyOptionsModeSingleSelectInputConfigurator#dataSource(com.holonplatform.core.datastore.Datastore,
-		 * com.holonplatform.core.datastore.DataTarget)
-		 */
-		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(Datastore datastore,
-				DataTarget<?> target) {
-			return new DefaultValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<>(
-					builder.dataSource(datastore, target));
 		}
 
 		/*
@@ -531,8 +428,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.renderer.ComponentRenderer)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> renderer(
-				ComponentRenderer<? extends Component, PropertyBox> renderer) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> renderer(
+				ComponentRenderer<? extends Component, ITEM> renderer) {
 			builder.renderer(renderer);
 			return this;
 		}
@@ -544,8 +441,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> itemEnabledProvider(
-				SerializablePredicate<PropertyBox> itemEnabledProvider) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -557,8 +454,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionGenerator(
-				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
 		}
@@ -570,8 +467,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> itemCaption(PropertyBox item,
-				Localizable caption) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -583,8 +479,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(
-				ListDataProvider<PropertyBox> dataProvider) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -595,7 +490,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withSelectionListener(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -606,7 +501,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> readOnly(boolean readOnly) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -618,7 +513,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withValueChangeListener(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -629,7 +524,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> id(String id) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -639,7 +534,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> visible(boolean visible) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -650,8 +545,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * function.Consumer)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> elementConfiguration(
-				Consumer<Element> element) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
 		}
@@ -663,7 +557,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withAttachListener(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -676,7 +570,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withDetachListener(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -687,7 +581,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withThemeName(String themeName) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -699,7 +593,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -712,7 +606,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -723,7 +617,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> styleNames(String... styleNames) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -733,7 +627,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> styleName(String styleName) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -743,7 +637,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> enabled(boolean enabled) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -755,7 +649,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * (boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withDeferredLocalization(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -778,7 +672,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Localizable)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> label(Localizable label) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -786,15 +680,30 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(
-		 * com.holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
+		 * com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreDataProviderConfigurator#dataSource(com.
+		 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget,
+		 * java.util.function.Function, java.lang.Iterable)
 		 */
 		@SuppressWarnings("rawtypes")
 		@Override
-		public <P extends Property> ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(
-				Datastore datastore, DataTarget<?> target, Iterable<P> properties) {
-			return new DefaultValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<>(
-					builder.dataSource(datastore, target, properties));
+		public <P extends Property> ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(
+				Datastore datastore, DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter,
+				Iterable<P> properties) {
+			return new DefaultValidatableDatastoreOptionsSingleSelectInputBuilder<>(
+					builder.dataSource(datastore, target, itemConverter, properties));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasBeanDatastoreDataProviderConfigurator#dataSource(com.
+		 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
+		 */
+		@Override
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+				DataTarget<?> target) {
+			return new DefaultValidatableDatastoreOptionsSingleSelectInputBuilder<>(
+					builder.dataSource(datastore, target));
 		}
 
 		/*
@@ -804,8 +713,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .provider.DataProvider)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(
-				DataProvider<PropertyBox, ?> dataProvider) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -815,7 +723,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Iterable)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> items(Iterable<PropertyBox> items) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
 			builder.items(items);
 			return this;
 		}
@@ -824,8 +732,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Object[])
 		 */
+		@SuppressWarnings("unchecked")
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> items(PropertyBox... items) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> items(ITEM... items) {
 			builder.items(items);
 			return this;
 		}
@@ -835,20 +744,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#addItem(java.lang.Object)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> addItem(PropertyBox item) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 			builder.addItem(item);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
-		 * holonplatform.core.property.Property)
-		 */
-		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
-			builder.itemCaptionProperty(property);
 			return this;
 		}
 
@@ -858,7 +755,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> withValidator(Validator<T> validator) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withValidator(Validator<T> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -870,7 +767,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> validationStatusHandler(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> validationStatusHandler(
 				ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
@@ -882,7 +779,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> validateOnValueChange(
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> validateOnValueChange(
 				boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
@@ -895,7 +792,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * core.Validator)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> required(Validator<T> validator) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> required(Validator<T> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -907,7 +804,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> required(Localizable message) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
 		}
@@ -917,7 +814,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> required(boolean required) {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> required(boolean required) {
 			validatableInputConfigurator.required(required);
 			return this;
 		}
@@ -927,7 +824,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public ValidatablePropertyOptionsModeSingleSelectInputBuilder<T> required() {
+		public ValidatableOptionsSingleSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 
@@ -942,15 +839,14 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 
 	}
 
-	static class DefaultDatastorePropertyOptionsModeSingleSelectInputBuilder<T>
-			implements DatastorePropertyOptionsModeSingleSelectInputBuilder<T> {
+	static class DefaultDatastoreOptionsSingleSelectInputBuilder<T, ITEM>
+			implements DatastoreOptionsSingleSelectInputBuilder<T, ITEM> {
 
-		private final DefaultPropertyOptionsModeSingleSelectInputBuilder<T> builder;
-		private final DatastoreDataProvider<PropertyBox, ?> datastoreDataProvider;
+		private final DefaultOptionsSingleSelectInputBuilder<T, ITEM> builder;
+		private final DatastoreDataProvider<ITEM, ?> datastoreDataProvider;
 
-		public DefaultDatastorePropertyOptionsModeSingleSelectInputBuilder(
-				DefaultPropertyOptionsModeSingleSelectInputBuilder<T> builder,
-				DatastoreDataProvider<PropertyBox, ?> datastoreDataProvider) {
+		public DefaultDatastoreOptionsSingleSelectInputBuilder(DefaultOptionsSingleSelectInputBuilder<T, ITEM> builder,
+				DatastoreDataProvider<ITEM, ?> datastoreDataProvider) {
 			super();
 			this.builder = builder;
 			this.datastoreDataProvider = datastoreDataProvider;
@@ -963,8 +859,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.renderer.ComponentRenderer)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> renderer(
-				ComponentRenderer<? extends Component, PropertyBox> renderer) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> renderer(
+				ComponentRenderer<? extends Component, ITEM> renderer) {
 			builder.renderer(renderer);
 			return this;
 		}
@@ -976,8 +872,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemEnabledProvider(
-				SerializablePredicate<PropertyBox> itemEnabledProvider) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -989,21 +885,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionGenerator(
-				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
-		 * holonplatform.core.property.Property)
-		 */
-		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionProperty(Property<?> property) {
-			builder.itemCaptionProperty(property);
 			return this;
 		}
 
@@ -1014,8 +898,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaption(PropertyBox item,
-				Localizable caption) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -1027,8 +910,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(
-				ListDataProvider<PropertyBox> dataProvider) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -1038,8 +920,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> validatable() {
-			return new DefaultValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<>(this);
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> validatable() {
+			return new DefaultValidatableDatastoreOptionsSingleSelectInputBuilder<>(this);
 		}
 
 		/*
@@ -1047,7 +929,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> readOnly(boolean readOnly) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -1059,7 +941,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withValueChangeListener(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -1070,7 +952,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> required(boolean required) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> required(boolean required) {
 			builder.required(required);
 			return this;
 		}
@@ -1080,7 +962,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> required() {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 
@@ -1089,7 +971,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> id(String id) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -1099,7 +981,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> visible(boolean visible) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -1110,7 +992,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * function.Consumer)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
 		}
@@ -1122,7 +1004,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withAttachListener(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -1135,7 +1017,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDetachListener(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -1146,7 +1028,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withThemeName(String themeName) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1158,7 +1040,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1171,7 +1053,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1183,7 +1065,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withSelectionListener(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1194,7 +1076,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> styleNames(String... styleNames) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1204,7 +1086,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> styleName(String styleName) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1214,7 +1096,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> enabled(boolean enabled) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1226,7 +1108,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * (boolean)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDeferredLocalization(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -1249,7 +1131,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Localizable)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> label(Localizable label) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -1260,7 +1142,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withQueryConfigurationProvider(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			datastoreDataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -1273,8 +1155,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDefaultQuerySort(
-				QuerySort defaultQuerySort) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDefaultQuerySort(QuerySort defaultQuerySort) {
 			datastoreDataProvider.setDefaultSort(defaultQuerySort);
 			return this;
 		}
@@ -1286,8 +1167,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemIdentifierProvider(
-				Function<PropertyBox, Object> itemIdentifierProvider) {
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+				Function<ITEM, Object> itemIdentifierProvider) {
 			datastoreDataProvider.setItemIdentifier(itemIdentifierProvider);
 			return this;
 		}
@@ -1299,7 +1180,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastorePropertyOptionsModeSingleSelectInputBuilder<T> querySortOrderConverter(
+		public DatastoreOptionsSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
 			return this;
@@ -1316,14 +1197,14 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 
 	}
 
-	static class DefaultValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T>
-			implements ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> {
+	static class DefaultValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM>
+			implements ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> {
 
-		private final DatastorePropertyOptionsModeSingleSelectInputBuilder<T> builder;
+		private final DatastoreOptionsSingleSelectInputBuilder<T, ITEM> builder;
 		private final DefaultValidatableInputConfigurator<T> validatableInputConfigurator;
 
-		public DefaultValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder(
-				DatastorePropertyOptionsModeSingleSelectInputBuilder<T> builder) {
+		public DefaultValidatableDatastoreOptionsSingleSelectInputBuilder(
+				DatastoreOptionsSingleSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
@@ -1336,8 +1217,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.renderer.ComponentRenderer)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> renderer(
-				ComponentRenderer<? extends Component, PropertyBox> renderer) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> renderer(
+				ComponentRenderer<? extends Component, ITEM> renderer) {
 			builder.renderer(renderer);
 			return this;
 		}
@@ -1349,8 +1230,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemEnabledProvider(
-				SerializablePredicate<PropertyBox> itemEnabledProvider) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -1362,8 +1243,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionGenerator(
-				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
 		}
@@ -1375,7 +1256,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaption(PropertyBox item,
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item,
 				Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
@@ -1388,8 +1269,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> dataSource(
-				ListDataProvider<PropertyBox> dataProvider) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> dataSource(
+				ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -1400,7 +1281,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withSelectionListener(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1411,7 +1292,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> readOnly(boolean readOnly) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -1423,7 +1304,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withValueChangeListener(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -1434,7 +1315,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> id(String id) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -1444,7 +1325,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> visible(boolean visible) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -1455,7 +1336,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * function.Consumer)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> elementConfiguration(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> elementConfiguration(
 				Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
@@ -1468,7 +1349,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withAttachListener(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -1481,7 +1362,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDetachListener(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -1492,7 +1373,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withThemeName(String themeName) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1504,7 +1385,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1517,7 +1398,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withEventListener(String eventType,
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1528,7 +1409,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> styleNames(String... styleNames) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1538,7 +1419,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> styleName(String styleName) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1548,7 +1429,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> enabled(boolean enabled) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1560,7 +1441,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * (boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDeferredLocalization(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -1583,7 +1464,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * Localizable)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> label(Localizable label) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -1594,7 +1475,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withQueryConfigurationProvider(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			builder.withQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -1607,7 +1488,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withDefaultQuerySort(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withDefaultQuerySort(
 				QuerySort defaultQuerySort) {
 			builder.withDefaultQuerySort(defaultQuerySort);
 			return this;
@@ -1620,8 +1501,8 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemIdentifierProvider(
-				Function<PropertyBox, Object> itemIdentifierProvider) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+				Function<ITEM, Object> itemIdentifierProvider) {
 			builder.itemIdentifierProvider(itemIdentifierProvider);
 			return this;
 		}
@@ -1633,22 +1514,9 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> querySortOrderConverter(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
-		 * holonplatform.core.property.Property)
-		 */
-		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> itemCaptionProperty(
-				Property<?> property) {
-			builder.itemCaptionProperty(property);
 			return this;
 		}
 
@@ -1658,8 +1526,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> withValidator(
-				Validator<T> validator) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withValidator(Validator<T> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -1671,7 +1538,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> validationStatusHandler(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> validationStatusHandler(
 				ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
@@ -1683,7 +1550,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> validateOnValueChange(
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> validateOnValueChange(
 				boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
@@ -1696,7 +1563,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * core.Validator)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> required(Validator<T> validator) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> required(Validator<T> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -1708,7 +1575,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> required(Localizable message) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
 		}
@@ -1718,7 +1585,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> required(boolean required) {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> required(boolean required) {
 			validatableInputConfigurator.required(required);
 			return this;
 		}
@@ -1728,7 +1595,7 @@ public class DefaultPropertyOptionsModeSingleSelectInputBuilder<T>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public ValidatableDatastorePropertyOptionsModeSingleSelectInputBuilder<T> required() {
+		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 

@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.holonplatform.core.Validator;
@@ -46,7 +47,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableMultiSelect;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.MultiSelectInputAdapter;
@@ -65,19 +66,18 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.Element;
-import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * Default {@link ItemOptionsModeMultiSelectInputBuilder} implementation.
+ * Default {@link OptionsMultiSelectInputBuilder} implementation.
  *
  * @param <T> Value type
  * @param <ITEM> Item type
  *
  * @since 5.2.0
  */
-public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
-		AbstractLocalizableComponentConfigurator<CheckboxGroup<ITEM>, ItemOptionsModeMultiSelectInputBuilder<T, ITEM>>
-		implements ItemOptionsModeMultiSelectInputBuilder<T, ITEM> {
+public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
+		extends AbstractLocalizableComponentConfigurator<CheckboxGroup<ITEM>, OptionsMultiSelectInputBuilder<T, ITEM>>
+		implements OptionsMultiSelectInputBuilder<T, ITEM> {
 
 	protected final DefaultHasLabelConfigurator<CheckboxGroup<ITEM>> labelConfigurator;
 
@@ -101,7 +101,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @param itemType Selection items type
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	public DefaultItemOptionsModeMultiSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
+	public DefaultOptionsMultiSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
 		super(new CheckboxGroup<>());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
@@ -144,7 +144,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected ItemOptionsModeMultiSelectInputBuilder<T, ITEM> getConfigurator() {
+	protected OptionsMultiSelectInputBuilder<T, ITEM> getConfigurator() {
 		return this;
 	}
 
@@ -197,8 +197,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
-	public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> validatable() {
-		return new DefaultValidatableItemOptionsModeMultiSelectInputBuilder<>(this);
+	public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> validatable() {
+		return new DefaultValidatableOptionsMultiSelectInputBuilder<>(this);
 	}
 
 	/*
@@ -207,8 +207,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> withSelectionListener(
-			SelectionListener<T> selectionListener) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> withSelectionListener(SelectionListener<T> selectionListener) {
 		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
 		selectionListeners.add(selectionListener);
 		return getConfigurator();
@@ -221,9 +220,9 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * vaadin.flow.function.SerializablePredicate)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
-			SerializablePredicate<ITEM> itemEnabledProvider) {
-		getComponent().setItemEnabledProvider(itemEnabledProvider);
+	public OptionsMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
+		ObjectUtils.argumentNotNull(itemEnabledProvider, "Item enabled predicate must be not null");
+		getComponent().setItemEnabledProvider(item -> itemEnabledProvider.test(item));
 		return getConfigurator();
 	}
 
@@ -234,7 +233,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+	public OptionsMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 			ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
 		getComponent().setItemLabelGenerator(item -> itemCaptionGenerator.getItemCaption(item));
@@ -248,7 +247,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * Object, com.holonplatform.core.i18n.Localizable)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		if (caption == null) {
 			itemCaptions.remove(item);
@@ -266,12 +265,12 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public <P extends Property> DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+	public <P extends Property> DatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
 			DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter, Iterable<P> properties) {
 		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
 				DatastoreDataProvider.asPropertySet(properties), itemConverter, f -> null);
 		getComponent().setDataProvider(datastoreDataProvider);
-		return new DefaultDatastoreItemOptionsModeMultiSelectInputBuilder<>(this, datastoreDataProvider);
+		return new DefaultDatastoreOptionsMultiSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
@@ -280,12 +279,11 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 	 */
 	@Override
-	public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
-			DataTarget<?> target) {
+	public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore, DataTarget<?> target) {
 		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
 				getItemType());
 		getComponent().setDataProvider(datastoreDataProvider);
-		return new DefaultDatastoreItemOptionsModeMultiSelectInputBuilder<>(this, datastoreDataProvider);
+		return new DefaultDatastoreOptionsMultiSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
@@ -295,7 +293,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * provider.DataProvider)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
 		getComponent().setDataProvider(dataProvider);
 		return this;
 	}
@@ -306,7 +304,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
 		return items(Arrays.asList(items));
 	}
 
@@ -317,7 +315,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * data.provider.ListDataProvider)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 		getComponent().setDataProvider(dataProvider);
 		return getConfigurator();
 	}
@@ -327,7 +325,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(java.lang.Iterable)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
 		this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
 		return getConfigurator();
 	}
@@ -337,7 +335,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#addItem(java.lang.Object)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		this.items.add(item);
 		return getConfigurator();
@@ -348,7 +346,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -360,7 +358,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+	public OptionsMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
 			ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
 		this.valueChangeListeners.add(listener);
@@ -372,7 +370,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> required(boolean required) {
 		getComponent().setRequired(required);
 		return getConfigurator();
 	}
@@ -382,7 +380,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> required() {
+	public OptionsMultiSelectInputBuilder<T, ITEM> required() {
 		return required(true);
 	}
 
@@ -392,21 +390,20 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 	 * Localizable)
 	 */
 	@Override
-	public ItemOptionsModeMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
+	public OptionsMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
 		labelConfigurator.label(label);
 		return getConfigurator();
 	}
 
 	// ------- extended builders
 
-	static class DefaultValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM>
-			implements ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> {
+	static class DefaultValidatableOptionsMultiSelectInputBuilder<T, ITEM>
+			implements ValidatableOptionsMultiSelectInputBuilder<T, ITEM> {
 
-		private final ItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder;
+		private final OptionsMultiSelectInputBuilder<T, ITEM> builder;
 		private final DefaultValidatableInputConfigurator<Set<T>> validatableInputConfigurator;
 
-		public DefaultValidatableItemOptionsModeMultiSelectInputBuilder(
-				ItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder) {
+		public DefaultValidatableOptionsMultiSelectInputBuilder(OptionsMultiSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
@@ -419,8 +416,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
-				SerializablePredicate<ITEM> itemEnabledProvider) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -432,7 +429,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
@@ -445,7 +442,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -457,8 +454,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(
-				ListDataProvider<ITEM> dataProvider) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -469,7 +465,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withSelectionListener(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -480,7 +476,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -492,7 +488,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -503,7 +499,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> id(String id) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -513,7 +509,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -524,8 +520,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * function.Consumer)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> elementConfiguration(
-				Consumer<Element> element) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
 		}
@@ -537,7 +532,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withAttachListener(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -550,7 +545,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDetachListener(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -561,7 +556,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -573,7 +568,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -586,7 +581,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -597,7 +592,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -607,7 +602,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -617,7 +612,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -629,7 +624,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * (boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -652,7 +647,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Localizable)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -666,10 +661,10 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 */
 		@SuppressWarnings("rawtypes")
 		@Override
-		public <P extends Property> ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(
+		public <P extends Property> ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(
 				Datastore datastore, DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter,
 				Iterable<P> properties) {
-			return new DefaultValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<>(
+			return new DefaultValidatableDatastoreOptionsMultiSelectInputBuilder<>(
 					builder.dataSource(datastore, target, itemConverter, properties));
 		}
 
@@ -680,9 +675,9 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
 				DataTarget<?> target) {
-			return new DefaultValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<>(
+			return new DefaultValidatableDatastoreOptionsMultiSelectInputBuilder<>(
 					builder.dataSource(datastore, target));
 		}
 
@@ -693,8 +688,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .provider.DataProvider)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(
-				DataProvider<ITEM, ?> dataProvider) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -704,7 +698,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Iterable)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
 			builder.items(items);
 			return this;
 		}
@@ -715,7 +709,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 */
 		@SuppressWarnings("unchecked")
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
 			builder.items(items);
 			return this;
 		}
@@ -725,7 +719,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#addItem(java.lang.Object)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 			builder.addItem(item);
 			return this;
 		}
@@ -736,7 +730,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValidator(Validator<Set<T>> validator) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withValidator(Validator<Set<T>> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -748,7 +742,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
 				ValidationStatusHandler<ValidatableInput<Set<T>>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
@@ -760,8 +754,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> validateOnValueChange(
-				boolean validateOnValueChange) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> validateOnValueChange(boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
 		}
@@ -773,7 +766,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * core.Validator)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(Validator<Set<T>> validator) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> required(Validator<Set<T>> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -785,7 +778,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
 		}
@@ -795,7 +788,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> required(boolean required) {
 			validatableInputConfigurator.required(required);
 			return this;
 		}
@@ -805,7 +798,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public ValidatableItemOptionsModeMultiSelectInputBuilder<T, ITEM> required() {
+		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 
@@ -820,14 +813,13 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 
 	}
 
-	static class DefaultDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM>
-			implements DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> {
+	static class DefaultDatastoreOptionsMultiSelectInputBuilder<T, ITEM>
+			implements DatastoreOptionsMultiSelectInputBuilder<T, ITEM> {
 
-		private final DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder;
+		private final DefaultOptionsMultiSelectInputBuilder<T, ITEM> builder;
 		private final DatastoreDataProvider<ITEM, ?> datastoreDataProvider;
 
-		public DefaultDatastoreItemOptionsModeMultiSelectInputBuilder(
-				DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder,
+		public DefaultDatastoreOptionsMultiSelectInputBuilder(DefaultOptionsMultiSelectInputBuilder<T, ITEM> builder,
 				DatastoreDataProvider<ITEM, ?> datastoreDataProvider) {
 			super();
 			this.builder = builder;
@@ -839,8 +831,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> validatable() {
-			return new DefaultValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<>(this);
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> validatable() {
+			return new DefaultValidatableDatastoreOptionsMultiSelectInputBuilder<>(this);
 		}
 
 		/*
@@ -850,8 +842,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
-				SerializablePredicate<ITEM> itemEnabledProvider) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -863,7 +855,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
@@ -876,7 +868,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -888,8 +880,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(
-				ListDataProvider<ITEM> dataProvider) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
 		}
@@ -899,7 +890,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -911,7 +902,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -922,7 +913,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> required(boolean required) {
 			builder.required(required);
 			return this;
 		}
@@ -932,7 +923,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required() {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 
@@ -941,7 +932,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> id(String id) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -951,7 +942,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -962,8 +953,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * function.Consumer)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> elementConfiguration(
-				Consumer<Element> element) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
 		}
@@ -975,7 +965,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withAttachListener(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -988,7 +978,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDetachListener(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -999,7 +989,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1011,7 +1001,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1024,7 +1014,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1036,7 +1026,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withSelectionListener(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1047,7 +1037,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1057,7 +1047,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1067,7 +1057,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1079,8 +1069,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * (boolean)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
-				boolean deferredLocalization) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
 		}
@@ -1102,7 +1091,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Localizable)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -1113,7 +1102,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			datastoreDataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -1126,8 +1115,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(
-				QuerySort defaultQuerySort) {
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(QuerySort defaultQuerySort) {
 			datastoreDataProvider.setDefaultSort(defaultQuerySort);
 			return this;
 		}
@@ -1139,7 +1127,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
 				Function<ITEM, Object> itemIdentifierProvider) {
 			datastoreDataProvider.setItemIdentifier(itemIdentifierProvider);
 			return this;
@@ -1152,7 +1140,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
+		public DatastoreOptionsMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
 			return this;
@@ -1169,14 +1157,14 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 
 	}
 
-	static class DefaultValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM>
-			implements ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> {
+	static class DefaultValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM>
+			implements ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> {
 
-		private final DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder;
+		private final DatastoreOptionsMultiSelectInputBuilder<T, ITEM> builder;
 		private final DefaultValidatableInputConfigurator<Set<T>> validatableInputConfigurator;
 
-		public DefaultValidatableDatastoreItemOptionsModeMultiSelectInputBuilder(
-				DatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> builder) {
+		public DefaultValidatableDatastoreOptionsMultiSelectInputBuilder(
+				DatastoreOptionsMultiSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
@@ -1189,8 +1177,8 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
-				SerializablePredicate<ITEM> itemEnabledProvider) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
+				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -1202,7 +1190,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
@@ -1215,8 +1203,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item,
-				Localizable caption) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -1228,7 +1215,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> dataSource(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> dataSource(
 				ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
@@ -1240,7 +1227,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withSelectionListener(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1251,7 +1238,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -1263,7 +1250,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
@@ -1274,7 +1261,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> id(String id) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -1284,7 +1271,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -1295,7 +1282,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * function.Consumer)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> elementConfiguration(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> elementConfiguration(
 				Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
@@ -1308,7 +1295,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withAttachListener(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -1321,7 +1308,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDetachListener(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -1332,7 +1319,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1344,7 +1331,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1357,7 +1344,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1368,7 +1355,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1378,7 +1365,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1388,7 +1375,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1400,7 +1387,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * (boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -1423,7 +1410,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * Localizable)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> label(Localizable label) {
 			builder.label(label);
 			return this;
 		}
@@ -1434,7 +1421,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			builder.withQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -1447,7 +1434,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(
 				QuerySort defaultQuerySort) {
 			builder.withDefaultQuerySort(defaultQuerySort);
 			return this;
@@ -1460,7 +1447,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
 				Function<ITEM, Object> itemIdentifierProvider) {
 			builder.itemIdentifierProvider(itemIdentifierProvider);
 			return this;
@@ -1473,7 +1460,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
 			return this;
@@ -1485,8 +1472,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> withValidator(
-				Validator<Set<T>> validator) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withValidator(Validator<Set<T>> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -1498,7 +1484,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
 				ValidationStatusHandler<ValidatableInput<Set<T>>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
@@ -1510,7 +1496,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> validateOnValueChange(
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> validateOnValueChange(
 				boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
@@ -1523,8 +1509,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * core.Validator)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(
-				Validator<Set<T>> validator) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> required(Validator<Set<T>> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -1536,7 +1521,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
 		}
@@ -1546,7 +1531,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> required(boolean required) {
 			validatableInputConfigurator.required(required);
 			return this;
 		}
@@ -1556,7 +1541,7 @@ public class DefaultItemOptionsModeMultiSelectInputBuilder<T, ITEM> extends
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
 		 */
 		@Override
-		public ValidatableDatastoreItemOptionsModeMultiSelectInputBuilder<T, ITEM> required() {
+		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 

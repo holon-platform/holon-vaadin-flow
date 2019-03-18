@@ -45,6 +45,8 @@ import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.ConfirmDi
 import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.MessageDialogBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogBuilder;
 import com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogCallback;
+import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.FilterableSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.PropertyFilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FormLayoutConfigurator.BaseFormLayoutConfigurator;
@@ -57,18 +59,18 @@ import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuild
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NativeButtonBuilder;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.OptionsSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.PropertyOptionsSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
-import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.ItemSelectModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder.PropertySelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurator.PropertySingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurator.SingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ThemableFlexComponentConfigurator;
@@ -85,6 +87,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HtmlContainer;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
@@ -99,6 +103,8 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinService;
 
@@ -801,21 +807,23 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input.
+		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link ComboBox} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are consistent. Use
 		 * {@link #singleSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
 		 * @param <T> Value type
 		 * @param type Selection value type (not null)
-		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
-		static <T> ItemSelectModeSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
+		static <T> FilterableSingleSelectInputBuilder<T, T> singleSelect(Class<T> type) {
 			return Input.singleSelect(type);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input.
+		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link ComboBox} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
 		 * of different type). When the the selection item and the selection value types are consistent, the
@@ -827,55 +835,117 @@ public interface Components {
 		 * @param itemType Selection items type (not null)
 		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 		 *        back (not null)
-		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
-		static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type,
-				Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
+		static <T, ITEM> FilterableSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type, Class<ITEM> itemType,
+				ItemConverter<T, ITEM> itemConverter) {
 			return Input.singleSelect(type, itemType, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property}.
+		 * Gets a builder to create a {@link Property} model based <em>filterable</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ComboBox} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+		 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 		 */
-		static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
+		static <T> PropertyFilterableSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
 			return Input.singleSelect(selectionProperty);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property} and
-		 * converter.
+		 * Gets a builder to create a {@link Property} model based <em>filterable</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ComboBox} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
 		 * @param itemConverter The function to use to convert a selection value into the corresponding
 		 *        {@link PropertyBox} item
-		 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+		 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 		 */
-		static <T> PropertySelectModeSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
+		static <T> PropertyFilterableSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
 				Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.singleSelect(selectionProperty, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input using the <em>options</em> rendering mode, i.e. a
-		 * radio button group.
+		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link Select} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * {@link #singleSelect(Class, Class, ItemConverter)} if not.
+		 * <p>
+		 * @param <T> Value type
+		 * @param type Selection value type (not null)
+		 * @return A new {@link SingleSelectInputBuilder}
+		 */
+		static <T> SingleSelectInputBuilder<T, T> singleSimpleSelect(Class<T> type) {
+			return Input.singleSimpleSelect(type);
+		}
+
+		/**
+		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link Select} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
+		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * {@link #singleSelect(Class)} method can be used.
+		 * <p>
+		 * @param <T> Value type
+		 * @param <ITEM> Item type
+		 * @param type Selection value type (not null)
+		 * @param itemType Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
+		 *        back (not null)
+		 * @return A new {@link SingleSelectInputBuilder}
+		 */
+		static <T, ITEM> SingleSelectInputBuilder<T, ITEM> singleSimpleSelect(Class<T> type, Class<ITEM> itemType,
+				ItemConverter<T, ITEM> itemConverter) {
+			return Input.singleSimpleSelect(type, itemType, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>simple</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link Select} as input component.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @return A new {@link PropertySingleSelectInputBuilder}
+		 */
+		static <T> PropertySingleSelectInputBuilder<T> singleSimpleSelect(final Property<T> selectionProperty) {
+			return Input.singleSimpleSelect(selectionProperty);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>simple</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link Select} as input component.
+		 * @param <T> Value type
+		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * @param itemConverter The function to use to convert a selection value into the corresponding
+		 *        {@link PropertyBox} item
+		 * @return A new {@link PropertySingleSelectInputBuilder}
+		 */
+		static <T> PropertySingleSelectInputBuilder<T> singleSimpleSelect(final Property<T> selectionProperty,
+				Function<T, Optional<PropertyBox>> itemConverter) {
+			return Input.singleSimpleSelect(selectionProperty, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link RadioButtonGroup} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are consistent. Use
 		 * {@link #singleOptionSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
 		 * @param <T> Value type
 		 * @param type Selection value type (not null)
-		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
-		static <T> ItemOptionsModeSingleSelectInputBuilder<T, T> singleOptionSelect(Class<T> type) {
+		static <T> OptionsSingleSelectInputBuilder<T, T> singleOptionSelect(Class<T> type) {
 			return Input.singleOptionSelect(type);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input using the <em>options</em> rendering mode, i.e. a
-		 * radio button group.
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link RadioButtonGroup} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
 		 * of different type). When the the selection item and the selection value types are consistent, the
@@ -887,57 +957,56 @@ public interface Components {
 		 * @param itemType Selection items type (not null)
 		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 		 *        back (not null)
-		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
-		static <T, ITEM> ItemOptionsModeSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
+		static <T, ITEM> OptionsSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
 				Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
 			return Input.singleOptionSelect(type, itemType, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property} and the
-		 * <em>options</em> rendering mode, i.e. a radio button group.
+		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+		 * @return A new {@link PropertyOptionsSingleSelectInputBuilder}
 		 */
-		static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(
-				final Property<T> selectionProperty) {
+		static <T> PropertyOptionsSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty) {
 			return Input.singleOptionSelect(selectionProperty);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input, using given selection {@link Property}, a
-		 * converter and the <em>options</em> rendering mode, i.e. a radio button group.
+		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
 		 * @param itemConverter The function to use to convert a selection value into the corresponding
 		 *        {@link PropertyBox} item
-		 * @return A new {@link PropertyOptionsModeSingleSelectInputBuilder}
+		 * @return A new {@link PropertyOptionsSingleSelectInputBuilder}
 		 */
-		static <T> PropertyOptionsModeSingleSelectInputBuilder<T> singleOptionSelect(
-				final Property<T> selectionProperty, Function<T, Optional<PropertyBox>> itemConverter) {
+		static <T> PropertyOptionsSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty,
+				Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.singleOptionSelect(selectionProperty, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox
-		 * group.
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type {@link Input}, which uses a
+		 * {@link CheckboxGroup} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are consistent. Use
 		 * {@link #multiOptionSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
 		 * @param <T> Value type
 		 * @param type Selection value type (not null)
-		 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
-		static <T> ItemOptionsModeMultiSelectInputBuilder<T, T> multiOptionSelect(Class<T> type) {
+		static <T> OptionsMultiSelectInputBuilder<T, T> multiOptionSelect(Class<T> type) {
 			return Input.multiOptionSelect(type);
 		}
 
 		/**
-		 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox
-		 * group.
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type {@link Input}, which uses a
+		 * {@link CheckboxGroup} as input component.
 		 * <p>
 		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
 		 * of different type). When the the selection item and the selection value types are consistent, the
@@ -949,77 +1018,75 @@ public interface Components {
 		 * @param itemType Selection items type (not null)
 		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 		 *        back (not null)
-		 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
-		static <T, ITEM> ItemOptionsModeMultiSelectInputBuilder<T, ITEM> multiOptionSelect(Class<T> type,
-				Class<ITEM> itemType, ItemConverter<T, ITEM> itemConverter) {
+		static <T, ITEM> OptionsMultiSelectInputBuilder<T, ITEM> multiOptionSelect(Class<T> type, Class<ITEM> itemType,
+				ItemConverter<T, ITEM> itemConverter) {
 			return Input.multiOptionSelect(type, itemType, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property} and the
-		 * <em>options</em> rendering mode, i.e. a checkbox group.
+		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+		 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 		 */
-		static <T> PropertyOptionsModeMultiSelectInputBuilder<T> multiOptionSelect(
-				final Property<T> selectionProperty) {
+		static <T> PropertyOptionsMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty) {
 			return Input.multiOptionSelect(selectionProperty);
 		}
 
 		/**
-		 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property}, a converter and the
-		 * <em>options</em> rendering mode, i.e. a checkbox group.
+		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
 		 * @param <T> Value type
 		 * @param selectionProperty The property to use to represent the selection value (not null)
 		 * @param itemConverter The function to use to convert a selection value into the corresponding
 		 *        {@link PropertyBox} item
-		 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+		 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 		 */
-		static <T> PropertyOptionsModeMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty,
+		static <T> PropertyOptionsMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty,
 				Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.multiOptionSelect(selectionProperty, itemConverter);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type.
+		 * Gets a builder to create a {@link SingleSelect} type {@link Input} for given <code>enum</code> type.
 		 * <p>
 		 * All the enum constants declared for the given enum type will be available as selection items.
 		 * </p>
 		 * @param <E> Enum type
 		 * @param enumType Enum type (not null)
-		 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
-		static <E extends Enum<E>> ItemSelectModeSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
+		static <E extends Enum<E>> FilterableSingleSelectInputBuilder<E, E> enumSelect(Class<E> enumType) {
 			return Input.enumSelect(enumType);
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type Input for given <code>enum</code> type with the
-		 * <em>options</em> rendering mode, i.e. using a radio button group.
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input} for given
+		 * <code>enum</code> type.
 		 * <p>
 		 * All the enum constants declared for the given enum type will be available as selection items.
 		 * </p>
 		 * @param <E> Enum type
 		 * @param enumType Enum type (not null)
-		 * @return A new {@link ItemOptionsModeSingleSelectInputBuilder}
+		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
-		static <E extends Enum<E>> ItemOptionsModeSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
+		static <E extends Enum<E>> OptionsSingleSelectInputBuilder<E, E> enumOptionSelect(Class<E> enumType) {
 			return Input.enumOptionSelect(enumType);
 		}
 
 		/**
-		 * Gets a builder to create a {@link MultiSelect} type Input for given <code>enum</code> class with the
-		 * <em>options</em> rendering mode, i.e. using a checkbox group.
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type Input for given <code>enum</code> type.
 		 * <p>
 		 * All the enum constants declared for the given enum type will be available as selection items.
 		 * </p>
 		 * @param <E> Enum type
 		 * @param enumType Enum type (not null)
-		 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
-		static <E extends Enum<E>> ItemOptionsModeMultiSelectInputBuilder<E, E> enumMultiSelect(Class<E> enumType) {
+		static <E extends Enum<E>> OptionsMultiSelectInputBuilder<E, E> enumMultiSelect(Class<E> enumType) {
 			return Input.enumMultiSelect(enumType);
 		}
 

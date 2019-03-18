@@ -52,9 +52,9 @@ import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.ValidatableMultiSelect;
 import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
@@ -63,15 +63,13 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.function.SerializablePredicate;
 
 public class TestOptionsMultiSelectInput {
 
 	@Test
 	public void testBuilders() {
 
-		ItemOptionsModeMultiSelectInputBuilder<String, String> builder = OptionsModeMultiSelectInputBuilder
-				.create(String.class);
+		OptionsMultiSelectInputBuilder<String, String> builder = OptionsMultiSelectConfigurator.create(String.class);
 		assertNotNull(builder);
 		Input<Set<String>> input = builder.build();
 		assertNotNull(input);
@@ -86,8 +84,8 @@ public class TestOptionsMultiSelectInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		ItemOptionsModeMultiSelectInputBuilder<String, Integer> builder2 = OptionsModeMultiSelectInputBuilder.create(
-				String.class, Integer.class,
+		OptionsMultiSelectInputBuilder<String, Integer> builder2 = OptionsMultiSelectConfigurator.create(String.class,
+				Integer.class,
 				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
@@ -109,8 +107,7 @@ public class TestOptionsMultiSelectInput {
 
 		final Property<String> PROPERTY = StringProperty.create("test");
 
-		PropertyOptionsModeMultiSelectInputBuilder<String> builder = OptionsModeMultiSelectInputBuilder
-				.create(PROPERTY);
+		PropertyOptionsMultiSelectInputBuilder<String> builder = OptionsMultiSelectConfigurator.create(PROPERTY);
 		assertNotNull(builder);
 		Input<Set<String>> input = builder.build();
 		assertNotNull(input);
@@ -125,7 +122,7 @@ public class TestOptionsMultiSelectInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = OptionsModeMultiSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
+		builder = OptionsMultiSelectConfigurator.create(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -280,17 +277,6 @@ public class TestOptionsMultiSelectInput {
 
 		input = Input.multiOptionSelect(String.class).required().build();
 		assertTrue(input.isRequired());
-
-	}
-
-	@Test
-	public void testItemEnabledSupplier() {
-
-		final SerializablePredicate<String> iep = item -> true;
-
-		Input<Set<String>> input = Input.multiOptionSelect(String.class).itemEnabledProvider(iep).build();
-		assertTrue(input.getComponent() instanceof CheckboxGroup<?>);
-		assertEquals(iep, ((CheckboxGroup<?>) input.getComponent()).getItemEnabledProvider());
 
 	}
 

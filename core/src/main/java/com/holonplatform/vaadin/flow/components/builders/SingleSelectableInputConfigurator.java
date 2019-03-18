@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 /**
  * {@link SingleSelect} type {@link Input} configurator.
@@ -27,7 +28,14 @@ import com.holonplatform.vaadin.flow.components.SingleSelect;
  *
  * @since 5.2.0
  */
-public interface SingleSelectInputConfigurator<T, ITEM, C extends SingleSelectInputConfigurator<T, ITEM, C>>
-		extends ItemSetConfigurator<C>, SelectableInputConfigurator<T, T, C> {
+public interface SingleSelectableInputConfigurator<T, ITEM, C extends SingleSelectableInputConfigurator<T, ITEM, C>>
+		extends ItemSetConfigurator<C>, SelectableInputConfigurator<T, T, C>, HasItemCaptionConfigurator<ITEM, C> {
+
+	/**
+	 * Set the items data provider using a {@link ListDataProvider}.
+	 * @param dataProvider The data provider to set
+	 * @return this
+	 */
+	C dataSource(ListDataProvider<ITEM> dataProvider);
 
 }

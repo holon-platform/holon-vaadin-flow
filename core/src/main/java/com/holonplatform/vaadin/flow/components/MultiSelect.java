@@ -25,10 +25,11 @@ import java.util.stream.Stream;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.ItemOptionsModeMultiSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.PropertyOptionsModeMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 
 /**
  * A {@link Selectable} component in which multiple items can be selected at the same time. Selecting an item adds it to
@@ -130,21 +131,23 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	// ------- builders
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
+	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a {@link CheckboxGroup} as input
+	 * component.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are consistent. Use
 	 * {@link #options(Class, Class, ItemConverter)} if not.
 	 * <p>
 	 * @param <T> Value type
 	 * @param type Selection value type (not null)
-	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+	 * @return A new {@link OptionsMultiSelectInputBuilder}
 	 */
-	static <T> ItemOptionsModeMultiSelectInputBuilder<T, T> options(Class<T> type) {
-		return OptionsModeMultiSelectInputBuilder.create(type);
+	static <T> OptionsMultiSelectInputBuilder<T, T> options(Class<T> type) {
+		return OptionsMultiSelectConfigurator.create(type);
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect} using the <em>options</em> rendering mode, i.e. a checkbox group.
+	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a {@link CheckboxGroup} as input
+	 * component.
 	 * <p>
 	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
 	 * different type). When the the selection item and the selection value types are consistent, the
@@ -156,36 +159,36 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	 * @param itemType Selection items type (not null)
 	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
 	 *        back (not null)
-	 * @return A new {@link ItemOptionsModeMultiSelectInputBuilder}
+	 * @return A new {@link OptionsMultiSelectInputBuilder}
 	 */
-	static <T, ITEM> ItemOptionsModeMultiSelectInputBuilder<T, ITEM> options(Class<T> type, Class<ITEM> itemType,
+	static <T, ITEM> OptionsMultiSelectInputBuilder<T, ITEM> options(Class<T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		return OptionsModeMultiSelectInputBuilder.create(type, itemType, itemConverter);
+		return OptionsMultiSelectConfigurator.create(type, itemType, itemConverter);
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property} and the <em>options</em>
-	 * rendering mode, i.e. a checkbox group.
+	 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect}, which uses a
+	 * {@link CheckboxGroup} as input component.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+	 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 	 */
-	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> options(final Property<T> selectionProperty) {
-		return OptionsModeMultiSelectInputBuilder.create(selectionProperty);
+	static <T> PropertyOptionsMultiSelectInputBuilder<T> options(final Property<T> selectionProperty) {
+		return OptionsMultiSelectConfigurator.create(selectionProperty);
 	}
 
 	/**
-	 * Gets a builder to create a {@link MultiSelect}, using given selection {@link Property}, a converter and the
-	 * <em>options</em> rendering mode, i.e. a checkbox group.
+	 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect}, which uses a
+	 * {@link CheckboxGroup} as input component.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
 	 *        item
-	 * @return A new {@link PropertyOptionsModeMultiSelectInputBuilder}
+	 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 	 */
-	static <T> PropertyOptionsModeMultiSelectInputBuilder<T> options(final Property<T> selectionProperty,
+	static <T> PropertyOptionsMultiSelectInputBuilder<T> options(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
-		return OptionsModeMultiSelectInputBuilder.create(selectionProperty, itemConverter);
+		return OptionsMultiSelectConfigurator.create(selectionProperty, itemConverter);
 	}
 
 }

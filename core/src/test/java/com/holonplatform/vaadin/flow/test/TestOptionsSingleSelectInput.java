@@ -47,9 +47,9 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.ItemOptionsModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.PropertyOptionsModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.OptionsSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.PropertyOptionsSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
@@ -61,15 +61,13 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
-import com.vaadin.flow.function.SerializablePredicate;
 
 public class TestOptionsSingleSelectInput {
 
 	@Test
 	public void testBuilders() {
 
-		ItemOptionsModeSingleSelectInputBuilder<String, String> builder = OptionsModeSingleSelectInputBuilder
-				.create(String.class);
+		OptionsSingleSelectInputBuilder<String, String> builder = OptionsSingleSelectConfigurator.create(String.class);
 		assertNotNull(builder);
 		Input<String> input = builder.build();
 		assertNotNull(input);
@@ -84,8 +82,8 @@ public class TestOptionsSingleSelectInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		ItemOptionsModeSingleSelectInputBuilder<String, Integer> builder2 = OptionsModeSingleSelectInputBuilder.create(
-				String.class, Integer.class,
+		OptionsSingleSelectInputBuilder<String, Integer> builder2 = OptionsSingleSelectConfigurator.create(String.class,
+				Integer.class,
 				ItemConverter.create(item -> item.toString(), value -> Optional.of(Integer.valueOf(value))));
 		input = builder2.build();
 		assertNotNull(input);
@@ -107,8 +105,7 @@ public class TestOptionsSingleSelectInput {
 
 		final Property<String> PROPERTY = StringProperty.create("test");
 
-		PropertyOptionsModeSingleSelectInputBuilder<String> builder = OptionsModeSingleSelectInputBuilder
-				.create(PROPERTY);
+		PropertyOptionsSingleSelectInputBuilder<String> builder = OptionsSingleSelectConfigurator.create(PROPERTY);
 		assertNotNull(builder);
 		Input<String> input = builder.build();
 		assertNotNull(input);
@@ -123,7 +120,7 @@ public class TestOptionsSingleSelectInput {
 		input = builder.build();
 		assertNotNull(input);
 
-		builder = OptionsModeSingleSelectInputBuilder.create(PROPERTY, value -> Optional.empty());
+		builder = OptionsSingleSelectConfigurator.create(PROPERTY, value -> Optional.empty());
 		assertNotNull(builder);
 		input = builder.build();
 		assertNotNull(input);
@@ -289,17 +286,6 @@ public class TestOptionsSingleSelectInput {
 		Input<String> input = Input.singleOptionSelect(String.class).renderer(renderer).build();
 		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
 		assertEquals(renderer, ((RadioButtonGroup<?>) input.getComponent()).getItemRenderer());
-
-	}
-
-	@Test
-	public void testItemEnabledSupplier() {
-
-		final SerializablePredicate<String> iep = item -> true;
-
-		Input<String> input = Input.singleOptionSelect(String.class).itemEnabledProvider(iep).build();
-		assertTrue(input.getComponent() instanceof RadioButtonGroup<?>);
-		assertEquals(iep, ((RadioButtonGroup<?>) input.getComponent()).getItemEnabledProvider());
 
 	}
 

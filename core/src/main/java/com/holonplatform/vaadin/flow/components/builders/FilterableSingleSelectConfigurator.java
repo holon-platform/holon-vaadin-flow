@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
-import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
@@ -30,14 +29,14 @@ import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultItemSelectModeSingleSelectInputBuilder;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertySelectModeSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultFilterableSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyFilterableSingleSelectInputBuilder;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.renderer.Renderer;
 
 /**
- * {@link SingleSelect} input builder for the <em>select</em> rendering mode.
+ * Filterable {@link SingleSelect} input builder using a {@link ComboBox} as input component.
  *
  * @param <T> Value type
  * @param <ITEM> Item type
@@ -45,13 +44,13 @@ import com.vaadin.flow.data.renderer.Renderer;
  *
  * @since 5.2.0
  */
-public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectModeSingleSelectInputBuilder<T, ITEM, B>>
-		extends SingleSelectInputConfigurator<T, ITEM, B>, HasSizeConfigurator<B>, HasLabelConfigurator<B>,
+public interface FilterableSingleSelectConfigurator<T, ITEM, B extends FilterableSingleSelectConfigurator<T, ITEM, B>>
+		extends SingleSelectableInputConfigurator<T, ITEM, B>, HasSizeConfigurator<B>, HasLabelConfigurator<B>,
 		HasPlaceholderConfigurator<B>, HasPatternConfigurator<B>, HasAutofocusConfigurator<B>,
 		FocusableConfigurator<Component, B> {
 
 	/**
-	 * Sets the Renderer responsible to render the individual items in the list of possible choices.
+	 * Sets the {@link Renderer} responsible to render the individual items in the list of possible choices.
 	 * <p>
 	 * It doesn't affect how the selected item is rendered - that can be configured by using
 	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
@@ -60,47 +59,6 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 * @return this
 	 */
 	B renderer(Renderer<ITEM> renderer);
-
-	/**
-	 * Set the generator to be used to display item captions (i.e. labels).
-	 * @param itemCaptionGenerator The generator to set (not null)
-	 * @return this
-	 */
-	B itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator);
-
-	/**
-	 * Set an explicit caption for given item.
-	 * <p>
-	 * This is an alternative for
-	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
-	 * When an <code>ItemCaptionGenerator</code> is configured, explicit item captions will be ignored.
-	 * </p>
-	 * @param item Item to set the caption for (not null)
-	 * @param caption Item caption (not null)
-	 * @return this
-	 */
-	B itemCaption(ITEM item, Localizable caption);
-
-	/**
-	 * Set an explicit caption for given item.
-	 * @param item Item to set the caption for (not null)
-	 * @param caption Item caption
-	 * @return this
-	 */
-	default B itemCaption(ITEM item, String caption) {
-		return itemCaption(item, Localizable.builder().message(caption).build());
-	}
-
-	/**
-	 * Set an explicit caption for given item.
-	 * @param item Item to set the caption for (not null)
-	 * @param caption Item caption
-	 * @param messageCode Item caption translation code
-	 * @return this
-	 */
-	default B itemCaption(ITEM item, String caption, String messageCode) {
-		return itemCaption(item, Localizable.builder().message(caption).messageCode(messageCode).build());
-	}
 
 	/**
 	 * Sets the page size, which is the number of items fetched at a time from the data provider.
@@ -114,56 +72,43 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	 */
 	B pageSize(int pageSize);
 
-	/**
-	 * Set the items data provider using a {@link ListDataProvider}.
-	 * <p>
-	 * Filtering will use a case insensitive match to show all items where the filter text is a substring of the label
-	 * displayed for that item, which you can configure with
-	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
-	 * </p>
-	 * @param dataProvider The data provider to set
-	 * @return this
-	 */
-	B dataSource(ListDataProvider<ITEM> dataProvider);
-
 	// ------- specific configurators
 
 	/**
-	 * {@link SingleSelect} input configurator for the <em>select</em> rendering mode.
+	 * Filterable {@link SingleSelect} input configurator.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 * @param <D> Datastore data source configurator type
 	 * @param <C> Concrete configurator type
 	 */
-	public interface ItemSelectModeSingleSelectInputConfigurator<T, ITEM, D extends DatastoreDataProviderConfigurator<ITEM, D>, C extends ItemSelectModeSingleSelectInputConfigurator<T, ITEM, D, C>>
-			extends SelectModeSingleSelectInputBuilder<T, ITEM, C>,
+	public interface FilterableSingleSelectInputConfigurator<T, ITEM, D extends DatastoreDataProviderConfigurator<ITEM, D>, C extends FilterableSingleSelectInputConfigurator<T, ITEM, D, C>>
+			extends FilterableSingleSelectConfigurator<T, ITEM, C>,
 			HasBeanDatastoreFilterableDataProviderConfigurator<ITEM, String, D, C> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input configurator for the <em>select</em> rendering mode with
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * Filterable {@link SingleSelect} input configurator with {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 * @param <C> Concrete configurator type
 	 */
-	public interface DatastoreItemSelectModeSingleSelectInputConfigurator<T, ITEM, C extends DatastoreItemSelectModeSingleSelectInputConfigurator<T, ITEM, C>>
-			extends SelectModeSingleSelectInputBuilder<T, ITEM, C>, DatastoreDataProviderConfigurator<ITEM, C> {
+	public interface DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, C extends DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, C>>
+			extends FilterableSingleSelectConfigurator<T, ITEM, C>, DatastoreDataProviderConfigurator<ITEM, C> {
 
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input configurator for the <em>select</em> rendering mode.
+	 * {@link Property} model based filterable {@link SingleSelect} input configurator.
 	 *
 	 * @param <T> Value type
 	 * @param <D> Datastore data source configurator type
 	 * @param <C> Concrete configurator type
 	 */
-	public interface PropertySelectModeSingleSelectInputConfigurator<T, D extends DatastoreDataProviderConfigurator<PropertyBox, D>, C extends PropertySelectModeSingleSelectInputConfigurator<T, D, C>>
-			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, C>,
+	public interface PropertyFilterableSingleSelectInputConfigurator<T, D extends DatastoreDataProviderConfigurator<PropertyBox, D>, C extends PropertyFilterableSingleSelectInputConfigurator<T, D, C>>
+			extends FilterableSingleSelectConfigurator<T, PropertyBox, C>,
 			HasPropertyBoxDatastoreFilterableDataProviderConfigurator<String, D, C>,
 			PropertySelectInputConfigurator<T, T, C> {
 
@@ -227,14 +172,14 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input configurator for the <em>select</em> rendering mode with
+	 * {@link Property} model based filterable {@link SingleSelect} input configurator with
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <C> Concrete configurator type
 	 */
-	public interface DatastorePropertySelectModeSingleSelectInputConfigurator<T, C extends DatastorePropertySelectModeSingleSelectInputConfigurator<T, C>>
-			extends SelectModeSingleSelectInputBuilder<T, PropertyBox, C>,
+	public interface DatastorePropertyFilterableSingleSelectInputConfigurator<T, C extends DatastorePropertyFilterableSingleSelectInputConfigurator<T, C>>
+			extends FilterableSingleSelectConfigurator<T, PropertyBox, C>,
 			DatastoreDataProviderConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
 
 		/**
@@ -297,152 +242,153 @@ public interface SelectModeSingleSelectInputBuilder<T, ITEM, B extends SelectMod
 	// ------- actual builders
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode with validation support.
+	 * Filterable {@link SingleSelect} input builder with validation support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
-			ItemSelectModeSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>, ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
-			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface ValidatableFilterableSingleSelectInputBuilder<T, ITEM> extends
+			FilterableSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM>, ValidatableFilterableSingleSelectInputBuilder<T, ITEM>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableFilterableSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode with validation and
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * Filterable {@link SingleSelect} input builder with validation and {@link DatastoreDataProviderConfigurator}
+	 * support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
-			DatastoreItemSelectModeSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
-			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> extends
+			DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode.
+	 * Filterable {@link SingleSelect} input builder.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface ItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
-			ItemSelectModeSingleSelectInputConfigurator<T, ITEM, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>, ItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
-			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, ItemSelectModeSingleSelectInputBuilder<T, ITEM>, ValidatableItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface FilterableSingleSelectInputBuilder<T, ITEM> extends
+			FilterableSingleSelectInputConfigurator<T, ITEM, DatastoreFilterableSingleSelectInputBuilder<T, ITEM>, FilterableSingleSelectInputBuilder<T, ITEM>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, FilterableSingleSelectInputBuilder<T, ITEM>, ValidatableFilterableSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	/**
-	 * {@link SingleSelect} input builder for the <em>select</em> rendering mode with
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * Filterable {@link SingleSelect} input builder with {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 */
-	public interface DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM> extends
-			DatastoreItemSelectModeSingleSelectInputConfigurator<T, ITEM, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>>,
-			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>, ValidatableDatastoreItemSelectModeSingleSelectInputBuilder<T, ITEM>> {
+	public interface DatastoreFilterableSingleSelectInputBuilder<T, ITEM> extends
+			DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, DatastoreFilterableSingleSelectInputBuilder<T, ITEM>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastoreFilterableSingleSelectInputBuilder<T, ITEM>, ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM>> {
 
 	}
 
 	// ------- builders using property model
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>select</em> rendering mode with
-	 * validation support.
+	 * {@link Property} model based filterable {@link SingleSelect} input builder with validation support.
 	 *
 	 * @param <T> Value type
 	 */
-	public interface ValidatablePropertySelectModeSingleSelectInputBuilder<T> extends
-			PropertySelectModeSingleSelectInputConfigurator<T, ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T>, ValidatablePropertySelectModeSingleSelectInputBuilder<T>>,
-			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatablePropertySelectModeSingleSelectInputBuilder<T>> {
+	public interface ValidatablePropertyFilterableSingleSelectInputBuilder<T> extends
+			PropertyFilterableSingleSelectInputConfigurator<T, ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T>, ValidatablePropertyFilterableSingleSelectInputBuilder<T>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatablePropertyFilterableSingleSelectInputBuilder<T>> {
 	}
 
 	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>select</em> rendering mode with
-	 * validation and {@link DatastoreDataProviderConfigurator} support.
-	 *
-	 * @param <T> Value type
-	 */
-	public interface ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T> extends
-			DatastorePropertySelectModeSingleSelectInputConfigurator<T, ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T>>,
-			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T>> {
-
-	}
-
-	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>select</em> rendering mode.
-	 *
-	 * @param <T> Value type
-	 */
-	public interface PropertySelectModeSingleSelectInputBuilder<T> extends
-			PropertySelectModeSingleSelectInputConfigurator<T, DatastorePropertySelectModeSingleSelectInputBuilder<T>, PropertySelectModeSingleSelectInputBuilder<T>>,
-			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, PropertySelectModeSingleSelectInputBuilder<T>, ValidatablePropertySelectModeSingleSelectInputBuilder<T>> {
-	}
-
-	/**
-	 * {@link Property} model based {@link SingleSelect} input builder for the <em>select</em> rendering mode with
+	 * {@link Property} model based filterable {@link SingleSelect} input builder with validation and
 	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 */
-	public interface DatastorePropertySelectModeSingleSelectInputBuilder<T> extends
-			DatastorePropertySelectModeSingleSelectInputConfigurator<T, DatastorePropertySelectModeSingleSelectInputBuilder<T>>,
-			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastorePropertySelectModeSingleSelectInputBuilder<T>, ValidatableDatastorePropertySelectModeSingleSelectInputBuilder<T>> {
+	public interface ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> extends
+			DatastorePropertyFilterableSingleSelectInputConfigurator<T, ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T>>,
+			BaseValidatableInputBuilder<T, ValidatableSingleSelect<T>, ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T>> {
+
+	}
+
+	/**
+	 * {@link Property} model based filterable {@link SingleSelect} input builder.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface PropertyFilterableSingleSelectInputBuilder<T> extends
+			PropertyFilterableSingleSelectInputConfigurator<T, DatastorePropertyFilterableSingleSelectInputBuilder<T>, PropertyFilterableSingleSelectInputBuilder<T>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, PropertyFilterableSingleSelectInputBuilder<T>, ValidatablePropertyFilterableSingleSelectInputBuilder<T>> {
+	}
+
+	/**
+	 * {@link Property} model based filterable {@link SingleSelect} input builder with
+	 * {@link DatastoreDataProviderConfigurator} support.
+	 *
+	 * @param <T> Value type
+	 */
+	public interface DatastorePropertyFilterableSingleSelectInputBuilder<T> extends
+			DatastorePropertyFilterableSingleSelectInputConfigurator<T, DatastorePropertyFilterableSingleSelectInputBuilder<T>>,
+			InputBuilder<T, ValueChangeEvent<T>, SingleSelect<T>, ValidatableSingleSelect<T>, DatastorePropertyFilterableSingleSelectInputBuilder<T>, ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T>> {
 
 	}
 
 	// ------ builders
 
 	/**
-	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
+	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable {@link SingleSelect}, which uses a
+	 * {@link ComboBox} as input component.
 	 * @param <T> Value type
 	 * @param <ITEM> Item type
 	 * @param type Selection value type (not null)
 	 * @param itemType Selection items type (not null)
 	 * @param itemConverter The item converter to use (not null)
-	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 * @return A new {@link FilterableSingleSelectInputBuilder}
 	 */
-	static <T, ITEM> ItemSelectModeSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
+	static <T, ITEM> FilterableSingleSelectInputBuilder<T, ITEM> create(Class<T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		return new DefaultItemSelectModeSingleSelectInputBuilder<>(type, itemType, itemConverter);
+		return new DefaultFilterableSingleSelectInputBuilder<>(type, itemType, itemConverter);
 	}
 
 	/**
-	 * Create a new {@link ItemSelectModeSingleSelectInputBuilder}.
+	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable {@link SingleSelect}, which uses a
+	 * {@link ComboBox} as input component.
 	 * @param type Selection value type (not null)
 	 * @param <T> Value type
-	 * @return A new {@link ItemSelectModeSingleSelectInputBuilder}
+	 * @return A new {@link FilterableSingleSelectInputBuilder}
 	 */
-	static <T> ItemSelectModeSingleSelectInputBuilder<T, T> create(Class<T> type) {
-		return new DefaultItemSelectModeSingleSelectInputBuilder<>(type, type, ItemConverter.identity());
+	static <T> FilterableSingleSelectInputBuilder<T, T> create(Class<T> type) {
+		return new DefaultFilterableSingleSelectInputBuilder<>(type, type, ItemConverter.identity());
 	}
 
 	// property
 
 	/**
-	 * Create a new {@link PropertySelectModeSingleSelectInputBuilder} using given selection {@link Property} and
-	 * converter.
+	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a {@link Property} model based filterable
+	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 	 */
-	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
-		return new DefaultPropertySelectModeSingleSelectInputBuilder<>(selectionProperty);
+	static <T> PropertyFilterableSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
+		return new DefaultPropertyFilterableSingleSelectInputBuilder<>(selectionProperty);
 	}
 
 	/**
-	 * Create a new {@link PropertySelectModeSingleSelectInputBuilder} using given selection {@link Property}.
+	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a {@link Property} model based filterable
+	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
 	 * @param <T> Value type
 	 * @param selectionProperty The property to use to represent the selection value (not null)
 	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
 	 *        item
-	 * @return A new {@link PropertySelectModeSingleSelectInputBuilder}
+	 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 	 */
-	static <T> PropertySelectModeSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
+	static <T> PropertyFilterableSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
-		return new DefaultPropertySelectModeSingleSelectInputBuilder<>(selectionProperty, itemConverter);
+		return new DefaultPropertyFilterableSingleSelectInputBuilder<>(selectionProperty, itemConverter);
 	}
 
 }
