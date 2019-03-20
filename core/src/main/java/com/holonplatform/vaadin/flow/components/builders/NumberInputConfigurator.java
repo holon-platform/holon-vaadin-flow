@@ -100,4 +100,30 @@ public interface NumberInputConfigurator<T extends Number, C extends NumberInput
 	 */
 	C maxDecimals(int maxDecimals);
 
+	/**
+	 * Set whether to automatically select the input value when the input component gains focus.
+	 * @param autoselect <code>true</code> to automatically select the input value when the input component gains focus,
+	 *        <code>false</code> otherwise
+	 * @return this
+	 * @since 5.2.4
+	 */
+	C autoselect(boolean autoselect);
+
+	/**
+	 * Automatically select the input value when the input component gains focus.
+	 * @return this
+	 * @since 5.2.4
+	 */
+	default C autoselect() {
+		return autoselect(true);
+	}
+
+	/**
+	 * Set whether to show a <em>clear</em> button which can be used to clear the input value.
+	 * @param clearButtonVisible <code>true</code> to show the clear button, <code>false</code> to hide it
+	 * @return this
+	 * @since 5.2.4
+	 */
+	C clearButtonVisible(boolean clearButtonVisible);
+
 }

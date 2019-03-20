@@ -603,4 +603,24 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 		return required(true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputConfigurator#autoselect(boolean)
+	 */
+	@Override
+	public C autoselect(boolean autoselect) {
+		getComponent().setAutoselect(autoselect);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputConfigurator#clearButtonVisible(boolean)
+	 */
+	@Override
+	public C clearButtonVisible(boolean clearButtonVisible) {
+		getComponent().setClearButtonVisible(clearButtonVisible);
+		return getConfigurator();
+	}
+
 }
