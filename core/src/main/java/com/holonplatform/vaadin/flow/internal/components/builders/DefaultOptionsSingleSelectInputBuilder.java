@@ -18,7 +18,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,6 @@ import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
 import com.holonplatform.core.datastore.Datastore;
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
@@ -52,6 +51,7 @@ import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
+import com.holonplatform.vaadin.flow.internal.utils.CollectionUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -92,7 +92,7 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 
 	protected final ItemConverter<T, ITEM> itemConverter;
 
-	protected Set<ITEM> items = new HashSet<>();
+	protected Set<ITEM> items = new LinkedHashSet<>();
 
 	protected final Map<ITEM, Localizable> itemCaptions = new HashMap<>();
 
@@ -329,7 +329,7 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 	 */
 	@Override
 	public OptionsSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
-		this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
+		this.items = CollectionUtils.iterableAsSet(items);
 		return getConfigurator();
 	}
 

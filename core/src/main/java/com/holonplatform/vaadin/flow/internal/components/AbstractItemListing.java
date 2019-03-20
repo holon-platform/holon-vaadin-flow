@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,6 @@ import com.holonplatform.core.Registration;
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.Logger;
-import com.holonplatform.core.internal.utils.ConversionUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.PropertyRendererRegistry;
 import com.holonplatform.core.property.VirtualProperty;
@@ -88,6 +87,7 @@ import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemList
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn;
 import com.holonplatform.vaadin.flow.internal.components.support.ItemListingColumn.SortMode;
+import com.holonplatform.vaadin.flow.internal.utils.CollectionUtils;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -1896,7 +1896,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		protected final I instance;
 
-		protected Set<T> items = new HashSet<>();
+		protected Set<T> items = new LinkedHashSet<>();
 
 		private final List<ItemEventListener<L, T, ItemEvent<L, T>>> refreshListeners = new LinkedList<>();
 
@@ -2131,7 +2131,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 */
 		@Override
 		public C items(Iterable<T> items) {
-			this.items = (items != null) ? ConversionUtils.iterableAsSet(items) : new HashSet<>();
+			this.items = CollectionUtils.iterableAsSet(items);
 			return getConfigurator();
 		}
 
