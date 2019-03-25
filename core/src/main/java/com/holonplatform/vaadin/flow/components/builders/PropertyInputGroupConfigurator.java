@@ -27,7 +27,6 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Input.InputPropertyRenderer;
 import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
-import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
@@ -44,7 +43,7 @@ public interface PropertyInputGroupConfigurator<C extends PropertyInputGroupConf
 		extends PropertySetInputGroupConfigurator<PropertyInputGroup, C> {
 
 	/**
-	 * Set the given property as hidden. If a property is hidden, the {@link ViewComponent} bound to the property will
+	 * Set the given property as hidden. If a property is hidden, the {@link Input} bound to the property will
 	 * never be generated, but its value will be written to a {@link PropertyBox} using
 	 * {@link PropertyViewGroup#getValue()}.
 	 * @param <T> Property type
