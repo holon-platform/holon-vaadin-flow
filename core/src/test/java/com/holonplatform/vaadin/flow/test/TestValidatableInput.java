@@ -107,6 +107,48 @@ public class TestValidatableInput {
 	}
 
 	@Test
+	public void testValueIfValid() {
+
+		final ValidatableInput<String> input = ValidatableInput.from(Input.string().build());
+		input.addValidator(Validator.max(2));
+
+		assertTrue(input.isValid());
+		Assertions.assertDoesNotThrow(() -> input.validate());
+		assertFalse(input.getValueIfValid().isPresent());
+
+		input.setValue("aa");
+		assertTrue(input.isValid());
+		Assertions.assertDoesNotThrow(() -> input.validate());
+		assertTrue(input.getValueIfValid().isPresent());
+
+		input.setValue("abc");
+		assertFalse(input.isValid());
+		Assertions.assertThrows(ValidationException.class, () -> input.validate());
+		assertFalse(input.getValueIfValid().isPresent());
+
+		final ValidatableInput<String> input2 = Input.string().validatable().required().withValidator(Validator.max(2))
+				.build();
+
+		assertFalse(input2.isValid());
+		assertFalse(input2.getValueIfValid().isPresent());
+
+		input2.setValue("aa");
+		assertTrue(input2.isValid());
+		Assertions.assertDoesNotThrow(() -> input2.validate());
+		assertTrue(input2.getValueIfValid().isPresent());
+
+		input2.setValue("abc");
+		assertFalse(input2.isValid());
+		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
+		assertFalse(input2.getValueIfValid().isPresent());
+
+		input2.clear();
+		assertFalse(input2.isValid());
+		assertFalse(input2.getValueIfValid().isPresent());
+
+	}
+
+	@Test
 	public void testValidateOnValueChange() {
 
 		final ValidatableInput<String> input = Input.string().validatable().withValidator(Validator.max(2)).build();

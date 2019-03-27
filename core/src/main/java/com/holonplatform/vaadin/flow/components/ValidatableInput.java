@@ -53,6 +53,23 @@ public interface ValidatableInput<T> extends Input<T>, Validatable {
 	T getValue();
 
 	/**
+	 * Get the input value, if the input is not empty and the value is <em>valid</em>, i.e. validation is successful for
+	 * any validator bound to the input.
+	 * <p>
+	 * Differently from the {@link #getValue()} method, any validation exception is swallowed, returning an empty
+	 * Optional instead.
+	 * </p>
+	 * @return the input value, or an empty Optional if the input is empty or the input value is not valid
+	 */
+	default Optional<T> getValueIfValid() {
+		try {
+			return Optional.ofNullable(getValue());
+		} catch (@SuppressWarnings("unused") ValidationException e) {
+			return Optional.empty();
+		}
+	}
+
+	/**
 	 * Adds a {@link Validator} to validate the input value.
 	 * @param validator The validator to add (not null)
 	 * @return The validator registration reference
