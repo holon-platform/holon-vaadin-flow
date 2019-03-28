@@ -524,6 +524,24 @@ public class TestSingleSelectInput {
 
 	}
 
+	@Test
+	public void testItemConverter() {
+
+		SingleSelect<String> input = Input
+				.singleSimpleSelect(String.class, Integer.class, ItemConverter.create(
+						item -> (item == null) ? null : item.toString(), value -> Optional.of(Integer.valueOf(value))))
+				.addItem(1)
+				.addItem(2)
+				.addItem(3)
+				.build();
+		
+		assertNull(input.getValue());
+		
+		input.setValue("2");
+		assertEquals("2", input.getValue());
+
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDataProvider() {
