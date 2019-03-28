@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.text.NumberFormat;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -31,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -63,10 +63,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
  *
  * @since 5.2.2
  */
-public abstract class AbstractNumberInputBuilder<T extends Number, C extends NumberInputConfigurator<T, C>>
-		extends AbstractLocalizableComponentConfigurator<TextField, C> implements NumberInputConfigurator<T, C> {
-
-	private final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
+public abstract class AbstractNumberInputBuilder<T extends Number, C extends NumberInputConfigurator<T, C>> extends
+		AbstractInputConfigurator<T, ValueChangeEvent<T>, TextField, C> implements NumberInputConfigurator<T, C> {
 
 	private final Class<T> numberType;
 
@@ -85,18 +83,20 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 	protected final DefaultHasPlaceholderConfigurator<TextField> placeholderConfigurator;
 
 	public AbstractNumberInputBuilder(Class<T> numberType) {
-		this(numberType, new TextField(), null, StringToNumberConverter.create(numberType), Collections.emptyList());
+		this(numberType, new TextField(), null, StringToNumberConverter.create(numberType), Collections.emptyList(),
+				InputAdaptersContainer.create());
 	}
 
 	public AbstractNumberInputBuilder(Class<T> numberType, TextField component, T initialValue,
 			StringToNumberConverter<T> converter,
-			List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners) {
-		super(component);
+			List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners,
+			InputAdaptersContainer<T> adapters) {
+		super(component, adapters);
 		ObjectUtils.argumentNotNull(numberType, "Number type must be not null");
 		this.numberType = numberType;
 		this.initialValue = initialValue;
 		this.converter = converter;
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
+		initValueChangeListeners(valueChangeListeners);
 
 		getComponent().setAutocapitalize(Autocapitalize.NONE);
 		getComponent().setAutocorrect(false);
@@ -122,10 +122,6 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 
 	protected T getInitialValue() {
 		return initialValue;
-	}
-
-	protected List<ValueChangeListener<T, ValueChangeEvent<T>>> getValueChangeListeners() {
-		return valueChangeListeners;
 	}
 
 	protected Class<T> getNumberType() {
@@ -187,11 +183,11 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 
 		// conversion
-		final Input<T> numberInput = Input.from(input, getConverter());
+		final Input<T> numberInput = Input.builder(input, getConverter())
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 		if (initialValue != null) {
 			numberInput.setValue(initialValue);
 		}
-		valueChangeListeners.forEach(listener -> numberInput.addValueChangeListener(listener));
 		return numberInput;
 	}
 
@@ -280,19 +276,6 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 	@Override
 	public C withValue(T value) {
 		this.initialValue = value;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.Component;
@@ -88,6 +89,11 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	private PropertyHandler<String, T, V, C> labelPropertyHandler;
 	private PropertyHandler<String, T, V, C> titlePropertyHandler;
 	private PropertyHandler<String, T, V, C> placeholderPropertyHandler;
+
+	/**
+	 * Adapters
+	 */
+	private final InputAdaptersContainer<T> adapters = InputAdaptersContainer.create();
 
 	/**
 	 * Default constructor.
@@ -581,6 +587,22 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	@Override
 	public Component getComponent() {
 		return component;
+	}
+
+	@Override
+	public <A> Optional<A> as(Class<A> type) {
+		ObjectUtils.argumentNotNull(type, "Type must be not null");
+		return adapters.getAs(this, type);
+	}
+
+	/**
+	 * Set the adapter for given type.
+	 * @param <A> Adapter type
+	 * @param type Adapter type (not null)
+	 * @param adapter Adapter function
+	 */
+	public <A> void setAdapter(Class<A> type, Function<Input<T>, A> adapter) {
+		adapters.setAdapter(type, adapter);
 	}
 
 	/*

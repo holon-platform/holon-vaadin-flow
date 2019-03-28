@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -33,6 +34,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Adapter to use a {@link HasValue} {@link Component} as a {@link SingleSelect}.
@@ -313,6 +315,26 @@ public class SingleSelectInputAdapter<T> implements SingleSelect<T> {
 	@Override
 	public Optional<HasSize> hasSize() {
 		return input.hasSize();
+	}
+
+	@Override
+	public HasValue<?, T> asHasValue() {
+		return input.asHasValue();
+	}
+
+	@Override
+	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
+		return input.hasInvalidChangeEventNotifier();
+	}
+
+	@Override
+	public Optional<HasValueChangeMode> hasValueChangeMode() {
+		return input.hasValueChangeMode();
+	}
+
+	@Override
+	public <A> Optional<A> as(Class<A> type) {
+		return input.as(type);
 	}
 
 }

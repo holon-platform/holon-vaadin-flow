@@ -47,6 +47,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.MultiSelectInputAdapter;
@@ -75,13 +76,12 @@ import com.vaadin.flow.dom.Element;
  *
  * @since 5.2.0
  */
-public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
-		extends AbstractLocalizableComponentConfigurator<CheckboxGroup<ITEM>, OptionsMultiSelectInputBuilder<T, ITEM>>
+public class DefaultOptionsMultiSelectInputBuilder<T, ITEM> extends
+		AbstractInputConfigurator<Set<T>, ValueChangeEvent<Set<T>>, CheckboxGroup<ITEM>, OptionsMultiSelectInputBuilder<T, ITEM>>
 		implements OptionsMultiSelectInputBuilder<T, ITEM> {
 
 	protected final DefaultHasLabelConfigurator<CheckboxGroup<ITEM>> labelConfigurator;
 
-	protected final List<ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>>> valueChangeListeners = new LinkedList<>();
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
@@ -103,7 +103,7 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 	 */
 	public DefaultOptionsMultiSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		super(new CheckboxGroup<>());
+		super(new CheckboxGroup<>(), InputAdaptersContainer.create());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
@@ -179,15 +179,16 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 				.hasValidationSupplier(f -> f).isEmptySupplier(f -> f.getValue() == null || f.getValue().isEmpty())
 				.build();
 
-		final MultiSelect<T> multiSelect = new MultiSelectInputAdapter<>(itemInput, itemConverter,
-				ms -> component.getDataProvider().refreshAll(), () -> {
+		final MultiSelectInputAdapter<T, ITEM, CheckboxGroup<ITEM>> multiSelect = new MultiSelectInputAdapter<>(
+				itemInput, itemConverter, ms -> component.getDataProvider().refreshAll(), () -> {
 					if (component.getDataProvider() != null) {
 						return component.getDataProvider().fetch(new Query<>()).collect(Collectors.toSet());
 					}
 					return null;
 				});
 		selectionListeners.forEach(listener -> multiSelect.addSelectionListener(listener));
-		valueChangeListeners.forEach(listener -> multiSelect.addValueChangeListener(listener));
+		getValueChangeListeners().forEach(listener -> multiSelect.addValueChangeListener(listener));
+		getAdapters().getAdapters().forEach((t, a) -> multiSelect.setAdapter(t, a));
 
 		return multiSelect;
 	}
@@ -348,20 +349,6 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 	@Override
 	public OptionsMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public OptionsMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
-			ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 
@@ -721,6 +708,13 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 		@Override
 		public ValidatableOptionsMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 			builder.addItem(item);
+			return this;
+		}
+
+		@Override
+		public <A> ValidatableOptionsMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
 			return this;
 		}
 
@@ -1096,6 +1090,13 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 			return this;
 		}
 
+		@Override
+		public <A> DatastoreOptionsMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
@@ -1463,6 +1464,13 @@ public class DefaultOptionsMultiSelectInputBuilder<T, ITEM>
 		public ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		@Override
+		public <A> ValidatableDatastoreOptionsMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
 			return this;
 		}
 

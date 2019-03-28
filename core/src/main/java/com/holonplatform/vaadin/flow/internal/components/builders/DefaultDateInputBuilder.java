@@ -67,7 +67,7 @@ public class DefaultDateInputBuilder extends AbstractDateInputBuilder<DateInputB
 	@Override
 	public ValidatableDateInputBuilder validatable() {
 		return new DefaultValidatableDateInputBuilder(getLocalDateInputBuilder(), getTimeZone(),
-				getValueChangeListeners());
+				getValueChangeListeners(), getAdapters());
 	}
 
 }

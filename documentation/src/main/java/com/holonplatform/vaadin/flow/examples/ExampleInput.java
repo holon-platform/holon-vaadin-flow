@@ -451,11 +451,14 @@ public class ExampleInput {
 		ValidatableInput<String> validatableInput = Input.string().validatable().build(); // <1>
 
 		validatableInput.isValid(); // <2>
+
 		try {
 			validatableInput.validate(); // <3>
 		} catch (ValidationException e) {
 			/* value is not valid */
 		}
+
+		Optional<String> value = validatableInput.getValueIfValid(); // <4>
 		// end::input25[]
 	}
 
@@ -629,6 +632,19 @@ public class ExampleInput {
 					event.getInputsValidationStatus().forEach(s -> s.getErrorMessages()); // <5>
 				}).build();
 		// end::input37[]
+	}
+
+	public void input38() {
+		// tag::input38[]
+		Input<String> input = Input.string().withAdapter(MyExtension.class, i -> new MyExtension()) // <1>
+				.build();
+
+		Optional<MyExtension> extension = input.as(MyExtension.class); // <2>
+		// end::input38[]
+	}
+
+	private class MyExtension {
+
 	}
 
 	private static Datastore getDatastore() {

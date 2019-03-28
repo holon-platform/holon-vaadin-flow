@@ -16,6 +16,8 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
@@ -231,5 +234,22 @@ public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends C
 	 * @return this
 	 */
 	B withValueChangeListeners(Collection<ValueChangeListener<T, ValueChangeEvent<T>>> listeners);
+
+	/**
+	 * Add a set of adapters.
+	 * @param <A> Adapter type
+	 * @param adapters The adapters to add
+	 * @return this
+	 */
+	<A> B withAdapters(Map<Class<A>, Function<Input<T>, A>> adapters);
+
+	/**
+	 * Add a set of adapters.
+	 * @param adapters The adapters to add
+	 * @return this
+	 */
+	default B withAdapters(InputAdaptersContainer<T> adapters) {
+		return withAdapters((adapters != null) ? adapters.getAdapters() : Collections.emptyMap());
+	}
 
 }

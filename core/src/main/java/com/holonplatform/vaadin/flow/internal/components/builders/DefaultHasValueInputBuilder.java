@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 		super(component);
 		this.instance = new InputAdapter<>(field, component);
 	}
-	
+
 	@Override
 	protected Optional<HasSize> hasSize() {
 		return Optional.empty();
@@ -326,6 +327,20 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 			Collection<ValueChangeListener<T, ValueChangeEvent<T>>> listeners) {
 		if (listeners != null) {
 			listeners.forEach(listener -> getInstance().addValueChangeListener(listener));
+		}
+		return getConfigurator();
+	}
+
+	@Override
+	public <A> HasValueInputBuilder<T, H, C> withAdapter(Class<A> type, Function<Input<T>, A> adapter) {
+		getInstance().setAdapter(type, adapter);
+		return getConfigurator();
+	}
+
+	@Override
+	public <A> HasValueInputBuilder<T, H, C> withAdapters(Map<Class<A>, Function<Input<T>, A>> adapters) {
+		if (adapters != null) {
+			adapters.forEach((type, adapter) -> getInstance().setAdapter(type, adapter));
 		}
 		return getConfigurator();
 	}

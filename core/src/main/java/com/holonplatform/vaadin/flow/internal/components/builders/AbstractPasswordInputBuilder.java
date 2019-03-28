@@ -16,18 +16,17 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputIsEmptySupplier;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputValueSupplier;
 import com.vaadin.flow.component.BlurNotifier;
@@ -62,9 +61,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
  * @since 5.2.2
  */
 public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfigurator<C>>
-		extends AbstractLocalizableComponentConfigurator<PasswordField, C> implements PasswordInputConfigurator<C> {
-
-	private final List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners = new LinkedList<>();
+		extends AbstractInputConfigurator<String, ValueChangeEvent<String>, PasswordField, C>
+		implements PasswordInputConfigurator<C> {
 
 	private boolean emptyValuesAsNull = true;
 
@@ -83,16 +81,17 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	protected final DefaultHasPlaceholderConfigurator<PasswordField> placeholderConfigurator;
 
 	public AbstractPasswordInputBuilder() {
-		this(new PasswordField(), true, false, Collections.emptyList());
+		this(new PasswordField(), true, false, Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractPasswordInputBuilder(PasswordField component, boolean emptyValuesAsNull, boolean blankValuesAsNull,
-			List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners) {
-		super(component);
+			List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners,
+			InputAdaptersContainer<String> adapters) {
+		super(component, adapters);
 
 		this.emptyValuesAsNull = emptyValuesAsNull;
 		this.blankValuesAsNull = blankValuesAsNull;
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
+		initValueChangeListeners(valueChangeListeners);
 
 		autocompleteConfigurator = new DefaultHasAutocompleteConfigurator(getComponent());
 		autocapitalizeConfigurator = new DefaultHasAutocapitalizeConfigurator(getComponent());
@@ -120,10 +119,6 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	protected boolean isBlankValuesAsNull() {
 		return blankValuesAsNull;
-	}
-
-	protected List<ValueChangeListener<String, ValueChangeEvent<String>>> getValueChangeListeners() {
-		return valueChangeListeners;
 	}
 
 	@Override
@@ -154,7 +149,7 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 				.isEmptySupplier(new StringInputIsEmptySupplier<>(emptyValuesAsNull, blankValuesAsNull))
 				.valueSupplier(new StringInputValueSupplier<>(emptyValuesAsNull, blankValuesAsNull))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
-				.withValueChangeListeners(valueChangeListeners).build();
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**
@@ -222,19 +217,6 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	@Override
 	public C withValue(String value) {
 		getComponent().setValue(value);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<String, ValueChangeEvent<String>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

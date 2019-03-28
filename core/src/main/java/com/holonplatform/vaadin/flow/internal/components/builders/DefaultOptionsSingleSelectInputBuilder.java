@@ -46,11 +46,13 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.OptionsSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
+import com.holonplatform.vaadin.flow.internal.converters.ItemConverterConverter;
 import com.holonplatform.vaadin.flow.internal.utils.CollectionUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -60,8 +62,6 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.data.binder.Result;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -79,12 +79,11 @@ import com.vaadin.flow.dom.Element;
  * @since 5.2.0
  */
 public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
-		AbstractLocalizableComponentConfigurator<RadioButtonGroup<ITEM>, OptionsSingleSelectInputBuilder<T, ITEM>>
+		AbstractInputConfigurator<T, ValueChangeEvent<T>, RadioButtonGroup<ITEM>, OptionsSingleSelectInputBuilder<T, ITEM>>
 		implements OptionsSingleSelectInputBuilder<T, ITEM> {
 
 	protected final DefaultHasLabelConfigurator<RadioButtonGroup<ITEM>> labelConfigurator;
 
-	protected final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
@@ -106,7 +105,7 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 	 */
 	public DefaultOptionsSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		super(new RadioButtonGroup<>());
+		super(new RadioButtonGroup<>(), InputAdaptersContainer.create());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
@@ -181,9 +180,8 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v)).hasEnabledSupplier(f -> f)
 				.hasValidationSupplier(f -> f).build();
 
-		final Input<T> input = Input.from(itemInput, Converter.from(item -> Result.ok(itemConverter.getValue(item)),
-				value -> itemConverter.getItem(value).orElse(null)));
-		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
+		final Input<T> input = Input.builder(itemInput, new ItemConverterConverter<>(itemConverter))
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 
 		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
 				() -> component.getDataProvider().refreshAll());
@@ -360,20 +358,6 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 	@Override
 	public OptionsSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public OptionsSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 
@@ -663,6 +647,13 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public boolean isDeferredLocalizationEnabled() {
 			return builder.isDeferredLocalizationEnabled();
+		}
+
+		@Override
+		public <A> ValidatableOptionsSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -1136,6 +1127,13 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 			return this;
 		}
 
+		@Override
+		public <A> DatastoreOptionsSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
@@ -1517,6 +1515,13 @@ public class DefaultOptionsSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		@Override
+		public <A> ValidatableDatastoreOptionsSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
 			return this;
 		}
 

@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatablePasswordInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.textfield.PasswordField;
 
 /**
@@ -37,9 +38,9 @@ public class DefaultValidatablePasswordInputBuilder extends
 	private final DefaultValidatableInputConfigurator<String> validatableInputConfigurator;
 
 	public DefaultValidatablePasswordInputBuilder(PasswordField component, boolean emptyValuesAsNull,
-			boolean blankValuesAsNull,
-			List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners) {
-		super(component, emptyValuesAsNull, blankValuesAsNull, valueChangeListeners);
+			boolean blankValuesAsNull, List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners,
+			InputAdaptersContainer<String> adapters) {
+		super(component, emptyValuesAsNull, blankValuesAsNull, valueChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

@@ -16,12 +16,10 @@
 package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
@@ -30,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.builders.BooleanInputConfigurato
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -52,22 +51,20 @@ import com.vaadin.flow.component.checkbox.Checkbox;
  * @since 5.2.2
  */
 public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigurator<C>>
-		extends AbstractLocalizableComponentConfigurator<Checkbox, C> implements BooleanInputConfigurator<C> {
-
-	private final List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners = new LinkedList<>();
+		extends AbstractInputConfigurator<Boolean, ValueChangeEvent<Boolean>, Checkbox, C>
+		implements BooleanInputConfigurator<C> {
 
 	protected final DefaultHasLabelConfigurator<Checkbox> labelConfigurator;
 
 	public AbstractBooleanInputBuilder() {
-		this(new Checkbox(), Collections.emptyList());
+		this(new Checkbox(), Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractBooleanInputBuilder(Checkbox component,
-			List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners) {
-		super(component);
-
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
-
+			List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners,
+			InputAdaptersContainer<Boolean> adapters) {
+		super(component, adapters);
+		initValueChangeListeners(valueChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -88,18 +85,14 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 		return Optional.of(getComponent());
 	}
 
-	protected List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> getValueChangeListeners() {
-		return valueChangeListeners;
-	}
-
 	/**
 	 * Build the component as an {@link Input}.
 	 * @return The {@link Input} instance
 	 */
 	protected Input<Boolean> buildAsInput() {
 		return Input.builder(getComponent()).labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
-				.withValueChangeListeners(valueChangeListeners).focusOperation(f -> f.focus())
-				.hasEnabledSupplier(f -> f).build();
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters())
+				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 	}
 
 	/**
@@ -127,19 +120,6 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	@Override
 	public C withValue(Boolean value) {
 		getComponent().setValue(value);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<Boolean, ValueChangeEvent<Boolean>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

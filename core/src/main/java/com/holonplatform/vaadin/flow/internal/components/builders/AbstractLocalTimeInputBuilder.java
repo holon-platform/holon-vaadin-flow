@@ -18,19 +18,18 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
-import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -51,22 +50,22 @@ import com.vaadin.flow.component.timepicker.TimePicker;
  * @since 5.2.2
  */
 public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConfigurator<C>>
-		extends AbstractLocalizableComponentConfigurator<TimePicker, C> implements LocalTimeInputConfigurator<C> {
-
-	private final List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners = new LinkedList<>();
+		extends AbstractInputConfigurator<LocalTime, ValueChangeEvent<LocalTime>, TimePicker, C>
+		implements LocalTimeInputConfigurator<C> {
 
 	protected final DefaultHasLabelConfigurator<TimePicker> labelConfigurator;
 	protected final DefaultHasTitleConfigurator<TimePicker> titleConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<TimePicker> placeholderConfigurator;
 
 	public AbstractLocalTimeInputBuilder() {
-		this(new TimePicker(), Collections.emptyList());
+		this(new TimePicker(), Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalTimeInputBuilder(TimePicker component,
-			List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners) {
-		super(component);
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
+			List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners,
+			InputAdaptersContainer<LocalTime> adapters) {
+		super(component, adapters);
+		initValueChangeListeners(valueChangeListeners);
 
 		// default step
 		getComponent().setStep(Duration.ofMinutes(15));
@@ -80,10 +79,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
 		}, this);
-	}
-
-	protected List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> getValueChangeListeners() {
-		return valueChangeListeners;
 	}
 
 	@Override
@@ -113,7 +108,7 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 						(f, c, v) -> c.getElement().setProperty("title", v == null ? "" : v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
-				.withValueChangeListeners(valueChangeListeners).build();
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**
@@ -172,19 +167,6 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 	@Override
 	public C withValue(LocalTime value) {
 		getComponent().setValue(value);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

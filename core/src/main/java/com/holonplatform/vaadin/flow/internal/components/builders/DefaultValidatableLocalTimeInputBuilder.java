@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableLocalTimeInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.timepicker.TimePicker;
 
 /**
@@ -38,8 +39,9 @@ public class DefaultValidatableLocalTimeInputBuilder extends
 	private final DefaultValidatableInputConfigurator<LocalTime> validatableInputConfigurator;
 
 	public DefaultValidatableLocalTimeInputBuilder(TimePicker component,
-			List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners) {
-		super(component, valueChangeListeners);
+			List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners,
+			InputAdaptersContainer<LocalTime> adapters) {
+		super(component, valueChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

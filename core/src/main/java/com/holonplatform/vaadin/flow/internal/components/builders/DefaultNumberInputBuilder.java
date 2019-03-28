@@ -69,7 +69,7 @@ public class DefaultNumberInputBuilder<T extends Number> extends AbstractNumberI
 	@Override
 	public ValidatableNumberInputBuilder<T> validatable() {
 		return new DefaultValidatableNumberInputBuilder<>(getNumberType(), getComponent(), getInitialValue(),
-				getConverter(), getValueChangeListeners());
+				getConverter(), getValueChangeListeners(), getAdapters());
 	}
 
 }

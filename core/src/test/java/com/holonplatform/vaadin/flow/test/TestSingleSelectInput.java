@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,6 +58,7 @@ import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.select.Select;
@@ -738,6 +740,25 @@ public class TestSingleSelectInput {
 
 		input2.clear();
 		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
+	}
+
+	@Test
+	public void testAdapters() {
+
+		Input<String> input = Input.singleSimpleSelect(String.class)
+				.withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789)).build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
+
+		assertFalse(input.as(Collection.class).isPresent());
+
+		input = Input.singleSimpleSelect(String.class).validatable()
+				.withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789)).build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
+
 	}
 
 	private class StringValue {

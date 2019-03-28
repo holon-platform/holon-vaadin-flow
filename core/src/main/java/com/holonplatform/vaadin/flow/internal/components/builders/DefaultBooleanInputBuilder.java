@@ -66,7 +66,7 @@ public class DefaultBooleanInputBuilder extends AbstractBooleanInputBuilder<Bool
 	 */
 	@Override
 	public ValidatableBooleanInputBuilder validatable() {
-		return new DefaultValidatableBooleanInputBuilder(getComponent(), getValueChangeListeners());
+		return new DefaultValidatableBooleanInputBuilder(getComponent(), getValueChangeListeners(), getAdapters());
 	}
 
 }

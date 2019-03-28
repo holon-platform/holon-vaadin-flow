@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +40,7 @@ import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -404,6 +406,24 @@ public class TestLocalDateInput {
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
+
+	}
+
+	@Test
+	public void testAdapters() {
+
+		Input<LocalDate> input = Input.localDate().withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789))
+				.build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
+
+		assertFalse(input.as(Collection.class).isPresent());
+
+		input = Input.localDate().validatable().withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789)).build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
 
 	}
 

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,8 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
+import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
@@ -42,6 +45,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Adapter to use a {@link HasValue} {@link Component} as a {@link MultiSelect}.
@@ -65,6 +69,8 @@ public class MultiSelectInputAdapter<T, ITEM, C extends Component> implements Mu
 	private final Consumer<MultiSelect<T>> refreshOperation;
 
 	private final Supplier<Set<ITEM>> selectAllOperation;
+
+	private final InputAdaptersContainer<Set<T>> adapters = InputAdaptersContainer.create();
 
 	/**
 	 * Constructor.
@@ -389,6 +395,36 @@ public class MultiSelectInputAdapter<T, ITEM, C extends Component> implements Mu
 	@Override
 	public Optional<HasSize> hasSize() {
 		return input.hasSize();
+	}
+
+	@Override
+	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
+		return input.hasInvalidChangeEventNotifier();
+	}
+
+	@Override
+	public Optional<HasValueChangeMode> hasValueChangeMode() {
+		return input.hasValueChangeMode();
+	}
+
+	@Override
+	public <A> Optional<A> as(Class<A> type) {
+		ObjectUtils.argumentNotNull(type, "Type must be not null");
+		final Optional<A> adapter = adapters.getAs(this, type);
+		if (adapter.isPresent()) {
+			return adapter;
+		}
+		return input.as(type);
+	}
+
+	/**
+	 * Set the adapter for given type.
+	 * @param <A> Adapter type
+	 * @param type Adapter type (not null)
+	 * @param adapter Adapter function
+	 */
+	public <A> void setAdapter(Class<A> type, Function<Input<Set<T>>, A> adapter) {
+		adapters.setAdapter(type, adapter);
 	}
 
 }

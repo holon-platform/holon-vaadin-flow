@@ -36,6 +36,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -281,6 +282,12 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 	@Override
 	public PropertySingleSelectInputBuilder<T> required() {
 		return required(true);
+	}
+
+	@Override
+	public <A> PropertySingleSelectInputBuilder<T> withAdapter(Class<A> type, Function<Input<T>, A> adapter) {
+		builder.withAdapter(type, adapter);
+		return this;
 	}
 
 	/*
@@ -875,6 +882,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 			return required(true);
 		}
 
+		@Override
+		public <A> ValidatablePropertySingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
@@ -1374,6 +1388,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		@Override
 		public DatastorePropertySingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> DatastorePropertySingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -1952,6 +1973,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		@Override
 		public ValidatableDatastorePropertySingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> ValidatableDatastorePropertySingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*

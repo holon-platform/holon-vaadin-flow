@@ -67,7 +67,7 @@ public class DefaultStringInputBuilder extends AbstractStringInputBuilder<String
 	@Override
 	public ValidatableStringInputBuilder validatable() {
 		return new DefaultValidatableStringInputBuilder(getComponent(), isEmptyValuesAsNull(), isBlankValuesAsNull(),
-				getValueChangeListeners());
+				getValueChangeListeners(), getAdapters());
 	}
 
 }

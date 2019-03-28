@@ -1946,6 +1946,25 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <2> Use `SUBJECT` as items property set, which includes the `NAME` property
 <3> The `NAME` property value is used as item caption
 
+[[InputAdapterExtension]]
+==== Extend the Input API using adapters
+
+The `Input` API can be extended using custom _adapters_, i.e. a class/interface to provide additional Input attributes and/or functionalities.
+
+An adapter can be registered at `Input` build time using the `withAdapter` method, providing:
+
+* The adapter `Class`
+* A `Function` to provide the adapter instance when requested, with the `Input` instance as function argument.
+
+An adapter instance can be obtained using the `Input` API method `<A> Optional<A> as(Class<A> type)`. If an adapter of the given `type` is available (i.e. was registered as described above), the adapter function will be invoked to provide the adapter instance.
+
+[source, java]
+----
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[tag=input38,indent=0]
+----
+<1> Register and adapter for the `MyExtension` type
+<2> Get the `MyExtension` type instance, if available
+
 [[ValidatableInput]]
 ==== Validatable inputs
 
@@ -1983,6 +2002,7 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 <1> Create a `ValidatableInput`
 <2> Check whether the input value is valid
 <3> Validate the input value, throwing a `ValidationException` if the validation fails
+<4> Get the input value only if it is valid
 
 By default, the *validation errors* are notified to the user using the UI component error message, if supported by the concrete input component.
 

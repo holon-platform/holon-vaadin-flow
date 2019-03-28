@@ -34,6 +34,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -257,6 +258,12 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 	@Override
 	public PropertyOptionsSingleSelectInputBuilder<T> required() {
 		return required(true);
+	}
+
+	@Override
+	public <A> PropertyOptionsSingleSelectInputBuilder<T> withAdapter(Class<A> type, Function<Input<T>, A> adapter) {
+		builder.withAdapter(type, adapter);
+		return this;
 	}
 
 	/*
@@ -923,6 +930,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 			return required(true);
 		}
 
+		@Override
+		public <A> ValidatablePropertyOptionsSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
@@ -1073,6 +1087,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 		@Override
 		public DatastorePropertyOptionsSingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> DatastorePropertyOptionsSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -1719,6 +1740,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 		@Override
 		public ValidatableDatastorePropertyOptionsSingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> ValidatableDatastorePropertyOptionsSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*

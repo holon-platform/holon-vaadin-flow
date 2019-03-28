@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -43,6 +44,7 @@ import com.holonplatform.vaadin.flow.components.builders.DateInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -436,6 +438,23 @@ public class TestDateInput {
 		assertNull(input.getValue());
 		assertFalse(input.getValueIfPresent().isPresent());
 		assertTrue(input.isEmpty());
+
+	}
+
+	@Test
+	public void testAdapters() {
+
+		Input<Date> input = Input.date().withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789)).build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
+
+		assertFalse(input.as(Collection.class).isPresent());
+
+		input = Input.date().validatable().withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789)).build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
 
 	}
 

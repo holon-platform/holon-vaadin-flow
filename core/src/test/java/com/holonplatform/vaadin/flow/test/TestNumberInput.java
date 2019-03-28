@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,6 +38,7 @@ import com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
+import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
@@ -521,6 +523,25 @@ public class TestNumberInput {
 		assertNull(input.getEmptyValue());
 		input.setValue(123.567d);
 		assertEquals(Double.valueOf(123.57d), input.getValue());
+
+	}
+
+	@Test
+	public void testAdapters() {
+
+		Input<Double> input = Input.number(Double.class).withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789))
+				.build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
+
+		assertFalse(input.as(Collection.class).isPresent());
+
+		input = Input.number(Double.class).validatable().withAdapter(TestAdapter.class, i -> TestAdapter.create(i, 789))
+				.build();
+
+		assertTrue(input.as(TestAdapter.class).isPresent());
+		assertEquals(Integer.valueOf(789), input.as(TestAdapter.class).map(a -> a.getId()).orElse(0));
 
 	}
 

@@ -46,11 +46,13 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.FilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
+import com.holonplatform.vaadin.flow.internal.converters.ItemConverterConverter;
 import com.holonplatform.vaadin.flow.internal.utils.CollectionUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.BlurNotifier;
@@ -65,8 +67,6 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.data.binder.Result;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -83,15 +83,14 @@ import com.vaadin.flow.function.SerializableFunction;
  *
  * @since 5.2.0
  */
-public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
-		extends AbstractLocalizableComponentConfigurator<ComboBox<ITEM>, FilterableSingleSelectInputBuilder<T, ITEM>>
+public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
+		AbstractInputConfigurator<T, ValueChangeEvent<T>, ComboBox<ITEM>, FilterableSingleSelectInputBuilder<T, ITEM>>
 		implements FilterableSingleSelectInputBuilder<T, ITEM> {
 
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 	protected final DefaultHasLabelConfigurator<ComboBox<ITEM>> labelConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<ComboBox<ITEM>> placeholderConfigurator;
 
-	protected final List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners = new LinkedList<>();
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
@@ -113,7 +112,7 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 	 */
 	public DefaultFilterableSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		super(new ComboBox<>());
+		super(new ComboBox<>(), InputAdaptersContainer.create());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
@@ -195,9 +194,8 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 
-		final Input<T> input = Input.from(itemInput, Converter.from(item -> Result.ok(itemConverter.getValue(item)),
-				value -> itemConverter.getItem(value).orElse(null)));
-		valueChangeListeners.forEach(listener -> input.addValueChangeListener(listener));
+		final Input<T> input = Input.builder(itemInput, new ItemConverterConverter<>(itemConverter))
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 
 		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
 				() -> component.getDataProvider().refreshAll());
@@ -376,20 +374,6 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 	@Override
 	public FilterableSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public FilterableSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 
@@ -1104,6 +1088,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 			return this;
 		}
 
+		@Override
+		public <A> ValidatableFilterableSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
@@ -1555,6 +1546,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 		@Override
 		public ShortcutConfigurator<DatastoreFilterableSingleSelectInputBuilder<T, ITEM>> withFocusShortcut(Key key) {
 			return new DelegatedShortcutConfigurator<>(builder.withFocusShortcut(key), this);
+		}
+
+		@Override
+		public <A> DatastoreFilterableSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -2104,6 +2102,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM>
 		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
+			return this;
+		}
+
+		@Override
+		public <A> ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
 			return this;
 		}
 

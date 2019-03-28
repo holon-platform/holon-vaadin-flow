@@ -18,7 +18,6 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -34,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
 import com.vaadin.flow.component.BlurNotifier;
@@ -56,10 +56,9 @@ import com.vaadin.flow.shared.Registration;
  *
  * @since 5.2.2
  */
-public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeInputConfigurator<C>> extends
-		AbstractLocalizableComponentConfigurator<DateTimeField, C> implements LocalDateTimeInputConfigurator<C> {
-
-	private final List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners = new LinkedList<>();
+public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeInputConfigurator<C>>
+		extends AbstractInputConfigurator<LocalDateTime, ValueChangeEvent<LocalDateTime>, DateTimeField, C>
+		implements LocalDateTimeInputConfigurator<C> {
 
 	protected final DefaultHasLabelConfigurator<DateTimeField> labelConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<DateTimeField> placeholderConfigurator;
@@ -71,29 +70,25 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 	private LocalDateTime initialValue;
 
 	public AbstractLocalDateTimeInputBuilder() {
-		this(new DateTimeField(), null, null, null, Collections.emptyList());
+		this(new DateTimeField(), null, null, null, Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalDateTimeInputBuilder(DateTimeField component, Registration contextLocaleOnAttachRegistration,
 			CalendarLocalization localization, LocalDateTime initialValue,
-			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners) {
-		super(component);
+			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners,
+			InputAdaptersContainer<LocalDateTime> adapters) {
+		super(component, adapters);
 
 		this.contextLocaleOnAttachRegistration = contextLocaleOnAttachRegistration;
 		this.localization = localization;
 		this.initialValue = initialValue;
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
-
+		initValueChangeListeners(valueChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
 		}, this);
-	}
-
-	protected List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> getValueChangeListeners() {
-		return valueChangeListeners;
 	}
 
 	protected Registration getContextLocaleOnAttachRegistration() {
@@ -153,7 +148,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).invalidChangeEventNotifierSupplier(f -> f)
-				.withValueChangeListeners(valueChangeListeners).build();
+				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**
@@ -211,19 +206,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 	@Override
 	public C withValue(LocalDateTime value) {
 		this.initialValue = value;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

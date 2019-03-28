@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableBooleanInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 /**
@@ -37,8 +38,9 @@ public class DefaultValidatableBooleanInputBuilder extends AbstractBooleanInputB
 	private final DefaultValidatableInputConfigurator<Boolean> validatableInputConfigurator;
 
 	public DefaultValidatableBooleanInputBuilder(Checkbox component,
-			List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners) {
-		super(component, valueChangeListeners);
+			List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners,
+			InputAdaptersContainer<Boolean> adapters) {
+		super(component, valueChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

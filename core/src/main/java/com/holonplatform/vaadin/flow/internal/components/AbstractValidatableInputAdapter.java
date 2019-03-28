@@ -38,6 +38,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValidation;
+import com.vaadin.flow.data.value.HasValueChangeMode;
 
 /**
  * Base adapter to convert an {@link Input} instance into a {@link ValidatableInput} one.
@@ -224,6 +225,16 @@ public abstract class AbstractValidatableInputAdapter<T, I extends Input<T>> imp
 	@Override
 	public Optional<InvalidChangeEventNotifier> hasInvalidChangeEventNotifier() {
 		return input.hasInvalidChangeEventNotifier();
+	}
+
+	@Override
+	public Optional<HasValueChangeMode> hasValueChangeMode() {
+		return input.hasValueChangeMode();
+	}
+
+	@Override
+	public <A> Optional<A> as(Class<A> type) {
+		return input.as(type);
 	}
 
 	/*

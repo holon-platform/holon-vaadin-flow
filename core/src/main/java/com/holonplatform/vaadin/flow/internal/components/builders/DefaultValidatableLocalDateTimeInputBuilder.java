@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableLocalDateTimeInputBuilder;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
 import com.vaadin.flow.shared.Registration;
 
@@ -42,8 +43,9 @@ public class DefaultValidatableLocalDateTimeInputBuilder
 	public DefaultValidatableLocalDateTimeInputBuilder(DateTimeField component,
 			Registration contextLocaleOnAttachRegistration, CalendarLocalization localization,
 			LocalDateTime initialValue,
-			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners) {
-		super(component, contextLocaleOnAttachRegistration, localization, initialValue, valueChangeListeners);
+			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners,
+			InputAdaptersContainer<LocalDateTime> adapters) {
+		super(component, contextLocaleOnAttachRegistration, localization, initialValue, valueChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

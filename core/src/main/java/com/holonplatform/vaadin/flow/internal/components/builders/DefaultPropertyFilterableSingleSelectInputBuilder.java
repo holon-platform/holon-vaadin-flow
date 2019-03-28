@@ -34,6 +34,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -105,8 +106,8 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		super();
 		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
 		this.selectionProperty = selectionProperty;
-		this.builder = new DefaultFilterableSingleSelectInputBuilder<>(selectionProperty.getType(),
-				PropertyBox.class, itemConverter);
+		this.builder = new DefaultFilterableSingleSelectInputBuilder<>(selectionProperty.getType(), PropertyBox.class,
+				itemConverter);
 		this.builder.itemCaptionGenerator(item -> {
 			if (item != null) {
 				return selectionProperty.present(item.getValue(selectionProperty));
@@ -527,6 +528,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		return builder.isDeferredLocalizationEnabled();
 	}
 
+	@Override
+	public <A> PropertyFilterableSingleSelectInputBuilder<T> withAdapter(Class<A> type, Function<Input<T>, A> adapter) {
+		builder.withAdapter(type, adapter);
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -849,6 +856,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		@Override
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> ValidatablePropertyFilterableSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -1456,6 +1470,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return required(true);
 		}
 
+		@Override
+		public <A> DatastorePropertyFilterableSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
@@ -2026,6 +2047,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		@Override
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<T>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*

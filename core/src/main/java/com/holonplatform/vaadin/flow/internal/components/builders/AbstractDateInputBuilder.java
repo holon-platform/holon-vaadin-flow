@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -32,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.DateInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.builders.AbstractLocalDateInputBuilder.DefaultCalendarLocalizationBuilder;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -56,19 +58,23 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 
 	private final List<ValueChangeListener<Date, ValueChangeEvent<Date>>> valueChangeListeners = new LinkedList<>();
 
+	private final InputAdaptersContainer<Date> adapters;
+
 	private final DefaultLocalDateInputBuilder localDateInputBuilder;
 
 	private ZoneId timeZone;
 
 	public AbstractDateInputBuilder() {
-		this(new DefaultLocalDateInputBuilder(), null, Collections.emptyList());
+		this(new DefaultLocalDateInputBuilder(), null, Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractDateInputBuilder(DefaultLocalDateInputBuilder localDateInputBuilder, ZoneId timeZone,
-			List<ValueChangeListener<Date, ValueChangeEvent<Date>>> valueChangeListeners) {
+			List<ValueChangeListener<Date, ValueChangeEvent<Date>>> valueChangeListeners,
+			InputAdaptersContainer<Date> adapters) {
 		super();
 		this.localDateInputBuilder = localDateInputBuilder;
 		this.timeZone = timeZone;
+		this.adapters = adapters;
 		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
 	}
 
@@ -84,6 +90,10 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 
 	protected List<ValueChangeListener<Date, ValueChangeEvent<Date>>> getValueChangeListeners() {
 		return valueChangeListeners;
+	}
+
+	protected InputAdaptersContainer<Date> getAdapters() {
+		return adapters;
 	}
 
 	protected ZoneId getTimeZone() {
@@ -104,10 +114,10 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 	 * @return The {@link Input} instance
 	 */
 	protected Input<Date> buildAsInput() {
-		final Input<Date> input = Input.from(localDateInputBuilder.build(),
-				(timeZone != null) ? new LocalDateToDateConverter(timeZone) : new LocalDateToDateConverter());
-		valueChangeListeners.forEach(l -> input.addValueChangeListener(l));
-		return input;
+		return Input
+				.builder(localDateInputBuilder.build(),
+						(timeZone != null) ? new LocalDateToDateConverter(timeZone) : new LocalDateToDateConverter())
+				.withValueChangeListeners(valueChangeListeners).withAdapters(adapters).build();
 	}
 
 	/**
@@ -512,6 +522,12 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 	@Override
 	public C required() {
 		return required(true);
+	}
+
+	@Override
+	public <A> C withAdapter(Class<A> type, Function<Input<Date>, A> adapter) {
+		adapters.setAdapter(type, adapter);
+		return getConfigurator();
 	}
 
 }

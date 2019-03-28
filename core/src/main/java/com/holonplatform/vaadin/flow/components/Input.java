@@ -38,6 +38,7 @@ import com.holonplatform.vaadin.flow.components.builders.DateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.FilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.PropertyFilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.InputConverterBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
@@ -143,6 +144,16 @@ public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComp
 	// Adapters
 
 	/**
+	 * Get this {@link Input} component as the given object <code>type</code>, if available.
+	 * @param <A> The object type
+	 * @param type The object type to obtain (not null)
+	 * @return Optional object instance of given type, empty if not available
+	 */
+	default <A> Optional<A> as(Class<A> type) {
+		return Optional.empty();
+	}
+
+	/**
 	 * Get this {@link Input} as an {@link HasValue} component.
 	 * @return The {@link HasValue} component
 	 */
@@ -235,7 +246,7 @@ public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComp
 	}
 
 	/**
-	 * et a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} and {@link Component}
+	 * Get a {@link HasValueInputBuilder} to create an {@link Input} using given {@link HasValue} and {@link Component}
 	 * field instances.
 	 * @param <T> Value type
 	 * @param <H> {@link HasValue} type
@@ -247,6 +258,19 @@ public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComp
 	static <T, H extends HasValue<?, T>, C extends Component> HasValueInputBuilder<T, H, C> builder(H field,
 			C component) {
 		return HasValueInputBuilder.create(field, component);
+	}
+
+	/**
+	 * Get a builder to configure and create a new {@link Input} from another {@link Input} with a different value type,
+	 * using given {@link Converter} to perform value conversions.
+	 * @param <T> Presentation value type
+	 * @param <V> Model value type
+	 * @param input The original input (not null)
+	 * @param converter The value converter (not null)
+	 * @return A new {@link InputConverterBuilder}
+	 */
+	static <T, V> InputConverterBuilder<T, V> builder(Input<V> input, Converter<V, T> converter) {
+		return InputConverterBuilder.create(input, converter);
 	}
 
 	// Builders using property

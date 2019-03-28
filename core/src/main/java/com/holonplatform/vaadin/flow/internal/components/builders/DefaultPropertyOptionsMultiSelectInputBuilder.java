@@ -35,6 +35,7 @@ import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
@@ -243,6 +244,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> required() {
 		return required(true);
+	}
+
+	@Override
+	public <A> PropertyOptionsMultiSelectInputBuilder<T> withAdapter(Class<A> type,
+			Function<Input<Set<T>>, A> adapter) {
+		builder.withAdapter(type, adapter);
+		return this;
 	}
 
 	/*
@@ -895,6 +903,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 			return required(true);
 		}
 
+		@Override
+		public <A> ValidatablePropertyOptionsMultiSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
@@ -1032,6 +1047,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> DatastorePropertyOptionsMultiSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*
@@ -1665,6 +1687,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> required() {
 			return required(true);
+		}
+
+		@Override
+		public <A> ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
+			builder.withAdapter(type, adapter);
+			return this;
 		}
 
 		/*

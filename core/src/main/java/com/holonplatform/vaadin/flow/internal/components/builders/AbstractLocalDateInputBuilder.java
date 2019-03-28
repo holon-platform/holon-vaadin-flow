@@ -17,7 +17,6 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -33,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
@@ -58,9 +58,8 @@ import com.vaadin.flow.shared.Registration;
  * @since 5.2.2
  */
 public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConfigurator<C>>
-		extends AbstractLocalizableComponentConfigurator<DatePicker, C> implements LocalDateInputConfigurator<C> {
-
-	private final List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> valueChangeListeners = new LinkedList<>();
+		extends AbstractInputConfigurator<LocalDate, ValueChangeEvent<LocalDate>, DatePicker, C>
+		implements LocalDateInputConfigurator<C> {
 
 	protected final DefaultHasLabelConfigurator<DatePicker> labelConfigurator;
 	protected final DefaultHasPlaceholderConfigurator<DatePicker> placeholderConfigurator;
@@ -70,28 +69,23 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	private CalendarLocalization localization;
 
 	public AbstractLocalDateInputBuilder() {
-		this(new DatePicker(), null, null, Collections.emptyList());
+		this(new DatePicker(), null, null, Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalDateInputBuilder(DatePicker component, Registration contextLocaleOnAttachRegistration,
 			CalendarLocalization localization,
-			List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> valueChangeListeners) {
-		super(component);
-
+			List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> valueChangeListeners,
+			InputAdaptersContainer<LocalDate> adapters) {
+		super(component, adapters);
 		this.contextLocaleOnAttachRegistration = contextLocaleOnAttachRegistration;
 		this.localization = localization;
-		valueChangeListeners.forEach(l -> this.valueChangeListeners.add(l));
-
+		initValueChangeListeners(valueChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
 		placeholderConfigurator = new DefaultHasPlaceholderConfigurator<>(getComponent(), placeholder -> {
 			getComponent().setPlaceholder(placeholder);
 		}, this);
-	}
-
-	protected List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> getValueChangeListeners() {
-		return valueChangeListeners;
 	}
 
 	protected Registration getContextLocaleOnAttachRegistration() {
@@ -145,7 +139,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 				.invalidChangeEventNotifierSupplier(
 						f -> listener -> RegistrationAdapter.adapt(f.addInvalidChangeListener(e -> listener
 								.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), f)))))
-				.withValueChangeListeners(valueChangeListeners).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withAdapters(getAdapters())
+				.build();
 	}
 
 	/**
@@ -173,19 +169,6 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	@Override
 	public C withValue(LocalDate value) {
 		getComponent().setValue(value);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
-	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
-	 */
-	@Override
-	public C withValueChangeListener(ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>> listener) {
-		ObjectUtils.argumentNotNull(listener, "ValueChangeListener must be not null");
-		this.valueChangeListeners.add(listener);
 		return getConfigurator();
 	}
 

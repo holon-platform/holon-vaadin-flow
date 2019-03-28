@@ -67,7 +67,7 @@ public class DefaultPasswordInputBuilder extends AbstractPasswordInputBuilder<Pa
 	@Override
 	public ValidatablePasswordInputBuilder validatable() {
 		return new DefaultValidatablePasswordInputBuilder(getComponent(), isEmptyValuesAsNull(), isBlankValuesAsNull(),
-				getValueChangeListeners());
+				getValueChangeListeners(), getAdapters());
 	}
 
 }

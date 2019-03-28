@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.internal.components;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
@@ -25,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -50,6 +52,8 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 
 	private final Input<T> input;
 	private final Converter<T, V> converter;
+
+	private final InputAdaptersContainer<V> adapters = InputAdaptersContainer.create();
 
 	/**
 	 * Constructor.
@@ -101,6 +105,26 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public Component getComponent() {
 		return input.getComponent();
+	}
+
+	@Override
+	public <A> Optional<A> as(Class<A> type) {
+		ObjectUtils.argumentNotNull(type, "Type must be not null");
+		final Optional<A> adapter = adapters.getAs(this, type);
+		if (adapter.isPresent()) {
+			return adapter;
+		}
+		return input.as(type);
+	}
+
+	/**
+	 * Set the adapter for given type.
+	 * @param <A> Adapter type
+	 * @param type Adapter type (not null)
+	 * @param adapter Adapter function
+	 */
+	public <A> void setAdapter(Class<A> type, Function<Input<V>, A> adapter) {
+		adapters.setAdapter(type, adapter);
 	}
 
 	/*
