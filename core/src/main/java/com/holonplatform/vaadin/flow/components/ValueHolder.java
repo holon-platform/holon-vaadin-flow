@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import com.holonplatform.core.Registration;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
 
 /**
  * Represents an object which holds a value and provide methods to handle such value.
@@ -140,6 +141,19 @@ public interface ValueHolder<V, E extends ValueChangeEvent<V>> extends Serializa
 		 * @return the new value
 		 */
 		V getValue();
+
+		/**
+		 * Create a new {@link ValueChangeEvent}.
+		 * @param <T> Value type
+		 * @param source Source (not null)
+		 * @param oldValue Old value
+		 * @param value New value
+		 * @param userOriginated Whether is a client-side (user originated) change event or server side
+		 * @return A new {@link ValueChangeEvent} instance
+		 */
+		static <T> ValueChangeEvent<T> create(ValueHolder<T, ?> source, T oldValue, T value, boolean userOriginated) {
+			return new DefaultValueChangeEvent<>(source, oldValue, value, userOriginated);
+		}
 
 	}
 
