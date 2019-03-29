@@ -22,6 +22,7 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization;
 import com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator.BaseHasLabelConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.HasElement;
 
@@ -31,7 +32,7 @@ import com.vaadin.flow.component.HasElement;
  * @since 5.2.0
  */
 public class DefaultHasLabelConfigurator<C extends HasElement> extends AbstractLocalizationSupportConfigurator<C>
-		implements HasLabelConfigurator<DefaultHasLabelConfigurator<C>> {
+		implements BaseHasLabelConfigurator {
 
 	private static final Logger LOGGER = VaadinLogger.create();
 

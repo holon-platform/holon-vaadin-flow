@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.vaadin.flow.internal.components.builders.DelegatedShortcutConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.KeyModifier;
 
@@ -95,5 +96,16 @@ public interface ShortcutConfigurator<P> {
 	 * @return The parent configurator/builder
 	 */
 	P add();
+
+	/**
+	 * Create a {@link ShortcutConfigurator} which delegates actual configuration to another one.
+	 * @param <P> Parent configurator type
+	 * @param delegate Delegate configurator (not null)
+	 * @param parent Parent configurator (not null)
+	 * @return A new delegated {@link ShortcutConfigurator}
+	 */
+	static <P> ShortcutConfigurator<P> delegated(ShortcutConfigurator<?> delegate, P parent) {
+		return new DelegatedShortcutConfigurator<>(delegate, parent);
+	}
 
 }

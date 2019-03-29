@@ -15,9 +15,13 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.function.Consumer;
+
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasLabelConfigurator;
+import com.vaadin.flow.component.HasElement;
 
 /**
  * Configurator for {@link HasLabel} type components.
@@ -71,6 +75,37 @@ public interface HasLabelConfigurator<C extends HasLabelConfigurator<C>> {
 	default C label(String defaultLabel, String messageCode, Object... arguments) {
 		return label(Localizable.builder().message((defaultLabel == null) ? "" : defaultLabel).messageCode(messageCode)
 				.messageArguments(arguments).build());
+	}
+
+	/**
+	 * Base {@link HasLabelConfigurator}.
+	 */
+	public interface BaseHasLabelConfigurator extends HasLabelConfigurator<BaseHasLabelConfigurator> {
+
+	}
+
+	/**
+	 * Create a new {@link BaseHasLabelConfigurator}.
+	 * @param <C> Component type
+	 * @param setLabelOperation Operation to use to set the component label (not null)
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseHasLabelConfigurator}
+	 */
+	static <C extends HasElement> BaseHasLabelConfigurator create(C component, Consumer<String> setLabelOperation) {
+		return new DefaultHasLabelConfigurator<>(component, setLabelOperation);
+	}
+
+	/**
+	 * Create a new {@link BaseHasLabelConfigurator}.
+	 * @param <C> Component type
+	 * @param setLabelOperation Operation to use to set the component label (not null)
+	 * @param component Component to configure (not null)
+	 * @param deferrableLocalization Optional {@link HasDeferrableLocalization} reference
+	 * @return A new {@link BaseHasLabelConfigurator}
+	 */
+	static <C extends HasElement> BaseHasLabelConfigurator create(C component, Consumer<String> setLabelOperation,
+			HasDeferrableLocalization deferrableLocalization) {
+		return new DefaultHasLabelConfigurator<>(component, setLabelOperation, deferrableLocalization);
 	}
 
 }

@@ -48,7 +48,7 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 
 	private final C component;
 
-	private final DefaultComponentConfigurator componentConfigurator;
+	private final BaseComponentConfigurator componentConfigurator;
 
 	private HasSizeConfigurator<?> sizeConfigurator;
 	private HasStyleConfigurator<?> styleConfigurator;
@@ -62,7 +62,7 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 		super();
 		ObjectUtils.argumentNotNull(component, "Component must be not null");
 		this.component = component;
-		this.componentConfigurator = new DefaultComponentConfigurator(component);
+		this.componentConfigurator = ComponentConfigurator.create(component);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public abstract class AbstractComponentConfigurator<C extends Component, B exten
 	 * Get the component configurator.
 	 * @return the component configurator
 	 */
-	protected DefaultComponentConfigurator getComponentConfigurator() {
+	protected BaseComponentConfigurator getComponentConfigurator() {
 		return componentConfigurator;
 	}
 
