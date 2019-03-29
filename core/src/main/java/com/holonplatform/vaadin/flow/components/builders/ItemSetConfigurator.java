@@ -18,6 +18,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.io.Serializable;
 
 import com.holonplatform.vaadin.flow.components.ItemSet;
+import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
 
 /**
  * {@link ItemSet} configurator.
@@ -45,6 +46,15 @@ public interface ItemSetConfigurator<C extends ItemSetConfigurator<C>> {
 		 */
 		String getItemCaption(ITEM item);
 
+	}
+
+	/**
+	 * Create the default {@link ItemCaptionGenerator} for enumeration types.
+	 * @param <E> Enum type
+	 * @return Default {@link ItemCaptionGenerator} for enumeration types
+	 */
+	static <E extends Enum<E>> ItemCaptionGenerator<E> enumCaptionGenerator() {
+		return new EnumItemCaptionGenerator<>();
 	}
 
 }
