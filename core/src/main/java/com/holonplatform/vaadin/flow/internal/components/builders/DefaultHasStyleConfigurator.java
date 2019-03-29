@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator.BaseHasStyleConfigurator;
 import com.vaadin.flow.component.HasStyle;
 
 /**
@@ -24,7 +25,7 @@ import com.vaadin.flow.component.HasStyle;
  *
  * @since 5.2.0
  */
-public class DefaultHasStyleConfigurator implements HasStyleConfigurator<DefaultHasStyleConfigurator> {
+public class DefaultHasStyleConfigurator implements BaseHasStyleConfigurator {
 
 	private final HasStyle component;
 

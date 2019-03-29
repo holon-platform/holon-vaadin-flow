@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.support.Unit;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.vaadin.flow.component.HasSize;
 
 /**
@@ -174,5 +175,21 @@ public interface HasSizeConfigurator<C extends HasSizeConfigurator<C>> {
 	 * @since 5.2.3
 	 */
 	C maxHeight(String maxHeight);
+
+	/**
+	 * Base {@link HasSizeConfigurator}.
+	 */
+	public interface BaseHasSizeConfigurator extends HasSizeConfigurator<BaseHasSizeConfigurator> {
+
+	}
+
+	/**
+	 * Create a new {@link BaseHasSizeConfigurator}.
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseHasSizeConfigurator}
+	 */
+	static BaseHasSizeConfigurator create(HasSize component) {
+		return new DefaultHasSizeConfigurator(component);
+	}
 
 }

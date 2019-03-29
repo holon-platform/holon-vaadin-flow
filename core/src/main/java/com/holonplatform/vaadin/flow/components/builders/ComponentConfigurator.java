@@ -100,15 +100,15 @@ public interface ComponentConfigurator<C extends ComponentConfigurator<C>> exten
 	 */
 	public interface BaseComponentConfigurator extends ComponentConfigurator<BaseComponentConfigurator> {
 
-		/**
-		 * Create a new {@link BaseComponentConfigurator} on given <code>component</code>.
-		 * @param component Component to configure (not null)
-		 * @return A new {@link BaseComponentConfigurator} to configure given component
-		 */
-		static BaseComponentConfigurator create(Component component) {
-			return new DefaultComponentConfigurator(component);
-		}
+	}
 
+	/**
+	 * Create a new {@link BaseComponentConfigurator} on given <code>component</code>.
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseComponentConfigurator} to configure given component
+	 */
+	static BaseComponentConfigurator create(Component component) {
+		return new DefaultComponentConfigurator(component);
 	}
 
 }

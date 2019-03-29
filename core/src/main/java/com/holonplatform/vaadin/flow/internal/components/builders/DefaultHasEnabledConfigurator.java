@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.internal.components.builders;
 
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator.BaseHasEnabledConfigurator;
 import com.vaadin.flow.component.HasEnabled;
 
 /**
@@ -24,7 +25,7 @@ import com.vaadin.flow.component.HasEnabled;
  *
  * @since 5.2.0
  */
-public class DefaultHasEnabledConfigurator implements HasEnabledConfigurator<DefaultHasEnabledConfigurator> {
+public class DefaultHasEnabledConfigurator implements BaseHasEnabledConfigurator {
 
 	private final HasEnabled component;
 

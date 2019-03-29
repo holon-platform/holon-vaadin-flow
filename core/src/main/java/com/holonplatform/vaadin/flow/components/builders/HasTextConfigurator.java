@@ -17,6 +17,7 @@ package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasTextConfigurator;
 import com.vaadin.flow.component.HasText;
 
 /**
@@ -71,6 +72,22 @@ public interface HasTextConfigurator<C extends HasTextConfigurator<C>> {
 	default C text(String defaultText, String messageCode, Object... arguments) {
 		return text(Localizable.builder().message((defaultText == null) ? "" : defaultText).messageCode(messageCode)
 				.messageArguments(arguments).build());
+	}
+
+	/**
+	 * Base {@link HasTextConfigurator}.
+	 */
+	public interface BaseHasTextConfigurator extends HasTextConfigurator<BaseHasTextConfigurator> {
+
+	}
+
+	/**
+	 * Create a new {@link BaseHasTextConfigurator}.
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseHasTextConfigurator}
+	 */
+	static BaseHasTextConfigurator create(HasText component) {
+		return new DefaultHasTextConfigurator(component);
 	}
 
 }

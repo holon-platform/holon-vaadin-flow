@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnabledConfigurator;
 import com.vaadin.flow.component.HasEnabled;
 
 /**
@@ -41,6 +42,22 @@ public interface HasEnabledConfigurator<C extends HasEnabledConfigurator<C>> {
 	 */
 	default C disabled() {
 		return enabled(false);
+	}
+
+	/**
+	 * Base {@link HasEnabledConfigurator}.
+	 */
+	public interface BaseHasEnabledConfigurator extends HasEnabledConfigurator<BaseHasEnabledConfigurator> {
+
+	}
+
+	/**
+	 * Create a new {@link BaseHasEnabledConfigurator}.
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseHasEnabledConfigurator}
+	 */
+	static BaseHasEnabledConfigurator create(HasEnabled component) {
+		return new DefaultHasEnabledConfigurator(component);
 	}
 
 }

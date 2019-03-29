@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
 import com.vaadin.flow.component.HasStyle;
 
 /**
@@ -42,5 +43,21 @@ public interface HasStyleConfigurator<C extends HasStyleConfigurator<C>> {
 	 * @return this
 	 */
 	C styleName(String styleName);
+
+	/**
+	 * Base {@link HasStyleConfigurator}.
+	 */
+	public interface BaseHasStyleConfigurator extends HasStyleConfigurator<BaseHasStyleConfigurator> {
+
+	}
+
+	/**
+	 * Create a new {@link BaseHasStyleConfigurator}.
+	 * @param component Component to configure (not null)
+	 * @return A new {@link BaseHasStyleConfigurator}
+	 */
+	static BaseHasStyleConfigurator create(HasStyle component) {
+		return new DefaultHasStyleConfigurator(component);
+	}
 
 }

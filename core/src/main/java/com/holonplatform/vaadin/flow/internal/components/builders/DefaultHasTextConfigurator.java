@@ -20,6 +20,7 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization;
 import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator.BaseHasTextConfigurator;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.component.HasText;
 
@@ -29,7 +30,7 @@ import com.vaadin.flow.component.HasText;
  * @since 5.2.0
  */
 public class DefaultHasTextConfigurator extends AbstractLocalizationSupportConfigurator<HasText>
-		implements HasTextConfigurator<DefaultHasTextConfigurator> {
+		implements BaseHasTextConfigurator {
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
