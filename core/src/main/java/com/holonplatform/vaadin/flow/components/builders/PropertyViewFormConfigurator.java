@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Axioma srl.
+ * Copyright 2016-2019 Axioma srl.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,21 +16,19 @@
 package com.holonplatform.vaadin.flow.components.builders;
 
 import com.holonplatform.vaadin.flow.components.PropertyViewForm;
+import com.holonplatform.vaadin.flow.components.PropertyViewGroup;
+import com.holonplatform.vaadin.flow.components.ViewComponent;
 import com.vaadin.flow.component.Component;
 
 /**
- * {@link PropertyViewForm} builder.
+ * {@link PropertyViewForm} configurator.
  * 
  * @param <C> Content type
  * 
- * @since 5.2.0
+ * @since 5.2.5
  */
-public interface PropertyViewFormBuilder<C extends Component> extends PropertyViewFormConfigurator<C> {
-
-	/**
-	 * Build the {@link PropertyViewForm}.
-	 * @return A new {@link PropertyViewForm}
-	 */
-	PropertyViewForm build();
+public interface PropertyViewFormConfigurator<C extends Component>
+		extends PropertyFormConfigurator<C, ViewComponent<?>, PropertyViewGroup, PropertyViewFormBuilder<C>>,
+		PropertyViewGroupConfigurator<PropertyViewFormBuilder<C>> {
 
 }

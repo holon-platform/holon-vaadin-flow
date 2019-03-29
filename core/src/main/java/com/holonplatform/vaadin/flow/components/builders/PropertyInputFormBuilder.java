@@ -15,9 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
-import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.PropertyInputForm;
-import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -27,9 +25,7 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface PropertyInputFormBuilder<C extends Component>
-		extends PropertyFormConfigurator<C, Input<?>, PropertyInputGroup, PropertyInputFormBuilder<C>>,
-		PropertyInputGroupConfigurator<PropertyInputFormBuilder<C>> {
+public interface PropertyInputFormBuilder<C extends Component> extends PropertyInputFormConfigurator<C> {
 
 	/**
 	 * Build the {@link PropertyInputForm}.
