@@ -33,6 +33,7 @@ public final class CollectionUtils implements Serializable {
 
 	/**
 	 * Convert given {@link Iterable} into a {@link Set}.
+	 * @param <T> Element type
 	 * @param iterable The iterable to convert (maybe null)
 	 * @return A linked {@link Set} with all the elements provided by the iterable, if any
 	 */
