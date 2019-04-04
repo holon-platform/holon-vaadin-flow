@@ -15,6 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultContextMenuBuilder;
@@ -42,12 +43,24 @@ public interface ContextMenuBuilder extends
 	ContextMenu build(Component target);
 
 	/**
+	 * Build the {@link ContextMenu} and bind it to the given <code>target</code> component.
+	 * <p>
+	 * By default, the context menu can be opened with a right click or a long touch on the target component.
+	 * </p>
+	 * @param target The target component for this context menu
+	 * @return The {@link ContextMenu} instance
+	 */
+	default ContextMenu build(HasComponent target) {
+		return build((target != null) ? target.getComponent() : null);
+	}
+
+	/**
 	 * Build the {@link ContextMenu}. The context menu will not be bound to any target component, the
 	 * {@link ContextMenu#setTarget(Component)} method should be used later to configure the target component.
 	 * @return The {@link ContextMenu} instance
 	 */
 	default ContextMenu build() {
-		return build(null);
+		return build((Component) null);
 	}
 
 	// builders

@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.flow.components.builders;
 import java.util.EventListener;
 
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
@@ -93,6 +95,19 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	MenuItemBuilder<L, M, I, S, C> withItem(Component component);
 
 	/**
+	 * Create a new menu item with the given {@link HasComponent} component inside.
+	 * <p>
+	 * The {@link MenuItemBuilder#add()} method can be used to add the item to the context menu.
+	 * </p>
+	 * @param component The menu item component (not null)
+	 * @return A {@link MenuItemBuilder} to configure and add the menu item
+	 */
+	default MenuItemBuilder<L, M, I, S, C> withItem(HasComponent component) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return withItem(component.getComponent());
+	}
+
+	/**
 	 * Add a new menu item using given localizable text content and a {@link ClickEventListener} for menu item clicks.
 	 * @param text Menu item text content
 	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
@@ -135,6 +150,18 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 	 */
 	default C withItem(Component component, L clickEventListener) {
 		return withItem(component).withClickListener(clickEventListener).add();
+	}
+
+	/**
+	 * Add a new menu item with the given {@link HasComponent} component inside and a {@link ClickEventListener} for
+	 * menu item clicks.
+	 * @param component The menu item component (not null)
+	 * @param clickEventListener The listener to use to listen to menu item clicks (not null)
+	 * @return this
+	 */
+	default C withItem(HasComponent component, L clickEventListener) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return withItem(component.getComponent(), clickEventListener);
 	}
 
 	/**
@@ -190,7 +217,7 @@ public interface ContextMenuConfigurator<L extends EventListener, M extends Cont
 		 * @since 5.2.3
 		 */
 		MenuItemBuilder<L, M, I, S, B> checkable(boolean checkable);
-		
+
 		/**
 		 * Set the menu as checkable.
 		 * <p>
