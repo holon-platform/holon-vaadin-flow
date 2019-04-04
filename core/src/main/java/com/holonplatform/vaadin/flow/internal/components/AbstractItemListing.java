@@ -1393,6 +1393,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 					getColumn(property).ifPresent(column -> {
 						buildPropertyEditor(configuration).ifPresent(editor -> {
 							editors.put(property, editor);
+							// remove label
+							editor.hasLabel().ifPresent(l -> l.setLabel(""));
 							// set the column editor
 							column.setEditorComponent(editor.getComponent());
 							// configure and bind
