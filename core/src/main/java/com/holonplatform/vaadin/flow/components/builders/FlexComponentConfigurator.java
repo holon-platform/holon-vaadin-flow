@@ -15,6 +15,9 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.Component;
@@ -63,6 +66,17 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	 */
 	default C align(Component component, Alignment alignment) {
 		return alignSelf(alignment, component);
+	}
+
+	/**
+	 * Set the alignment for an individual component inside the layout.
+	 * @param component the component to set the alignment for (not null)
+	 * @param alignment the Alignment to set
+	 * @return this
+	 */
+	default C align(HasComponent component, Alignment alignment) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return align(component.getComponent(), alignment);
 	}
 
 	/**
@@ -154,6 +168,18 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	C expand(Component... componentsToExpand);
 
 	/**
+	 * Expands the given components.
+	 * <p>
+	 * It effectively sets {@code 1} as a flex grow property value for each component.
+	 * @param componentsToExpand components to expand
+	 * @return this
+	 */
+	default C expand(HasComponent... componentsToExpand) {
+		return expand(Arrays.asList(componentsToExpand).stream().filter(c -> c != null).map(c -> c.getComponent())
+				.collect(Collectors.toList()).toArray(new Component[0]));
+	}
+
+	/**
 	 * Adds a component to the layout using given <code>alignment</code>.
 	 * @param component The component to add
 	 * @param alignment the Alignment to use for the component
@@ -162,6 +188,17 @@ public interface FlexComponentConfigurator<C extends FlexComponentConfigurator<C
 	default C addAndAlign(Component component, Alignment alignment) {
 		add(component);
 		return alignSelf(alignment, component);
+	}
+
+	/**
+	 * Adds a component to the layout using given <code>alignment</code>.
+	 * @param component The component to add (not null)
+	 * @param alignment the Alignment to use for the component
+	 * @return this
+	 */
+	default C addAndAlign(HasComponent component, Alignment alignment) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return addAndAlign(component.getComponent(), alignment);
 	}
 
 }
