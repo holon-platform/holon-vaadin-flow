@@ -25,7 +25,7 @@ import com.vaadin.flow.component.Component;
  * 
  * @since 5.2.0
  */
-public interface PropertyInputFormBuilder<C extends Component> extends PropertyInputFormConfigurator<C> {
+public interface PropertyInputFormBuilder<C extends Component> extends PropertyInputFormConfigurator<C, PropertyInputFormBuilder<C>> {
 
 	/**
 	 * Build the {@link PropertyInputForm}.

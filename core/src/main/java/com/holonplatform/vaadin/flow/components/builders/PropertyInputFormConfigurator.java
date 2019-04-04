@@ -24,11 +24,11 @@ import com.vaadin.flow.component.Component;
  * {@link PropertyInputForm} configurator.
  * 
  * @param <C> Content type
+ * @param <B> Actual configurator type
  * 
  * @since 5.2.0
  */
-public interface PropertyInputFormConfigurator<C extends Component>
-		extends PropertyFormConfigurator<C, Input<?>, PropertyInputGroup, PropertyInputFormBuilder<C>>,
-		PropertyInputGroupConfigurator<PropertyInputFormBuilder<C>> {
+public interface PropertyInputFormConfigurator<C extends Component, B extends PropertyInputFormConfigurator<C, B>>
+		extends PropertyFormConfigurator<C, Input<?>, PropertyInputGroup, B>, PropertyInputGroupConfigurator<B> {
 
 }
