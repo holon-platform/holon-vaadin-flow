@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.components.builders;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -41,11 +43,34 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	C withComponent(Component component);
 
 	/**
+	 * Add given {@link HasComponent} component to the dialog content.
+	 * <p>
+	 * If a dialog message is configured, the component will be placed after the dialog message element.
+	 * </p>
+	 * @param component The component to add (not null)
+	 * @return this
+	 */
+	default C withComponent(HasComponent component) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return withComponent(component.getComponent());
+	}
+
+	/**
 	 * Add given component to the dialog toolbar, shown at the bottom of the dialog area.
 	 * @param component The toolbar component to add (not null)
 	 * @return this
 	 */
 	C withToolbarComponent(Component component);
+
+	/**
+	 * Add given {@link HasComponent} component to the dialog toolbar, shown at the bottom of the dialog area.
+	 * @param component The toolbar component to add (not null)
+	 * @return this
+	 */
+	default C withToolbarComponent(HasComponent component) {
+		ObjectUtils.argumentNotNull(component, "HasComponent must be not null");
+		return withToolbarComponent(component.getComponent());
+	}
 
 	/**
 	 * Add a lister for event fired by the <code>opened-changed</code> events.
