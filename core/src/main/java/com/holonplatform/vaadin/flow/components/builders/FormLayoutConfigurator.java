@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.holonplatform.core.internal.utils.ObjectUtils;
+import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultFormLayoutConfigurator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -64,6 +66,18 @@ public interface FormLayoutConfigurator<C extends FormLayoutConfigurator<C>> ext
 
 	/**
 	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
+	 * @param field the field component to wrap (not null)
+	 * @param label the label component to set
+	 * @param formItem Optional {@link Consumer} to configure the created {@link FormItem} instance
+	 * @return this
+	 */
+	default C withFormItem(HasComponent field, Component label, Consumer<FormItem> formItem) {
+		ObjectUtils.argumentNotNull(field, "Field must be not null");
+		return withFormItem(field.getComponent(), label, formItem);
+	}
+
+	/**
+	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
 	 * @param field the field component to wrap
 	 * @param label the label component to set
 	 * @return this
@@ -71,6 +85,17 @@ public interface FormLayoutConfigurator<C extends FormLayoutConfigurator<C>> ext
 	default C withFormItem(Component field, Component label) {
 		return withFormItem(field, label, i -> {
 		});
+	}
+
+	/**
+	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
+	 * @param field the field component to wrap
+	 * @param label the label component to set
+	 * @return this
+	 */
+	default C withFormItem(HasComponent field, Component label) {
+		ObjectUtils.argumentNotNull(field, "Field must be not null");
+		return withFormItem(field.getComponent(), label);
 	}
 
 	/**
@@ -86,11 +111,34 @@ public interface FormLayoutConfigurator<C extends FormLayoutConfigurator<C>> ext
 	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
 	 * @param field the field component to wrap
 	 * @param label the label text to set
+	 * @param formItem Optional {@link Consumer} to configure the created {@link FormItem} instance
+	 * @return this
+	 */
+	default C withFormItem(HasComponent field, String label, Consumer<FormItem> formItem) {
+		ObjectUtils.argumentNotNull(field, "Field must be not null");
+		return withFormItem(field.getComponent(), label, formItem);
+	}
+
+	/**
+	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
+	 * @param field the field component to wrap
+	 * @param label the label text to set
 	 * @return this
 	 */
 	default C withFormItem(Component field, String label) {
 		return withFormItem(field, label, i -> {
 		});
+	}
+
+	/**
+	 * Create and add a new {@link FormItem} to this layout that wraps the given field with a label.
+	 * @param field the field component to wrap
+	 * @param label the label text to set
+	 * @return this
+	 */
+	default C withFormItem(HasComponent field, String label) {
+		ObjectUtils.argumentNotNull(field, "Field must be not null");
+		return withFormItem(field.getComponent(), label);
 	}
 
 	/**
