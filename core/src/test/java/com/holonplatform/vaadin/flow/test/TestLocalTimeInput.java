@@ -42,7 +42,6 @@ import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestLocalTimeInput {
@@ -347,16 +346,6 @@ public class TestLocalTimeInput {
 
 		input.setValue(LocalTime.of(23, 59));
 		assertEquals(1, fired.get());
-
-	}
-
-	@Test
-	public void testFocus() {
-
-		Input<LocalTime> input = Input.localTime().tabIndex(77).build();
-		assertTrue(input.getComponent() instanceof TimePicker);
-
-		assertEquals(77, ((TimePicker) input.getComponent()).getTabIndex());
 
 	}
 

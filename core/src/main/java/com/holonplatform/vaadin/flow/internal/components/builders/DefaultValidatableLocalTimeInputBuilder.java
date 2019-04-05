@@ -26,7 +26,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableLocalTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
-import com.vaadin.flow.component.timepicker.TimePicker;
+import com.holonplatform.vaadin.flow.internal.components.fix.TimePicker;
 
 /**
  * Default {@link ValidatableLocalTimeInputBuilder} implementation.

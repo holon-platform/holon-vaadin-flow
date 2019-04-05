@@ -29,6 +29,7 @@ import com.holonplatform.vaadin.flow.components.HasLabel;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.fix.TimePicker;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.BlurNotifier;
@@ -45,11 +46,12 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.shared.Registration;
 
 /**
  * A {@link HasValue} component for date and time input.
+ * 
+ * TODO replace with Vaadin TimePicker impl when bug fixed
  *
  * @since 5.2.0
  */

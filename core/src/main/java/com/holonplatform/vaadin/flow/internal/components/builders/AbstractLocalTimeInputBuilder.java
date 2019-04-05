@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
+import com.holonplatform.vaadin.flow.internal.components.fix.TimePicker;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.Component;
@@ -40,7 +41,6 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.timepicker.TimePicker;
 
 /**
  * Base {@link LocalTimeInputConfigurator} implementation using a {@link TimePicker} as concrete component.
