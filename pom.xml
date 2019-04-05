@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.holon-platform</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.1.1</version>
+		<version>1.1.2</version>
 	</parent>
 
 	<groupId>com.holon-platform.vaadin</groupId>
@@ -57,11 +57,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- pre-releases package name -->
-		<bintray.package>holon-vaadin-flow</bintray.package>
-
 		<!-- Holon core -->
-		<holon.core.version>5.2.1</holon.core.version>
+		<holon.core.version>5.2.2</holon.core.version>
 
 		<!-- Vaadin -->
 		<vaadin.version>13.0.3</vaadin.version>
@@ -71,7 +68,7 @@
 		<servlet.version>3.1.0</servlet.version>
 
 		<!-- Test JDBC Datastore -->
-		<holon.jdbc.datastore.version>5.2.1</holon.jdbc.datastore.version>
+		<holon.jdbc.datastore.version>5.2.3</holon.jdbc.datastore.version>
 		<!-- Mockito (test) -->
 		<mockito.version>2.23.0</mockito.version>
 
@@ -114,7 +111,7 @@
 						<phase>package</phase>
 						<inherited>false</inherited>
 						<goals>
-							<goal>aggregate-jar</goal>
+							<goal>aggregate-no-fork</goal>
 						</goals>
 						<configuration>
 							<show>public</show>
