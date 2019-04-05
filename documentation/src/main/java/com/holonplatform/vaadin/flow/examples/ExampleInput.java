@@ -78,8 +78,8 @@ public class ExampleInput {
 				.placeholder("My placeholder", "placeholder.message.code")// <10>
 				.autofocus(true)// <11>
 				.prefixComponent(new Button("Prefix"))// <12>
-				.tabIndex(99)// <13>
-				.readOnly() // 14>
+				.tabIndex(99) // <13>
+				.readOnly() // <14>
 				.withBlurListener(event -> {// <15>
 					/* handle blur event */
 				}).withValueChangeListener(event -> { // <16>

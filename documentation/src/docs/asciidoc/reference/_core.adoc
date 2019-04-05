@@ -318,8 +318,8 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleComponents.
 <1> Create a String type `Input`
 <2> Check if the component supports the enabled mode and if so set it to `false`
 <3> Check if the component supports size and if so set it to full
-<3> Check if the component supports style and if so add a CSS style class name
-<4> Check if the component supports a label and if so set it to `My label`
+<4> Check if the component supports style and if so add a CSS style class name
+<5> Check if the component supports a label and if so set it to `My label`
 
 [[ValueHolder]]
 === The `ValueHolder` interface
@@ -1990,8 +1990,8 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleInput.java[
 ----
 <1> Use the `ValidatableInput` builder method to create and configure a validatable input from a standard `Input`
 <2> Add a input value `Validator`
-<1> Use the `ValidatableInput` _from_ method to directly create a validatable input from a standard `Input`
-<2> Add a input value `Validator` using the `addValidator` method
+<3> Use the `ValidatableInput` _from_ method to directly create a validatable input from a standard `Input`
+<4> Add a input value `Validator` using the `addValidator` method
 
 A `ValidatableInput` extends the link:{apidir}/com/holonplatform/vaadin/flow/components/Validatable.html[Validatable^] API, which provides method to *validate the input value* using the registered validators.
 

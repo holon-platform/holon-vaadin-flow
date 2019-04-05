@@ -518,16 +518,16 @@ When a redirect URI is not provided and the authentication is not available for 
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=auth1,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation17.java[tag=auth1,indent=0]
 ----
 <1> The `View1` routing target class, and so the `some/path` route path, can be accessed only by an authenticated user 
-<1> The `View2` routing target class, and so the `some/path` route path, can be accessed only by an authenticated user and a `login` redirect URI is specified and will be used to redirect the user navigation when the authentication is not available
+<2> The `View2` routing target class, and so the `some/path` route path, can be accessed only by an authenticated user and a `login` redirect URI is specified and will be used to redirect the user navigation when the authentication is not available
 
 The `@Authenticate` annotation can be also used on a *routing layout class*: any routing target class child of the layout will inherit the `@Authenticate` annotation definition.
 
 [source, java]
 ----
-include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation16.java[tag=auth2,indent=0]
+include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleNavigation17.java[tag=auth2,indent=0]
 ----
 <1> The `@Authenticate` is declared on a `RouterLayout`: any child routing target class will inherit the authentication control declaration
 <2> The `View` routing target class declares `MainLayout` as parent layout, so it will be under authentication control
