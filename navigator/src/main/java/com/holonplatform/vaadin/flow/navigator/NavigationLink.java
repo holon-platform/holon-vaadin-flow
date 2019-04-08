@@ -18,10 +18,14 @@ package com.holonplatform.vaadin.flow.navigator;
 import com.holonplatform.vaadin.flow.components.HasComponent;
 import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator;
 import com.holonplatform.vaadin.flow.navigator.internal.DefaultNavigationLink;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.router.Router;
@@ -35,7 +39,7 @@ import com.vaadin.flow.router.Router;
  * 
  * @since 5.2.0
  */
-public interface NavigationLink extends HasComponent, HasText, HasStyle {
+public interface NavigationLink extends HasComponent, HasText, HasStyle, HasEnabled, HasSize {
 
 	/**
 	 * Gets the href (the URL) of this link.
@@ -77,7 +81,8 @@ public interface NavigationLink extends HasComponent, HasText, HasStyle {
 	 * {@link NavigationLink} builder.
 	 */
 	public interface Builder extends ComponentConfigurator<Builder>, HasTextConfigurator<Builder>,
-			HasStyleConfigurator<Builder>, NavigationURLBuilder<Builder>, DeferrableLocalizationConfigurator<Builder> {
+			HasStyleConfigurator<Builder>, HasSizeConfigurator<Builder>, HasEnabledConfigurator<Builder>,
+			NavigationURLBuilder<Builder>, DeferrableLocalizationConfigurator<Builder> {
 
 		/**
 		 * Build the {@link NavigationLink}.

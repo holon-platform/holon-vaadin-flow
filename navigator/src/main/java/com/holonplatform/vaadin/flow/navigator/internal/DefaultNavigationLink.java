@@ -19,9 +19,11 @@ import java.util.function.Consumer;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultComponentConfigurator;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
-import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasTextConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator;
 import com.holonplatform.vaadin.flow.navigator.NavigationLink;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -82,9 +84,11 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 
 		private final DefaultNavigationLink instance;
 
-		private final DefaultComponentConfigurator componentConfigurator;
-		private final DefaultHasTextConfigurator textConfigurator;
-		private final DefaultHasStyleConfigurator styleConfigurator;
+		private final BaseComponentConfigurator componentConfigurator;
+		private final BaseHasTextConfigurator textConfigurator;
+		private final BaseHasStyleConfigurator styleConfigurator;
+		private final BaseHasSizeConfigurator sizeConfigurator;
+		private final BaseHasEnabledConfigurator enabledConfigurator;
 
 		private boolean deferredLocalizationEnabled;
 
@@ -119,9 +123,11 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 			super(path);
 			this.instance = new DefaultNavigationLink();
 
-			this.componentConfigurator = new DefaultComponentConfigurator(instance);
-			this.textConfigurator = new DefaultHasTextConfigurator(instance, this);
-			this.styleConfigurator = new DefaultHasStyleConfigurator(instance);
+			this.componentConfigurator = ComponentConfigurator.create(instance);
+			this.textConfigurator = HasTextConfigurator.create(instance, this);
+			this.styleConfigurator = HasStyleConfigurator.create(instance);
+			this.sizeConfigurator = HasSizeConfigurator.create(instance);
+			this.enabledConfigurator = HasEnabledConfigurator.create(instance);
 		}
 
 		/*
@@ -272,6 +278,48 @@ public class DefaultNavigationLink extends RouterLink implements NavigationLink 
 		@Override
 		public Builder styleName(String styleName) {
 			styleConfigurator.styleName(styleName);
+			return this;
+		}
+
+		@Override
+		public Builder enabled(boolean enabled) {
+			enabledConfigurator.enabled(enabled);
+			return this;
+		}
+
+		@Override
+		public Builder width(String width) {
+			sizeConfigurator.width(width);
+			return this;
+		}
+
+		@Override
+		public Builder height(String height) {
+			sizeConfigurator.height(height);
+			return this;
+		}
+
+		@Override
+		public Builder minWidth(String minWidth) {
+			sizeConfigurator.minWidth(minWidth);
+			return this;
+		}
+
+		@Override
+		public Builder maxWidth(String maxWidth) {
+			sizeConfigurator.maxWidth(maxWidth);
+			return this;
+		}
+
+		@Override
+		public Builder minHeight(String minHeight) {
+			sizeConfigurator.minHeight(minHeight);
+			return this;
+		}
+
+		@Override
+		public Builder maxHeight(String maxHeight) {
+			sizeConfigurator.maxHeight(maxHeight);
 			return this;
 		}
 
