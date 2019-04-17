@@ -32,6 +32,7 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
  *
  * @since 5.2.0
  */
+@Deprecated
 public class DeviceInfoServiceInitListener implements VaadinServiceInitListener {
 
 	private static final long serialVersionUID = -5461929742733298279L;

@@ -35,6 +35,7 @@ import com.vaadin.flow.component.page.Page;
  *
  * @since 5.0.0
  */
+@Deprecated
 public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListener {
 
 	private static final long serialVersionUID = -8874983833266879186L;

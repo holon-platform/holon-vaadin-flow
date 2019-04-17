@@ -21,12 +21,16 @@ import java.util.Optional;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 
 /**
  * A {@link DeviceInfo} registry to track the {@link DeviceInfo} instances associated to each {@link UI} instance.
  *
  * @since 5.2.0
+ * 
+ * @deprecated Use Vaadin {@link WebBrowser} instead
  */
+@Deprecated
 public interface DeviceInfoRegistry extends Serializable {
 
 	/**
@@ -57,6 +61,9 @@ public interface DeviceInfoRegistry extends Serializable {
 	static Optional<DeviceInfoRegistry> getSessionRegistry() {
 		VaadinSession session = VaadinSession.getCurrent();
 		if (session != null) {
+			if (session.getAttribute(DeviceInfoRegistry.class) == null) {
+				session.setAttribute(DeviceInfoRegistry.class, new DefaultDeviceInfoRegistry());
+			}
 			return Optional.ofNullable(session.getAttribute(DeviceInfoRegistry.class));
 		}
 		return Optional.empty();

@@ -22,12 +22,14 @@ import java.util.WeakHashMap;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.device.DeviceInfo;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinRequest;
 
 /**
  * Default {@link DeviceInfoRegistry} implementation.
  * 
  * @since 5.2.0
  */
+@Deprecated
 public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 
 	private static final long serialVersionUID = -3886097061085664626L;
@@ -59,6 +61,12 @@ public class DefaultDeviceInfoRegistry implements DeviceInfoRegistry {
 	@Override
 	public Optional<DeviceInfo> getDeviceInfo(UI ui) {
 		ObjectUtils.argumentNotNull(ui, "UI must be not null");
+		if (ui != null && !deviceInfos.containsKey(ui)) {
+			final VaadinRequest request = VaadinRequest.getCurrent();
+			if (request != null) {
+				deviceInfos.put(ui, DeviceInfo.create(ui, request));
+			}
+		}
 		return Optional.ofNullable(deviceInfos.get(ui));
 	}
 

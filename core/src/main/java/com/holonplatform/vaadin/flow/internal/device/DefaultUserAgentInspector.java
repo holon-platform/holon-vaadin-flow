@@ -23,6 +23,7 @@ import com.vaadin.flow.server.VaadinRequest;
  * 
  * @since 4.2.0
  */
+@Deprecated
 public class DefaultUserAgentInspector implements UserAgentInspector {
 
 	private static final long serialVersionUID = 4243512097574898067L;

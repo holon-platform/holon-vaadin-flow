@@ -2243,19 +2243,4 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleSessionScop
 [[DeviceInfo]]
 == Device information
 
-The link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] API can be used to obtain information about the client device in which application is running.
-
-A `DeviceInfo` instance is bound to each application `UI` and can be obtained using the `get()` API methods.
-
-[source, java]
-----
-include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleDeviceInfo.java[tag=di1,indent=0]
-----
-<1> Get the `DeviceInfo` bound to the given UI
-<2> Get the `DeviceInfo` bound to the current UI
-<3> Require the `DeviceInfo` bound to the current UI
-<4> Get the current request `Accept` header
-<5> Get the current request `User-Agent` header
-<6> Get the device viewport width
-<7> Get the device viewport height
-<8> Check if the device is a smartphone
+WARNING: Since version 5.2.7, the link:{apidir}/com/holonplatform/vaadin/device/DeviceInfo.html[DeviceInfo^] API is deprecated: use `com.vaadin.flow.server.WebBrowser` instead (it can be obtained from `VaadinSession`). 

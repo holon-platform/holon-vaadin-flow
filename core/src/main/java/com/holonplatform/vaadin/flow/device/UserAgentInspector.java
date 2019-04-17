@@ -19,13 +19,19 @@ import java.io.Serializable;
 
 import com.holonplatform.vaadin.flow.internal.device.DefaultUserAgentInspector;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 
 /**
  * Interface to obtain client device and environment informations using browser provided <code>user-agent</code> and
  * <code>accept</code> request headers.
  * 
  * @since 5.0.0
+ * 
+ * @deprecated Use Vaadin {@link WebBrowser} instead
+ * @see VaadinSession#getBrowser()
  */
+@Deprecated
 public interface UserAgentInspector extends Serializable {
 
 	/**

@@ -22,14 +22,18 @@ import com.holonplatform.vaadin.flow.internal.device.DefaultDeviceInfo;
 import com.holonplatform.vaadin.flow.internal.device.DeviceInfoRegistry;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 
 /**
  * Provides informations about the client device in which application is running.
  * 
- * @see UserAgentInspector
- * 
  * @since 5.2.0
+ * 
+ * @deprecated Use Vaadin {@link WebBrowser} instead
+ * @see VaadinSession#getBrowser()
  */
+@Deprecated
 public interface DeviceInfo extends UserAgentInspector {
 
 	/**
