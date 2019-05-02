@@ -72,10 +72,6 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.editor.EditorCancelListener;
-import com.vaadin.flow.component.grid.editor.EditorCloseListener;
-import com.vaadin.flow.component.grid.editor.EditorOpenListener;
-import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -1027,7 +1023,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
-		public DatastoreBeanListingBuilder<T> withEditorSaveListener(EditorSaveListener<T> listener) {
+		public DatastoreBeanListingBuilder<T> withEditorSaveListener(EditorSaveListener<T, String> listener) {
 			builder.withEditorSaveListener(listener);
 			return this;
 		}
@@ -1039,7 +1035,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
-		public DatastoreBeanListingBuilder<T> withEditorCancelListener(EditorCancelListener<T> listener) {
+		public DatastoreBeanListingBuilder<T> withEditorCancelListener(EditorCancelListener<T, String> listener) {
 			builder.withEditorCancelListener(listener);
 			return this;
 		}
@@ -1051,7 +1047,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
-		public DatastoreBeanListingBuilder<T> withEditorOpenListener(EditorOpenListener<T> listener) {
+		public DatastoreBeanListingBuilder<T> withEditorOpenListener(EditorOpenListener<T, String> listener) {
 			builder.withEditorOpenListener(listener);
 			return this;
 		}
@@ -1063,7 +1059,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		 * flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
-		public DatastoreBeanListingBuilder<T> withEditorCloseListener(EditorCloseListener<T> listener) {
+		public DatastoreBeanListingBuilder<T> withEditorCloseListener(EditorCloseListener<T, String> listener) {
 			builder.withEditorCloseListener(listener);
 			return this;
 		}

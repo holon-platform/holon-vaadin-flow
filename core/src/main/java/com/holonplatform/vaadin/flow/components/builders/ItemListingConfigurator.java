@@ -27,7 +27,11 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.query.QuerySort.SortDirection;
 import com.holonplatform.vaadin.flow.components.ItemListing;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorCancelListener;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorCloseListener;
 import com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorOpenListener;
+import com.holonplatform.vaadin.flow.components.ItemListing.EditorSaveListener;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingCell;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingRow;
 import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingSection;
@@ -44,10 +48,6 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
-import com.vaadin.flow.component.grid.editor.EditorCancelListener;
-import com.vaadin.flow.component.grid.editor.EditorCloseListener;
-import com.vaadin.flow.component.grid.editor.EditorOpenListener;
-import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.renderer.ClickableRenderer.ItemClickListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -619,7 +619,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the listing is editable.
 	 * <p>
-	 * Use {@link #withEditorSaveListener(EditorSaveListener)} to register a listener for editor item save events.
+	 * Use <code>withEditorSaveListener</code> to register a listener for editor item save events.
 	 * </p>
 	 * @param editable whether the listing is editable
 	 * @return this
@@ -668,28 +668,28 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @param listener The listener to add (not null)
 	 * @return this
 	 */
-	C withEditorSaveListener(EditorSaveListener<T> listener);
+	C withEditorSaveListener(EditorSaveListener<T, P> listener);
 
 	/**
 	 * Adds an item editor listener for editor <code>cancel</code> events.
 	 * @param listener The listener to add (not null)
 	 * @return this
 	 */
-	C withEditorCancelListener(EditorCancelListener<T> listener);
+	C withEditorCancelListener(EditorCancelListener<T, P> listener);
 
 	/**
 	 * Adds an item editor save listener for editor <code>open</code> events.
 	 * @param listener The listener to add (not null)
 	 * @return this
 	 */
-	C withEditorOpenListener(EditorOpenListener<T> listener);
+	C withEditorOpenListener(EditorOpenListener<T, P> listener);
 
 	/**
 	 * Adds an item editor save listener for editor <code>close</code> events.
 	 * @param listener The listener to add (not null)
 	 * @return this
 	 */
-	C withEditorCloseListener(EditorCloseListener<T> listener);
+	C withEditorCloseListener(EditorCloseListener<T, P> listener);
 
 	/**
 	 * Set whether the listing is <em>frozen</em>.

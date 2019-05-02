@@ -30,13 +30,22 @@ public interface PropertyListingBuilder extends PropertyListingConfigurator<Prop
 		ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> {
 
 	/**
+	 * {@link PropertyListing} configurator with {@link DatastoreDataProviderConfigurator} support.
+	 * 
+	 * @since 5.2.8
+	 */
+	public interface DatastorePropertyListingConfigurator
+			extends PropertyListingConfigurator<DatastorePropertyListingBuilder>,
+			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyListingBuilder> {
+
+	}
+
+	/**
 	 * {@link PropertyListing} builder with {@link DatastoreDataProviderConfigurator} support.
 	 * 
 	 * @since 5.2.0
 	 */
-	public interface DatastorePropertyListingBuilder
-			extends PropertyListingConfigurator<DatastorePropertyListingBuilder>,
-			DatastoreDataProviderConfigurator<PropertyBox, DatastorePropertyListingBuilder>,
+	public interface DatastorePropertyListingBuilder extends DatastorePropertyListingConfigurator,
 			ItemListingBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> {
 
 	}

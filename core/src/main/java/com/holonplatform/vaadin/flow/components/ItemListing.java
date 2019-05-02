@@ -15,14 +15,18 @@
  */
 package com.holonplatform.vaadin.flow.components;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.holonplatform.core.i18n.Localizable;
+import com.holonplatform.vaadin.flow.data.ItemListingDataProviderAdapter;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
@@ -351,6 +355,132 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		 * @param component the component to set
 		 */
 		void setComponent(Component component);
+
+	}
+
+	// ------- Editor events
+
+	/**
+	 * An event listener for editor open events.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.8
+	 */
+	@FunctionalInterface
+	public interface EditorOpenListener<T, P> extends Serializable {
+
+		/**
+		 * Called when the editor is opened.
+		 * @param event Editor event
+		 */
+		void onEditorOpen(ItemEditorEvent<T, P> event);
+
+	}
+
+	/**
+	 * An event listener for editor close events.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.8
+	 */
+	@FunctionalInterface
+	public interface EditorCloseListener<T, P> extends Serializable {
+
+		/**
+		 * Called when the editor is closed.
+		 * @param event Editor event
+		 */
+		void onEditorClose(ItemEditorEvent<T, P> event);
+
+	}
+
+	/**
+	 * An event listener for editor save events.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.8
+	 */
+	@FunctionalInterface
+	public interface EditorSaveListener<T, P> extends Serializable {
+
+		/**
+		 * Called when the editor is saved.
+		 * @param event Editor event
+		 */
+		void onEditorSave(ItemEditorEvent<T, P> event);
+
+	}
+
+	/**
+	 * An event listener for editor cancel events.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.8
+	 */
+	@FunctionalInterface
+	public interface EditorCancelListener<T, P> extends Serializable {
+
+		/**
+		 * Called when the editor is cancelled.
+		 * @param event Editor event
+		 */
+		void onEditorCancel(ItemEditorEvent<T, P> event);
+
+	}
+
+	/**
+	 * Editor event.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.8
+	 */
+	public interface ItemEditorEvent<T, P> extends Serializable {
+
+		/**
+		 * Get the {@link ItemListing} to which the ditor is bound.
+		 * @return The listing
+		 */
+		ItemListing<T, P> getListing();
+
+		/**
+		 * Get the item editor.
+		 * @return The editor
+		 */
+		Editor<T> getEditor();
+
+		/**
+		 * Gets the item being edited.
+		 * @return the item being edited
+		 */
+		T getItem();
+
+		/**
+		 * Gets whether the item is an additional item.
+		 * <p>
+		 * Additional items are provided in addition to the ones returned by the concrete data provider.
+		 * </p>
+		 * @return Whether the item is an additional item
+		 * @see ItemListingDataProviderAdapter
+		 */
+		default boolean isAdditionalItem() {
+			return getListing().getAdditionalItems().contains(getItem());
+		}
+
+		/**
+		 * Get the available editor bindings, i.e. the {@link Input} component for each property.
+		 * @return A map of the editor bindings
+		 */
+		Map<P, Input<?>> getBindings();
 
 	}
 

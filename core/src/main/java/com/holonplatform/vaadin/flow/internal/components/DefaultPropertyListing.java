@@ -70,10 +70,6 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.editor.EditorCancelListener;
-import com.vaadin.flow.component.grid.editor.EditorCloseListener;
-import com.vaadin.flow.component.grid.editor.EditorOpenListener;
-import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -1139,7 +1135,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
-		public DatastorePropertyListingBuilder withEditorSaveListener(EditorSaveListener<PropertyBox> listener) {
+		public DatastorePropertyListingBuilder withEditorSaveListener(
+				EditorSaveListener<PropertyBox, Property<?>> listener) {
 			builder.withEditorSaveListener(listener);
 			return this;
 		}
@@ -1151,7 +1148,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
-		public DatastorePropertyListingBuilder withEditorCancelListener(EditorCancelListener<PropertyBox> listener) {
+		public DatastorePropertyListingBuilder withEditorCancelListener(
+				EditorCancelListener<PropertyBox, Property<?>> listener) {
 			builder.withEditorCancelListener(listener);
 			return this;
 		}
@@ -1163,7 +1161,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
-		public DatastorePropertyListingBuilder withEditorOpenListener(EditorOpenListener<PropertyBox> listener) {
+		public DatastorePropertyListingBuilder withEditorOpenListener(
+				EditorOpenListener<PropertyBox, Property<?>> listener) {
 			builder.withEditorOpenListener(listener);
 			return this;
 		}
@@ -1175,7 +1174,8 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		 * flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
-		public DatastorePropertyListingBuilder withEditorCloseListener(EditorCloseListener<PropertyBox> listener) {
+		public DatastorePropertyListingBuilder withEditorCloseListener(
+				EditorCloseListener<PropertyBox, Property<?>> listener) {
 			builder.withEditorCloseListener(listener);
 			return this;
 		}

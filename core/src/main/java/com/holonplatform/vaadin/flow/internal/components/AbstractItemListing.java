@@ -77,6 +77,7 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyl
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValidationStatusEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEditorEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
@@ -111,10 +112,6 @@ import com.vaadin.flow.component.grid.contextmenu.GridContextMenu.GridContextMen
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
 import com.vaadin.flow.component.grid.editor.Editor;
-import com.vaadin.flow.component.grid.editor.EditorCancelListener;
-import com.vaadin.flow.component.grid.editor.EditorCloseListener;
-import com.vaadin.flow.component.grid.editor.EditorOpenListener;
-import com.vaadin.flow.component.grid.editor.EditorSaveListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
@@ -253,6 +250,23 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 */
 	private final Map<SelectionListener<T>, com.vaadin.flow.shared.Registration> selectionListenerRegistrations = new HashMap<>(
 			2);
+
+	/**
+	 * Editor open listeners
+	 */
+	private final List<EditorOpenListener<T, P>> editorOpenListeners = new LinkedList<>();
+	/**
+	 * Editor open listeners
+	 */
+	private final List<EditorCloseListener<T, P>> editorCloseListeners = new LinkedList<>();
+	/**
+	 * Editor open listeners
+	 */
+	private final List<EditorSaveListener<T, P>> editorSaveListeners = new LinkedList<>();
+	/**
+	 * Editor open listeners
+	 */
+	private final List<EditorCancelListener<T, P>> editorCancelListeners = new LinkedList<>();
 
 	/**
 	 * Whether the listing was built
@@ -1308,6 +1322,42 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
+	 * Add a new {@link EditorOpenListener}.
+	 * @param listener The listener to add
+	 */
+	protected void addEditorOpenListener(EditorOpenListener<T, P> listener) {
+		ObjectUtils.argumentNotNull(listener, "Editor listener must be not null");
+		editorOpenListeners.add(listener);
+	}
+
+	/**
+	 * Add a new {@link EditorCloseListener}.
+	 * @param listener The listener to add
+	 */
+	protected void addEditorCloseListener(EditorCloseListener<T, P> listener) {
+		ObjectUtils.argumentNotNull(listener, "Editor listener must be not null");
+		editorCloseListeners.add(listener);
+	}
+
+	/**
+	 * Add a new {@link EditorSaveListener}.
+	 * @param listener The listener to add
+	 */
+	protected void addEditorSaveListener(EditorSaveListener<T, P> listener) {
+		ObjectUtils.argumentNotNull(listener, "Editor listener must be not null");
+		editorSaveListeners.add(listener);
+	}
+
+	/**
+	 * Add a new {@link EditorCancelListener}.
+	 * @param listener The listener to add
+	 */
+	protected void addEditorCancelListener(EditorCancelListener<T, P> listener) {
+		ObjectUtils.argumentNotNull(listener, "Editor listener must be not null");
+		editorCancelListeners.add(listener);
+	}
+
+	/**
 	 * Add a editor value change listener.
 	 * @param valueChangeListener the value change listener to add (not null)
 	 * @return The listener registration
@@ -1436,11 +1486,31 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		// value change
 		getEditor().addOpenListener(e -> {
 			this.oldEditorValue = e.getItem();
+			// fire listeners
+			final ItemEditorEvent<T, P> event = createItemEditorEvent(e.getSource(), e.getItem());
+			editorOpenListeners.forEach(l -> l.onEditorOpen(event));
 		});
 		getEditor().addCloseListener(e -> {
 			this.oldEditorValue = null;
+			// fire listeners
+			final ItemEditorEvent<T, P> event = createItemEditorEvent(e.getSource(), e.getItem());
+			editorCloseListeners.forEach(l -> l.onEditorClose(event));
 		});
-		getEditor().addSaveListener(e -> fireValueChangeListeners(e.getItem()));
+		getEditor().addSaveListener(e -> {
+			fireValueChangeListeners(e.getItem());
+			// fire listeners
+			final ItemEditorEvent<T, P> event = createItemEditorEvent(e.getSource(), e.getItem());
+			editorSaveListeners.forEach(l -> l.onEditorSave(event));
+		});
+		getEditor().addCancelListener(e -> {
+			// fire listeners
+			final ItemEditorEvent<T, P> event = createItemEditorEvent(e.getSource(), e.getItem());
+			editorCancelListeners.forEach(l -> l.onEditorCancel(event));
+		});
+	}
+
+	private ItemEditorEvent<T, P> createItemEditorEvent(Editor<T> editor, T item) {
+		return new DefaultItemEditorEvent<>(this, editor, item, () -> editors);
 	}
 
 	protected EditorComponentGroup<P, T> getEditorComponentGroup() {
@@ -2712,10 +2782,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
-		public C withEditorSaveListener(EditorSaveListener<T> listener) {
-			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+		public C withEditorSaveListener(EditorSaveListener<T, P> listener) {
 			this.editable = true;
-			instance.getEditor().addSaveListener(listener);
+			instance.addEditorSaveListener(listener);
 			return getConfigurator();
 		}
 
@@ -2726,10 +2795,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
-		public C withEditorCancelListener(EditorCancelListener<T> listener) {
-			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+		public C withEditorCancelListener(EditorCancelListener<T, P> listener) {
 			this.editable = true;
-			instance.getEditor().addCancelListener(listener);
+			instance.addEditorCancelListener(listener);
 			return getConfigurator();
 		}
 
@@ -2740,10 +2808,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
-		public C withEditorOpenListener(EditorOpenListener<T> listener) {
-			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+		public C withEditorOpenListener(EditorOpenListener<T, P> listener) {
 			this.editable = true;
-			instance.getEditor().addOpenListener(listener);
+			instance.addEditorOpenListener(listener);
 			return getConfigurator();
 		}
 
@@ -2754,10 +2821,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		 * flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
-		public C withEditorCloseListener(EditorCloseListener<T> listener) {
-			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+		public C withEditorCloseListener(EditorCloseListener<T, P> listener) {
 			this.editable = true;
-			instance.getEditor().addCloseListener(listener);
+			instance.addEditorCloseListener(listener);
 			return getConfigurator();
 		}
 
