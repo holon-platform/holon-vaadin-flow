@@ -1019,7 +1019,21 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 */
 	@Override
 	public boolean removeAdditionalItem(T item) {
-		return requireItemListingDataProvider().removeAdditionalItem(item);
+		// ensure editor closed
+		boolean buffered = getEditor().isBuffered();
+		if (getEditor().isOpen()) {
+			if (buffered) {
+				getEditor().setBuffered(false);
+			}
+			getEditor().closeEditor();
+		}
+		// remove item
+		boolean removed = requireItemListingDataProvider().removeAdditionalItem(item);
+		// restore buffered
+		if (buffered && !getEditor().isBuffered()) {
+			getEditor().setBuffered(true);
+		}
+		return removed;
 	}
 
 	/*
@@ -1028,7 +1042,20 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 */
 	@Override
 	public void removeAdditionalItems() {
+		// ensure editor closed
+		boolean buffered = getEditor().isBuffered();
+		if (getEditor().isOpen()) {
+			if (buffered) {
+				getEditor().setBuffered(false);
+			}
+			getEditor().closeEditor();
+		}
+		// remove items
 		requireItemListingDataProvider().removeAdditionalItems();
+		// restore buffered
+		if (buffered && !getEditor().isBuffered()) {
+			getEditor().setBuffered(true);
+		}
 	}
 
 	/*
