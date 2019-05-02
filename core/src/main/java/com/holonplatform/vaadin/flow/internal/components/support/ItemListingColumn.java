@@ -390,11 +390,11 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	 */
 	public enum SortMode {
 
-				DEFAULT,
+		DEFAULT,
 
-				ENABLED,
+		ENABLED,
 
-				DISABLED
+		DISABLED
 
 	}
 

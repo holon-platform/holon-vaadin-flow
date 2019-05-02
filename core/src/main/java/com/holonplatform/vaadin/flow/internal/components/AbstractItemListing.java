@@ -854,7 +854,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 				}
 			}
 		} else {
-			column.setSortable(false);
+			if (configuration.getSortMode() == SortMode.DISABLED) {
+				column.setSortable(false);
+			}
 		}
 		// return the column key
 		return configuration.getColumnKey();

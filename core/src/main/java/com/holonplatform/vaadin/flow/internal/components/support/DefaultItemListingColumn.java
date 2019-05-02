@@ -463,7 +463,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public void setSortProperties(List<P> sortProperties) {
 		this.sortProperties = sortProperties;
-		if (sortProperties != null && !sortProperties.isEmpty()) {
+		if (sortProperties != null && !sortProperties.isEmpty() && getSortMode() != SortMode.DISABLED) {
 			setSortMode(SortMode.ENABLED);
 		}
 	}
