@@ -259,7 +259,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 		propertyBox.setInvalidAllowed(true);
 		// flush the Input values
 		components.bindings().forEach(b -> {
-			if (!b.getProperty().isReadOnly() && !b.getElement().isReadOnly()) { // exclude read-only properties
+			if (!b.getProperty().isReadOnly()) { // exclude read-only properties
 				propertyBox.setValue(b.getProperty(), b.getElement().getValue());
 			}
 		});
