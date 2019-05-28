@@ -448,6 +448,14 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C footerComponent(P property, Component footer);
 
 	/**
+	 * Add a {@link ColumnPostProcessor} which can be used to furtherly configure each listing column before adding it
+	 * to the listing component.
+	 * @param columnPostProcessor The post processor to add (not null)
+	 * @return this
+	 */
+	C withColumnPostProcessor(ColumnPostProcessor<P> columnPostProcessor);
+
+	/**
 	 * Sets the page size, which is the number of items fetched at a time from the data source.
 	 * <p>
 	 * Note: the number of items in the server-side memory can be considerably higher than the page size, since the
@@ -731,15 +739,13 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * ItemListing column configurator.
-	 *
-	 * @param <T> Item type
-	 * @param <P> Item property type
+	 * Base ItemListing column configurator.
+	 * 
 	 * @param <C> Concrete configurator type
 	 * 
-	 * @since 5.2.0
+	 * @since 5.2.11
 	 */
-	public interface ItemListingColumnConfigurator<T, P, C extends ItemListingColumnConfigurator<T, P, C>> {
+	public interface BaseItemListingColumnConfigurator<C extends BaseItemListingColumnConfigurator<C>> {
 
 		/**
 		 * Set whether the column is user-resizable.
@@ -754,13 +760,6 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * @return this
 		 */
 		C visible(boolean visible);
-
-		/**
-		 * Set whether the column is frozen.
-		 * @param frozen Whether the column is frozen
-		 * @return this
-		 */
-		C frozen(boolean frozen);
 
 		/**
 		 * Sets the width of the column as a CSS-string.
@@ -778,6 +777,34 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * @return this
 		 */
 		C flexGrow(int flexGrow);
+
+		/**
+		 * Sets the column text alignment.
+		 * @param alignment the text alignment to set
+		 * @return this
+		 */
+		C alignment(ColumnAlignment alignment);
+
+	}
+
+	/**
+	 * ItemListing column configurator.
+	 *
+	 * @param <T> Item type
+	 * @param <P> Item property type
+	 * @param <C> Concrete configurator type
+	 * 
+	 * @since 5.2.0
+	 */
+	public interface ItemListingColumnConfigurator<T, P, C extends ItemListingColumnConfigurator<T, P, C>>
+			extends BaseItemListingColumnConfigurator<C> {
+
+		/**
+		 * Set whether the column is frozen.
+		 * @param frozen Whether the column is frozen
+		 * @return this
+		 */
+		C frozen(boolean frozen);
 
 		/**
 		 * Set the CSS style class name generator to use for the column.
@@ -921,6 +948,36 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * @return The parent listing builder
 		 */
 		B add();
+
+	}
+
+	/**
+	 * Listing column configurator to be used in a column post processor.
+	 * 
+	 * @since 5.2.11
+	 */
+	public interface ColumnConfigurator extends BaseItemListingColumnConfigurator<ColumnConfigurator> {
+
+	}
+
+	/**
+	 * A post processor which can be used to furtherly configure a listing column before adding it to the listing
+	 * component.
+	 *
+	 * @param <P> Property type
+	 * 
+	 * @since 5.2.11
+	 */
+	@FunctionalInterface
+	public interface ColumnPostProcessor<P> {
+
+		/**
+		 * Configure the column which corresponds to given <code>property</code>.
+		 * @param property The property which identifies the column
+		 * @param header The column header
+		 * @param configurator The {@link ColumnConfigurator} which can be used to configure the column
+		 */
+		void configureColumn(P property, String header, ColumnConfigurator configurator);
 
 	}
 

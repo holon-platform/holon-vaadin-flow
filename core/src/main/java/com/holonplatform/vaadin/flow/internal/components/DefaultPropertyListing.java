@@ -952,6 +952,13 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyListingBuilder withColumnPostProcessor(
+				ColumnPostProcessor<Property<?>> columnPostProcessor) {
+			builder.withColumnPostProcessor(columnPostProcessor);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)

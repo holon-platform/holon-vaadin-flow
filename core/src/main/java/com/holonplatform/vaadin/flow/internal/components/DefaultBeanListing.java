@@ -866,6 +866,12 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 			return this;
 		}
 
+		@Override
+		public DatastoreBeanListingBuilder<T> withColumnPostProcessor(ColumnPostProcessor<String> columnPostProcessor) {
+			builder.withColumnPostProcessor(columnPostProcessor);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)

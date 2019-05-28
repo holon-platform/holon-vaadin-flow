@@ -56,6 +56,8 @@ import com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator
 import com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnPostProcessor;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.EditableItemListingSection;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingColumnBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
@@ -193,6 +195,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 * Property for which to expand the corresponding column
 	 */
 	private P propertyToExpand;
+
+	/**
+	 * Listing columns post processors
+	 */
+	private final List<ColumnPostProcessor<P>> columnPostProcessors = new LinkedList<>();
 
 	/**
 	 * Whether the listing is editable
@@ -858,8 +865,59 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 				column.setSortable(false);
 			}
 		}
+		// post processors
+		final String columnHeader = columnsHeaders.getOrDefault(property, "");
+		final ColumnConfigurator columnConfigurator = new DefaultColumnConfigurator<>(column);
+		getColumnPostProcessors().forEach(cpp -> {
+			cpp.configureColumn(property, columnHeader, columnConfigurator);
+		});
 		// return the column key
 		return configuration.getColumnKey();
+	}
+
+	private static final class DefaultColumnConfigurator<T> implements ColumnConfigurator {
+
+		private final Column<T> column;
+
+		public DefaultColumnConfigurator(Column<T> column) {
+			super();
+			this.column = column;
+		}
+
+		@Override
+		public ColumnConfigurator resizable(boolean resizable) {
+			column.setResizable(resizable);
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator visible(boolean visible) {
+			column.setVisible(visible);
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator width(String width) {
+			if (width != null) {
+				column.setWidth(width);
+			}
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator flexGrow(int flexGrow) {
+			column.setFlexGrow(flexGrow);
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator alignment(ColumnAlignment alignment) {
+			if (alignment != null) {
+				column.setTextAlign(asColumnTextAlign(alignment));
+			}
+			return this;
+		}
+
 	}
 
 	/**
@@ -1304,6 +1362,23 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		ObjectUtils.argumentNotNull(validator, "Validator must be not null");
 		this.validators.add(validator);
 
+	}
+
+	/**
+	 * Add a column post processor.
+	 * @param columnPostProcessor The column post processor to add (not null)
+	 */
+	protected void addColumnPostProcessor(ColumnPostProcessor<P> columnPostProcessor) {
+		ObjectUtils.argumentNotNull(columnPostProcessor, "Column post-processor must be not null");
+		this.columnPostProcessors.add(columnPostProcessor);
+	}
+
+	/**
+	 * Get the column post processors.
+	 * @return the column post processors
+	 */
+	protected List<ColumnPostProcessor<P>> getColumnPostProcessors() {
+		return columnPostProcessors;
 	}
 
 	/**
@@ -2576,6 +2651,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			return getConfigurator();
 		}
 
+		@Override
+		public C withColumnPostProcessor(ColumnPostProcessor<P> columnPostProcessor) {
+			instance.addColumnPostProcessor(columnPostProcessor);
+			return getConfigurator();
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -3299,6 +3380,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> flexGrow(int flexGrow) {
 			listing.getColumnConfiguration(property).setFlexGrow(flexGrow);
+			return this;
+		}
+
+		@Override
+		public ItemListingColumnBuilder<T, P, L, B> alignment(ColumnAlignment alignment) {
+			listing.getColumnConfiguration(property).setAlignment(alignment);
 			return this;
 		}
 
