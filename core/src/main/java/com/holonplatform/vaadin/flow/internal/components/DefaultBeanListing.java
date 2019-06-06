@@ -751,6 +751,18 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 			return this;
 		}
 
+		@Override
+		public DatastoreBeanListingBuilder<T> autoWidth(String property, boolean autoWidth) {
+			builder.autoWidth(property, autoWidth);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> columnsAutoWidth() {
+			builder.columnsAutoWidth();
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,

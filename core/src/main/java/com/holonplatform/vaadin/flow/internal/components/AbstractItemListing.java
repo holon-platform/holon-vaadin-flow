@@ -197,6 +197,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private P propertyToExpand;
 
 	/**
+	 * Default auto-width for columns
+	 */
+	private boolean columnsAutoWidth = false;
+
+	/**
 	 * Listing columns post processors
 	 */
 	private final List<ColumnPostProcessor<P>> columnPostProcessors = new LinkedList<>();
@@ -778,6 +783,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
+	 * Get whether to apply automatic width for all the columns.
+	 * @return Whether to apply automatic width for all the columns.
+	 */
+	protected boolean isColumnsAutoWidth() {
+		return columnsAutoWidth;
+	}
+
+	/**
+	 * Set whether to apply automatic width for all the columns.
+	 * @param columnsAutoWidth Whether to apply automatic width for all the columns
+	 */
+	protected void setColumnsAutoWidth(boolean columnsAutoWidth) {
+		this.columnsAutoWidth = columnsAutoWidth;
+	}
+
+	/**
 	 * Build the listing, adding a Grid column for each item property and setting up the item editor if
 	 * <code>editable</code> is <code>true</code>.
 	 * @param editable Whether the listing is editable
@@ -830,6 +851,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		column.setFrozen(configuration.isFrozen());
 		// width
 		configuration.getWidth().ifPresent(w -> column.setWidth(w));
+		if (!configuration.getWidth().isPresent() && (configuration.isAutoWidth() || isColumnsAutoWidth())) {
+			column.setAutoWidth(true);
+		}
 		// flex grow
 		if (getPropertyToExpand() != null) {
 			if (property.equals(getPropertyToExpand())) {
@@ -907,6 +931,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public ColumnConfigurator flexGrow(int flexGrow) {
 			column.setFlexGrow(flexGrow);
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator autoWidth(boolean autoWidth) {
+			column.setAutoWidth(autoWidth);
 			return this;
 		}
 
@@ -2487,6 +2517,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			return getConfigurator();
 		}
 
+		@Override
+		public C autoWidth(P property, boolean autoWidth) {
+			instance.getColumnConfiguration(property).setAutoWidth(autoWidth);
+			return getConfigurator();
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#flexGrow(java.lang.Object,
@@ -2529,6 +2565,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C expand(P property) {
 			instance.setPropertyToExpand(property);
+			return getConfigurator();
+		}
+
+		@Override
+		public C columnsAutoWidth() {
+			instance.setColumnsAutoWidth(true);
 			return getConfigurator();
 		}
 
@@ -3369,6 +3411,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 				listing.getColumnConfiguration(property).setFlexGrow(0);
 			}
 			listing.getColumnConfiguration(property).setWidth(width);
+			return this;
+		}
+
+		@Override
+		public ItemListingColumnBuilder<T, P, L, B> autoWidth(boolean autoWidth) {
+			listing.getColumnConfiguration(property).setAutoWidth(autoWidth);
 			return this;
 		}
 

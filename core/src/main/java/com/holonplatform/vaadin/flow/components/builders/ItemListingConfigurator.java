@@ -236,6 +236,43 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C width(P property, String width);
 
 	/**
+	 * Enables or disables automatic width for the column which corresponds to given property.
+	 * <p>
+	 * Automatically sets the width of the column based on the columncontents when this is set to true.
+	 * </p>
+	 * <p>
+	 * For performance reasons the column width is calculated automaticallyonly once when the grid items are rendered
+	 * for the first time and thecalculation only considers the rows which are currently rendered inDOM (a bit more than
+	 * what is currently visible). If the grid isscrolled, or the cell content changes, the column width might notmatch
+	 * the contents anymore.
+	 * </p>
+	 * @param property The property to configure (not null)
+	 * @param autoWidth Whether to enable the column auto-width
+	 * @return this
+	 * @since 5.3.0
+	 */
+	C autoWidth(P property, boolean autoWidth);
+
+	/**
+	 * Enables automatic width for the column which corresponds to given property.
+	 * <p>
+	 * Automatically sets the width of the column based on the columncontents when this is set to true.
+	 * </p>
+	 * <p>
+	 * For performance reasons the column width is calculated automaticallyonly once when the grid items are rendered
+	 * for the first time and thecalculation only considers the rows which are currently rendered inDOM (a bit more than
+	 * what is currently visible). If the grid isscrolled, or the cell content changes, the column width might notmatch
+	 * the contents anymore.
+	 * </p>
+	 * @param property The property to configure (not null)
+	 * @return this
+	 * @since 5.3.0
+	 */
+	default C autoWidth(P property) {
+		return autoWidth(property, true);
+	}
+
+	/**
 	 * Sets the flex grow ratio for the column which corresponds to given property.
 	 * <p>
 	 * When set to 0, column width is fixed.
@@ -293,6 +330,14 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C expand(P property);
+
+	/**
+	 * Enables automatic width for all the listing columns.
+	 * @return this
+	 * @see #autoWidth(Object, boolean)
+	 * @since 5.3.0
+	 */
+	C columnsAutoWidth();
 
 	/**
 	 * Sets the text alignment for the column which corresponds to given property.
@@ -777,6 +822,42 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * @return this
 		 */
 		C flexGrow(int flexGrow);
+
+		/**
+		 * Enables or disables automatic width for the column.
+		 * <p>
+		 * Automatically sets the width of the column based on the columncontents when this is set to true.
+		 * </p>
+		 * <p>
+		 * For performance reasons the column width is calculated automaticallyonly once when the grid items are
+		 * rendered for the first time and thecalculation only considers the rows which are currently rendered inDOM (a
+		 * bit more than what is currently visible). If the grid isscrolled, or the cell content changes, the column
+		 * width might notmatch the contents anymore.
+		 * </p>
+		 * @param autoWidth Whether to enable the column auto-width
+		 * @return this
+		 * @since 5.3.0
+		 */
+		C autoWidth(boolean autoWidth);
+
+		/**
+		 * Enables automatic width for the column.
+		 * <p>
+		 * Automatically sets the width of the column based on the columncontents when this is set to true.
+		 * </p>
+		 * <p>
+		 * For performance reasons the column width is calculated automaticallyonly once when the grid items are
+		 * rendered for the first time and thecalculation only considers the rows which are currently rendered inDOM (a
+		 * bit more than what is currently visible). If the grid isscrolled, or the cell content changes, the column
+		 * width might notmatch the contents anymore.
+		 * </p>
+		 * @param property The property to configure (not null)
+		 * @return this
+		 * @since 5.3.0
+		 */
+		default C autoWidth() {
+			return autoWidth(true);
+		}
 
 		/**
 		 * Sets the column text alignment.

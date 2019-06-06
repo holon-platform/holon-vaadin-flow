@@ -62,6 +62,7 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	private int flexGrow = 1;
 	private ColumnAlignment alignment;
 	private String width = null;
+	private boolean autoWidth = false;
 	private Localizable headerText;
 	private Component headerComponent;
 	private Localizable footerText;
@@ -220,6 +221,16 @@ public class DefaultItemListingColumn<P, T, V> implements ItemListingColumn<P, T
 	@Override
 	public void setFlexGrow(int flexGrow) {
 		this.flexGrow = flexGrow;
+	}
+
+	@Override
+	public boolean isAutoWidth() {
+		return autoWidth;
+	}
+
+	@Override
+	public void setAutoWidth(boolean autoWidth) {
+		this.autoWidth = autoWidth;
 	}
 
 	/*

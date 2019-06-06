@@ -835,6 +835,18 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyListingBuilder autoWidth(Property<?> property, boolean autoWidth) {
+			builder.autoWidth(property, autoWidth);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder columnsAutoWidth() {
+			builder.columnsAutoWidth();
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
