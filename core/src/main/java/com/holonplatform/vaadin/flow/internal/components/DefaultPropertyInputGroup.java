@@ -345,7 +345,7 @@ public class DefaultPropertyInputGroup extends AbstractPropertySetGroup<Input<?>
 					return Optional.ofNullable(
 							((VirtualProperty<T>) property).getValueProvider().getPropertyValue(propertyBox));
 				}
-				return null;
+				return Optional.empty();
 			}
 			// get the property value
 			if (propertyBox.containsValue(property)) {
