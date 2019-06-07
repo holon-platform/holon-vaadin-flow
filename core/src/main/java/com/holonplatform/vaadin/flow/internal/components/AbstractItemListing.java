@@ -1078,6 +1078,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		getGrid().getDataProvider().refreshItem(item);
 	}
 
+	@Override
+	public void recalculateColumnWidths() {
+		getGrid().recalculateColumnWidths();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isFrozen()
