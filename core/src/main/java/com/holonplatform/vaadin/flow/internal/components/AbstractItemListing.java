@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,6 +68,10 @@ import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDnDListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemListingDataProviderAdapter;
 import com.holonplatform.vaadin.flow.data.ItemSort;
@@ -82,6 +87,9 @@ import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValu
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEditorEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDropEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
@@ -113,6 +121,7 @@ import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu.GridContextMenuItemClickEvent;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
@@ -3084,6 +3093,63 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C frozen(boolean frozen) {
 			this.frozen = frozen;
+			return getConfigurator();
+		}
+
+		@Override
+		public C rowsDraggable(boolean rowsDraggable) {
+			instance.getGrid().setRowsDraggable(rowsDraggable);
+			return getConfigurator();
+		}
+
+		@Override
+		public C dragFilter(Predicate<T> dragFilter) {
+			ObjectUtils.argumentNotNull(dragFilter, "Drag filter predicate must be not null");
+			instance.getGrid().setDragFilter(r -> dragFilter.test(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C dragDataGenerator(String type, Function<T, String> dragDataGenerator) {
+			ObjectUtils.argumentNotNull(dragDataGenerator, "Drag data generator function must be not null");
+			instance.getGrid().setDragDataGenerator(type, r -> dragDataGenerator.apply(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDragStartListener(ItemListingDnDListener<T, P, ItemListingDragStartEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drag start listener must be not null");
+			instance.getGrid().addDragStartListener(
+					event -> listener.onDndEvent(new DefaultItemListingDragStartEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDragEndListener(ItemListingDnDListener<T, P, ItemListingDragEndEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drag end listener must be not null");
+			instance.getGrid().addDragEndListener(
+					event -> listener.onDndEvent(new DefaultItemListingDragEndEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
+		@Override
+		public C dropMode(GridDropMode dropMode) {
+			instance.getGrid().setDropMode(dropMode);
+			return getConfigurator();
+		}
+
+		@Override
+		public C dropFilter(Predicate<T> dropFilter) {
+			ObjectUtils.argumentNotNull(dropFilter, "Drop filter predicate must be not null");
+			instance.getGrid().setDropFilter(r -> dropFilter.test(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDropListener(ItemListingDnDListener<T, P, ItemListingDropEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drop listener must be not null");
+			instance.getGrid()
+					.addDropListener(event -> listener.onDndEvent(new DefaultItemListingDropEvent<>(instance, event)));
 			return getConfigurator();
 		}
 

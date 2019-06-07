@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -41,6 +42,10 @@ import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDnDListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.vaadin.flow.component.Component;
@@ -48,6 +53,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.data.renderer.ClickableRenderer.ItemClickListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -758,6 +764,110 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C frozen(boolean frozen);
+
+	/**
+	 * Sets whether the user can drag the grid rows or not.
+	 * @param rowsRraggable <code>true</code> if the rows can be dragged by the user, <code>false</code> if not
+	 * @return this
+	 */
+	C rowsDraggable(boolean rowsDraggable);
+
+	/**
+	 * Sets the drag filter for this drag source.
+	 * <p>
+	 * When the rows dragging is enabled, by default all the visible rows can be dragged.
+	 * </p>
+	 * <p>
+	 * A drag filter function can be used to specify the rows that are available for dragging. The function receives an
+	 * item and returns <code>true</code> if the row can be dragged, <code>false</code> otherwise.
+	 * </p>
+	 * <p>
+	 * <em>NOTE: If the filtering conditions change dynamically, remember to explicitly invoke
+	 * {@link ItemListing#refreshItem(Object)} for the relevant items to get the filters re-run for them.</em>
+	 * </p>
+	 * @param dragFilter The drag filter predicate (not null)
+	 * @return this
+	 */
+	C dragFilter(Predicate<T> dragFilter);
+
+	/**
+	 * Sets a generator function for customizing drag data. The generated value will be accessible using the same
+	 * <code>type</code> as the generator is set here. The function is executed for each item in the listing during data
+	 * generation. Return a {@link String} to be appended to the row as <code>type</code> data.
+	 * @param type Type of the generated data. The generated value will be accessible during drop using this type (not null)
+	 * @param dragDataGenerator Function to be executed on row data generation (not null)
+	 * @return this
+	 */
+	C dragDataGenerator(String type, Function<T, String> dragDataGenerator);
+
+	/**
+	 * Adds a listing drag start listener.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withDragStartListener(ItemListingDnDListener<T, P, ItemListingDragStartEvent<T, P>> listener);
+
+	/**
+	 * Adds a listing drag end listener.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withDragEndListener(ItemListingDnDListener<T, P, ItemListingDragEndEvent<T, P>> listener);
+
+	/**
+	 * Sets the drop mode of this drop target. When set to not <code>null</code>, the listing fires drop events upon
+	 * data drop over the listing or the listing rows.
+	 * <p>
+	 * When using {@link GridDropMode#ON_TOP}, and the listing is either empty or has empty space after the last row,
+	 * the drop can still happen on the empty space, and the drop target item will not be available.
+	 * </p>
+	 * <p>
+	 * When using {@link GridDropMode#BETWEEN} or {@link GridDropMode#ON_TOP_OR_BETWEEN}, and there is at least one row
+	 * in the listing, any drop after the last row in the grid will get the last row as the drop target item. If there
+	 * are no rows in the listing, then the drop target item will not be available.
+	 * </p>
+	 * <p>
+	 * If using {@link GridDropMode#ON_GRID}, then the drop will not happen on any row, but instead just "on the
+	 * listing". The target row will not be present in this case.
+	 * </p>
+	 * <p>
+	 * <em>NOTE: Prefer not using a row specific {@link GridDropMode} with a listing that enables sorting. If for
+	 * example a new row gets added to a specific location on drop event, it might not end up in the location of the
+	 * drop but rather where the active sorting configuration prefers to place it. This behavior might feel unexpected
+	 * for the users.</em>
+	 * </p>
+	 * @param dropMode Drop mode that describes the allowed drop locations within the listing's row. Can be
+	 *        <code>null</code> to disable dropping
+	 * @return this
+	 */
+	C dropMode(GridDropMode dropMode);
+
+	/**
+	 * Sets the drop filter for this drag target.
+	 * <p>
+	 * When the drop mode of the grid has been set to one of {@link GridDropMode#BETWEEN}, {@link GridDropMode#ON_TOP}
+	 * or {@link GridDropMode#ON_TOP_OR_BETWEEN}, by default all the visible rows can be dropped over.
+	 * </p>
+	 * <p>
+	 * A drop filter function can be used to specify the rows that are available for dropping over. The function
+	 * receives an item and should return <code>true</code> if the row can be dropped over, <code>false</code>
+	 * otherwise.
+	 * </p>
+	 * <p>
+	 * <em>NOTE: If the filtering conditions change dynamically, remember to explicitly invoke
+	 * {@link ItemListing#refreshItem(Object)} for the relevant items to get the filters re-run for them.</em>
+	 * </p>
+	 * @param dropFilter The drop filter predicate (not null)
+	 * @return this
+	 */
+	C dropFilter(Predicate<T> dropFilter);
+
+	/**
+	 * Adds a listing drop listener.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withDropListener(ItemListingDnDListener<T, P, ItemListingDropEvent<T, P>> listener);
 
 	// -------
 

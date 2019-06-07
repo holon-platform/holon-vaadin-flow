@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,6 +57,10 @@ import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDnDListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
@@ -70,6 +75,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -1591,6 +1597,58 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public DatastorePropertyListingBuilder frozen(boolean frozen) {
 			builder.frozen(frozen);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder rowsDraggable(boolean rowsDraggable) {
+			builder.rowsDraggable(rowsDraggable);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder dragFilter(Predicate<PropertyBox> dragFilter) {
+			builder.dragFilter(dragFilter);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder dragDataGenerator(String type,
+				Function<PropertyBox, String> dragDataGenerator) {
+			builder.dragDataGenerator(type, dragDataGenerator);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder withDragStartListener(
+				ItemListingDnDListener<PropertyBox, Property<?>, ItemListingDragStartEvent<PropertyBox, Property<?>>> listener) {
+			builder.withDragStartListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder withDragEndListener(
+				ItemListingDnDListener<PropertyBox, Property<?>, ItemListingDragEndEvent<PropertyBox, Property<?>>> listener) {
+			builder.withDragEndListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder dropMode(GridDropMode dropMode) {
+			builder.dropMode(dropMode);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder dropFilter(Predicate<PropertyBox> dropFilter) {
+			builder.dropFilter(dropFilter);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder withDropListener(
+				ItemListingDnDListener<PropertyBox, Property<?>, ItemListingDropEvent<PropertyBox, Property<?>>> listener) {
+			builder.withDropListener(listener);
 			return this;
 		}
 

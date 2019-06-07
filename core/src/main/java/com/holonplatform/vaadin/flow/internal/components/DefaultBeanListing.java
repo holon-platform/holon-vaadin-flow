@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,6 +59,10 @@ import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDnDListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
@@ -72,6 +77,7 @@ import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -1526,6 +1532,57 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public DatastoreBeanListingBuilder<T> frozen(boolean frozen) {
 			builder.frozen(frozen);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> rowsDraggable(boolean rowsDraggable) {
+			builder.rowsDraggable(rowsDraggable);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> dragFilter(Predicate<T> dragFilter) {
+			builder.dragFilter(dragFilter);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> dragDataGenerator(String type, Function<T, String> dragDataGenerator) {
+			builder.dragDataGenerator(type, dragDataGenerator);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> withDragStartListener(
+				ItemListingDnDListener<T, String, ItemListingDragStartEvent<T, String>> listener) {
+			builder.withDragStartListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> withDragEndListener(
+				ItemListingDnDListener<T, String, ItemListingDragEndEvent<T, String>> listener) {
+			builder.withDragEndListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> dropMode(GridDropMode dropMode) {
+			builder.dropMode(dropMode);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> dropFilter(Predicate<T> dropFilter) {
+			builder.dropFilter(dropFilter);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> withDropListener(
+				ItemListingDnDListener<T, String, ItemListingDropEvent<T, String>> listener) {
+			builder.withDropListener(listener);
 			return this;
 		}
 
