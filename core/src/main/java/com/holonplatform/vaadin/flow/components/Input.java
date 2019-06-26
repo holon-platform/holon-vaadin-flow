@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.operation.TriConsumer;
 import com.holonplatform.core.property.Property;
@@ -53,6 +54,7 @@ import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurato
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringInputBuilder;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.DefaultInputPropertyRenderer;
 import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerator;
@@ -94,6 +96,13 @@ public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComp
 	 * @return <code>false</code> if the user can modify the value, <code>true</code> if not
 	 */
 	boolean isReadOnly();
+
+	/**
+	 * Adds a read-only change listener, called when the read-only state changes.
+	 * @param listener the read-only change listener to add (not null)
+	 * @return a registration for the listener, which provides the <em>remove</em> operation
+	 */
+	public Registration addReadonlyChangeListener(ReadonlyChangeListener listener);
 
 	/**
 	 * Gets whether the field is <em>required</em>, i.e. a <em>required indicator</em> symbol is visible.

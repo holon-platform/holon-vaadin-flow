@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.PasswordInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputIsEmptySupplier;
 import com.holonplatform.vaadin.flow.internal.components.support.StringInputValueSupplier;
@@ -81,17 +82,19 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	protected final DefaultHasPlaceholderConfigurator<PasswordField> placeholderConfigurator;
 
 	public AbstractPasswordInputBuilder() {
-		this(new PasswordField(), true, false, Collections.emptyList(), InputAdaptersContainer.create());
+		this(new PasswordField(), true, false, Collections.emptyList(), Collections.emptyList(),
+				InputAdaptersContainer.create());
 	}
 
 	public AbstractPasswordInputBuilder(PasswordField component, boolean emptyValuesAsNull, boolean blankValuesAsNull,
 			List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners,
-			InputAdaptersContainer<String> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<String> adapters) {
 		super(component, adapters);
 
 		this.emptyValuesAsNull = emptyValuesAsNull;
 		this.blankValuesAsNull = blankValuesAsNull;
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 
 		autocompleteConfigurator = new DefaultHasAutocompleteConfigurator(getComponent());
 		autocapitalizeConfigurator = new DefaultHasAutocapitalizeConfigurator(getComponent());
@@ -149,7 +152,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 				.isEmptySupplier(new StringInputIsEmptySupplier<>(emptyValuesAsNull, blankValuesAsNull))
 				.valueSupplier(new StringInputValueSupplier<>(emptyValuesAsNull, blankValuesAsNull))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**

@@ -29,6 +29,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -58,14 +59,15 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 	protected final DefaultHasPlaceholderConfigurator<TimePicker> placeholderConfigurator;
 
 	public AbstractLocalTimeInputBuilder() {
-		this(new TimePicker(), Collections.emptyList(), InputAdaptersContainer.create());
+		this(new TimePicker(), Collections.emptyList(), Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalTimeInputBuilder(TimePicker component,
 			List<ValueChangeListener<LocalTime, ValueChangeEvent<LocalTime>>> valueChangeListeners,
-			InputAdaptersContainer<LocalTime> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<LocalTime> adapters) {
 		super(component, adapters);
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 
 		// default step
 		getComponent().setStep(Duration.ofMinutes(15));
@@ -108,7 +110,8 @@ public abstract class AbstractLocalTimeInputBuilder<C extends LocalTimeInputConf
 						(f, c, v) -> c.getElement().setProperty("title", v == null ? "" : v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f)
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**

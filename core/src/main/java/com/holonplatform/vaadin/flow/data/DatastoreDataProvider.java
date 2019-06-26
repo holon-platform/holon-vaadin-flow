@@ -104,6 +104,12 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	 */
 	void setFilterConverter(Function<F, QueryFilter> filterConverter);
 
+	/**
+	 * Get the filter applied to queries, if any.
+	 * @return Optional query filter
+	 */
+	Optional<QueryFilter> getQueryFilter();
+
 	// ------- builders
 
 	/**

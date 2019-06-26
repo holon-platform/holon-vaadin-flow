@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.HasValueInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableInputBuilder;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.internal.components.InputAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -328,6 +329,20 @@ public class DefaultHasValueInputBuilder<T, H extends HasValue<?, T>, C extends 
 		if (listeners != null) {
 			listeners.forEach(listener -> getInstance().addValueChangeListener(listener));
 		}
+		return getConfigurator();
+	}
+
+	@Override
+	public HasValueInputBuilder<T, H, C> withReadonlyChangeListeners(Collection<ReadonlyChangeListener> listeners) {
+		if (listeners != null) {
+			listeners.forEach(listener -> getInstance().addReadonlyChangeListener(listener));
+		}
+		return getConfigurator();
+	}
+
+	@Override
+	public HasValueInputBuilder<T, H, C> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		getInstance().addReadonlyChangeListener(listener);
 		return getConfigurator();
 	}
 

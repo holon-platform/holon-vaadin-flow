@@ -28,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.builders.BooleanInputConfigurato
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.support.ComponentClickListenerAdapter;
 import com.vaadin.flow.component.BlurNotifier;
@@ -57,14 +58,15 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	protected final DefaultHasLabelConfigurator<Checkbox> labelConfigurator;
 
 	public AbstractBooleanInputBuilder() {
-		this(new Checkbox(), Collections.emptyList(), InputAdaptersContainer.create());
+		this(new Checkbox(), Collections.emptyList(), Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractBooleanInputBuilder(Checkbox component,
 			List<ValueChangeListener<Boolean, ValueChangeEvent<Boolean>>> valueChangeListeners,
-			InputAdaptersContainer<Boolean> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<Boolean> adapters) {
 		super(component, adapters);
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -91,7 +93,8 @@ public abstract class AbstractBooleanInputBuilder<C extends BooleanInputConfigur
 	 */
 	protected Input<Boolean> buildAsInput() {
 		return Input.builder(getComponent()).labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters())
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters())
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 	}
 

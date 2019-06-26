@@ -67,7 +67,7 @@ public class DefaultStringAreaInputBuilder extends AbstractStringAreaInputBuilde
 	@Override
 	public ValidatableStringAreaInputBuilder validatable() {
 		return new DefaultValidatableStringAreaInputBuilder(getComponent(), isEmptyValuesAsNull(),
-				isBlankValuesAsNull(), getValueChangeListeners(), getAdapters());
+				isBlankValuesAsNull(), getValueChangeListeners(), getReadonlyChangeListeners(), getAdapters());
 	}
 
 }

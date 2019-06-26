@@ -15,6 +15,8 @@
  */
 package com.holonplatform.vaadin.flow.internal.components;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +28,8 @@ import com.holonplatform.vaadin.flow.components.HasPlaceholder;
 import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeEvent;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.RegistrationAdapter;
@@ -89,6 +93,11 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	private PropertyHandler<String, T, V, C> labelPropertyHandler;
 	private PropertyHandler<String, T, V, C> titlePropertyHandler;
 	private PropertyHandler<String, T, V, C> placeholderPropertyHandler;
+
+	/**
+	 * Read-only change listeners
+	 */
+	private final List<ReadonlyChangeListener> readonlyChangeListeners = new LinkedList<>();
 
 	/**
 	 * Adapters
@@ -426,6 +435,9 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		getField().setReadOnly(readOnly);
+		// fire listeners
+		final ReadonlyChangeEvent evt = ReadonlyChangeEvent.create(this, readOnly);
+		readonlyChangeListeners.forEach(l -> l.onReadonlyChangeEvent(evt));
 	}
 
 	/*
@@ -435,6 +447,13 @@ public class InputAdapter<T, V extends HasValue<?, T>, C extends Component> impl
 	@Override
 	public boolean isReadOnly() {
 		return getField().isReadOnly();
+	}
+
+	@Override
+	public Registration addReadonlyChangeListener(ReadonlyChangeListener listener) {
+		ObjectUtils.argumentNotNull(listener, "ReadonlyChangeListener must be not null");
+		readonlyChangeListeners.add(listener);
+		return () -> readonlyChangeListeners.remove(listener);
 	}
 
 	/*

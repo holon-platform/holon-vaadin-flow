@@ -44,6 +44,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -224,6 +225,12 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 	public PropertyOptionsMultiSelectInputBuilder<T> withValueChangeListener(
 			ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 		builder.withValueChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public PropertyOptionsMultiSelectInputBuilder<T> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		builder.withReadonlyChangeListener(listener);
 		return this;
 	}
 
@@ -594,6 +601,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1030,6 +1044,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
@@ -1384,6 +1405,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 

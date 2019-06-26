@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.InputConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.Component;
 
@@ -42,6 +43,7 @@ public abstract class AbstractInputConfigurator<T, E extends ValueChangeEvent<T>
 		extends AbstractLocalizableComponentConfigurator<C, B> implements InputConfigurator<T, E, B> {
 
 	private final List<ValueChangeListener<T, E>> valueChangeListeners = new LinkedList<>();
+	private final List<ReadonlyChangeListener> readonlyChangeListeners = new LinkedList<>();
 
 	private final InputAdaptersContainer<T> adapters;
 
@@ -63,6 +65,13 @@ public abstract class AbstractInputConfigurator<T, E extends ValueChangeEvent<T>
 	}
 
 	@Override
+	public B withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		ObjectUtils.argumentNotNull(listener, "ReadonlyChangeListener must be not null");
+		this.readonlyChangeListeners.add(listener);
+		return getConfigurator();
+	}
+
+	@Override
 	public <A> B withAdapter(Class<A> type, Function<Input<T>, A> adapter) {
 		adapters.setAdapter(type, adapter);
 		return getConfigurator();
@@ -79,11 +88,29 @@ public abstract class AbstractInputConfigurator<T, E extends ValueChangeEvent<T>
 	}
 
 	/**
+	 * Init the read-only change listeners.
+	 * @param readonlyChangeListeners the listeners to add
+	 */
+	protected void initReadonlyChangeListeners(Iterable<ReadonlyChangeListener> readonlyChangeListeners) {
+		if (readonlyChangeListeners != null) {
+			readonlyChangeListeners.forEach(l -> this.readonlyChangeListeners.add(l));
+		}
+	}
+
+	/**
 	 * Get the configured value change listeners.
 	 * @return the value change listeners
 	 */
 	protected List<ValueChangeListener<T, E>> getValueChangeListeners() {
 		return valueChangeListeners;
+	}
+
+	/**
+	 * Get the configured read-only change listeners.
+	 * @return the read-only change listeners
+	 */
+	protected List<ReadonlyChangeListener> getReadonlyChangeListeners() {
+		return readonlyChangeListeners;
 	}
 
 	/**

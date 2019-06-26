@@ -33,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -234,6 +235,13 @@ public interface InputAdapterBuilder<T, V, H extends HasValue<?, V>, C extends C
 	 * @return this
 	 */
 	B withValueChangeListeners(Collection<ValueChangeListener<T, ValueChangeEvent<T>>> listeners);
+
+	/**
+	 * Add a set of {@link ReadonlyChangeListener}s to be notified when the input read-only state changes.
+	 * @param listeners The {@link ReadonlyChangeListener}s to add (not null)
+	 * @return this
+	 */
+	B withReadonlyChangeListeners(Collection<ReadonlyChangeListener> listeners);
 
 	/**
 	 * Add a set of adapters.

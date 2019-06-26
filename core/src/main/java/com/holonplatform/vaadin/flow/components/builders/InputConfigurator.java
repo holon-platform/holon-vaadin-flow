@@ -20,6 +20,7 @@ import java.util.function.Function;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 
 /**
  * Interface to configure an {@link Input}.
@@ -50,6 +51,13 @@ public interface InputConfigurator<T, E extends ValueChangeEvent<T>, C extends I
 	default C readOnly() {
 		return readOnly(true);
 	}
+
+	/**
+	 * Add a {@link ReadonlyChangeListener} to be notified when the input read-only state changes.
+	 * @param listener The {@link ReadonlyChangeListener} to add (not null)
+	 * @return this
+	 */
+	C withReadonlyChangeListener(ReadonlyChangeListener listener);
 
 	/**
 	 * Add a {@link ValueChangeListener} to be notified when the input value changes.

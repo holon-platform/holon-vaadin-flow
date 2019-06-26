@@ -33,6 +33,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
@@ -70,19 +71,21 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 	private LocalDateTime initialValue;
 
 	public AbstractLocalDateTimeInputBuilder() {
-		this(new DateTimeField(), null, null, null, Collections.emptyList(), InputAdaptersContainer.create());
+		this(new DateTimeField(), null, null, null, Collections.emptyList(), Collections.emptyList(),
+				InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalDateTimeInputBuilder(DateTimeField component, Registration contextLocaleOnAttachRegistration,
 			CalendarLocalization localization, LocalDateTime initialValue,
 			List<ValueChangeListener<LocalDateTime, ValueChangeEvent<LocalDateTime>>> valueChangeListeners,
-			InputAdaptersContainer<LocalDateTime> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<LocalDateTime> adapters) {
 		super(component, adapters);
 
 		this.contextLocaleOnAttachRegistration = contextLocaleOnAttachRegistration;
 		this.localization = localization;
 		this.initialValue = initialValue;
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -148,7 +151,8 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 				.labelPropertyHandler((f, c) -> c.getLabel(), (f, c, v) -> c.setLabel(v))
 				.placeholderPropertyHandler((f, c) -> c.getPlaceholder(), (f, c, v) -> c.setPlaceholder(v))
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).invalidChangeEventNotifierSupplier(f -> f)
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**

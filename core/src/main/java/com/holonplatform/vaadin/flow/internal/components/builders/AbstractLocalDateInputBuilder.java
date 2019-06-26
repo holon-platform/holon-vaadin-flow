@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.BaseTemporalInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.i18n.LocalizationProvider;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultInvalidChangeEvent;
@@ -69,17 +70,19 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	private CalendarLocalization localization;
 
 	public AbstractLocalDateInputBuilder() {
-		this(new DatePicker(), null, null, Collections.emptyList(), InputAdaptersContainer.create());
+		this(new DatePicker(), null, null, Collections.emptyList(), Collections.emptyList(),
+				InputAdaptersContainer.create());
 	}
 
 	public AbstractLocalDateInputBuilder(DatePicker component, Registration contextLocaleOnAttachRegistration,
 			CalendarLocalization localization,
 			List<ValueChangeListener<LocalDate, ValueChangeEvent<LocalDate>>> valueChangeListeners,
-			InputAdaptersContainer<LocalDate> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<LocalDate> adapters) {
 		super(component, adapters);
 		this.contextLocaleOnAttachRegistration = contextLocaleOnAttachRegistration;
 		this.localization = localization;
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 		labelConfigurator = new DefaultHasLabelConfigurator<>(getComponent(), label -> {
 			getComponent().setLabel(label);
 		}, this);
@@ -140,8 +143,7 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 						f -> listener -> RegistrationAdapter.adapt(f.addInvalidChangeListener(e -> listener
 								.onInvalidChangeEvent(new DefaultInvalidChangeEvent(e.isFromClient(), f)))))
 				.withValueChangeListeners(getValueChangeListeners())
-				.withAdapters(getAdapters())
-				.build();
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 	}
 
 	/**

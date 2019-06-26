@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableNumberInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableStringInputBuilder;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.textfield.TextField;
 
@@ -44,8 +45,8 @@ public class DefaultValidatableNumberInputBuilder<T extends Number> extends
 	public DefaultValidatableNumberInputBuilder(Class<T> numberType, TextField component, T initialValue,
 			StringToNumberConverter<T> converter,
 			List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners,
-			InputAdaptersContainer<T> adapters) {
-		super(numberType, component, initialValue, converter, valueChangeListeners, adapters);
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<T> adapters) {
+		super(numberType, component, initialValue, converter, valueChangeListeners, readonlyChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 
