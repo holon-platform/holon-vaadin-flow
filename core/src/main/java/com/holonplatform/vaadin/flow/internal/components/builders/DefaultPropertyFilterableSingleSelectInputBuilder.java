@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.PropertyFilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.CustomValueSetListener;
 import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
@@ -243,6 +244,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 	@Override
 	public PropertyFilterableSingleSelectInputBuilder<T> pageSize(int pageSize) {
 		builder.pageSize(pageSize);
+		return this;
+	}
+
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+		builder.allowCustomValue(allowCustomValue);
+		return this;
+	}
+
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+			CustomValueSetListener<T> customValueSetListener) {
+		builder.withCustomValueSetListener(customValueSetListener);
 		return this;
 	}
 
@@ -808,6 +822,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		@Override
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> pageSize(int pageSize) {
 			builder.pageSize(pageSize);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
 			return this;
 		}
 
@@ -1433,6 +1460,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -2013,6 +2053,20 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		@Override
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> pageSize(int pageSize) {
 			builder.pageSize(pageSize);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(
+				boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
 			return this;
 		}
 
