@@ -124,6 +124,48 @@ public interface SingleSelectConfigurator<T, ITEM, B extends SingleSelectConfigu
 				.messageCode(messageCode).messageArguments(arguments).build());
 	}
 
+	/**
+	 * Adds the given component into the <code>prefix</code> slot.
+	 * @param component The component to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withPrefixComponent(Component component);
+
+	/**
+	 * Adds the given component into the select drop-down area.
+	 * @param component The component to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withDropDownComponent(Component component);
+
+	/**
+	 * Adds the given component into the select drop-down area as the first child.
+	 * @param component The component to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withDropDownComponentAsFirst(Component component);
+
+	/**
+	 * Adds the given component into the select drop-down area after the given item.
+	 * @param afterItem The item to add component after (not null)
+	 * @param component The component to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withDropDownComponentAfter(ITEM afterItem, Component component);
+
+	/**
+	 * Adds the given component into the select drop-down area before the given item.
+	 * @param beforeItem The item to add component before (not null)
+	 * @param component The component to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withDropDownComponentBefore(ITEM beforeItem, Component component);
+
 	// ------- specific configurators
 
 	/**

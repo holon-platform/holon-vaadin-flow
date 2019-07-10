@@ -269,6 +269,43 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 		return getConfigurator();
 	}
 
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().addToPrefix(component);
+		return getConfigurator();
+	}
+
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> withDropDownComponent(Component component) {
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().add(component);
+		return getConfigurator();
+	}
+
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> withDropDownComponentAsFirst(Component component) {
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().addComponentAsFirst(component);
+		return getConfigurator();
+	}
+
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> withDropDownComponentAfter(ITEM afterItem, Component component) {
+		ObjectUtils.argumentNotNull(afterItem, "Item must be not null");
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().addComponents(afterItem, component);
+		return getConfigurator();
+	}
+
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> withDropDownComponentBefore(ITEM beforeItem, Component component) {
+		ObjectUtils.argumentNotNull(beforeItem, "Item must be not null");
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().prependComponents(beforeItem, component);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#itemEnabledProvider(java.util.
@@ -595,6 +632,38 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 		@Override
 		public ValidatableSingleSelectInputBuilder<T, ITEM> emptySelectionCaption(Localizable emptySelectionCaption) {
 			builder.emptySelectionCaption(emptySelectionCaption);
+			return this;
+		}
+
+		@Override
+		public ValidatableSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableSingleSelectInputBuilder<T, ITEM> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableSingleSelectInputBuilder<T, ITEM> withDropDownComponentAsFirst(Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableSingleSelectInputBuilder<T, ITEM> withDropDownComponentAfter(ITEM afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public ValidatableSingleSelectInputBuilder<T, ITEM> withDropDownComponentBefore(ITEM beforeItem,
+				Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
 			return this;
 		}
 
@@ -1206,6 +1275,38 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 			return this;
 		}
 
+		@Override
+		public DatastoreSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public DatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public DatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentAsFirst(Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public DatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentAfter(ITEM afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public DatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentBefore(ITEM beforeItem,
+				Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1753,6 +1854,38 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> emptySelectionCaption(
 				Localizable emptySelectionCaption) {
 			builder.emptySelectionCaption(emptySelectionCaption);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentAsFirst(Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentAfter(ITEM afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreSingleSelectInputBuilder<T, ITEM> withDropDownComponentBefore(ITEM beforeItem,
+				Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
 			return this;
 		}
 
