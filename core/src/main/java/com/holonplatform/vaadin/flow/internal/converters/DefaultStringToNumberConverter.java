@@ -217,18 +217,7 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	 * @return The {@link NumberFormat} to use for value conversions
 	 */
 	protected NumberFormat getNumberFormat(ValueContext context) {
-		// check fixed pattern
-		if (getNumberFormatPattern().isPresent()) {
-			return new DecimalFormat(getNumberFormatPattern().get(), new DecimalFormatSymbols(getLocale(context)));
-		}
-		// check fixed NumberFormat
-		if (getNumberFormat().isPresent()) {
-			return getNumberFormat().get();
-		}
-		// get using locale
-		NumberFormat numberFormat = getNumberFormat().orElseGet(
-				() -> TypeUtils.isDecimalNumber(getNumberType()) ? NumberFormat.getNumberInstance(getLocale(context))
-						: NumberFormat.getIntegerInstance(getLocale(context)));
+		final NumberFormat numberFormat = buildNumberFormat(context);
 		// min decimals
 		if (getMinDecimals() > -1) {
 			numberFormat.setMinimumFractionDigits(getMinDecimals());
@@ -242,6 +231,24 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 				numberFormat.setMaximumFractionDigits(defaultMaximumFractionDigits);
 			}
 		}
+		// disable grouping
+		numberFormat.setGroupingUsed(false);
+		return numberFormat;
+	}
+
+	private NumberFormat buildNumberFormat(ValueContext context) {
+		// check fixed pattern
+		if (getNumberFormatPattern().isPresent()) {
+			return new DecimalFormat(getNumberFormatPattern().get(), new DecimalFormatSymbols(getLocale(context)));
+		}
+		// check fixed NumberFormat
+		if (getNumberFormat().isPresent()) {
+			return getNumberFormat().get();
+		}
+		// get using locale
+		NumberFormat numberFormat = getNumberFormat().orElseGet(
+				() -> TypeUtils.isDecimalNumber(getNumberType()) ? NumberFormat.getNumberInstance(getLocale(context))
+						: NumberFormat.getIntegerInstance(getLocale(context)));
 		return numberFormat;
 	}
 
