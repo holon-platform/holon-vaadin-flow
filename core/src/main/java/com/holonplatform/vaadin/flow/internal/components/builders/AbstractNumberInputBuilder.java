@@ -242,6 +242,12 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 		return getConfigurator();
 	}
 
+	@Override
+	public C useGrouping(boolean useGrouping) {
+		getConverter().setUseGrouping(useGrouping);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.NumberInputBuilder#minDecimals(int)

@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
@@ -84,7 +86,16 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 */
 	@Override
 	public V getValue() {
-		return convertToModel(input.getValue());
+		try {
+			return convertToModel(input.getValue());
+		} catch (Exception e) {
+			// notify error
+			input.hasValidation().ifPresent(v -> {
+				v.setInvalid(true);
+				v.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+			});
+			throw e;
+		}
 	}
 
 	/*

@@ -71,6 +71,11 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 	private boolean allowNegatives = true;
 
 	/**
+	 * Whether to use grouping
+	 */
+	private boolean useGrouping = false;
+
+	/**
 	 * Minimum decimals
 	 */
 	private int minDecimals = -1;
@@ -154,6 +159,24 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 		return Optional.ofNullable(numberFormatPattern);
 	}
 
+	/**
+	 * Get whether to use the grouping character.
+	 * @return Whether to use the grouping character.
+	 */
+	@Override
+	public boolean isUseGrouping() {
+		return useGrouping;
+	}
+
+	/**
+	 * Set whether to use the grouping character.
+	 * @param useGrouping Whether to use the grouping character.
+	 */
+	@Override
+	public void setUseGrouping(boolean useGrouping) {
+		this.useGrouping = useGrouping;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#isAllowNegatives()
@@ -231,11 +254,18 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 				numberFormat.setMaximumFractionDigits(defaultMaximumFractionDigits);
 			}
 		}
-		// disable grouping
-		numberFormat.setGroupingUsed(false);
+		// check grouping
+		if (!isUseGrouping()) {
+			numberFormat.setGroupingUsed(false);
+		}
 		return numberFormat;
 	}
 
+	/**
+	 * Create the {@link NumberFormat} instance to use for conversions.
+	 * @param context Value context
+	 * @return The {@link NumberFormat} instance to use for conversions
+	 */
 	private NumberFormat buildNumberFormat(ValueContext context) {
 		// check fixed pattern
 		if (getNumberFormatPattern().isPresent()) {
@@ -301,6 +331,15 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 		return getDecimalFormatSymbols().map(dfs -> dfs.getDecimalSeparator());
 	}
 
+	/**
+	 * Get the grouping separator character, if available
+	 * @return the grouping separator character, if available
+	 */
+	@Override
+	public Optional<Character> getGroupingSymbol() {
+		return getDecimalFormatSymbols().map(dfs -> dfs.getGroupingSeparator());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter#getValidationPattern()
@@ -321,6 +360,10 @@ public class DefaultStringToNumberConverter<T extends Number> extends AbstractLo
 			}
 			return decimalPattern;
 		} else {
+			if (isUseGrouping() && getGroupingSymbol().isPresent()) {
+				final String pattern = "^([0-9])(" + escape(getGroupingSymbol().get()) + "|[0-9])*";
+				return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + pattern : pattern;
+			}
 			return isAllowNegatives() ? PATTERN_NEGATIVE_PREFIX + PATTERN_INTEGER : PATTERN_INTEGER;
 		}
 	}

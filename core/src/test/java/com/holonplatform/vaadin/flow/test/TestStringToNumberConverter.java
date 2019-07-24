@@ -41,10 +41,17 @@ public class TestStringToNumberConverter {
 	public void testDoubleConverter() {
 
 		final Double dbl = 12345.67d;
+		
+		StringToNumberConverter<Double> converter = StringToNumberConverter.create(Double.class);
+
+		String text = converter.convertToPresentation(dbl, new ValueContext(Locale.US));
+		assertNotNull(text);
+		assertEquals("12345.67", text);
 
 		StringToNumberConverter<Double> converter1 = StringToNumberConverter.create(Double.class);
+		converter1.setUseGrouping(true);
 
-		String text = converter1.convertToPresentation(dbl, new ValueContext(Locale.US));
+		text = converter1.convertToPresentation(dbl, new ValueContext(Locale.US));
 		assertNotNull(text);
 		assertEquals("12,345.67", text);
 
@@ -73,6 +80,7 @@ public class TestStringToNumberConverter {
 
 		// fixed Locale
 		StringToNumberConverter<Double> converter2 = StringToNumberConverter.create(Double.class, Locale.US);
+		converter2.setUseGrouping(true);
 
 		text = converter2.convertToPresentation(dbl, new ValueContext(Locale.US));
 		assertNotNull(text);
@@ -154,10 +162,17 @@ public class TestStringToNumberConverter {
 	public void testIntegerConverter() {
 
 		final Integer itg = 12345;
+		
+		StringToNumberConverter<Integer> converter = StringToNumberConverter.create(Integer.class);
+
+		String text = converter.convertToPresentation(itg, new ValueContext(Locale.US));
+		assertNotNull(text);
+		assertEquals("12345", text);
 
 		StringToNumberConverter<Integer> converter1 = StringToNumberConverter.create(Integer.class);
+		converter1.setUseGrouping(true);
 
-		String text = converter1.convertToPresentation(itg, new ValueContext(Locale.US));
+		text = converter1.convertToPresentation(itg, new ValueContext(Locale.US));
 		assertNotNull(text);
 		assertEquals("12,345", text);
 
