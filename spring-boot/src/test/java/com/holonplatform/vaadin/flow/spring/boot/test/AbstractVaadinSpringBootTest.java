@@ -59,7 +59,6 @@ public abstract class AbstractVaadinSpringBootTest {
 
 		ui = new UI();
 		ui.getInternals().setSession(vaadinSession);
-		ui.doInit(request, TEST_UIID);
 
 		CurrentInstance.setCurrent(ui);
 	}
@@ -136,16 +135,8 @@ public abstract class AbstractVaadinSpringBootTest {
 	 */
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, !isVaadinDebugMode());
+		properties.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
 		return properties;
-	}
-
-	/**
-	 * Whether to use Vaadin debug mode
-	 * @return <code>true</code> to use Vaadin debug mode
-	 */
-	protected boolean isVaadinDebugMode() {
-		return false;
 	}
 
 }

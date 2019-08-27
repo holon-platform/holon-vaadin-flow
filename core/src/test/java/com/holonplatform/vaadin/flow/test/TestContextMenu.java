@@ -20,15 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.builders.ContextMenuBuilder;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
-import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Span;
 
@@ -66,24 +63,6 @@ public class TestContextMenu {
 
 		menu = ContextMenuBuilder.create().hidden().build();
 		assertFalse(menu.isVisible());
-
-		final AtomicBoolean attached = new AtomicBoolean(false);
-
-		menu = ContextMenuBuilder.create().withAttachListener(e -> {
-			attached.set(true);
-		}).build();
-
-		ComponentUtil.onComponentAttach(menu, true);
-		assertTrue(attached.get());
-
-		final AtomicBoolean detached = new AtomicBoolean(false);
-
-		menu = ContextMenuBuilder.create().withDetachListener(e -> {
-			detached.set(true);
-		}).build();
-
-		ComponentUtil.onComponentDetach(menu);
-		assertTrue(detached.get());
 	}
 
 	@Test

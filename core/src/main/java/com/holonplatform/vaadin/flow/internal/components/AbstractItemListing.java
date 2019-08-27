@@ -113,6 +113,8 @@ import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedCh
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.GridMultiSelectionModel;
+import com.vaadin.flow.component.grid.GridMultiSelectionModel.SelectAllCheckboxVisibility;
 import com.vaadin.flow.component.grid.GridNoneSelectionModel;
 import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -1252,6 +1254,17 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		// check built
 		if (isBuilt()) {
 			setupSelectionListeners();
+		}
+	}
+
+	/**
+	 * Sets the select all checkbox visibility mode.
+	 * @param selectAllCheckBoxVisibility the visiblity mode to use
+	 */
+	public void setSelectAllCheckboxVisibility(SelectAllCheckboxVisibility selectAllCheckBoxVisibility) {
+		if (selectAllCheckBoxVisibility != null && getGrid().getSelectionModel() instanceof GridMultiSelectionModel) {
+			((GridMultiSelectionModel<T>) getGrid().getSelectionModel())
+					.setSelectAllCheckboxVisibility(selectAllCheckBoxVisibility);
 		}
 	}
 
@@ -2788,6 +2801,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C selectionMode(SelectionMode selectionMode) {
 			instance.setSelectionMode(selectionMode);
+			return getConfigurator();
+		}
+
+		@Override
+		public C selectAllCheckboxVisibility(SelectAllCheckboxVisibility selectAllCheckBoxVisibility) {
+			instance.setSelectAllCheckboxVisibility(selectAllCheckBoxVisibility);
 			return getConfigurator();
 		}
 

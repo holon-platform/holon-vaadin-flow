@@ -74,6 +74,7 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.FocusNotifier.FocusEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.GridMultiSelectionModel.SelectAllCheckboxVisibility;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.data.binder.Setter;
@@ -1040,6 +1041,13 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public DatastorePropertyListingBuilder selectionMode(SelectionMode selectionMode) {
 			builder.selectionMode(selectionMode);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder selectAllCheckboxVisibility(
+				SelectAllCheckboxVisibility selectAllCheckBoxVisibility) {
+			builder.selectAllCheckboxVisibility(selectAllCheckBoxVisibility);
 			return this;
 		}
 

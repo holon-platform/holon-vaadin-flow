@@ -49,6 +49,7 @@ import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemSort;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.GridMultiSelectionModel.SelectAllCheckboxVisibility;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
@@ -580,6 +581,17 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C selectionMode(SelectionMode selectionMode);
 
 	/**
+	 * Sets the select all checkbox visibility mode.
+	 * <p>
+	 * The default value is {@link SelectAllCheckboxVisibility#DEFAULT}, which means that the checkbox is only visible
+	 * if the data provider is in-memory.
+	 * </p>
+	 * @param selectAllCheckBoxVisibility The select all checkbox visibility mode
+	 * @return this
+	 */
+	C selectAllCheckboxVisibility(SelectAllCheckboxVisibility selectAllCheckBoxVisibility);
+
+	/**
 	 * Set the listing selection mode as {@link SelectionMode#SINGLE}.
 	 * @return this
 	 */
@@ -767,7 +779,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Sets whether the user can drag the grid rows or not.
-	 * @param rowsRraggable <code>true</code> if the rows can be dragged by the user, <code>false</code> if not
+	 * @param rowsDraggable <code>true</code> if the rows can be dragged by the user, <code>false</code> if not
 	 * @return this
 	 */
 	C rowsDraggable(boolean rowsDraggable);
@@ -794,7 +806,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * Sets a generator function for customizing drag data. The generated value will be accessible using the same
 	 * <code>type</code> as the generator is set here. The function is executed for each item in the listing during data
 	 * generation. Return a {@link String} to be appended to the row as <code>type</code> data.
-	 * @param type Type of the generated data. The generated value will be accessible during drop using this type (not null)
+	 * @param type Type of the generated data. The generated value will be accessible during drop using this type (not
+	 *        null)
 	 * @param dragDataGenerator Function to be executed on row data generation (not null)
 	 * @return this
 	 */
@@ -961,7 +974,6 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * bit more than what is currently visible). If the grid isscrolled, or the cell content changes, the column
 		 * width might notmatch the contents anymore.
 		 * </p>
-		 * @param property The property to configure (not null)
 		 * @return this
 		 * @since 5.3.0
 		 */

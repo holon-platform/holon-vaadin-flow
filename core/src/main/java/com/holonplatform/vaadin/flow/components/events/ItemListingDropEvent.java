@@ -43,15 +43,13 @@ public interface ItemListingDropEvent<T, P> extends ItemListingDnDEvent<T, P> {
 	/**
 	 * Get the location of the drop within the row.
 	 * <p>
-	 * <em>NOTE: the location will be {@link GridDropLocation#EMPTY} if:
+	 * NOTE: the location will be {@link GridDropLocation#EMPTY} if:
 	 * <ul>
 	 * <li>dropped on an empty grid</li>
 	 * <li>dropping on rows was not possible because of {@link GridDropMode#ON_GRID } was used</li>
 	 * <li>{@link GridDropMode#ON_TOP} is used and the drop happened on empty space after last row or on top of the
 	 * header / footer</li>
 	 * </ul>
-	 * </em>
-	 * </p>
 	 * @return The location of the drop in relative to the {@link #getDropTargetItem()} or
 	 *         {@link GridDropLocation#EMPTY} if no target row present
 	 */

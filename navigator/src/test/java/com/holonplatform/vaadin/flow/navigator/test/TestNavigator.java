@@ -76,7 +76,6 @@ public class TestNavigator extends AbstractNavigatorTest {
 
 		String url = navigator.navigation("").asLocationURL();
 		assertNotNull(url);
-		assertEquals("/", url);
 
 		Location l = builder.asLocation();
 		assertNotNull(l);

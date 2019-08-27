@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Locale;
-import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +35,6 @@ import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.server.Constants;
-import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 
@@ -252,8 +249,6 @@ public class TestLocalizationProvider {
 	private static VaadinService createVaadinService(LocalizationContext localizationContext) {
 		Instantiator instantiator = createInstantiator(localizationContext);
 		VaadinServletService vaadinService = mock(VaadinServletService.class);
-		when(vaadinService.getDeploymentConfiguration())
-				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getInstantiator()).thenReturn(instantiator);
 		return vaadinService;
 	}
@@ -263,12 +258,6 @@ public class TestLocalizationProvider {
 		when(instantiator.getI18NProvider()).thenReturn(
 				(localizationContext == null) ? null : LocalizationContextI18NProvider.create(localizationContext));
 		return instantiator;
-	}
-
-	private static Properties getDeploymentProperties() {
-		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
-		return properties;
 	}
 
 }
