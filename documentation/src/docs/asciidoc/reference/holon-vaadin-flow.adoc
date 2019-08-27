@@ -77,6 +77,13 @@ The Holon Platform provides an *overall Maven BOM (Bill of Materials)* to easily
 
 See link:index.html#obtain-the-platform-artifacts[Obtain the platform artifacts] for details.
 
+[[WhatsNew53x]]
+== What's new in version 5.3.x
+
+* *Default navigation error handler routes*:
+The default `UnauthorizedNavigationError` and `ForbiddenNavigationError` error handler routes, bound to the `UnauthorizedNavigationException` and `ForbiddenNavigationException` respectively, were removed to avoid conflicts with the Vaadin flow routes auto-scan when user-defined routes to handle the same exceptions are present in classpath.
+
+
 // Inclusions
 
 include::_core.adoc[]

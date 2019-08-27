@@ -20,18 +20,15 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import com.holonplatform.vaadin.flow.navigator.Navigator;
 import com.holonplatform.vaadin.flow.navigator.exceptions.ForbiddenNavigationException;
 import com.holonplatform.vaadin.flow.navigator.exceptions.UnauthorizedNavigationException;
 import com.holonplatform.vaadin.flow.spring.EnableNavigator;
-import com.holonplatform.vaadin.flow.spring.boot.internal.DefaultNavigatorErrorsRegistrar;
 import com.holonplatform.vaadin.flow.spring.boot.internal.NavigatorServletContextInitializer;
 
 /**
@@ -71,13 +68,6 @@ public class NavigatorAutoConfiguration {
 	@ConditionalOnMissingBean(Navigator.class)
 	@EnableNavigator
 	static class UINavigatorAutoConfiguration {
-
-	}
-
-	@Configuration
-	@ConditionalOnProperty(prefix = "holon.vaadin.navigator.errors", name = "enabled", matchIfMissing = true)
-	@Import(DefaultNavigatorErrorsRegistrar.class)
-	static class DefaultNavigatorErrorsAutoConfiguration {
 
 	}
 

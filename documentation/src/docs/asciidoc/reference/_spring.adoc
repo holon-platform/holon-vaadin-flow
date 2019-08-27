@@ -62,14 +62,6 @@ The `holon-vaadin-flow-spring-boot` artifact includes the standard Vaadin Flow S
 
 The `Navigator` API auto configuration provides automatic setup of a *UI-scoped* `Navigator` bean, if a `Navigator` type bean is not already available in application context. See <<EnableNavigator>>.
 
-Furthermore, two default navigation error notification UI components are registered: 
-
-* One for the `UnauthorizedNavigationException`: see link:{apidir}/com/holonplatform/vaadin/flow/navigator/errors/UnauthorizedNavigationError.html[UnauthorizedNavigationError^].
-
-* One for the `ForbiddenNavigationException`: see link:{apidir}/com/holonplatform/vaadin/flow/navigator/errors/ForbiddenNavigationError.html[ForbiddenNavigationError^].
-
-The `holon.vaadin.navigator.errors.enabled` application configuration property can be setted to `false` to disable the error components registration.
-
 [[LocalizationContextAutoConfiguration]]
 === `LocalizationContext` integration auto configuration
 
