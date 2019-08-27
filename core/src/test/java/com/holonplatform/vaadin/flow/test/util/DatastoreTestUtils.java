@@ -29,7 +29,7 @@ public final class DatastoreTestUtils {
 	public static final StringProperty CODE = StringProperty.create("code");
 	public static final StringProperty DESCRIPTION = StringProperty.create("description");
 
-	public static final PropertySet<?> TEST1 = PropertySet.builderOf(CODE, DESCRIPTION).identifier(CODE).build();
+	public static final PropertySet<?> TEST1 = PropertySet.builderOf(CODE, DESCRIPTION).withIdentifier(CODE).build();
 	public static final PropertySet<?> TEST1_NOID = PropertySet.of(CODE, DESCRIPTION);
 
 }

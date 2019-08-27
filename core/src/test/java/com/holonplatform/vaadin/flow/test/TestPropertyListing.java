@@ -87,7 +87,7 @@ public class TestPropertyListing {
 	private static final VirtualProperty<String> VIRTUAL = VirtualProperty.create(String.class,
 			pb -> pb.containsValue(NAME) ? "[" + pb.getValue(NAME) + "]" : null);
 
-	private static final PropertySet<?> SET = PropertySet.builderOf(ID, NAME, VIRTUAL).identifier(ID).build();
+	private static final PropertySet<?> SET = PropertySet.builderOf(ID, NAME, VIRTUAL).withIdentifier(ID).build();
 
 	@Test
 	public void testBuilders() {
