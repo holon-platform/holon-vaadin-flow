@@ -134,6 +134,18 @@ public interface ItemListingColumn<P, T, V> extends Serializable {
 	 * @param flexGrow the flex grow ratio
 	 */
 	void setFlexGrow(int flexGrow);
+	
+	/**
+	 * Get whether auto-width is enabled for the column.
+	 * @return whether auto-width is enabled
+	 */
+	boolean isAutoWidth();
+
+	/**
+	 * Set whether auto-width is enabled for the column.
+	 * @param autoWidth whether the column auto-width is enabled
+	 */
+	void setAutoWidth(boolean autoWidth);
 
 	/**
 	 * Get the column alignment.

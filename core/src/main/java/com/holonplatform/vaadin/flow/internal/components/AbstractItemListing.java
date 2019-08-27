@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,6 +68,10 @@ import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDnDListener;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.components.events.ItemListingDropEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemListingItemEvent;
 import com.holonplatform.vaadin.flow.data.ItemListingDataProviderAdapter;
 import com.holonplatform.vaadin.flow.data.ItemSort;
@@ -82,6 +87,9 @@ import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValu
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEditorEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingClickEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDragEndEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDragStartEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingDropEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemListingItemEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultItemListingColumn;
@@ -113,6 +121,7 @@ import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu.GridContextMenuItemClickEvent;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.grid.contextmenu.GridSubMenu;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
@@ -195,6 +204,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 * Property for which to expand the corresponding column
 	 */
 	private P propertyToExpand;
+
+	/**
+	 * Default auto-width for columns
+	 */
+	private boolean columnsAutoWidth = false;
 
 	/**
 	 * Listing columns post processors
@@ -778,6 +792,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
+	 * Get whether to apply automatic width for all the columns.
+	 * @return Whether to apply automatic width for all the columns.
+	 */
+	protected boolean isColumnsAutoWidth() {
+		return columnsAutoWidth;
+	}
+
+	/**
+	 * Set whether to apply automatic width for all the columns.
+	 * @param columnsAutoWidth Whether to apply automatic width for all the columns
+	 */
+	protected void setColumnsAutoWidth(boolean columnsAutoWidth) {
+		this.columnsAutoWidth = columnsAutoWidth;
+	}
+
+	/**
 	 * Build the listing, adding a Grid column for each item property and setting up the item editor if
 	 * <code>editable</code> is <code>true</code>.
 	 * @param editable Whether the listing is editable
@@ -830,6 +860,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		column.setFrozen(configuration.isFrozen());
 		// width
 		configuration.getWidth().ifPresent(w -> column.setWidth(w));
+		if (!configuration.getWidth().isPresent() && (configuration.isAutoWidth() || isColumnsAutoWidth())) {
+			column.setAutoWidth(true);
+		}
 		// flex grow
 		if (getPropertyToExpand() != null) {
 			if (property.equals(getPropertyToExpand())) {
@@ -907,6 +940,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public ColumnConfigurator flexGrow(int flexGrow) {
 			column.setFlexGrow(flexGrow);
+			return this;
+		}
+
+		@Override
+		public ColumnConfigurator autoWidth(boolean autoWidth) {
+			column.setAutoWidth(autoWidth);
 			return this;
 		}
 
@@ -1046,6 +1085,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		}
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		getGrid().getDataProvider().refreshItem(item);
+	}
+
+	@Override
+	public void recalculateColumnWidths() {
+		getGrid().recalculateColumnWidths();
 	}
 
 	/*
@@ -2487,6 +2531,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			return getConfigurator();
 		}
 
+		@Override
+		public C autoWidth(P property, boolean autoWidth) {
+			instance.getColumnConfiguration(property).setAutoWidth(autoWidth);
+			return getConfigurator();
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#flexGrow(java.lang.Object,
@@ -2529,6 +2579,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 		@Override
 		public C expand(P property) {
 			instance.setPropertyToExpand(property);
+			return getConfigurator();
+		}
+
+		@Override
+		public C columnsAutoWidth() {
+			instance.setColumnsAutoWidth(true);
 			return getConfigurator();
 		}
 
@@ -3040,6 +3096,63 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			return getConfigurator();
 		}
 
+		@Override
+		public C rowsDraggable(boolean rowsDraggable) {
+			instance.getGrid().setRowsDraggable(rowsDraggable);
+			return getConfigurator();
+		}
+
+		@Override
+		public C dragFilter(Predicate<T> dragFilter) {
+			ObjectUtils.argumentNotNull(dragFilter, "Drag filter predicate must be not null");
+			instance.getGrid().setDragFilter(r -> dragFilter.test(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C dragDataGenerator(String type, Function<T, String> dragDataGenerator) {
+			ObjectUtils.argumentNotNull(dragDataGenerator, "Drag data generator function must be not null");
+			instance.getGrid().setDragDataGenerator(type, r -> dragDataGenerator.apply(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDragStartListener(ItemListingDnDListener<T, P, ItemListingDragStartEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drag start listener must be not null");
+			instance.getGrid().addDragStartListener(
+					event -> listener.onDndEvent(new DefaultItemListingDragStartEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDragEndListener(ItemListingDnDListener<T, P, ItemListingDragEndEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drag end listener must be not null");
+			instance.getGrid().addDragEndListener(
+					event -> listener.onDndEvent(new DefaultItemListingDragEndEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
+		@Override
+		public C dropMode(GridDropMode dropMode) {
+			instance.getGrid().setDropMode(dropMode);
+			return getConfigurator();
+		}
+
+		@Override
+		public C dropFilter(Predicate<T> dropFilter) {
+			ObjectUtils.argumentNotNull(dropFilter, "Drop filter predicate must be not null");
+			instance.getGrid().setDropFilter(r -> dropFilter.test(r));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withDropListener(ItemListingDnDListener<T, P, ItemListingDropEvent<T, P>> listener) {
+			ObjectUtils.argumentNotNull(listener, "Drop listener must be not null");
+			instance.getGrid()
+					.addDropListener(event -> listener.onDndEvent(new DefaultItemListingDropEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
 	}
 
 	static class DefaultItemListingContextMenuBuilder<T, P, L extends ItemListing<T, P>, C extends ItemListingConfigurator<T, P, L, C>>
@@ -3369,6 +3482,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 				listing.getColumnConfiguration(property).setFlexGrow(0);
 			}
 			listing.getColumnConfiguration(property).setWidth(width);
+			return this;
+		}
+
+		@Override
+		public ItemListingColumnBuilder<T, P, L, B> autoWidth(boolean autoWidth) {
+			listing.getColumnConfiguration(property).setAutoWidth(autoWidth);
 			return this;
 		}
 

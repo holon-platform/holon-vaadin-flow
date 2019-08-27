@@ -258,6 +258,11 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	 */
 	void removeAdditionalItems();
 
+	/**
+	 * Updates the width of all columns which are configured for automatic width calculation.
+	 */
+	void recalculateColumnWidths();
+
 	// ------- listing sections handlers
 
 	/**
