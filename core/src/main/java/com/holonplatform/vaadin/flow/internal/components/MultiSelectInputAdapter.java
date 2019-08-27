@@ -35,6 +35,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultSelectionEvent;
@@ -222,6 +223,11 @@ public class MultiSelectInputAdapter<T, ITEM, C extends Component> implements Mu
 	@Override
 	public boolean isReadOnly() {
 		return input.isReadOnly();
+	}
+
+	@Override
+	public Registration addReadonlyChangeListener(ReadonlyChangeListener listener) {
+		return input.addReadonlyChangeListener(listener);
 	}
 
 	/*

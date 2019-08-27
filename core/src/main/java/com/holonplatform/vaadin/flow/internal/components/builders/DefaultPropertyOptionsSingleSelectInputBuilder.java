@@ -43,6 +43,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsSingleSelectConfigurator.PropertyOptionsSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -238,6 +239,12 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 	public PropertyOptionsSingleSelectInputBuilder<T> withValueChangeListener(
 			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		builder.withValueChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public PropertyOptionsSingleSelectInputBuilder<T> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		builder.withReadonlyChangeListener(listener);
 		return this;
 	}
 
@@ -621,6 +628,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 		public ValidatablePropertyOptionsSingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyOptionsSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1070,6 +1084,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyOptionsSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
@@ -1437,6 +1458,13 @@ public class DefaultPropertyOptionsSingleSelectInputBuilder<T> implements Proper
 		public ValidatableDatastorePropertyOptionsSingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyOptionsSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 

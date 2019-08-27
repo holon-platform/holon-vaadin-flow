@@ -244,6 +244,18 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 		return super.getId(item);
 	}
 
+	@Override
+	public Optional<QueryFilter> getQueryFilter() {
+		final List<QueryFilter> filters = new LinkedList<>();
+		queryConfigurationProviders.forEach(p -> {
+			QueryFilter qf = p.getQueryFilter();
+			if (qf != null) {
+				filters.add(qf);
+			}
+		});
+		return QueryFilter.allOf(filters);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see

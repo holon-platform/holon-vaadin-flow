@@ -24,6 +24,7 @@ import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ValidatableStringAreaInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.textfield.TextArea;
 
@@ -39,8 +40,8 @@ public class DefaultValidatableStringAreaInputBuilder extends
 
 	public DefaultValidatableStringAreaInputBuilder(TextArea component, boolean emptyValuesAsNull,
 			boolean blankValuesAsNull, List<ValueChangeListener<String, ValueChangeEvent<String>>> valueChangeListeners,
-			InputAdaptersContainer<String> adapters) {
-		super(component, emptyValuesAsNull, blankValuesAsNull, valueChangeListeners, adapters);
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<String> adapters) {
+		super(component, emptyValuesAsNull, blankValuesAsNull, valueChangeListeners, readonlyChangeListeners, adapters);
 		this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 	}
 

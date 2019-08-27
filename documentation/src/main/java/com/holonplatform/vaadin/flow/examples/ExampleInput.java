@@ -50,6 +50,7 @@ import com.holonplatform.vaadin.flow.components.PropertyInputGroup;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.Status;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -171,6 +172,11 @@ public class ExampleInput {
 		@Override
 		public boolean isReadOnly() {
 			return false;
+		}
+
+		@Override
+		public Registration addReadonlyChangeListener(ReadonlyChangeListener listener) {
+			return null;
 		}
 
 		@Override

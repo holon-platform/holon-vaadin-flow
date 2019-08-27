@@ -32,6 +32,7 @@ import com.holonplatform.vaadin.flow.components.ValidatableInput;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler.ValidationStatusEvent;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.internal.components.support.DefaultUserInputValidator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -117,6 +118,11 @@ public abstract class AbstractValidatableInputAdapter<T, I extends Input<T>> imp
 	@Override
 	public boolean isReadOnly() {
 		return input.isReadOnly();
+	}
+
+	@Override
+	public Registration addReadonlyChangeListener(ReadonlyChangeListener listener) {
+		return input.addReadonlyChangeListener(listener);
 	}
 
 	/*

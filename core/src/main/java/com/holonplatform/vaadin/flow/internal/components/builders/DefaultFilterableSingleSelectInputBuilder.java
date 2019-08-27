@@ -46,10 +46,13 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.FilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.CustomValueSetListener;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultCustomValueSetEvent;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
 import com.holonplatform.vaadin.flow.internal.converters.ItemConverterConverter;
@@ -67,6 +70,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.GeneratedVaadinComboBox.CustomValueSetEvent;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -92,6 +96,8 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 	protected final DefaultHasPlaceholderConfigurator<ComboBox<ITEM>> placeholderConfigurator;
 
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
+
+	protected final List<CustomValueSetListener<T>> customValueSetListeners = new LinkedList<>();
 
 	private final Class<? extends T> type;
 	private final Class<ITEM> itemType;
@@ -195,12 +201,45 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 				.focusOperation(f -> f.focus()).hasEnabledSupplier(f -> f).build();
 
 		final Input<T> input = Input.builder(itemInput, new ItemConverterConverter<>(itemConverter))
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 
 		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
 				() -> component.getDataProvider().refreshAll());
 		selectionListeners.forEach(listener -> select.addSelectionListener(listener));
+		if (!customValueSetListeners.isEmpty()) {
+			component
+					.addCustomValueSetListener(new SingleSelectCustomValueSetListener(select, customValueSetListeners));
+		}
 		return select;
+	}
+
+	@SuppressWarnings("serial")
+	private class SingleSelectCustomValueSetListener
+			implements ComponentEventListener<CustomValueSetEvent<ComboBox<ITEM>>> {
+
+		private final SingleSelect<T> select;
+		private final List<CustomValueSetListener<T>> listeners;
+		private String lastValue;
+
+		public SingleSelectCustomValueSetListener(SingleSelect<T> select,
+				List<CustomValueSetListener<T>> customValueSetListeners) {
+			super();
+			this.select = select;
+			this.listeners = customValueSetListeners;
+		}
+
+		@Override
+		public void onComponentEvent(CustomValueSetEvent<ComboBox<ITEM>> event) {
+			if (this.lastValue == null || !this.lastValue.equals(event.getDetail())) {
+				this.lastValue = event.getDetail();
+				listeners.forEach(l -> {
+					l.onCustomValueSetEvent(
+							new DefaultCustomValueSetEvent<>(select, event.isFromClient(), event.getDetail()));
+				});
+			}
+		}
+
 	}
 
 	/*
@@ -234,6 +273,20 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 	@Override
 	public FilterableSingleSelectInputBuilder<T, ITEM> pageSize(int pageSize) {
 		getComponent().setPageSize(pageSize);
+		return getConfigurator();
+	}
+
+	@Override
+	public FilterableSingleSelectInputBuilder<T, ITEM> allowCustomValue(boolean allowCustomValue) {
+		getComponent().setAllowCustomValue(allowCustomValue);
+		return getConfigurator();
+	}
+
+	@Override
+	public FilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
+			CustomValueSetListener<T> customValueSetListener) {
+		ObjectUtils.argumentNotNull(customValueSetListener, "Listener must be not null");
+		customValueSetListeners.add(customValueSetListener);
 		return getConfigurator();
 	}
 
@@ -581,6 +634,19 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 			return this;
 		}
 
+		@Override
+		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -625,6 +691,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1166,6 +1239,19 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 			return this;
 		}
 
+		@Override
+		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1207,6 +1293,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1677,6 +1770,20 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 			return this;
 		}
 
+		@Override
+		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> allowCustomValue(
+				boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return null;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1722,6 +1829,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 

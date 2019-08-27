@@ -30,6 +30,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.NumberInputConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
@@ -84,19 +85,20 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 
 	public AbstractNumberInputBuilder(Class<T> numberType) {
 		this(numberType, new TextField(), null, StringToNumberConverter.create(numberType), Collections.emptyList(),
-				InputAdaptersContainer.create());
+				Collections.emptyList(), InputAdaptersContainer.create());
 	}
 
 	public AbstractNumberInputBuilder(Class<T> numberType, TextField component, T initialValue,
 			StringToNumberConverter<T> converter,
 			List<ValueChangeListener<T, ValueChangeEvent<T>>> valueChangeListeners,
-			InputAdaptersContainer<T> adapters) {
+			List<ReadonlyChangeListener> readonlyChangeListeners, InputAdaptersContainer<T> adapters) {
 		super(component, adapters);
 		ObjectUtils.argumentNotNull(numberType, "Number type must be not null");
 		this.numberType = numberType;
 		this.initialValue = initialValue;
 		this.converter = converter;
 		initValueChangeListeners(valueChangeListeners);
+		initReadonlyChangeListeners(readonlyChangeListeners);
 
 		getComponent().setAutocapitalize(Autocapitalize.NONE);
 		getComponent().setAutocorrect(false);
@@ -184,7 +186,8 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 
 		// conversion
 		final Input<T> numberInput = Input.builder(input, getConverter())
-				.withValueChangeListeners(getValueChangeListeners()).withAdapters(getAdapters()).build();
+				.withValueChangeListeners(getValueChangeListeners())
+				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
 		if (initialValue != null) {
 			numberInput.setValue(initialValue);
 		}
@@ -236,6 +239,12 @@ public abstract class AbstractNumberInputBuilder<T extends Number, C extends Num
 	@Override
 	public C allowNegative(boolean allowNegative) {
 		getConverter().setAllowNegatives(allowNegative);
+		return getConfigurator();
+	}
+
+	@Override
+	public C useGrouping(boolean useGrouping) {
+		getConverter().setUseGrouping(useGrouping);
 		return getConfigurator();
 	}
 

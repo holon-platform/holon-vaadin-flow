@@ -46,6 +46,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurator.PropertySingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -262,6 +263,12 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 	public PropertySingleSelectInputBuilder<T> withValueChangeListener(
 			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		builder.withValueChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public PropertySingleSelectInputBuilder<T> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		builder.withReadonlyChangeListener(listener);
 		return this;
 	}
 
@@ -567,6 +574,37 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		return this;
 	}
 
+	@Override
+	public PropertySingleSelectInputBuilder<T> withPrefixComponent(Component component) {
+		builder.withPrefixComponent(component);
+		return this;
+	}
+
+	@Override
+	public PropertySingleSelectInputBuilder<T> withDropDownComponent(Component component) {
+		builder.withDropDownComponent(component);
+		return this;
+	}
+
+	@Override
+	public PropertySingleSelectInputBuilder<T> withDropDownComponentAsFirst(Component component) {
+		builder.withDropDownComponentAsFirst(component);
+		return this;
+	}
+
+	@Override
+	public PropertySingleSelectInputBuilder<T> withDropDownComponentAfter(PropertyBox afterItem, Component component) {
+		builder.withDropDownComponentAfter(afterItem, component);
+		return this;
+	}
+
+	@Override
+	public PropertySingleSelectInputBuilder<T> withDropDownComponentBefore(PropertyBox beforeItem,
+			Component component) {
+		builder.withDropDownComponentBefore(beforeItem, component);
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#itemEnabledProvider(java.util.
@@ -860,6 +898,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		public ValidatablePropertySingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1266,6 +1311,38 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 			return this;
 		}
 
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withDropDownComponentAsFirst(Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withDropDownComponentAfter(PropertyBox afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertySingleSelectInputBuilder<T> withDropDownComponentBefore(PropertyBox beforeItem,
+				Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
@@ -1368,6 +1445,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		public DatastorePropertySingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1807,6 +1891,38 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 			return this;
 		}
 
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withDropDownComponentAsFirst(Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withDropDownComponentAfter(PropertyBox afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertySingleSelectInputBuilder<T> withDropDownComponentBefore(PropertyBox beforeItem,
+				Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
@@ -1953,6 +2069,13 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -2401,6 +2524,39 @@ public class DefaultPropertySingleSelectInputBuilder<T> implements PropertySingl
 		@Override
 		public ValidatableDatastorePropertySingleSelectInputBuilder<T> required(Localizable message) {
 			validatableInputConfigurator.required(message);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withDropDownComponent(Component component) {
+			builder.withDropDownComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withDropDownComponentAsFirst(
+				Component component) {
+			builder.withDropDownComponentAsFirst(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withDropDownComponentAfter(PropertyBox afterItem,
+				Component component) {
+			builder.withDropDownComponentAfter(afterItem, component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertySingleSelectInputBuilder<T> withDropDownComponentBefore(
+				PropertyBox beforeItem, Component component) {
+			builder.withDropDownComponentBefore(beforeItem, component);
 			return this;
 		}
 

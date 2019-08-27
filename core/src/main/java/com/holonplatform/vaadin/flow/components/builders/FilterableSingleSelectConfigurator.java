@@ -28,6 +28,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.events.CustomValueSetListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultFilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyFilterableSingleSelectInputBuilder;
@@ -71,6 +72,28 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	 * @return this
 	 */
 	B pageSize(int pageSize);
+
+	/**
+	 * Set whether custom values are allowed. If <code>true</code>, the user can input a value that is not present in
+	 * the items list.
+	 * @param allowCustomValue Whether custom values are allowed
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B allowCustomValue(boolean allowCustomValue);
+
+	/**
+	 * Add a listener for custom value set event, which is fired when user types in a value that don't already exist in
+	 * the select items set.
+	 * <p>
+	 * As a side effect makes the select allow custom values. If you don't want to allow a user to add new values to the
+	 * list once the listener is added please disable it explicitly via the {@link #allowCustomValue(boolean)} method.
+	 * </p>
+	 * @param customValueSetListener The listener to add (not null)
+	 * @return this
+	 * @since 5.2.13
+	 */
+	B withCustomValueSetListener(CustomValueSetListener<T> customValueSetListener);
 
 	// ------- specific configurators
 

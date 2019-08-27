@@ -85,6 +85,13 @@ public interface NumberInputConfigurator<T extends Number, C extends NumberInput
 	 * @return this
 	 */
 	C allowNegative(boolean allowNegative);
+	
+	/**
+	 * Set whether to use the grouping symbol for numbers representation and for input validation.
+	 * @param useGrouping Whether to use the grouping symbol
+	 * @return this
+	 */
+	C useGrouping(boolean useGrouping);
 
 	/**
 	 * Sets the minimum number of digits allowed in the fraction portion of a number.

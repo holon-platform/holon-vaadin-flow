@@ -25,6 +25,7 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.InputConverterBuilder;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.internal.components.InputConverterAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -86,6 +87,20 @@ public class DefaultInputConverterBuilder<T, V> extends
 	@Override
 	public InputConverterBuilder<T, V> withValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		input.addValueChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public InputConverterBuilder<T, V> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		input.addReadonlyChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public InputConverterBuilder<T, V> withReadonlyChangeListeners(Collection<ReadonlyChangeListener> listeners) {
+		if (listeners != null) {
+			listeners.forEach(l -> input.addReadonlyChangeListener(l));
+		}
 		return this;
 	}
 

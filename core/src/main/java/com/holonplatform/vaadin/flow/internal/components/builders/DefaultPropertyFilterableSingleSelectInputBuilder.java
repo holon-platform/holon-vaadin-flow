@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.holonplatform.core.TypedExpression;
 import com.holonplatform.core.Validator;
@@ -31,6 +32,7 @@ import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.property.PropertySet;
+import com.holonplatform.core.query.Query;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
@@ -44,6 +46,8 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.PropertyFilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
+import com.holonplatform.vaadin.flow.components.events.CustomValueSetListener;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -125,12 +129,21 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 	 * @param datastore The datastore
 	 * @param target The query target
 	 * @param propertySet The query projection
+	 * @param filterSupplier Additional filters supplier
 	 */
-	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
+	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
+			Supplier<QueryFilter> filterSupplier) {
 		if (propertyItemConverter != null && propertyItemConverter.getToItemConverter() == null) {
 			propertyItemConverter.setToItemConverter(value -> {
-				return (value == null) ? Optional.empty()
-						: datastore.query(target).filter(QueryFilter.eq(selectionProperty, value)).findOne(propertySet);
+				if (value == null) {
+					return Optional.empty();
+				}
+				final Query query = datastore.query(target).filter(QueryFilter.eq(selectionProperty, value));
+				final QueryFilter additionalFilter = (filterSupplier != null) ? filterSupplier.get() : null;
+				if (additionalFilter != null) {
+					query.filter(additionalFilter);
+				}
+				return query.findOne(propertySet);
 			});
 		}
 	}
@@ -154,7 +167,8 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 					return null;
 				});
 		builder.dataSource(datastoreDataProvider);
-		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
+		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties),
+				() -> datastoreDataProvider.getQueryFilter().orElse(null));
 		return new DefaultDatastorePropertyFilterableSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
@@ -171,7 +185,8 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		final DatastoreDataProvider<PropertyBox, String> datastoreDataProvider = DatastoreDataProvider.create(datastore,
 				target, DatastoreDataProvider.asPropertySet(properties), filterConverter);
 		builder.dataSource(datastoreDataProvider);
-		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
+		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties),
+				() -> datastoreDataProvider.getQueryFilter().orElse(null));
 		return new DefaultDatastorePropertyFilterableSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
@@ -229,6 +244,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 	@Override
 	public PropertyFilterableSingleSelectInputBuilder<T> pageSize(int pageSize) {
 		builder.pageSize(pageSize);
+		return this;
+	}
+
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+		builder.allowCustomValue(allowCustomValue);
+		return this;
+	}
+
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+			CustomValueSetListener<T> customValueSetListener) {
+		builder.withCustomValueSetListener(customValueSetListener);
 		return this;
 	}
 
@@ -305,6 +333,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 	public PropertyFilterableSingleSelectInputBuilder<T> withValueChangeListener(
 			ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 		builder.withValueChangeListener(listener);
+		return this;
+	}
+
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> withReadonlyChangeListener(ReadonlyChangeListener listener) {
+		builder.withReadonlyChangeListener(listener);
 		return this;
 	}
 
@@ -791,6 +825,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -836,6 +883,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1406,6 +1460,19 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1448,6 +1515,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public DatastorePropertyFilterableSingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 
@@ -1982,6 +2056,20 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> allowCustomValue(
+				boolean allowCustomValue) {
+			builder.allowCustomValue(allowCustomValue);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
+				CustomValueSetListener<T> customValueSetListener) {
+			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -2027,6 +2115,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withValueChangeListener(
 				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
 			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
 			return this;
 		}
 

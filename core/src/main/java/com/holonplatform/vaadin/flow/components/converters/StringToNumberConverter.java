@@ -48,6 +48,18 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	void setAllowNegatives(boolean allowNegatives);
 
 	/**
+	 * Get whether to use the grouping character.
+	 * @return Whether to use the grouping character.
+	 */
+	boolean isUseGrouping();
+
+	/**
+	 * Set whether to use the grouping character.
+	 * @param useGrouping Whether to use the grouping character.
+	 */
+	void setUseGrouping(boolean useGrouping);
+
+	/**
 	 * Get the minimum decimal digits to display.
 	 * @return the minimum decimal digits, <code>-1</code> if not configured
 	 */
@@ -76,6 +88,12 @@ public interface StringToNumberConverter<T extends Number> extends Converter<Str
 	 * @return the decimal separator character, or empty if the number type is not a decimal number
 	 */
 	Optional<Character> getDecimalSymbol();
+
+	/**
+	 * Get the grouping separator character, if available
+	 * @return the grouping separator character, if available
+	 */
+	Optional<Character> getGroupingSymbol();
 
 	/**
 	 * Get the regex validation pattern which corresponds to the converter configuration.

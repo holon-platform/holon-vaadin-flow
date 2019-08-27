@@ -18,6 +18,8 @@ package com.holonplatform.vaadin.flow.internal.components;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.holonplatform.core.Registration;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.components.HasLabel;
@@ -26,6 +28,7 @@ import com.holonplatform.vaadin.flow.components.HasTitle;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.ValueHolder;
 import com.holonplatform.vaadin.flow.components.events.InvalidChangeEventNotifier;
+import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultValueChangeEvent;
 import com.vaadin.flow.component.Component;
@@ -83,7 +86,16 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	 */
 	@Override
 	public V getValue() {
-		return convertToModel(input.getValue());
+		try {
+			return convertToModel(input.getValue());
+		} catch (Exception e) {
+			// notify error
+			input.hasValidation().ifPresent(v -> {
+				v.setInvalid(true);
+				v.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+			});
+			throw e;
+		}
 	}
 
 	/*
@@ -143,6 +155,11 @@ public class InputConverterAdapter<T, V> implements Input<V> {
 	@Override
 	public boolean isReadOnly() {
 		return input.isReadOnly();
+	}
+
+	@Override
+	public Registration addReadonlyChangeListener(ReadonlyChangeListener listener) {
+		return input.addReadonlyChangeListener(listener);
 	}
 
 	/*
