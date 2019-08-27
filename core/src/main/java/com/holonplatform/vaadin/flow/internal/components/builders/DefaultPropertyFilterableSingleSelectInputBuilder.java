@@ -260,6 +260,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		return this;
 	}
 
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(boolean clearButtonVisible) {
+		builder.clearButtonVisible(clearButtonVisible);
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -835,6 +841,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
 				CustomValueSetListener<T> customValueSetListener) {
 			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
 			return this;
 		}
 
@@ -1473,6 +1485,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -2067,6 +2085,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> withCustomValueSetListener(
 				CustomValueSetListener<T> customValueSetListener) {
 			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(
+				boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
 			return this;
 		}
 

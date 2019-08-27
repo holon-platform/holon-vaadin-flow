@@ -278,6 +278,22 @@ public class DateTimeField extends Composite<HorizontalLayout>
 	}
 
 	/**
+	 * Set whether the clear button is visible.
+	 * @param clearButtonVisible Whether the clear button is visible
+	 */
+	public void setClearButtonVisible(boolean clearButtonVisible) {
+		this.date.setClearButtonVisible(clearButtonVisible);
+	}
+
+	/**
+	 * Get whether the clear button is visible.
+	 * @return Whether the clear button is visible
+	 */
+	public boolean isClearButtonVisible() {
+		return this.date.isClearButtonVisible();
+	}
+
+	/**
 	 * Set the {@link Locale} to use for the <code>date</code> field. The displayed date will be matched to the format
 	 * used in that locale.
 	 * @param locale the locale set, not <code>null</code>

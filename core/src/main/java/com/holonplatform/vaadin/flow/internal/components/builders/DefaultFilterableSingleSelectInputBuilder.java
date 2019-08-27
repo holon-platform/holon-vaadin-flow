@@ -290,6 +290,12 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		return getConfigurator();
 	}
 
+	@Override
+	public FilterableSingleSelectInputBuilder<T, ITEM> clearButtonVisible(boolean clearButtonVisible) {
+		getComponent().setClearButtonVisible(clearButtonVisible);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -644,6 +650,12 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
 				CustomValueSetListener<T> customValueSetListener) {
 			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
+		@Override
+		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> clearButtonVisible(boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
 			return this;
 		}
 
@@ -1249,6 +1261,12 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> withCustomValueSetListener(
 				CustomValueSetListener<T> customValueSetListener) {
 			builder.withCustomValueSetListener(customValueSetListener);
+			return this;
+		}
+
+		@Override
+		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> clearButtonVisible(boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
 			return this;
 		}
 
@@ -2283,6 +2301,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		@Override
 		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> clearButtonVisible(
+				boolean clearButtonVisible) {
+			builder.clearButtonVisible(clearButtonVisible);
 			return this;
 		}
 

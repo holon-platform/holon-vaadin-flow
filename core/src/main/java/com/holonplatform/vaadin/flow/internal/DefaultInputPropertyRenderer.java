@@ -141,7 +141,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 		}
 		if (TypeUtils.isDate(type)) {
 			// Date
-			return Optional.of(Input.date().build()).map(input -> (Input<V>) input);
+			return Optional.of(Input.date().clearButtonVisible(true).build()).map(input -> (Input<V>) input);
 		}
 		if (TypeUtils.isNumber(type)) {
 			// Number
@@ -188,7 +188,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalDate> renderLocalDate(Property<? extends T> property) {
-		return Input.localDate().label(property).readOnly(property.isReadOnly()).build();
+		return Input.localDate().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalDateTime> renderLocalDateTime(Property<? extends T> property) {
-		return Input.localDateTime().label(property).readOnly(property.isReadOnly()).build();
+		return Input.localDateTime().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -225,10 +225,10 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 			return Input.from(Input.localTime().label(property).readOnly(property.isReadOnly()).build(),
 					new DateToLocalTimeConverter());
 		case DATE_TIME:
-			return Input.dateTime().label(property).readOnly(property.isReadOnly()).build();
+			return Input.dateTime().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
 		case DATE:
 		default:
-			return Input.date().label(property).readOnly(property.isReadOnly()).build();
+			return Input.date().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
 		}
 	}
 

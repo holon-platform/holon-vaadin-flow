@@ -95,6 +95,14 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	 */
 	B withCustomValueSetListener(CustomValueSetListener<T> customValueSetListener);
 
+	/**
+	 * Set whether to show a <em>clear</em> button which can be used to clear the input value.
+	 * @param clearButtonVisible <code>true</code> to show the clear button, <code>false</code> to hide it
+	 * @return this
+	 * @since 5.3.0
+	 */
+	B clearButtonVisible(boolean clearButtonVisible);
+
 	// ------- specific configurators
 
 	/**

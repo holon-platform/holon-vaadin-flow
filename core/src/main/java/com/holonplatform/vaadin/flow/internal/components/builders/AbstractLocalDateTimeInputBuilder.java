@@ -203,6 +203,12 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 		return getConfigurator();
 	}
 
+	@Override
+	public C clearButtonVisible(boolean clearButtonVisible) {
+		getComponent().setClearButtonVisible(clearButtonVisible);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)

@@ -78,6 +78,14 @@ public interface BaseTemporalInputConfigurator<D, C extends BaseTemporalInputCon
 	 * @return this
 	 */
 	C initialPosition(D initialPosition);
+	
+	/**
+	 * Set whether to show a <em>clear</em> button which can be used to clear the input value.
+	 * @param clearButtonVisible <code>true</code> to show the clear button, <code>false</code> to hide it
+	 * @return this
+	 * @since 5.3.0
+	 */
+	C clearButtonVisible(boolean clearButtonVisible);
 
 	/**
 	 * Set the visible week numbers.

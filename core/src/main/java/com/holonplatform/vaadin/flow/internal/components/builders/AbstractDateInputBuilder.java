@@ -218,6 +218,12 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 		return getConfigurator();
 	}
 
+	@Override
+	public C clearButtonVisible(boolean clearButtonVisible) {
+		localDateInputBuilder.clearButtonVisible(clearButtonVisible);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#weekNumbersVisible(boolean)
