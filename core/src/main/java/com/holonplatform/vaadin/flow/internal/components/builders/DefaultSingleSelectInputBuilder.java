@@ -74,6 +74,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.Element;
 
@@ -105,6 +106,7 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 	protected final Map<ITEM, Localizable> itemCaptions = new HashMap<>();
 
 	protected boolean customItemCaptionGenerator = false;
+	protected boolean customItemLabelGenerator = false;
 
 	/**
 	 * Constructor.
@@ -232,6 +234,39 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 	/*
 	 * (non-Javadoc)
 	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
+	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
+	 */
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
+		getComponent().setRenderer(new TextRenderer<>(item -> itemCaptionGenerator.getItemCaption(item)));
+		this.customItemCaptionGenerator = true;
+		if (!customItemLabelGenerator) {
+			getComponent().setItemLabelGenerator(item -> itemCaptionGenerator.getItemCaption(item));
+		}
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
+	 * Object, com.holonplatform.core.i18n.Localizable)
+	 */
+	@Override
+	public SingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		ObjectUtils.argumentNotNull(item, "Item must be not null");
+		if (caption == null) {
+			itemCaptions.remove(item);
+		} else {
+			itemCaptions.put(item, caption);
+		}
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.NativeModeSingleSelectInputBuilder#itemLabelGenerator(java.util
 	 * .function.Function)
 	 */
@@ -239,6 +274,7 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 	public SingleSelectInputBuilder<T, ITEM> itemLabelGenerator(Function<ITEM, String> itemLabelGenerator) {
 		ObjectUtils.argumentNotNull(itemLabelGenerator, "Item label generator must be not null");
 		getComponent().setItemLabelGenerator(item -> itemLabelGenerator.apply(item));
+		this.customItemLabelGenerator = true;
 		return getConfigurator();
 	}
 
@@ -315,36 +351,6 @@ public class DefaultSingleSelectInputBuilder<T, ITEM>
 	public SingleSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
 		ObjectUtils.argumentNotNull(itemEnabledProvider, "Item enabled predicate must be not null");
 		getComponent().setItemEnabledProvider(item -> itemEnabledProvider.test(item));
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
-	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
-	 */
-	@Override
-	public SingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
-		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
-		getComponent().setTextRenderer(item -> itemCaptionGenerator.getItemCaption(item));
-		this.customItemCaptionGenerator = true;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
-	 * Object, com.holonplatform.core.i18n.Localizable)
-	 */
-	@Override
-	public SingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
-		ObjectUtils.argumentNotNull(item, "Item must be not null");
-		if (caption == null) {
-			itemCaptions.remove(item);
-		} else {
-			itemCaptions.put(item, caption);
-		}
 		return getConfigurator();
 	}
 
