@@ -237,6 +237,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		return this;
 	}
 
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> itemLabelGenerator(
+			Function<PropertyBox, String> itemLabelGenerator) {
+		builder.itemLabelGenerator(itemLabelGenerator);
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#pageSize(int)
@@ -805,6 +812,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> itemCaptionGenerator(
 				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> itemLabelGenerator(
+				Function<PropertyBox, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
 			return this;
 		}
 
@@ -1437,6 +1451,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> itemLabelGenerator(
+				Function<PropertyBox, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -2048,6 +2069,13 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T>
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> itemCaptionGenerator(
 				ItemCaptionGenerator<PropertyBox> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> itemLabelGenerator(
+				Function<PropertyBox, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
 			return this;
 		}
 

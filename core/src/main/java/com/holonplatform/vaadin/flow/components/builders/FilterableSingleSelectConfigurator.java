@@ -62,6 +62,18 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	B renderer(Renderer<ITEM> renderer);
 
 	/**
+	 * Sets the item label generator that is used to produce the strings shown in the input for each item.
+	 * <p>
+	 * When a {@link #renderer(Renderer)} or a
+	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}
+	 * is defined, the itemL label generator is only used to show the selected item label.
+	 * </p>
+	 * @param itemLabelGenerator The item label generator to set (not null)
+	 * @return this
+	 */
+	B itemLabelGenerator(Function<ITEM, String> itemLabelGenerator);
+
+	/**
 	 * Sets the page size, which is the number of items fetched at a time from the data provider.
 	 * <p>
 	 * The page size is also the largest number of items that can support client-side filtering. If you provide more

@@ -75,6 +75,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializableFunction;
@@ -109,6 +110,7 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 	protected final Map<ITEM, Localizable> itemCaptions = new HashMap<>();
 
 	protected boolean customItemCaptionGenerator = false;
+	protected boolean customItemLabelGenerator = false;
 
 	/**
 	 * Constructor.
@@ -306,8 +308,19 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 	public FilterableSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 			ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
-		getComponent().setItemLabelGenerator(item -> itemCaptionGenerator.getItemCaption(item));
+		getComponent().setRenderer(new TextRenderer<>(item -> itemCaptionGenerator.getItemCaption(item)));
 		this.customItemCaptionGenerator = true;
+		if (!customItemLabelGenerator) {
+			getComponent().setItemLabelGenerator(item -> itemCaptionGenerator.getItemCaption(item));
+		}
+		return getConfigurator();
+	}
+
+	@Override
+	public FilterableSingleSelectInputBuilder<T, ITEM> itemLabelGenerator(Function<ITEM, String> itemLabelGenerator) {
+		ObjectUtils.argumentNotNull(itemLabelGenerator, "Item label generator must be not null");
+		getComponent().setItemLabelGenerator(item -> itemLabelGenerator.apply(item));
+		this.customItemLabelGenerator = true;
 		return getConfigurator();
 	}
 
@@ -615,6 +628,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		@Override
+		public ValidatableFilterableSingleSelectInputBuilder<T, ITEM> itemLabelGenerator(
+				Function<ITEM, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
 			return this;
 		}
 
@@ -1229,6 +1249,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 			return this;
 		}
 
+		@Override
+		public DatastoreFilterableSingleSelectInputBuilder<T, ITEM> itemLabelGenerator(
+				Function<ITEM, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1762,6 +1789,13 @@ public class DefaultFilterableSingleSelectInputBuilder<T, ITEM> extends
 		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> itemLabelGenerator(
+				Function<ITEM, String> itemLabelGenerator) {
+			builder.itemLabelGenerator(itemLabelGenerator);
 			return this;
 		}
 
