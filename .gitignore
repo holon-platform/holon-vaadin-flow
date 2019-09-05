@@ -25,3 +25,10 @@ buildNumber.properties
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
+
+# Vaadin 
+node_modules/
+package.json
+webpack.config.js
+webpack.generated.js
+package-lock.json
