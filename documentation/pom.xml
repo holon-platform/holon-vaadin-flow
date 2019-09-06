@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.holon-platform.vaadin</groupId>
 		<artifactId>holon-vaadin-flow-root</artifactId>
-		<version>5.3.2</version>
+		<version>5.3.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>documentation-vaadin-flow</artifactId>
