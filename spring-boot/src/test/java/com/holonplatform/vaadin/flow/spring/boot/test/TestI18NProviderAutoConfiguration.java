@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.spring.boot.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;

@@ -41,7 +41,7 @@ public class TestStringToNumberConverter {
 	public void testDoubleConverter() {
 
 		final Double dbl = 12345.67d;
-		
+
 		StringToNumberConverter<Double> converter = StringToNumberConverter.create(Double.class);
 
 		String text = converter.convertToPresentation(dbl, new ValueContext(Locale.US));
@@ -70,7 +70,7 @@ public class TestStringToNumberConverter {
 		});
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter1.convertToPresentation(dbl, new ValueContext());
+			String text2 = converter1.convertToPresentation(dbl, new ValueContext((Locale) null));
 			assertNotNull(text2);
 			assertEquals("12.345,67", text2);
 
@@ -135,7 +135,7 @@ public class TestStringToNumberConverter {
 		assertEquals("12345.60", text);
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter5.convertToPresentation(dbl, new ValueContext());
+			String text2 = converter5.convertToPresentation(dbl, new ValueContext((Locale) null));
 			assertNotNull(text2);
 			assertEquals("12345,67", text2);
 		});
@@ -162,7 +162,7 @@ public class TestStringToNumberConverter {
 	public void testIntegerConverter() {
 
 		final Integer itg = 12345;
-		
+
 		StringToNumberConverter<Integer> converter = StringToNumberConverter.create(Integer.class);
 
 		String text = converter.convertToPresentation(itg, new ValueContext(Locale.US));
@@ -190,7 +190,7 @@ public class TestStringToNumberConverter {
 		});
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter1.convertToPresentation(itg, new ValueContext());
+			String text2 = converter1.convertToPresentation(itg, new ValueContext((Locale) null));
 			assertNotNull(text2);
 			assertEquals("12.345", text2);
 
