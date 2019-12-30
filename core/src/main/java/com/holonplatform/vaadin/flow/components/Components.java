@@ -54,6 +54,8 @@ import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder
 import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator.ListMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator.PropertyListMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.ListSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.PropertyListSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
@@ -104,6 +106,7 @@ import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.ListBox;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -1195,6 +1198,73 @@ public interface Components {
 		static <T> PropertyOptionsMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty,
 				Function<T, Optional<PropertyBox>> itemConverter) {
 			return Input.multiOptionSelect(selectionProperty, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a <em>list</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link MultiSelectListBox} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
+		 * {@link #multiListSelect(Class, Class, ItemConverter)} if not.
+		 * <p>
+		 * @param <T>  Value type
+		 * @param type Selection value type (not null)
+		 * @return A new {@link ListMultiSelectInputBuilder}
+		 */
+		static <T> ListMultiSelectInputBuilder<T, T> multiListSelect(Class<T> type) {
+			return Input.multiListSelect(type);
+		}
+
+		/**
+		 * Gets a builder to create a <em>list</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link MultiSelectListBox} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
+		 * {@link #multiListSelect(Class)} method can be used.
+		 * <p>
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
+		 * @return A new {@link ListMultiSelectInputBuilder}
+		 */
+		static <T, ITEM> ListMultiSelectInputBuilder<T, ITEM> multiListSelect(Class<T> type, Class<ITEM> itemType,
+				ItemConverter<T, ITEM> itemConverter) {
+			return Input.multiListSelect(type, itemType, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>list</em>
+		 * {@link MultiSelect} type {@link Input}, which uses a
+		 * {@link MultiSelectListBox} as input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @return A new {@link PropertyListMultiSelectInputBuilder}
+		 */
+		static <T> PropertyListMultiSelectInputBuilder<T> multiListSelect(final Property<T> selectionProperty) {
+			return Input.multiListSelect(selectionProperty);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>list</em>
+		 * {@link MultiSelect} type {@link Input}, which uses a
+		 * {@link MultiSelectListBox} as input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
+		 * @return A new {@link PropertyListMultiSelectInputBuilder}
+		 */
+		static <T> PropertyListMultiSelectInputBuilder<T> multiListSelect(final Property<T> selectionProperty,
+				Function<T, Optional<PropertyBox>> itemConverter) {
+			return Input.multiListSelect(selectionProperty, itemConverter);
 		}
 
 		/**

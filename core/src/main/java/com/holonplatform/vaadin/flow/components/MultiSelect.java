@@ -25,15 +25,19 @@ import java.util.stream.Stream;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator.ListMultiSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator.PropertyListMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.OptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 
 /**
- * A {@link Selectable} component in which multiple items can be selected at the same time. Selecting an item adds it to
- * the selection.
+ * A {@link Selectable} component in which multiple items can be selected at the
+ * same time. Selecting an item adds it to the selection.
  * 
  * @param <T> Selection item type
  * 
@@ -44,7 +48,8 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	/**
 	 * Adds the given item to the set of currently selected items.
 	 * <p>
-	 * By default this does not clear any previous selection. To do that, use {@link #deselectAll()}.
+	 * By default this does not clear any previous selection. To do that, use
+	 * {@link #deselectAll()}.
 	 * <p>
 	 * @param items Items to select (not null)
 	 */
@@ -53,7 +58,8 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	/**
 	 * Adds the given item to the set of currently selected items.
 	 * <p>
-	 * By default this does not clear any previous selection. To do that, use {@link #deselectAll()}.
+	 * By default this does not clear any previous selection. To do that, use
+	 * {@link #deselectAll()}.
 	 * <p>
 	 * @param items Items to select (not null)
 	 */
@@ -92,6 +98,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.components.Selectable#getSelectionMode()
 	 */
 	@Override
@@ -101,6 +108,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.components.Selectable#getFirstSelectedItem()
 	 */
 	@Override
@@ -110,6 +118,7 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.components.Selectable#select(java.lang.Object)
 	 */
 	@Override
@@ -120,7 +129,9 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.components.Selectable#deselect(java.lang.Object)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.components.Selectable#deselect(java.lang.Object)
 	 */
 	@Override
 	default void deselect(T item) {
@@ -131,13 +142,14 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	// ------- builders
 
 	/**
-	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a {@link CheckboxGroup} as input
-	 * component.
+	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a
+	 * {@link CheckboxGroup} as input component.
 	 * <p>
-	 * This builder can be used when the selection items type and the selection value type are consistent. Use
-	 * {@link #options(Class, Class, ItemConverter)} if not.
+	 * This builder can be used when the selection items type and the selection
+	 * value type are consistent. Use {@link #options(Class, Class, ItemConverter)}
+	 * if not.
 	 * <p>
-	 * @param <T> Value type
+	 * @param <T>  Value type
 	 * @param type Selection value type (not null)
 	 * @return A new {@link OptionsMultiSelectInputBuilder}
 	 */
@@ -146,19 +158,20 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	}
 
 	/**
-	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a {@link CheckboxGroup} as input
-	 * component.
+	 * Gets a builder to create a <em>options</em> {@link MultiSelect}, which uses a
+	 * {@link CheckboxGroup} as input component.
 	 * <p>
-	 * This builder can be used when the selection items type and the selection value type are not consistent (i.e. of
-	 * different type). When the the selection item and the selection value types are consistent, the
+	 * This builder can be used when the selection items type and the selection
+	 * value type are not consistent (i.e. of different type). When the the
+	 * selection item and the selection value types are consistent, the
 	 * {@link #options(Class)} method can be used.
 	 * <p>
-	 * @param <T> Value type
-	 * @param <ITEM> Item type
-	 * @param type Selection value type (not null)
-	 * @param itemType Selection items type (not null)
-	 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
-	 *        back (not null)
+	 * @param <T>           Value type
+	 * @param <ITEM>        Item type
+	 * @param type          Selection value type (not null)
+	 * @param itemType      Selection items type (not null)
+	 * @param itemConverter The item converter to use to convert a selection item
+	 *                      into a selection (Input) value and back (not null)
 	 * @return A new {@link OptionsMultiSelectInputBuilder}
 	 */
 	static <T, ITEM> OptionsMultiSelectInputBuilder<T, ITEM> options(Class<T> type, Class<ITEM> itemType,
@@ -167,10 +180,11 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	}
 
 	/**
-	 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect}, which uses a
-	 * {@link CheckboxGroup} as input component.
-	 * @param <T> Value type
-	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * Gets a builder to create a {@link Property} model based <em>options</em>
+	 * {@link MultiSelect}, which uses a {@link CheckboxGroup} as input component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
 	 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 	 */
 	static <T> PropertyOptionsMultiSelectInputBuilder<T> options(final Property<T> selectionProperty) {
@@ -178,17 +192,87 @@ public interface MultiSelect<T> extends Selectable<T>, Input<Set<T>>, ItemSet {
 	}
 
 	/**
-	 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect}, which uses a
-	 * {@link CheckboxGroup} as input component.
-	 * @param <T> Value type
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
-	 *        item
+	 * Gets a builder to create a {@link Property} model based <em>options</em>
+	 * {@link MultiSelect}, which uses a {@link CheckboxGroup} as input component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @param itemConverter     The function to use to convert a selection value
+	 *                          into the corresponding {@link PropertyBox} item
 	 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 	 */
 	static <T> PropertyOptionsMultiSelectInputBuilder<T> options(final Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
 		return OptionsMultiSelectConfigurator.create(selectionProperty, itemConverter);
+	}
+
+	// ------- list mode
+
+	/**
+	 * Gets a builder to create a <em>list</em> {@link MultiSelect}, which uses a
+	 * {@link MultiSelectListBox} as input component.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection
+	 * value type are consistent. Use {@link #list(Class, Class, ItemConverter)} if
+	 * not.
+	 * <p>
+	 * @param <T>  Value type
+	 * @param type Selection value type (not null)
+	 * @return A new {@link ListMultiSelectInputBuilder}
+	 */
+	static <T> ListMultiSelectInputBuilder<T, T> list(Class<T> type) {
+		return ListMultiSelectConfigurator.create(type);
+	}
+
+	/**
+	 * Gets a builder to create a <em>list</em> {@link MultiSelect}, which uses a
+	 * {@link MultiSelectListBox} as input component.
+	 * <p>
+	 * This builder can be used when the selection items type and the selection
+	 * value type are not consistent (i.e. of different type). When the the
+	 * selection item and the selection value types are consistent, the
+	 * {@link #list(Class)} method can be used.
+	 * <p>
+	 * @param <T>           Value type
+	 * @param <ITEM>        Item type
+	 * @param type          Selection value type (not null)
+	 * @param itemType      Selection items type (not null)
+	 * @param itemConverter The item converter to use to convert a selection item
+	 *                      into a selection (Input) value and back (not null)
+	 * @return A new {@link ListMultiSelectInputBuilder}
+	 */
+	static <T, ITEM> ListMultiSelectInputBuilder<T, ITEM> list(Class<T> type, Class<ITEM> itemType,
+			ItemConverter<T, ITEM> itemConverter) {
+		return ListMultiSelectConfigurator.create(type, itemType, itemConverter);
+	}
+
+	/**
+	 * Gets a builder to create a {@link Property} model based <em>list</em>
+	 * {@link MultiSelect}, which uses a {@link MultiSelectListBox} as input
+	 * component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @return A new {@link PropertyListMultiSelectInputBuilder}
+	 */
+	static <T> PropertyListMultiSelectInputBuilder<T> list(final Property<T> selectionProperty) {
+		return ListMultiSelectConfigurator.create(selectionProperty);
+	}
+
+	/**
+	 * Gets a builder to create a {@link Property} model based <em>list</em>
+	 * {@link MultiSelect}, which uses a {@link MultiSelectListBox} as input
+	 * component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @param itemConverter     The function to use to convert a selection value
+	 *                          into the corresponding {@link PropertyBox} item
+	 * @return A new {@link PropertyListMultiSelectInputBuilder}
+	 */
+	static <T> PropertyListMultiSelectInputBuilder<T> list(final Property<T> selectionProperty,
+			Function<T, Optional<PropertyBox>> itemConverter) {
+		return ListMultiSelectConfigurator.create(selectionProperty, itemConverter);
 	}
 
 }

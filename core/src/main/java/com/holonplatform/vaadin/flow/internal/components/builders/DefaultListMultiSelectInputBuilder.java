@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.holonplatform.core.Validator;
 import com.holonplatform.core.datastore.DataTarget;
@@ -38,22 +39,21 @@ import com.holonplatform.core.property.PropertyBox;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.Input;
+import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
-import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableInput;
-import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
+import com.holonplatform.vaadin.flow.components.ValidatableMultiSelect;
 import com.holonplatform.vaadin.flow.components.ValidationStatusHandler;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
-import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.ListSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ListMultiSelectConfigurator.ListMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
 import com.holonplatform.vaadin.flow.components.support.InputAdaptersContainer;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
-import com.holonplatform.vaadin.flow.internal.components.SingleSelectInputAdapter;
+import com.holonplatform.vaadin.flow.internal.components.MultiSelectInputAdapter;
 import com.holonplatform.vaadin.flow.internal.components.support.DeferrableItemLabelGenerator;
 import com.holonplatform.vaadin.flow.internal.components.support.ExceptionSwallowingSupplier;
-import com.holonplatform.vaadin.flow.internal.converters.ItemConverterConverter;
 import com.holonplatform.vaadin.flow.internal.utils.CollectionUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -62,12 +62,10 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.listbox.ListBox;
-import com.vaadin.flow.data.binder.Result;
-import com.vaadin.flow.data.binder.ValueContext;
-import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -75,18 +73,16 @@ import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.Element;
 
 /**
- * Default {@link ListSingleSelectInputBuilder} implementation.
+ * Default {@link ListMultiSelectInputBuilder} implementation.
  *
  * @param <T>    Value type
  * @param <ITEM> Item type
  *
  * @since 5.4.0
  */
-public class DefaultListSingleSelectInputBuilder<T, ITEM>
-		extends AbstractInputConfigurator<T, ValueChangeEvent<T>, ListBox<ITEM>, ListSingleSelectInputBuilder<T, ITEM>>
-		implements ListSingleSelectInputBuilder<T, ITEM> {
-
-	protected final DefaultHasEnabledConfigurator enabledConfigurator;
+public class DefaultListMultiSelectInputBuilder<T, ITEM> extends
+		AbstractInputConfigurator<Set<T>, ValueChangeEvent<Set<T>>, MultiSelectListBox<ITEM>, ListMultiSelectInputBuilder<T, ITEM>>
+		implements ListMultiSelectInputBuilder<T, ITEM> {
 
 	protected final List<SelectionListener<T>> selectionListeners = new LinkedList<>();
 
@@ -101,25 +97,21 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 
 	protected boolean customItemCaptionGenerator = false;
 
-	protected boolean failWhenItemNotPresent = false;
-
 	/**
 	 * Constructor.
 	 * @param type          Selection value type (not null)
 	 * @param itemType      Selection items type
 	 * @param itemConverter The item converter to use (not null)
 	 */
-	public DefaultListSingleSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
+	public DefaultListMultiSelectInputBuilder(Class<? extends T> type, Class<ITEM> itemType,
 			ItemConverter<T, ITEM> itemConverter) {
-		super(new ListBox<>(), InputAdaptersContainer.create());
+		super(new MultiSelectListBox<>(), InputAdaptersContainer.create());
 		ObjectUtils.argumentNotNull(type, "Selection value type must be not null");
 		ObjectUtils.argumentNotNull(itemType, "Selection item type must be not null");
 		ObjectUtils.argumentNotNull(itemConverter, "ItemConverter must be not null");
 		this.type = type;
 		this.itemType = itemType;
 		this.itemConverter = itemConverter;
-
-		enabledConfigurator = new DefaultHasEnabledConfigurator(getComponent());
 	}
 
 	protected Class<? extends T> getType() {
@@ -152,7 +144,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
-	protected ListSingleSelectInputBuilder<T, ITEM> getConfigurator() {
+	protected ListMultiSelectInputBuilder<T, ITEM> getConfigurator() {
 		return this;
 	}
 
@@ -162,8 +154,8 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 	 */
 	@Override
-	public SingleSelect<T> build() {
-		final ListBox<ITEM> component = getComponent();
+	public MultiSelect<T> build() {
+		final MultiSelectListBox<ITEM> component = getComponent();
 
 		// check DataProvider
 		if (!new ExceptionSwallowingSupplier<>(() -> component.getDataProvider()).get().isPresent()) {
@@ -182,76 +174,133 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 			component.setItems(items);
 		}
 
-		final Input<ITEM> itemInput = Input.builder(component).requiredPropertyHandler((f, c) -> {
+		final Input<Set<ITEM>> itemInput = Input.builder(component).requiredPropertyHandler((f, c) -> {
 			return false;
 			// TODO not supported by web component at time of writing
 			// return f.isRequiredIndicatorVisible();
 		}, (f, c, v) -> {
 			// TODO not supported by web component at time of writing
 			// f.setRequiredIndicatorVisible(v);
-		}).hasEnabledSupplier(f -> f).build();
+		}).isEmptySupplier(f -> f.getValue() == null || f.getValue().isEmpty()).build();
 
-		final Input<T> input = Input
-				.builder(itemInput,
-						failWhenItemNotPresent ? new ItemConverterConverter<>(itemConverter)
-								: new ListBoxItemConverterAdapter<>(component,
-										new ItemConverterConverter<>(itemConverter)))
-				.withValueChangeListeners(getValueChangeListeners())
-				.withReadonlyChangeListeners(getReadonlyChangeListeners()).withAdapters(getAdapters()).build();
+		final MultiSelectInputAdapter<T, ITEM, MultiSelectListBox<ITEM>> multiSelect = new MultiSelectInputAdapter<>(
+				itemInput, new MultiSelectListBoxItemConverterAdapter<>(component, itemConverter),
+				ms -> component.getDataProvider().refreshAll(), () -> {
+					if (component.getDataProvider() != null) {
+						return component.getDataProvider().fetch(new Query<>()).collect(Collectors.toSet());
+					}
+					return null;
+				});
+		selectionListeners.forEach(listener -> multiSelect.addSelectionListener(listener));
+		getValueChangeListeners().forEach(listener -> multiSelect.addValueChangeListener(listener));
+		getReadonlyChangeListeners().forEach(listener -> multiSelect.addReadonlyChangeListener(listener));
+		getAdapters().getAdapters().forEach((t, a) -> multiSelect.setAdapter(t, a));
 
-		final SingleSelect<T> select = new SingleSelectInputAdapter<>(input,
-				() -> component.getDataProvider().refreshAll());
-		selectionListeners.forEach(listener -> select.addSelectionListener(listener));
-		return select;
+		return multiSelect;
 	}
 
-	@SuppressWarnings("serial")
-	private static class ListBoxItemConverterAdapter<ITEM, T> implements Converter<ITEM, T> {
+	private static class MultiSelectListBoxItemConverterAdapter<T, ITEM> implements ItemConverter<T, ITEM> {
 
-		private final ListBox<ITEM> component;
-		private final Converter<ITEM, T> converter;
+		private final MultiSelectListBox<ITEM> component;
+		private final ItemConverter<T, ITEM> converter;
 
-		public ListBoxItemConverterAdapter(ListBox<ITEM> component, Converter<ITEM, T> converter) {
+		public MultiSelectListBoxItemConverterAdapter(MultiSelectListBox<ITEM> component,
+				ItemConverter<T, ITEM> converter) {
 			super();
 			this.component = component;
 			this.converter = converter;
 		}
 
 		@Override
-		public Result<T> convertToModel(ITEM value, ValueContext context) {
-			return converter.convertToModel(value, context);
+		public T getValue(ITEM item) {
+			return converter.getValue(item);
 		}
 
 		@Override
-		public ITEM convertToPresentation(T value, ValueContext context) {
-			final ITEM item = converter.convertToPresentation(value, context);
-			if (item != null) {
-				try {
-					component.setValue(item);
-				} catch (@SuppressWarnings("unused") IllegalArgumentException e) {
-					return null;
-				}
-			}
-			return item;
+		public Optional<ITEM> getItem(T value) {
+			return converter.getItem(value).filter(i -> component.getItemPosition(i) > -1);
 		}
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> withSelectionListener(SelectionListener<T> selectionListener) {
-		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
-		selectionListeners.add(selectionListener);
-		return getConfigurator();
+	public ValidatableListMultiSelectInputBuilder<T, ITEM> validatable() {
+		return new DefaultValidatableListMultiSelectInputBuilder<>(this);
 	}
 
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> renderer(ComponentRenderer<? extends Component, ITEM> renderer) {
+	public ListMultiSelectInputBuilder<T, ITEM> renderer(ComponentRenderer<? extends Component, ITEM> renderer) {
 		getComponent().setRenderer(renderer);
 		return getConfigurator();
 	}
 
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+	public ListMultiSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().addComponentAsFirst(component);
+		return getConfigurator();
+	}
+
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem, Component component) {
+		ObjectUtils.argumentNotNull(beforeItem, "Item must be not null");
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().prependComponents(beforeItem, component);
+		return getConfigurator();
+	}
+
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem, Component component) {
+		ObjectUtils.argumentNotNull(afterItem, "Item must be not null");
+		ObjectUtils.argumentNotNull(component, "Component must be not null");
+		getComponent().addComponents(afterItem, component);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+	 * #withSelectionListener(com.
+	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+	 */
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> withSelectionListener(SelectionListener<T> selectionListener) {
+		ObjectUtils.argumentNotNull(selectionListener, "SelectionListener must be not null");
+		selectionListeners.add(selectionListener);
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.
+	 * vaadin.flow.function.SerializablePredicate)
+	 */
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
+		ObjectUtils.argumentNotNull(itemEnabledProvider, "Item enabled predicate must be not null");
+		getComponent().setItemEnabledProvider(item -> itemEnabledProvider.test(item));
+		return getConfigurator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
+	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
+	 */
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 		ObjectUtils.argumentNotNull(itemCaptionGenerator, "ItemCaptionGenerator must be not null");
 		this.customItemCaptionGenerator = true;
 		getComponent().setRenderer(new TextRenderer<>(item -> itemCaptionGenerator.getItemCaption(item)));
@@ -266,7 +315,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * com.holonplatform.core.i18n.Localizable)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+	public ListMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		if (caption == null) {
 			itemCaptions.remove(item);
@@ -274,75 +323,6 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 			itemCaptions.put(item, caption);
 		}
 		return getConfigurator();
-	}
-
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
-		ObjectUtils.argumentNotNull(component, "Component must be not null");
-		getComponent().addComponentAsFirst(component);
-		return getConfigurator();
-	}
-
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem, Component component) {
-		ObjectUtils.argumentNotNull(beforeItem, "Item must be not null");
-		ObjectUtils.argumentNotNull(component, "Component must be not null");
-		getComponent().prependComponents(beforeItem, component);
-		return getConfigurator();
-	}
-
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem, Component component) {
-		ObjectUtils.argumentNotNull(afterItem, "Item must be not null");
-		ObjectUtils.argumentNotNull(component, "Component must be not null");
-		getComponent().addComponents(afterItem, component);
-		return getConfigurator();
-	}
-
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> failWhenItemNotPresent(boolean failWhenItemNotPresent) {
-		this.failWhenItemNotPresent = failWhenItemNotPresent;
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#
-	 * itemEnabledProvider(java.util. function.Predicate)
-	 */
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
-		ObjectUtils.argumentNotNull(itemEnabledProvider, "Item enabled predicate must be not null");
-		getComponent().setItemEnabledProvider(item -> itemEnabledProvider.test(item));
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
-	 * #items(java.lang.Object[])
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> items(ITEM... items) {
-		return items(Arrays.asList(items));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
-	 * #dataSource(com.vaadin.flow.data. provider.DataProvider)
-	 */
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
-		getComponent().setDataProvider(dataProvider);
-		return this;
 	}
 
 	/*
@@ -356,12 +336,12 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public <P extends Property> DatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+	public <P extends Property> DatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
 			DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter, Iterable<P> properties) {
 		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
 				DatastoreDataProvider.asPropertySet(properties), itemConverter, f -> null);
 		getComponent().setDataProvider(datastoreDataProvider);
-		return new DefaultDatastoreListSingleSelectInputBuilder<>(this, datastoreDataProvider);
+		return new DefaultDatastoreListMultiSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
@@ -373,11 +353,37 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * com.holonplatform.core.datastore.DataTarget)
 	 */
 	@Override
-	public DatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore, DataTarget<?> target) {
+	public DatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore, DataTarget<?> target) {
 		final DatastoreDataProvider<ITEM, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore, target,
 				getItemType());
 		getComponent().setDataProvider(datastoreDataProvider);
-		return new DefaultDatastoreListSingleSelectInputBuilder<>(this, datastoreDataProvider);
+		return new DefaultDatastoreListMultiSelectInputBuilder<>(this, datastoreDataProvider);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+	 * #dataSource(com.vaadin.flow.data. provider.DataProvider)
+	 */
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
+		getComponent().setDataProvider(dataProvider);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+	 * #items(java.lang.Object[])
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public ListMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
+		return items(Arrays.asList(items));
 	}
 
 	/*
@@ -388,7 +394,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * data.provider.ListDataProvider)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
+	public ListMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 		getComponent().setDataProvider(dataProvider);
 		return getConfigurator();
 	}
@@ -401,7 +407,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * java.lang.Iterable)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
+	public ListMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
 		this.items = CollectionUtils.iterableAsSet(items);
 		return getConfigurator();
 	}
@@ -413,21 +419,10 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * addItem(java.lang.Object)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> addItem(ITEM item) {
+	public ListMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 		ObjectUtils.argumentNotNull(item, "Item must be not null");
 		this.items.add(item);
 		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
-	 */
-	@Override
-	public ValidatableListSingleSelectInputBuilder<T, ITEM> validatable() {
-		return new DefaultValidatableListSingleSelectInputBuilder<>(this);
 	}
 
 	/*
@@ -438,7 +433,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * boolean)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+	public ListMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 		getComponent().setReadOnly(readOnly);
 		return getConfigurator();
 	}
@@ -451,8 +446,9 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * boolean)
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> required(boolean required) {
-		getComponent().setRequiredIndicatorVisible(required);
+	public ListMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+		// TODO not supported at time of writing
+		// getComponent().setRequiredIndicatorVisible(required);
 		return getConfigurator();
 	}
 
@@ -464,86 +460,95 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 	 * )
 	 */
 	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> required() {
+	public ListMultiSelectInputBuilder<T, ITEM> required() {
 		return required(true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
-	 * enabled(boolean)
-	 */
-	@Override
-	public ListSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
-		enabledConfigurator.enabled(enabled);
-		return getConfigurator();
 	}
 
 	// ------- extended builders
 
-	static class DefaultValidatableListSingleSelectInputBuilder<T, ITEM>
-			implements ValidatableListSingleSelectInputBuilder<T, ITEM> {
+	static class DefaultValidatableListMultiSelectInputBuilder<T, ITEM>
+			implements ValidatableListMultiSelectInputBuilder<T, ITEM> {
 
-		private final ListSingleSelectInputBuilder<T, ITEM> builder;
-		private final DefaultValidatableInputConfigurator<T> validatableInputConfigurator;
+		private final ListMultiSelectInputBuilder<T, ITEM> builder;
+		private final DefaultValidatableInputConfigurator<Set<T>> validatableInputConfigurator;
 
-		public DefaultValidatableListSingleSelectInputBuilder(ListSingleSelectInputBuilder<T, ITEM> builder) {
+		public DefaultValidatableListMultiSelectInputBuilder(ListMultiSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * NativeModeSingleSelectInputBuilder#renderer(com.vaadin.flow
-		 * .data.renderer.ComponentRenderer)
-		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> renderer(
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> width(String width) {
+			builder.width(width);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> height(String height) {
+			builder.height(height);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> renderer(
 				ComponentRenderer<? extends Component, ITEM> renderer) {
 			builder.renderer(renderer);
 			return this;
 		}
 
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
 			builder.withPrefixComponent(component);
 			return this;
 		}
 
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem,
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem,
 				Component component) {
 			builder.withComponentBefore(beforeItem, component);
 			return this;
 		}
 
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem,
-				Component component) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem, Component component) {
 			builder.withComponentAfter(afterItem, component);
-			return this;
-		}
-
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> failWhenItemNotPresent(boolean failWhenItemNotPresent) {
-			builder.failWhenItemNotPresent(failWhenItemNotPresent);
 			return this;
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#
-		 * itemEnabledProvider(java.util. function.Predicate)
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
+		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
 				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
@@ -552,14 +557,257 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
-		 * #dataSource(com.vaadin.flow.data .provider.DataProvider)
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
+		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
+		 * ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
+			builder.itemCaptionGenerator(itemCaptionGenerator);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaption(java.lang. Object,
+		 * com.holonplatform.core.i18n.Localizable)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+			builder.itemCaption(item, caption);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
+		 * flow.data.provider.ListDataProvider)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+		 * #withSelectionListener(com.
+		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withSelectionListener(
+				SelectionListener<T> selectionListener) {
+			builder.withSelectionListener(selectionListener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
+		 * boolean)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+			builder.readOnly(readOnly);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
+		 * withValueChangeListener(com.holonplatform
+		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
+			builder.withValueChangeListener(listener);
+			return this;
+		}
+
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+				ReadonlyChangeListener listener) {
+			builder.withReadonlyChangeListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * java.lang.String)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> id(String id) {
+			builder.id(id);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * visible(boolean)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
+			builder.visible(visible);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * elementConfiguration(java.util. function.Consumer)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
+			builder.elementConfiguration(element);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withAttachListener(
+				ComponentEventListener<AttachEvent> listener) {
+			builder.withAttachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withDetachListener(
+				ComponentEventListener<DetachEvent> listener) {
+			builder.withDetachListener(listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withThemeName(java.lang.String)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+			builder.withThemeName(themeName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+				DomEventListener listener) {
+			builder.withEventListener(eventType, listener);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+		 * java.lang.String)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+				DomEventListener listener, String filter) {
+			builder.withEventListener(eventType, listener, filter);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleNames(java.lang.String[])
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+			builder.styleNames(styleNames);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleName(java.lang.String)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
+			builder.styleName(styleName);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+		 * enabled(boolean)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+			builder.enabled(enabled);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(boolean deferredLocalization) {
+			builder.withDeferredLocalization(deferredLocalization);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
+		 * isDeferredLocalizationEnabled()
+		 */
+		@Override
+		public boolean isDeferredLocalizationEnabled() {
+			return builder.isDeferredLocalizationEnabled();
 		}
 
 		/*
@@ -573,10 +821,10 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 */
 		@SuppressWarnings("rawtypes")
 		@Override
-		public <P extends Property> ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(
+		public <P extends Property> ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(
 				Datastore datastore, DataTarget<?> target, Function<PropertyBox, ITEM> itemConverter,
 				Iterable<P> properties) {
-			return new DefaultValidatableDatastoreListSingleSelectInputBuilder<>(
+			return new DefaultValidatableDatastoreListMultiSelectInputBuilder<>(
 					builder.dataSource(datastore, target, itemConverter, properties));
 		}
 
@@ -589,9 +837,35 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * com.holonplatform.core.datastore.DataTarget)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(Datastore datastore,
 				DataTarget<?> target) {
-			return new DefaultValidatableDatastoreListSingleSelectInputBuilder<>(builder.dataSource(datastore, target));
+			return new DefaultValidatableDatastoreListMultiSelectInputBuilder<>(builder.dataSource(datastore, target));
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #dataSource(com.vaadin.flow.data .provider.DataProvider)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> dataSource(DataProvider<ITEM, ?> dataProvider) {
+			builder.dataSource(dataProvider);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #items(java.lang.Iterable)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
+			builder.items(items);
+			return this;
 		}
 
 		/*
@@ -603,7 +877,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 */
 		@SuppressWarnings("unchecked")
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> items(ITEM... items) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> items(ITEM... items) {
 			builder.items(items);
 			return this;
 		}
@@ -611,386 +885,19 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com
-		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
-		 * ItemCaptionGenerator)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
-				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
-			builder.itemCaptionGenerator(itemCaptionGenerator);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#itemCaption(java.lang. Object,
-		 * com.holonplatform.core.i18n.Localizable)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
-			builder.itemCaption(item, caption);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.
-		 * flow.data.provider.ListDataProvider)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
-			builder.dataSource(dataProvider);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
-		 * #withSelectionListener(com.
-		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #addItem(java.lang.Object)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withSelectionListener(
-				SelectionListener<T> selectionListener) {
-			builder.withSelectionListener(selectionListener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
-		 * boolean)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
-			builder.readOnly(readOnly);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
-		 * withValueChangeListener(com.holonplatform
-		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
-			builder.withValueChangeListener(listener);
-			return this;
-		}
-
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
-				ReadonlyChangeListener listener) {
-			builder.withReadonlyChangeListener(listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
-		 * boolean)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> required(boolean required) {
-			validatableInputConfigurator.required(required);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
-		 * )
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> required() {
-			return required(true);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> id(String id) {
-			builder.id(id);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * visible(boolean)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
-			builder.visible(visible);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * elementConfiguration(java.util. function.Consumer)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
-			builder.elementConfiguration(element);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withAttachListener(
-				ComponentEventListener<AttachEvent> listener) {
-			builder.withAttachListener(listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withDetachListener(
-				ComponentEventListener<DetachEvent> listener) {
-			builder.withDetachListener(listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
-		 * withThemeName(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
-			builder.withThemeName(themeName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
-		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
-				DomEventListener listener) {
-			builder.withEventListener(eventType, listener);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
-		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
-				DomEventListener listener, String filter) {
-			builder.withEventListener(eventType, listener, filter);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
-		 * styleNames(java.lang.String[])
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
-			builder.styleNames(styleNames);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
-		 * styleName(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
-			builder.styleName(styleName);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
-		 * enabled(boolean)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
-			builder.enabled(enabled);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(boolean deferredLocalization) {
-			builder.withDeferredLocalization(deferredLocalization);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
-		 * isDeferredLocalizationEnabled()
-		 */
-		@Override
-		public boolean isDeferredLocalizationEnabled() {
-			return builder.isDeferredLocalizationEnabled();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> width(String width) {
-			builder.width(width);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> height(String height) {
-			builder.height(height);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minWidth(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
-			builder.minWidth(minWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxWidth(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
-			builder.maxWidth(maxWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minHeight(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
-			builder.minHeight(minHeight);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxHeight(java.lang.String)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
-			builder.maxHeight(maxHeight);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(
-		 * java.lang.Iterable)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> items(Iterable<ITEM> items) {
-			builder.items(items);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#
-		 * addItem(java.lang.Object)
-		 */
-		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> addItem(ITEM item) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> addItem(ITEM item) {
 			builder.addItem(item);
 			return this;
 		}
 
 		@Override
-		public <A> ValidatableListSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
-				Function<Input<T>, A> adapter) {
+		public <A> ValidatableListMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
 			builder.withAdapter(type, adapter);
 			return this;
 		}
@@ -1002,7 +909,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#withValidator(com. holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> withValidator(Validator<T> validator) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> withValidator(Validator<Set<T>> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -1015,8 +922,8 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> validationStatusHandler(
-				ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
+				ValidationStatusHandler<ValidatableInput<Set<T>>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
 		}
@@ -1028,7 +935,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> validateOnValueChange(boolean validateOnValueChange) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> validateOnValueChange(boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
 		}
@@ -1040,7 +947,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#required(com.holonplatform. core.Validator)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> required(Validator<T> validator) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> required(Validator<Set<T>> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -1053,9 +960,34 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableListSingleSelectInputBuilder<T, ITEM> required(Localizable message) {
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * boolean)
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+			validatableInputConfigurator.required(required);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * )
+		 */
+		@Override
+		public ValidatableListMultiSelectInputBuilder<T, ITEM> required() {
+			return required(true);
 		}
 
 		/*
@@ -1066,61 +998,83 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * #build()
 		 */
 		@Override
-		public ValidatableSingleSelect<T> build() {
-			return validatableInputConfigurator.configure(ValidatableSingleSelect.from(builder.build()));
+		public ValidatableMultiSelect<T> build() {
+			return validatableInputConfigurator.configure(ValidatableMultiSelect.from(builder.build()));
 		}
 
 	}
 
-	static class DefaultDatastoreListSingleSelectInputBuilder<T, ITEM>
-			implements DatastoreListSingleSelectInputBuilder<T, ITEM> {
+	static class DefaultDatastoreListMultiSelectInputBuilder<T, ITEM>
+			implements DatastoreListMultiSelectInputBuilder<T, ITEM> {
 
-		private final ListSingleSelectInputBuilder<T, ITEM> builder;
+		private final DefaultListMultiSelectInputBuilder<T, ITEM> builder;
 		private final DatastoreDataProvider<ITEM, ?> datastoreDataProvider;
 
-		public DefaultDatastoreListSingleSelectInputBuilder(ListSingleSelectInputBuilder<T, ITEM> builder,
+		public DefaultDatastoreListMultiSelectInputBuilder(DefaultListMultiSelectInputBuilder<T, ITEM> builder,
 				DatastoreDataProvider<ITEM, ?> datastoreDataProvider) {
 			super();
 			this.builder = builder;
 			this.datastoreDataProvider = datastoreDataProvider;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * NativeModeSingleSelectInputBuilder#renderer(com.vaadin.flow
-		 * .data.renderer.ComponentRenderer)
-		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> renderer(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> width(String width) {
+			builder.width(width);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> height(String height) {
+			builder.height(height);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> renderer(
 				ComponentRenderer<? extends Component, ITEM> renderer) {
 			builder.renderer(renderer);
 			return this;
 		}
 
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
 			builder.withPrefixComponent(component);
 			return this;
 		}
 
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem,
-				Component component) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem, Component component) {
 			builder.withComponentBefore(beforeItem, component);
 			return this;
 		}
 
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem, Component component) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem, Component component) {
 			builder.withComponentAfter(afterItem, component);
-			return this;
-		}
-
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> failWhenItemNotPresent(boolean failWhenItemNotPresent) {
-			builder.failWhenItemNotPresent(failWhenItemNotPresent);
 			return this;
 		}
 
@@ -1128,11 +1082,22 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#
-		 * itemEnabledProvider(java.util. function.Predicate)
+		 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> validatable() {
+			return new DefaultValidatableDatastoreListMultiSelectInputBuilder<>(this);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com
+		 * .vaadin.flow.function.SerializablePredicate)
+		 */
+		@Override
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
 		}
@@ -1146,7 +1111,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ItemCaptionGenerator)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
@@ -1160,7 +1125,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -1173,20 +1138,9 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> validatable() {
-			return new DefaultValidatableDatastoreListSingleSelectInputBuilder<>(this);
 		}
 
 		/*
@@ -1197,7 +1151,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * boolean)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -1210,14 +1164,14 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}
 
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
 				ReadonlyChangeListener listener) {
 			builder.withReadonlyChangeListener(listener);
 			return this;
@@ -1231,7 +1185,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * boolean)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> required(boolean required) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> required(boolean required) {
 			builder.required(required);
 			return this;
 		}
@@ -1244,7 +1198,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * )
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> required() {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> required() {
 			return required(true);
 		}
 
@@ -1256,7 +1210,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.lang.String)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> id(String id) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -1268,7 +1222,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * visible(boolean)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -1280,7 +1234,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> elementConfiguration(Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
 		}
@@ -1292,7 +1246,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withAttachListener(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -1305,7 +1259,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withDetachListener(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -1319,7 +1273,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withThemeName(java.lang.String)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1332,7 +1286,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1347,7 +1301,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.lang.String)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1362,7 +1316,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withSelectionListener(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1375,7 +1329,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * styleNames(java.lang.String[])
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1387,7 +1341,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * styleName(java.lang.String)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1400,7 +1354,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * enabled(boolean)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1412,7 +1366,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(boolean deferredLocalization) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
 		}
@@ -1429,83 +1383,9 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 			return builder.isDeferredLocalizationEnabled();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
-		 * java.lang.String)
-		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> width(String width) {
-			builder.width(width);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
-		 * java.lang.String)
-		 */
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> height(String height) {
-			builder.height(height);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minWidth(java.lang.String)
-		 */
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
-			builder.minWidth(minWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxWidth(java.lang.String)
-		 */
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
-			builder.maxWidth(maxWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minHeight(java.lang.String)
-		 */
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
-			builder.minHeight(minHeight);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxHeight(java.lang.String)
-		 */
-		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
-			builder.maxHeight(maxHeight);
-			return this;
-		}
-
-		@Override
-		public <A> DatastoreListSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
-				Function<Input<T>, A> adapter) {
+		public <A> DatastoreListMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
 			builder.withAdapter(type, adapter);
 			return this;
 		}
@@ -1519,7 +1399,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * QueryConfigurationProvider)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			datastoreDataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -1533,7 +1413,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> withDefaultQuerySort(QuerySort defaultQuerySort) {
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(QuerySort defaultQuerySort) {
 			datastoreDataProvider.setDefaultSort(defaultQuerySort);
 			return this;
 		}
@@ -1546,7 +1426,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
 				Function<ITEM, Object> itemIdentifierProvider) {
 			datastoreDataProvider.setItemIdentifier(itemIdentifierProvider);
 			return this;
@@ -1560,7 +1440,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public DatastoreListSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
+		public DatastoreListMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			datastoreDataProvider.setQuerySortOrderConverter(querySortOrderConverter);
 			return this;
@@ -1572,34 +1452,97 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 		 */
 		@Override
-		public SingleSelect<T> build() {
+		public MultiSelect<T> build() {
 			return builder.build();
 		}
 
 	}
 
-	static class DefaultValidatableDatastoreListSingleSelectInputBuilder<T, ITEM>
-			implements ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> {
+	static class DefaultValidatableDatastoreListMultiSelectInputBuilder<T, ITEM>
+			implements ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> {
 
-		private final DatastoreListSingleSelectInputBuilder<T, ITEM> builder;
-		private final DefaultValidatableInputConfigurator<T> validatableInputConfigurator;
+		private final DatastoreListMultiSelectInputBuilder<T, ITEM> builder;
+		private final DefaultValidatableInputConfigurator<Set<T>> validatableInputConfigurator;
 
-		public DefaultValidatableDatastoreListSingleSelectInputBuilder(
-				DatastoreListSingleSelectInputBuilder<T, ITEM> builder) {
+		public DefaultValidatableDatastoreListMultiSelectInputBuilder(
+				DatastoreListMultiSelectInputBuilder<T, ITEM> builder) {
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 		}
 
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> width(String width) {
+			builder.width(width);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> height(String height) {
+			builder.height(height);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
+			builder.minWidth(minWidth);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
+			builder.maxWidth(maxWidth);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
+			builder.minHeight(minHeight);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
+			builder.maxHeight(maxHeight);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> renderer(
+				ComponentRenderer<? extends Component, ITEM> renderer) {
+			builder.renderer(renderer);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
+			builder.withPrefixComponent(component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem,
+				Component component) {
+			builder.withComponentBefore(beforeItem, component);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem,
+				Component component) {
+			builder.withComponentAfter(afterItem, component);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasItemEnableConfigurator#
-		 * itemEnabledProvider(java.util. function.Predicate)
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
+		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> itemEnabledProvider(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> itemEnabledProvider(
 				Predicate<ITEM> itemEnabledProvider) {
 			builder.itemEnabledProvider(itemEnabledProvider);
 			return this;
@@ -1609,53 +1552,12 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * (non-Javadoc)
 		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * NativeModeSingleSelectInputBuilder#renderer(com.vaadin.flow
-		 * .data.renderer.ComponentRenderer)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> renderer(
-				ComponentRenderer<? extends Component, ITEM> renderer) {
-			builder.renderer(renderer);
-			return this;
-		}
-
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withPrefixComponent(Component component) {
-			builder.withPrefixComponent(component);
-			return this;
-		}
-
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withComponentBefore(ITEM beforeItem,
-				Component component) {
-			builder.withComponentBefore(beforeItem, component);
-			return this;
-		}
-
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withComponentAfter(ITEM afterItem,
-				Component component) {
-			builder.withComponentAfter(afterItem, component);
-			return this;
-		}
-
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> failWhenItemNotPresent(
-				boolean failWhenItemNotPresent) {
-			builder.failWhenItemNotPresent(failWhenItemNotPresent);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com
+		 * OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
 		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
 		 * ItemCaptionGenerator)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> itemCaptionGenerator(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> itemCaptionGenerator(
 				ItemCaptionGenerator<ITEM> itemCaptionGenerator) {
 			builder.itemCaptionGenerator(itemCaptionGenerator);
 			return this;
@@ -1665,11 +1567,11 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * (non-Javadoc)
 		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#itemCaption(java.lang. Object,
+		 * OptionsModeMultiSelectInputBuilder#itemCaption(java.lang. Object,
 		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> itemCaption(ITEM item, Localizable caption) {
 			builder.itemCaption(item, caption);
 			return this;
 		}
@@ -1678,11 +1580,11 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * (non-Javadoc)
 		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.
+		 * OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> dataSource(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> dataSource(
 				ListDataProvider<ITEM> dataProvider) {
 			builder.dataSource(dataProvider);
 			return this;
@@ -1697,7 +1599,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withSelectionListener(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withSelectionListener(
 				SelectionListener<T> selectionListener) {
 			builder.withSelectionListener(selectionListener);
 			return this;
@@ -1711,7 +1613,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * boolean)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> readOnly(boolean readOnly) {
 			builder.readOnly(readOnly);
 			return this;
 		}
@@ -1724,42 +1626,17 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withValueChangeListener(
-				ValueChangeListener<T, ValueChangeEvent<T>> listener) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withValueChangeListener(
+				ValueChangeListener<Set<T>, ValueChangeEvent<Set<T>>> listener) {
 			builder.withValueChangeListener(listener);
 			return this;
 		}
 
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withReadonlyChangeListener(
 				ReadonlyChangeListener listener) {
 			builder.withReadonlyChangeListener(listener);
 			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
-		 * boolean)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> required(boolean required) {
-			validatableInputConfigurator.required(required);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
-		 * )
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> required() {
-			return required(true);
 		}
 
 		/*
@@ -1770,7 +1647,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> id(String id) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> id(String id) {
 			builder.id(id);
 			return this;
 		}
@@ -1782,7 +1659,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * visible(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> visible(boolean visible) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> visible(boolean visible) {
 			builder.visible(visible);
 			return this;
 		}
@@ -1794,7 +1671,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> elementConfiguration(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> elementConfiguration(
 				Consumer<Element> element) {
 			builder.elementConfiguration(element);
 			return this;
@@ -1807,7 +1684,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withAttachListener(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withAttachListener(
 				ComponentEventListener<AttachEvent> listener) {
 			builder.withAttachListener(listener);
 			return this;
@@ -1820,7 +1697,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withDetachListener(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withDetachListener(
 				ComponentEventListener<DetachEvent> listener) {
 			builder.withDetachListener(listener);
 			return this;
@@ -1834,7 +1711,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withThemeName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withThemeName(String themeName) {
 			builder.withThemeName(themeName);
 			return this;
 		}
@@ -1847,7 +1724,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener) {
 			builder.withEventListener(eventType, listener);
 			return this;
@@ -1862,7 +1739,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withEventListener(String eventType,
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withEventListener(String eventType,
 				DomEventListener listener, String filter) {
 			builder.withEventListener(eventType, listener, filter);
 			return this;
@@ -1875,7 +1752,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * styleNames(java.lang.String[])
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> styleNames(String... styleNames) {
 			builder.styleNames(styleNames);
 			return this;
 		}
@@ -1887,7 +1764,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * styleName(java.lang.String)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> styleName(String styleName) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> styleName(String styleName) {
 			builder.styleName(styleName);
 			return this;
 		}
@@ -1900,7 +1777,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * enabled(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> enabled(boolean enabled) {
 			builder.enabled(enabled);
 			return this;
 		}
@@ -1912,7 +1789,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withDeferredLocalization(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withDeferredLocalization(
 				boolean deferredLocalization) {
 			builder.withDeferredLocalization(deferredLocalization);
 			return this;
@@ -1933,87 +1810,13 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> width(String width) {
-			builder.width(width);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
-		 * java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> height(String height) {
-			builder.height(height);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minWidth(java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> minWidth(String minWidth) {
-			builder.minWidth(minWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxWidth(java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> maxWidth(String maxWidth) {
-			builder.maxWidth(maxWidth);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minHeight(java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> minHeight(String minHeight) {
-			builder.minHeight(minHeight);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxHeight(java.lang.String)
-		 */
-		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> maxHeight(String maxHeight) {
-			builder.maxHeight(maxHeight);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
 		 * DatastoreDataProviderConfigurator#
 		 * withQueryConfigurationProvider(com.holonplatform.core.query.
 		 * QueryConfigurationProvider)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withQueryConfigurationProvider(
 				QueryConfigurationProvider queryConfigurationProvider) {
 			builder.withQueryConfigurationProvider(queryConfigurationProvider);
 			return this;
@@ -2027,7 +1830,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withDefaultQuerySort(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withDefaultQuerySort(
 				QuerySort defaultQuerySort) {
 			builder.withDefaultQuerySort(defaultQuerySort);
 			return this;
@@ -2041,7 +1844,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> itemIdentifierProvider(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> itemIdentifierProvider(
 				Function<ITEM, Object> itemIdentifierProvider) {
 			builder.itemIdentifierProvider(itemIdentifierProvider);
 			return this;
@@ -2055,15 +1858,15 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * java.util.function.Function)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> querySortOrderConverter(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> querySortOrderConverter(
 				Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			builder.querySortOrderConverter(querySortOrderConverter);
 			return this;
 		}
 
 		@Override
-		public <A> ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
-				Function<Input<T>, A> adapter) {
+		public <A> ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withAdapter(Class<A> type,
+				Function<Input<Set<T>>, A> adapter) {
 			builder.withAdapter(type, adapter);
 			return this;
 		}
@@ -2075,7 +1878,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#withValidator(com. holonplatform.core.Validator)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> withValidator(Validator<T> validator) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> withValidator(Validator<Set<T>> validator) {
 			validatableInputConfigurator.withValidator(validator);
 			return this;
 		}
@@ -2088,8 +1891,8 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> validationStatusHandler(
-				ValidationStatusHandler<ValidatableInput<T>> validationStatusHandler) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> validationStatusHandler(
+				ValidationStatusHandler<ValidatableInput<Set<T>>> validationStatusHandler) {
 			validatableInputConfigurator.validationStatusHandler(validationStatusHandler);
 			return this;
 		}
@@ -2101,7 +1904,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> validateOnValueChange(
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> validateOnValueChange(
 				boolean validateOnValueChange) {
 			validatableInputConfigurator.validateOnValueChange(validateOnValueChange);
 			return this;
@@ -2114,7 +1917,7 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * ValidatableInputConfigurator#required(com.holonplatform. core.Validator)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> required(Validator<T> validator) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> required(Validator<Set<T>> validator) {
 			validatableInputConfigurator.required(validator);
 			return this;
 		}
@@ -2127,9 +1930,34 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * core.i18n.Localizable)
 		 */
 		@Override
-		public ValidatableDatastoreListSingleSelectInputBuilder<T, ITEM> required(Localizable message) {
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> required(Localizable message) {
 			validatableInputConfigurator.required(message);
 			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * boolean)
+		 */
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> required(boolean required) {
+			validatableInputConfigurator.required(required);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * )
+		 */
+		@Override
+		public ValidatableDatastoreListMultiSelectInputBuilder<T, ITEM> required() {
+			return required(true);
 		}
 
 		/*
@@ -2140,8 +1968,8 @@ public class DefaultListSingleSelectInputBuilder<T, ITEM>
 		 * #build()
 		 */
 		@Override
-		public ValidatableSingleSelect<T> build() {
-			return validatableInputConfigurator.configure(ValidatableSingleSelect.from(builder.build()));
+		public ValidatableMultiSelect<T> build() {
+			return validatableInputConfigurator.configure(ValidatableMultiSelect.from(builder.build()));
 		}
 
 	}
