@@ -15,13 +15,15 @@
  */
 package com.holonplatform.vaadin.flow.components.events;
 
+import java.util.EventListener;
+
 /**
  * A listener for {@link InvalidChangeEvent}s.
  * 
  * @since 5.2.0
  */
 @FunctionalInterface
-public interface InvalidChangeEventListener {
+public interface InvalidChangeEventListener extends EventListener {
 
 	/**
 	 * Invoked when an invalid change event has been fired.

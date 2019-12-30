@@ -64,6 +64,8 @@ import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator
 import com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ItemListingContextMenuBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnReorderListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnResizeListener;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
@@ -82,6 +84,8 @@ import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasEnab
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasSizeConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultHasStyleConfigurator;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultShortcutConfigurator;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultColumnReorderEvent;
+import com.holonplatform.vaadin.flow.internal.components.events.DefaultColumnResizeEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValidationStatusEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultGroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.internal.components.events.DefaultItemEditorEvent;
@@ -3445,6 +3449,32 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			ObjectUtils.argumentNotNull(listener, "Drop listener must be not null");
 			instance.getGrid()
 					.addDropListener(event -> listener.onDndEvent(new DefaultItemListingDropEvent<>(instance, event)));
+			return getConfigurator();
+		}
+
+		@Override
+		public C withColumnResizeListener(ColumnResizeListener<T, P> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			instance.getGrid().addColumnResizeListener(event -> {
+				instance.getProperty(event.getResizedColumn()).ifPresent(property -> {
+					listener.onColumnResizeEvent(new DefaultColumnResizeEvent<>(instance, event.isFromClient(),
+							property, event.getResizedColumn().getWidth()));
+				});
+			});
+			return getConfigurator();
+		}
+
+		@Override
+		public C withColumnReorderListener(ColumnReorderListener<T, P> listener) {
+			ObjectUtils.argumentNotNull(listener, "Listener must be not null");
+			instance.getGrid().addColumnReorderListener(event -> {
+				final List<Grid.Column<T>> columns = event.getColumns();
+				if (columns != null) {
+					listener.onColumnReorderEvent(new DefaultColumnReorderEvent<>(instance, event.isFromClient(),
+							columns.stream().map(c -> instance.getProperty(c).orElse(null)).filter(c -> c != null)
+									.collect(Collectors.toList())));
+				}
+			});
 			return getConfigurator();
 		}
 

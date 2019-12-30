@@ -53,6 +53,8 @@ import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder.DatastorePropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.ShortcutConfigurator;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnReorderListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnResizeListener;
 import com.holonplatform.vaadin.flow.components.events.GroupValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
@@ -101,7 +103,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/**
 	 * Constructor.
-	 * @param <P> Property type
+	 * @param <P>        Property type
 	 * @param properties Property set (not null)
 	 */
 	public <P extends Property<?>> DefaultPropertyListing(Iterable<P> properties) {
@@ -117,6 +119,7 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
 	 */
 	@Override
@@ -134,7 +137,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#isReadOnlyByDefault(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * isReadOnlyByDefault(java.lang.Object)
 	 */
 	@Override
 	protected boolean isReadOnlyByDefault(Property<?> property) {
@@ -143,7 +148,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getColumnKey(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getColumnKey(java.lang.Object)
 	 */
 	@Override
 	protected String generateColumnKey(Property<?> property) {
@@ -159,8 +166,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultColumnHeader(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getDefaultColumnHeader(java.lang.Object)
 	 */
 	@Override
 	protected Optional<Localizable> getDefaultColumnHeader(Property<?> property) {
@@ -177,8 +185,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#preProcessConfiguration(com.holonplatform.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * preProcessConfiguration(com.holonplatform.
 	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
@@ -198,7 +207,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getSortPropertyName(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getSortPropertyName(java.lang.Object)
 	 */
 	@Override
 	protected Optional<String> getSortPropertyName(Property<?> property) {
@@ -210,8 +221,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#generateDefaultGridColumn(com.holonplatform
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * generateDefaultGridColumn(com.holonplatform
 	 * .vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@SuppressWarnings("unchecked")
@@ -240,7 +252,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyType(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getPropertyType(java.lang.Object)
 	 */
 	@Override
 	protected Class<?> getPropertyType(Property<?> property) {
@@ -249,8 +263,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueGetter(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getPropertyValueGetter(java.lang.Object)
 	 */
 	@Override
 	protected ValueProvider<PropertyBox, ?> getPropertyValueGetter(Property<?> property) {
@@ -259,8 +274,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getPropertyValueSetter(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getPropertyValueSetter(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -273,7 +289,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#buildPropertyEditor(com.holonplatform.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * buildPropertyEditor(com.holonplatform.
 	 * vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@SuppressWarnings("unchecked")
@@ -296,9 +314,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#getDefaultPropertyValidators(java.lang.
-	 * Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * getDefaultPropertyValidators(java.lang. Object)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -308,7 +326,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#refreshVirtualProperties()
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
+	 * refreshVirtualProperties()
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -335,8 +355,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
-		 * getItemListing()
+		 * 
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.
+		 * AbstractItemListingConfigurator# getItemListing()
 		 */
 		@Override
 		protected PropertyListing getItemListing() {
@@ -345,8 +366,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.AbstractItemListingConfigurator#
-		 * getConfigurator()
+		 * 
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.
+		 * AbstractItemListingConfigurator# getConfigurator()
 		 */
 		@Override
 		public DefaultPropertyListingBuilder getConfigurator() {
@@ -355,9 +377,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
-		 * .ValueProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withColumn(com.vaadin.flow.function .ValueProvider)
 		 */
 		@Override
 		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withColumn(
@@ -368,9 +391,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withColumn(com.holonplatform.
-		 * core.property.VirtualProperty)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withColumn(com.holonplatform. core.property.VirtualProperty)
 		 */
 		@Override
 		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withColumn(
@@ -382,9 +406,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
-		 * .function.ValueProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withComponentColumn(com.vaadin.flow .function.ValueProvider)
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
@@ -395,8 +420,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withComponentColumn(com.
-		 * holonplatform.core.property.VirtualProperty)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withComponentColumn(com. holonplatform.core.property.VirtualProperty)
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, PropertyListingBuilder> withComponentColumn(
@@ -409,9 +436,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withValidator(com.holonplatform
-		 * .core.property.Property, com.holonplatform.core.Validator)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withValidator(com.holonplatform .core.property.Property,
+		 * com.holonplatform.core.Validator)
 		 */
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
@@ -424,9 +453,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
-		 * property.Property, com.holonplatform.core.property.PropertyRenderer)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #editor(com.holonplatform.core. property.Property,
+		 * com.holonplatform.core.property.PropertyRenderer)
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
@@ -438,9 +469,12 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator#
-		 * defaultValue(com.holonplatform.core.property.Property, java.util.function.Supplier)
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
+		 * PropertySetInputGroupConfigurator#
+		 * defaultValue(com.holonplatform.core.property.Property,
+		 * java.util.function.Supplier)
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
@@ -452,8 +486,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator#
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
+		 * PropertySetInputGroupConfigurator#
 		 * withValueChangeListener(com.holonplatform.core.property.Property,
 		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
@@ -468,9 +504,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPropertySetDatastoreDataProviderConfigurator#dataSource(
-		 * com.holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * HasPropertySetDatastoreDataProviderConfigurator#dataSource(
+		 * com.holonplatform.core.datastore.Datastore,
+		 * com.holonplatform.core.datastore.DataTarget)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder dataSource(Datastore datastore, DataTarget<?> target) {
@@ -482,7 +520,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
 		 */
 		@Override
 		public PropertyListing build() {
@@ -505,9 +545,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withColumn(com.holonplatform.
-		 * core.property.VirtualProperty)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withColumn(com.holonplatform. core.property.VirtualProperty)
 		 */
 		@Override
 		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withColumn(
@@ -520,9 +561,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withColumn(com.vaadin.flow.function
-		 * .ValueProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withColumn(com.vaadin.flow.function .ValueProvider)
 		 */
 		@Override
 		public <X> ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withColumn(
@@ -533,8 +575,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withComponentColumn(com.
-		 * holonplatform.core.property.VirtualProperty)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withComponentColumn(com. holonplatform.core.property.VirtualProperty)
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withComponentColumn(
@@ -548,9 +592,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withComponentColumn(com.vaadin.flow
-		 * .function.ValueProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withComponentColumn(com.vaadin.flow .function.ValueProvider)
 		 */
 		@Override
 		public ItemListingColumnBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> withComponentColumn(
@@ -561,9 +606,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#withValidator(com.holonplatform
-		 * .core.property.Property, com.holonplatform.core.Validator)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #withValidator(com.holonplatform .core.property.Property,
+		 * com.holonplatform.core.Validator)
 		 */
 		@Override
 		public <V> DatastorePropertyListingBuilder withValidator(Property<V> property, Validator<? super V> validator) {
@@ -573,9 +620,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator#editor(com.holonplatform.core.
-		 * property.Property, com.holonplatform.core.property.PropertyRenderer)
+		 * com.holonplatform.vaadin.flow.components.builders.PropertyListingConfigurator
+		 * #editor(com.holonplatform.core. property.Property,
+		 * com.holonplatform.core.property.PropertyRenderer)
 		 */
 		@Override
 		public <T> DatastorePropertyListingBuilder editor(Property<T> property,
@@ -586,8 +635,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
-		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query.
+		 * QueryConfigurationProvider)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withQueryConfigurationProvider(
@@ -598,8 +650,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
@@ -610,8 +663,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#itemIdentifierProvider(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#itemIdentifierProvider(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -623,8 +677,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#querySortOrderConverter(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#querySortOrderConverter(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -636,9 +691,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorComponent(java.lang.Object,
-		 * java.util.function.Function)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * editorComponent(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder editorComponent(Property<?> property,
@@ -649,8 +705,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsFirst(java.lang.Object)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * displayAsFirst(java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder displayAsFirst(Property<?> property) {
@@ -660,8 +718,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAsLast(java.lang.Object)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * displayAsLast(java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder displayAsLast(Property<?> property) {
@@ -671,9 +731,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayBefore(java.lang.Object,
-		 * java.lang.Object)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * displayBefore(java.lang.Object, java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder displayBefore(Property<?> property, Property<?> beforeProperty) {
@@ -683,8 +744,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#displayAfter(java.lang.Object,
-		 * java.lang.Object)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * displayAfter(java.lang.Object, java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder displayAfter(Property<?> property, Property<?> afterProperty) {
@@ -694,7 +757,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visibleColumns(java.util.List)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * visibleColumns(java.util.List)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder visibleColumns(List<? extends Property<?>> visibleColumns) {
@@ -704,7 +770,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * sortable(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder sortable(boolean sortable) {
@@ -714,8 +783,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortable(java.lang.Object,
-		 * boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * sortable(java.lang.Object, boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder sortable(Property<?> property, boolean sortable) {
@@ -725,7 +796,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * resizable(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder resizable(boolean resizable) {
@@ -735,8 +809,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#resizable(java.lang.Object,
-		 * boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * resizable(java.lang.Object, boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder resizable(Property<?> property, boolean resizable) {
@@ -746,8 +822,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#visible(java.lang.Object,
-		 * boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * visible(java.lang.Object, boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder visible(Property<?> property, boolean visible) {
@@ -757,8 +835,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#readOnly(java.lang.Object,
-		 * boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * readOnly(java.lang.Object, boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder readOnly(Property<?> property, boolean readOnly) {
@@ -768,8 +848,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(java.lang.Object,
-		 * boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * frozen(java.lang.Object, boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder frozen(Property<?> property, boolean frozen) {
@@ -779,7 +861,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozenColumns(int)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * frozenColumns(int)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder frozenColumns(int frozenColumnsCount) {
@@ -789,8 +874,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#width(java.lang.Object,
-		 * java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * width(java.lang.Object, java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder width(Property<?> property, String width) {
@@ -800,8 +887,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#flexGrow(java.lang.Object,
-		 * int)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * flexGrow(java.lang.Object, int)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder flexGrow(Property<?> property, int flexGrow) {
@@ -811,8 +900,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.util.
-		 * function.Function)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * styleNameGenerator(java.util. function.Function)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder styleNameGenerator(Function<PropertyBox, String> styleNameGenerator) {
@@ -822,8 +913,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#styleNameGenerator(java.lang.
-		 * Object, java.util.function.Function)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * styleNameGenerator(java.lang. Object, java.util.function.Function)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder styleNameGenerator(Property<?> property,
@@ -834,7 +927,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#expand(java.lang.Object)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * expand(java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder expand(Property<?> property) {
@@ -856,8 +952,12 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#alignment(java.lang.Object,
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.ColumnAlignment)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * alignment(java.lang.Object,
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * ColumnAlignment)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder alignment(Property<?> property, ColumnAlignment alignment) {
@@ -867,8 +967,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#renderer(java.lang.Object,
-		 * com.vaadin.flow.data.renderer.Renderer)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * renderer(java.lang.Object, com.vaadin.flow.data.renderer.Renderer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder renderer(Property<?> property, Renderer<PropertyBox> renderer) {
@@ -878,9 +980,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#valueProvider(java.lang.Object,
-		 * com.vaadin.flow.function.ValueProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * valueProvider(java.lang.Object, com.vaadin.flow.function.ValueProvider)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder valueProvider(Property<?> property,
@@ -891,9 +994,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortComparator(java.lang.Object,
-		 * java.util.Comparator)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * sortComparator(java.lang.Object, java.util.Comparator)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder sortComparator(Property<?> property,
@@ -904,8 +1008,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortUsing(java.lang.Object,
-		 * java.util.List)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * sortUsing(java.lang.Object, java.util.List)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder sortUsing(Property<?> property, List<Property<?>> sortProperties) {
@@ -915,8 +1021,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#sortProvider(java.lang.Object,
-		 * java.util.function.Function)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * sortProvider(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder sortProvider(Property<?> property,
@@ -927,8 +1035,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.lang.Object,
-		 * com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * header(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder header(Property<?> property, Localizable header) {
@@ -938,9 +1048,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#headerComponent(java.lang.Object,
-		 * com.vaadin.flow.component.Component)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * headerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder headerComponent(Property<?> property, Component header) {
@@ -950,8 +1061,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.lang.Object,
-		 * com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * footer(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder footer(Property<?> property, Localizable footer) {
@@ -961,9 +1074,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footerComponent(java.lang.Object,
-		 * com.vaadin.flow.component.Component)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * footerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder footerComponent(Property<?> property, Component footer) {
@@ -980,7 +1094,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#pageSize(int)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * pageSize(int)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder pageSize(int pageSize) {
@@ -990,7 +1107,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#heightByRows(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * heightByRows(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder heightByRows(boolean heightByRows) {
@@ -1000,8 +1120,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#columnReorderingAllowed(boolean)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * columnReorderingAllowed(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder columnReorderingAllowed(boolean columnReorderingAllowed) {
@@ -1011,9 +1133,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsRenderer(com.vaadin.flow
-		 * .data.renderer.Renderer)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * itemDetailsRenderer(com.vaadin.flow .data.renderer.Renderer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder itemDetailsRenderer(Renderer<PropertyBox> renderer) {
@@ -1023,8 +1146,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#itemDetailsVisibleOnClick(boolean)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * itemDetailsVisibleOnClick(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder itemDetailsVisibleOnClick(boolean detailsVisibleOnClick) {
@@ -1034,8 +1159,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#selectionMode(com.holonplatform.
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * selectionMode(com.holonplatform.
 		 * vaadin.flow.components.Selectable.SelectionMode)
 		 */
 		@Override
@@ -1053,7 +1180,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withSelectionListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withSelectionListener(com.
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
@@ -1064,7 +1194,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemClickListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withItemClickListener(com.
 		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
 		 */
 		@Override
@@ -1076,7 +1209,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withItemRefreshListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withItemRefreshListener(com.
 		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
@@ -1088,7 +1224,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#multiSort(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * multiSort(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder multiSort(boolean multiSort) {
@@ -1098,8 +1237,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#verticalScrollingEnabled(boolean)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * verticalScrollingEnabled(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder verticalScrollingEnabled(boolean enabled) {
@@ -1109,7 +1250,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#contextMenu()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * contextMenu()
 		 */
 		@Override
 		public ItemListingContextMenuBuilder<PropertyBox, Property<?>, PropertyListing, DatastorePropertyListingBuilder> contextMenu() {
@@ -1119,8 +1263,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#header(java.util.function.Consumer)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * header(java.util.function.Consumer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder header(
@@ -1131,8 +1277,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#footer(java.util.function.Consumer)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * footer(java.util.function.Consumer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder footer(
@@ -1143,7 +1291,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editable(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * editable(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder editable(boolean editable) {
@@ -1153,7 +1304,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#editorBuffered(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * editorBuffered(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder editorBuffered(boolean buffered) {
@@ -1163,8 +1317,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorSaveListener(com.vaadin.
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorSaveListener(com.vaadin.
 		 * flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
@@ -1176,8 +1332,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCancelListener(com.vaadin
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCancelListener(com.vaadin
 		 * .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
@@ -1189,8 +1347,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorOpenListener(com.vaadin.
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorOpenListener(com.vaadin.
 		 * flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
@@ -1202,8 +1362,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withEditorCloseListener(com.vaadin.
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCloseListener(com.vaadin.
 		 * flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
@@ -1215,9 +1377,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#withValidator(com.holonplatform.
-		 * core.Validator)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withValidator(com.holonplatform. core.Validator)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withValidator(Validator<PropertyBox> validator) {
@@ -1227,9 +1390,12 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator#
-		 * defaultValue(com.holonplatform.core.property.Property, java.util.function.Supplier)
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
+		 * PropertySetInputGroupConfigurator#
+		 * defaultValue(com.holonplatform.core.property.Property,
+		 * java.util.function.Supplier)
 		 */
 		@Override
 		public <V> DatastorePropertyListingBuilder defaultValue(Property<V> property,
@@ -1240,8 +1406,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.PropertySetInputGroupConfigurator#
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
+		 * PropertySetInputGroupConfigurator#
 		 * withValueChangeListener(com.holonplatform.core.property.Property,
 		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
@@ -1254,8 +1422,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#usePropertyRendererRegistry(com.
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * usePropertyRendererRegistry(com.
 		 * holonplatform.core.property.PropertyRendererRegistry)
 		 */
 		@Override
@@ -1267,8 +1437,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#withValueChangeListener(com.
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * withValueChangeListener(com.
 		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
@@ -1280,7 +1452,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * required(java.lang.Object)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder required(Property<?> property) {
@@ -1290,8 +1465,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#required(java.lang.Object,
-		 * com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * required(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder required(Property<?> property, Localizable message) {
@@ -1301,9 +1478,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#withPostProcessor(java.util.function
-		 * .BiConsumer)
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * withPostProcessor(java.util.function .BiConsumer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withPostProcessor(BiConsumer<Property<?>, Input<?>> postProcessor) {
@@ -1313,7 +1491,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
@@ -1325,8 +1506,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#groupValidationStatusHandler(com.
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * groupValidationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
 		 */
 		@Override
@@ -1338,9 +1521,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#validationStatusHandler(java.lang.
-		 * Object, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * validationStatusHandler(java.lang. Object,
+		 * com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder validationStatusHandler(Property<?> property,
@@ -1351,8 +1536,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#enableRefreshOnValueChange(boolean)
+		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * enableRefreshOnValueChange(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder enableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
@@ -1362,7 +1549,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder id(String id) {
@@ -1372,7 +1562,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * visible(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder visible(boolean visible) {
@@ -1382,8 +1574,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
-		 * function.Consumer)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder elementConfiguration(Consumer<Element> element) {
@@ -1393,9 +1586,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withAttachListener(ComponentEventListener<AttachEvent> listener) {
@@ -1405,9 +1598,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withDetachListener(ComponentEventListener<DetachEvent> listener) {
@@ -1417,7 +1610,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withThemeName(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withThemeName(String themeName) {
@@ -1427,9 +1623,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withEventListener(String eventType, DomEventListener listener) {
@@ -1439,9 +1636,11 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withEventListener(String eventType, DomEventListener listener,
@@ -1452,7 +1651,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder width(String width) {
@@ -1462,7 +1664,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder height(String height) {
@@ -1472,7 +1677,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minWidth(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
+		 * minWidth(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder minWidth(String minWidth) {
@@ -1482,7 +1689,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxWidth(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
+		 * maxWidth(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder maxWidth(String maxWidth) {
@@ -1492,7 +1701,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#minHeight(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
+		 * minHeight(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder minHeight(String minHeight) {
@@ -1502,7 +1713,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#maxHeight(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
+		 * maxHeight(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder maxHeight(String maxHeight) {
@@ -1512,7 +1725,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleNames(java.lang.String[])
 		 */
 		@Override
 		public DatastorePropertyListingBuilder styleNames(String... styleNames) {
@@ -1522,7 +1737,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleName(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder styleName(String styleName) {
@@ -1532,7 +1749,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+		 * enabled(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder enabled(boolean enabled) {
@@ -1542,7 +1762,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#tabIndex(int)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
+		 * tabIndex(int)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder tabIndex(int tabIndex) {
@@ -1552,9 +1774,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
+		 * withFocusListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withFocusListener(
@@ -1565,9 +1787,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
+		 * withBlurListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withBlurListener(ComponentEventListener<BlurEvent<Component>> listener) {
@@ -1577,9 +1799,9 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
-		 * component.Key)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
+		 * withFocusShortcut(com.vaadin.flow. component.Key)
 		 */
 		@Override
 		public ShortcutConfigurator<DatastorePropertyListingBuilder> withFocusShortcut(Key key) {
@@ -1588,9 +1810,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.
-		 * Enum[])
+		 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator
+		 * #withThemeVariants(java.lang. Enum[])
 		 */
 		@Override
 		public DatastorePropertyListingBuilder withThemeVariants(GridVariant... variants) {
@@ -1600,7 +1823,10 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#frozen(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * frozen(boolean)
 		 */
 		@Override
 		public DatastorePropertyListingBuilder frozen(boolean frozen) {
@@ -1660,9 +1886,25 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyListingBuilder withColumnResizeListener(
+				ColumnResizeListener<PropertyBox, Property<?>> listener) {
+			builder.withColumnResizeListener(listener);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder withColumnReorderListener(
+				ColumnReorderListener<PropertyBox, Property<?>> listener) {
+			builder.withColumnReorderListener(listener);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
 		 */
 		@Override
 		public PropertyListing build() {

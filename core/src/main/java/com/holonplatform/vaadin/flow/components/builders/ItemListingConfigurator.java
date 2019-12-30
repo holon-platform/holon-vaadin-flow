@@ -39,6 +39,8 @@ import com.holonplatform.vaadin.flow.components.ItemListing.ItemListingSection;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionListener;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.events.ClickEventListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnReorderListener;
+import com.holonplatform.vaadin.flow.components.events.ColumnResizeListener;
 import com.holonplatform.vaadin.flow.components.events.ItemClickEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEvent;
 import com.holonplatform.vaadin.flow.components.events.ItemEventListener;
@@ -77,67 +79,79 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		InputGroupConfigurator<P, T, EditorComponentGroup<P, T>, C> {
 
 	/**
-	 * Configure the column represented by given <code>property</code> to be displayed before any other listing column
-	 * by default.
-	 * @param property The property which represents the column to display as first (not null)
+	 * Configure the column represented by given <code>property</code> to be
+	 * displayed before any other listing column by default.
+	 * @param property The property which represents the column to display as first
+	 *                 (not null)
 	 * @return this
 	 */
 	C displayAsFirst(P property);
 
 	/**
-	 * Configure the column represented by given <code>property</code> to be displayed after any other listing column by
-	 * default.
-	 * @param property The property which represents the column to display as last (not null)
+	 * Configure the column represented by given <code>property</code> to be
+	 * displayed after any other listing column by default.
+	 * @param property The property which represents the column to display as last
+	 *                 (not null)
 	 * @return this
 	 */
 	C displayAsLast(P property);
 
 	/**
-	 * Configure the column represented by given <code>property</code> id to be displayed before the column which
-	 * corresponds to the id specified by the given <code>beforeProperty</code>.
-	 * @param property Property which represents the column to display before the other property (not null)
-	 * @param beforeProperty Property which represents the column before which the first property has to be displayed
-	 *        (not null)
+	 * Configure the column represented by given <code>property</code> id to be
+	 * displayed before the column which corresponds to the id specified by the
+	 * given <code>beforeProperty</code>.
+	 * @param property       Property which represents the column to display before
+	 *                       the other property (not null)
+	 * @param beforeProperty Property which represents the column before which the
+	 *                       first property has to be displayed (not null)
 	 * @return this
 	 */
 	C displayBefore(P property, P beforeProperty);
 
 	/**
-	 * Configure the column represented by given <code>property</code> id to be displayed after the column which
-	 * corresponds to the id specified by the given <code>afterProperty</code>.
-	 * @param property Property which represents the column to display after the other property (not null)
-	 * @param afterProperty Property which represents the column after which the first property has to be displayed (not
-	 *        null)
+	 * Configure the column represented by given <code>property</code> id to be
+	 * displayed after the column which corresponds to the id specified by the given
+	 * <code>afterProperty</code>.
+	 * @param property      Property which represents the column to display after
+	 *                      the other property (not null)
+	 * @param afterProperty Property which represents the column after which the
+	 *                      first property has to be displayed (not null)
 	 * @return this
 	 */
 	C displayAfter(P property, P afterProperty);
 
 	/**
-	 * Add a <em>virtual</em> column which contents will be rendered using given <code>valueProvider</code>.
-	 * @param <X> Column value type
-	 * @param valueProvider The value provider to use to provide the column value, using the current row item instance
-	 *        (not null)
-	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
-	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 * Add a <em>virtual</em> column which contents will be rendered using given
+	 * <code>valueProvider</code>.
+	 * @param <X>           Column value type
+	 * @param valueProvider The value provider to use to provide the column value,
+	 *                      using the current row item instance (not null)
+	 * @return An {@link ItemListingColumnBuilder} which allow further column
+	 *         configuration and provides the {@link ItemListingColumnBuilder#add()}
+	 *         method to add the column to the listing
 	 */
 	<X> ItemListingColumnBuilder<T, P, L, C> withColumn(ValueProvider<T, X> valueProvider);
 
 	/**
-	 * Add a column which contents will be rendered as a {@link Component} using given <code>valueProvider</code>.
-	 * @param valueProvider The value provider to use to provide the column {@link Component} using the current row item
-	 *        instance (not null)
-	 * @return An {@link ItemListingColumnBuilder} which allow further column configuration and provides the
-	 *         {@link ItemListingColumnBuilder#add()} method to add the column to the listing
+	 * Add a column which contents will be rendered as a {@link Component} using
+	 * given <code>valueProvider</code>.
+	 * @param valueProvider The value provider to use to provide the column
+	 *                      {@link Component} using the current row item instance
+	 *                      (not null)
+	 * @return An {@link ItemListingColumnBuilder} which allow further column
+	 *         configuration and provides the {@link ItemListingColumnBuilder#add()}
+	 *         method to add the column to the listing
 	 */
 	ItemListingColumnBuilder<T, P, L, C> withComponentColumn(ValueProvider<T, Component> valueProvider);
 
 	/**
-	 * Set the visible columns list, using the item properties as column reference. The columns will be displayed in the
-	 * order thay are provided.
+	 * Set the visible columns list, using the item properties as column reference.
+	 * The columns will be displayed in the order thay are provided.
 	 * <p>
-	 * Any property display order declaration configured using {@link #displayAsFirst(Object)},
-	 * {@link #displayAsLast(Object)}, {@link #displayBefore(Object, Object)} and {@link #displayAfter(Object, Object)}
-	 * will be ignored.
+	 * Any property display order declaration configured using
+	 * {@link #displayAsFirst(Object)}, {@link #displayAsLast(Object)},
+	 * {@link #displayBefore(Object, Object)} and
+	 * {@link #displayAfter(Object, Object)} will be ignored.
 	 * </p>
 	 * @param visibleColumns The visible column properties (not null)
 	 * @return this
@@ -148,12 +162,13 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the visible columns list, using the item properties as column reference. The columns will be displayed in the
-	 * order thay are provided.
+	 * Set the visible columns list, using the item properties as column reference.
+	 * The columns will be displayed in the order thay are provided.
 	 * <p>
-	 * Any property display order declaration configured using {@link #displayAsFirst(Object)},
-	 * {@link #displayAsLast(Object)}, {@link #displayBefore(Object, Object)} and {@link #displayAfter(Object, Object)}
-	 * will be ignored.
+	 * Any property display order declaration configured using
+	 * {@link #displayAsFirst(Object)}, {@link #displayAsLast(Object)},
+	 * {@link #displayBefore(Object, Object)} and
+	 * {@link #displayAfter(Object, Object)} will be ignored.
 	 * </p>
 	 * @param visibleColumns The visible column properties (not null)
 	 * @return this
@@ -184,7 +199,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Set whether the column which corresponds to given property is user-resizable.
-	 * @param property The property to configure (not null)
+	 * @param property  The property to configure (not null)
 	 * @param resizable Whether given property is user-resizable
 	 * @return this
 	 */
@@ -193,7 +208,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the column which corresponds to given property is visible.
 	 * @param property The property to configure (not null)
-	 * @param visible Whether given property is visible
+	 * @param visible  Whether given property is visible
 	 * @return this
 	 */
 	C visible(P property, boolean visible);
@@ -211,7 +226,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the column which corresponds to given property is read-only.
 	 * <p>
-	 * When a column is read-only, no editor component will be provided when the item is in edit mode.
+	 * When a column is read-only, no editor component will be provided when the
+	 * item is in edit mode.
 	 * </p>
 	 * @param property The property to configure (not null)
 	 * @param readOnly Whether given property is read-only
@@ -222,7 +238,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the column which corresponds to given property is frozen.
 	 * @param property The property to configure (not null)
-	 * @param frozen Whether given property is frozen
+	 * @param frozen   Whether given property is frozen
 	 * @return this
 	 */
 	C frozen(P property, boolean frozen);
@@ -235,25 +251,29 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C frozenColumns(int frozenColumnsCount);
 
 	/**
-	 * Sets the width of the column which corresponds to given property as a CSS-string.
+	 * Sets the width of the column which corresponds to given property as a
+	 * CSS-string.
 	 * @param property The property to configure (not null)
-	 * @param width the width to set
+	 * @param width    the width to set
 	 * @return this
 	 */
 	C width(P property, String width);
 
 	/**
-	 * Enables or disables automatic width for the column which corresponds to given property.
+	 * Enables or disables automatic width for the column which corresponds to given
+	 * property.
 	 * <p>
-	 * Automatically sets the width of the column based on the columncontents when this is set to true.
+	 * Automatically sets the width of the column based on the columncontents when
+	 * this is set to true.
 	 * </p>
 	 * <p>
-	 * For performance reasons the column width is calculated automaticallyonly once when the grid items are rendered
-	 * for the first time and thecalculation only considers the rows which are currently rendered inDOM (a bit more than
-	 * what is currently visible). If the grid isscrolled, or the cell content changes, the column width might notmatch
-	 * the contents anymore.
+	 * For performance reasons the column width is calculated automaticallyonly once
+	 * when the grid items are rendered for the first time and thecalculation only
+	 * considers the rows which are currently rendered inDOM (a bit more than what
+	 * is currently visible). If the grid isscrolled, or the cell content changes,
+	 * the column width might notmatch the contents anymore.
 	 * </p>
-	 * @param property The property to configure (not null)
+	 * @param property  The property to configure (not null)
 	 * @param autoWidth Whether to enable the column auto-width
 	 * @return this
 	 * @since 5.3.0
@@ -263,13 +283,15 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Enables automatic width for the column which corresponds to given property.
 	 * <p>
-	 * Automatically sets the width of the column based on the columncontents when this is set to true.
+	 * Automatically sets the width of the column based on the columncontents when
+	 * this is set to true.
 	 * </p>
 	 * <p>
-	 * For performance reasons the column width is calculated automaticallyonly once when the grid items are rendered
-	 * for the first time and thecalculation only considers the rows which are currently rendered inDOM (a bit more than
-	 * what is currently visible). If the grid isscrolled, or the cell content changes, the column width might notmatch
-	 * the contents anymore.
+	 * For performance reasons the column width is calculated automaticallyonly once
+	 * when the grid items are rendered for the first time and thecalculation only
+	 * considers the rows which are currently rendered inDOM (a bit more than what
+	 * is currently visible). If the grid isscrolled, or the cell content changes,
+	 * the column width might notmatch the contents anymore.
 	 * </p>
 	 * @param property The property to configure (not null)
 	 * @return this
@@ -291,47 +313,58 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C flexGrow(P property, int flexGrow);
 
 	/**
-	 * Sets the function that is used for generating CSS style class names for rows in this listing.
+	 * Sets the function that is used for generating CSS style class names for rows
+	 * in this listing.
 	 * <p>
-	 * Returning <code>null</code> from the generator results in no custom class name being set. Multiple class names
-	 * can be returned from the generator as space-separated.
+	 * Returning <code>null</code> from the generator results in no custom class
+	 * name being set. Multiple class names can be returned from the generator as
+	 * space-separated.
 	 * </p>
 	 * <p>
-	 * If a column level CSS class name generator is configured through {@link #styleNameGenerator(Object, Function)}
-	 * together with this method, resulting class names from both methods will be effective. Class names generated by
-	 * listing are applied to the cells before the class names generated by column. This means that if the classes
-	 * contain conflicting style properties, column's classes will win.
+	 * If a column level CSS class name generator is configured through
+	 * {@link #styleNameGenerator(Object, Function)} together with this method,
+	 * resulting class names from both methods will be effective. Class names
+	 * generated by listing are applied to the cells before the class names
+	 * generated by column. This means that if the classes contain conflicting style
+	 * properties, column's classes will win.
 	 * </p>
-	 * @param styleNameGenerator The function to use to generate the row CSS style class name
+	 * @param styleNameGenerator The function to use to generate the row CSS style
+	 *                           class name
 	 * @return this
 	 * @since 5.2.3
 	 */
 	C styleNameGenerator(Function<T, String> styleNameGenerator);
 
 	/**
-	 * Set the CSS style class name generator to use for the column which corresponds to given property.
+	 * Set the CSS style class name generator to use for the column which
+	 * corresponds to given property.
 	 * <p>
-	 * Returning <code>null</code> from the generator results in no custom class name being set. Multiple class names
-	 * can be returned from the generator as space-separated.
+	 * Returning <code>null</code> from the generator results in no custom class
+	 * name being set. Multiple class names can be returned from the generator as
+	 * space-separated.
 	 * </p>
 	 * <p>
-	 * If a row CSS style class name generator is configured through {@link #styleNameGenerator(Function)} together with
-	 * this method, resulting class names from both generators will be effective. Class names generated by the listing
-	 * are applied to the cells before the class names generated by column. This means that if the classes contain
-	 * conflicting style properties, column's classes will win.
+	 * If a row CSS style class name generator is configured through
+	 * {@link #styleNameGenerator(Function)} together with this method, resulting
+	 * class names from both generators will be effective. Class names generated by
+	 * the listing are applied to the cells before the class names generated by
+	 * column. This means that if the classes contain conflicting style properties,
+	 * column's classes will win.
 	 * </p>
-	 * @param property The property to configure (not null)
-	 * @param styleNameGenerator The function to use to generate the cell CSS style class name
+	 * @param property           The property to configure (not null)
+	 * @param styleNameGenerator The function to use to generate the cell CSS style
+	 *                           class name
 	 * @return this
 	 * @since 5.2.3
 	 */
 	C styleNameGenerator(P property, Function<T, String> styleNameGenerator);
 
 	/**
-	 * Expand the column which corresponds to given property, taking all the available space.
+	 * Expand the column which corresponds to given property, taking all the
+	 * available space.
 	 * <p>
-	 * The flew grow value for the provided column will be set to <code>1</code>, while the other columns flew grow
-	 * value will be set to <code>0</code>.
+	 * The flew grow value for the provided column will be set to <code>1</code>,
+	 * while the other columns flew grow value will be set to <code>0</code>.
 	 * </p>
 	 * @param property The property which identifies the column to expand
 	 * @return this
@@ -351,14 +384,15 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * <p>
 	 * Default is {@link ColumnAlignment#LEFT}.
 	 * </p>
-	 * @param property The property to configure (not null)
+	 * @param property  The property to configure (not null)
 	 * @param alignment the text alignment to set
 	 * @return this
 	 */
 	C alignment(P property, ColumnAlignment alignment);
 
 	/**
-	 * Sets the {@link Renderer} to use for the column which corresponds to given property.
+	 * Sets the {@link Renderer} to use for the column which corresponds to given
+	 * property.
 	 * @param property The property to configure (not null)
 	 * @param renderer The column renderer to use
 	 * @return this
@@ -366,11 +400,12 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C renderer(P property, Renderer<T> renderer);
 
 	/**
-	 * Render the column which corresponds to given property as a {@link Component}, using given function to provide the
-	 * component for each listing item.
-	 * @param <R> Component type
+	 * Render the column which corresponds to given property as a {@link Component},
+	 * using given function to provide the component for each listing item.
+	 * @param <R>      Component type
 	 * @param property The property to configure (not null)
-	 * @param renderer The function to use to provide the component for each listing item (not null)
+	 * @param renderer The function to use to provide the component for each listing
+	 *                 item (not null)
 	 * @return this
 	 */
 	default <R extends Component> C componentRenderer(P property, Function<T, R> renderer) {
@@ -379,35 +414,36 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Sets the {@link ValueProvider} to use to obtain the text to display in the column which corresponds to given
-	 * property.
-	 * @param property The property to configure (not null)
+	 * Sets the {@link ValueProvider} to use to obtain the text to display in the
+	 * column which corresponds to given property.
+	 * @param property      The property to configure (not null)
 	 * @param valueProvider The value provider to use
 	 * @return this
 	 */
 	C valueProvider(P property, ValueProvider<T, String> valueProvider);
 
 	/**
-	 * Sets comparator to use with in-memory sorting for the column which corresponds to given property.
-	 * @param property The property to configure (not null)
+	 * Sets comparator to use with in-memory sorting for the column which
+	 * corresponds to given property.
+	 * @param property   The property to configure (not null)
 	 * @param comparator The comparator to use with in-memory sorting
 	 * @return this
 	 */
 	C sortComparator(P property, Comparator<T> comparator);
 
 	/**
-	 * Set the properties to use to implement the sort logic to apply when the column which corresponds to given
-	 * property is user-sorted.
-	 * @param property The property to configure (not null)
+	 * Set the properties to use to implement the sort logic to apply when the
+	 * column which corresponds to given property is user-sorted.
+	 * @param property       The property to configure (not null)
 	 * @param sortProperties The properties to use to sort the column
 	 * @return this
 	 */
 	C sortUsing(P property, List<P> sortProperties);
 
 	/**
-	 * Set the properties to use to implement the sort logic to apply when the column which corresponds to given
-	 * property is user-sorted.
-	 * @param property The property to configure (not null)
+	 * Set the properties to use to implement the sort logic to apply when the
+	 * column which corresponds to given property is user-sorted.
+	 * @param property       The property to configure (not null)
 	 * @param sortProperties The properties to use to sort the column
 	 * @return this
 	 */
@@ -417,9 +453,9 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the function to use to obtain the {@link ItemSort}s to use when the column which corresponds to given
-	 * property is user-sorted.
-	 * @param property The property to configure (not null)
+	 * Set the function to use to obtain the {@link ItemSort}s to use when the
+	 * column which corresponds to given property is user-sorted.
+	 * @param property     The property to configure (not null)
 	 * @param sortProvider Sort provider
 	 * @return this
 	 */
@@ -428,7 +464,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set the header text for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param header Localizable column header text (not null)
+	 * @param header   Localizable column header text (not null)
 	 * @return this
 	 */
 	C header(P property, Localizable header);
@@ -436,7 +472,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set the header text for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param header The column header text
+	 * @param header   The column header text
 	 * @return this
 	 */
 	default C header(P property, String header) {
@@ -445,8 +481,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Set the header text for the column which corresponds to given property.
-	 * @param property The property to configure (not null)
-	 * @param defaultHeader The default column header text
+	 * @param property          The property to configure (not null)
+	 * @param defaultHeader     The default column header text
 	 * @param headerMessageCode The column header text translation message code
 	 * @return this
 	 */
@@ -455,9 +491,10 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the {@link Component} to use as header for the column which corresponds to given property.
+	 * Set the {@link Component} to use as header for the column which corresponds
+	 * to given property.
 	 * @param property The property to configure (not null)
-	 * @param header The column header component
+	 * @param header   The column header component
 	 * @return this
 	 */
 	C headerComponent(P property, Component header);
@@ -465,7 +502,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set the footer text for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param footer Localizable column footer text (not null)
+	 * @param footer   Localizable column footer text (not null)
 	 * @return this
 	 */
 	C footer(P property, Localizable footer);
@@ -473,7 +510,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set the footer text for the column which corresponds to given property.
 	 * @param property The property to configure (not null)
-	 * @param footer The column footer text
+	 * @param footer   The column footer text
 	 * @return this
 	 */
 	default C footer(P property, String footer) {
@@ -482,8 +519,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Set the footer text for the column which corresponds to given property.
-	 * @param property The property to configure (not null)
-	 * @param defaultFooter The default column footer text
+	 * @param property          The property to configure (not null)
+	 * @param defaultFooter     The default column footer text
 	 * @param footerMessageCode The column footer text translation message code
 	 * @return this
 	 */
@@ -492,44 +529,51 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the {@link Component} to use as footer for the column which corresponds to given property.
+	 * Set the {@link Component} to use as footer for the column which corresponds
+	 * to given property.
 	 * @param property The property to configure (not null)
-	 * @param footer The column footer component
+	 * @param footer   The column footer component
 	 * @return this
 	 */
 	C footerComponent(P property, Component footer);
 
 	/**
-	 * Add a {@link ColumnPostProcessor} which can be used to furtherly configure each listing column before adding it
-	 * to the listing component.
+	 * Add a {@link ColumnPostProcessor} which can be used to furtherly configure
+	 * each listing column before adding it to the listing component.
 	 * @param columnPostProcessor The post processor to add (not null)
 	 * @return this
 	 */
 	C withColumnPostProcessor(ColumnPostProcessor<P> columnPostProcessor);
 
 	/**
-	 * Sets the page size, which is the number of items fetched at a time from the data source.
+	 * Sets the page size, which is the number of items fetched at a time from the
+	 * data source.
 	 * <p>
-	 * Note: the number of items in the server-side memory can be considerably higher than the page size, since the
-	 * component can show more than one page at a time.
+	 * Note: the number of items in the server-side memory can be considerably
+	 * higher than the page size, since the component can show more than one page at
+	 * a time.
 	 * </p>
-	 * @param pageSize the maximum number of items sent per request. Should be greater than zero
+	 * @param pageSize the maximum number of items sent per request. Should be
+	 *                 greater than zero
 	 * @return this
 	 */
 	C pageSize(int pageSize);
 
 	/**
-	 * If <code>true</code>, the listing's height is defined by the number of its rows. All items are fetched from the
-	 * data provider, and the Grid shows no vertical scroll bar.
-	 * @param heightByRows <code>true</code> to make listing compute its height by the number of rows,
-	 *        <code>false</code> for the default behavior
+	 * If <code>true</code>, the listing's height is defined by the number of its
+	 * rows. All items are fetched from the data provider, and the Grid shows no
+	 * vertical scroll bar.
+	 * @param heightByRows <code>true</code> to make listing compute its height by
+	 *                     the number of rows, <code>false</code> for the default
+	 *                     behavior
 	 * @return this
 	 */
 	C heightByRows(boolean heightByRows);
 
 	/**
 	 * Sets whether column reordering is allowed or not.
-	 * @param columnReorderingAllowed <code>true</code> if column reordering is allowed
+	 * @param columnReorderingAllowed <code>true</code> if column reordering is
+	 *                                allowed
 	 * @return this
 	 */
 	C columnReorderingAllowed(boolean columnReorderingAllowed);
@@ -552,8 +596,10 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the function to use for displaying the item details rows as a {@link Component}.
-	 * @param componentProvider The function to provide the item details {@link Component}
+	 * Set the function to use for displaying the item details rows as a
+	 * {@link Component}.
+	 * @param componentProvider The function to provide the item details
+	 *                          {@link Component}
 	 * @return this
 	 */
 	default C itemDetailsComponent(Function<T, Component> componentProvider) {
@@ -562,12 +608,14 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Sets whether the item details can be opened and closed by clicking the rows or not.
+	 * Sets whether the item details can be opened and closed by clicking the rows
+	 * or not.
 	 * <p>
 	 * Default is <code>true</code>.
 	 * </p>
-	 * @param detailsVisibleOnClick <code>true</code> to enable opening and closing item details by clicking the rows,
-	 *        <code>false</code> otherwise
+	 * @param detailsVisibleOnClick <code>true</code> to enable opening and closing
+	 *                              item details by clicking the rows,
+	 *                              <code>false</code> otherwise
 	 * @return this
 	 * @see #itemDetailsRenderer(Renderer)
 	 */
@@ -575,7 +623,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Set the listing selection mode.
-	 * @param selectionMode The selection mode to set (not null). Use {@link SelectionMode#NONE} to disable selection.
+	 * @param selectionMode The selection mode to set (not null). Use
+	 *                      {@link SelectionMode#NONE} to disable selection.
 	 * @return this
 	 */
 	C selectionMode(SelectionMode selectionMode);
@@ -583,8 +632,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Sets the select all checkbox visibility mode.
 	 * <p>
-	 * The default value is {@link SelectAllCheckboxVisibility#DEFAULT}, which means that the checkbox is only visible
-	 * if the data provider is in-memory.
+	 * The default value is {@link SelectAllCheckboxVisibility#DEFAULT}, which means
+	 * that the checkbox is only visible if the data provider is in-memory.
 	 * </p>
 	 * @param selectAllCheckBoxVisibility The select all checkbox visibility mode
 	 * @return this
@@ -618,8 +667,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Add a {@link SelectionListener} to listen to items selection changes.
 	 * <p>
-	 * {@link SelectionListener}s are triggred only when listing is selectable, i.e. (i.e. {@link SelectionMode} is not
-	 * {@link SelectionMode#NONE}).
+	 * {@link SelectionListener}s are triggred only when listing is selectable, i.e.
+	 * (i.e. {@link SelectionMode} is not {@link SelectionMode#NONE}).
 	 * </p>
 	 * @param selectionListener The selection listener to add (not null)
 	 * @return this
@@ -636,8 +685,9 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Adds a listener that gets notified when the item listing data is refreshed.
 	 * <p>
-	 * The refresh event is fired when tha data provider detect a data change event, either for all the items or for
-	 * only one. When only one item is updated, it is available from {@link ItemEvent#getItem()}.
+	 * The refresh event is fired when tha data provider detect a data change event,
+	 * either for all the items or for only one. When only one item is updated, it
+	 * is available from {@link ItemEvent#getItem()}.
 	 * </p>
 	 * @param listener The {@link ItemEventListener} to add (not null)
 	 * @return this
@@ -646,43 +696,50 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Sets whether multiple column sorting is enabled on the client-side.
-	 * @param multiSort <code>true</code> to enable sorting of multiple columns on the client-side, <code>false</code>
-	 *        to disable
+	 * @param multiSort <code>true</code> to enable sorting of multiple columns on
+	 *                  the client-side, <code>false</code> to disable
 	 * @return this
 	 */
 	C multiSort(boolean multiSort);
 
 	/**
-	 * Enables or disables the vertical scrolling on the Grid web component. By default, the scrolling is enabled.
-	 * @param enabled <code>true</code> to enable vertical scrolling, <code>false</code> to disabled it
+	 * Enables or disables the vertical scrolling on the Grid web component. By
+	 * default, the scrolling is enabled.
+	 * @param enabled <code>true</code> to enable vertical scrolling,
+	 *                <code>false</code> to disabled it
 	 * @return this
 	 */
 	C verticalScrollingEnabled(boolean enabled);
 
 	/**
-	 * Get a {@link ItemListingContextMenuBuilder} to configure and add a context menu to show for each listing item.
+	 * Get a {@link ItemListingContextMenuBuilder} to configure and add a context
+	 * menu to show for each listing item.
 	 * <p>
-	 * Use the {@link ItemListingContextMenuBuilder#add()} method to add the context menu to the item listing.
+	 * Use the {@link ItemListingContextMenuBuilder#add()} method to add the context
+	 * menu to the item listing.
 	 * </p>
 	 * <p>
-	 * By default, the context menu can be opened with a right click or a long touch on the target component.
+	 * By default, the context menu can be opened with a right click or a long touch
+	 * on the target component.
 	 * </p>
 	 * @return A {@link ItemListingContextMenuBuilder}
 	 */
 	ItemListingContextMenuBuilder<T, P, L, C> contextMenu();
 
 	/**
-	 * Provide a {@link Consumer} to configure the item listing header section, using the {@link ItemListingSection}
-	 * API.
-	 * @param headerConfigurator The item listing header section configurator (not null)
+	 * Provide a {@link Consumer} to configure the item listing header section,
+	 * using the {@link ItemListingSection} API.
+	 * @param headerConfigurator The item listing header section configurator (not
+	 *                           null)
 	 * @return this
 	 */
 	C header(Consumer<EditableItemListingSection<P>> headerConfigurator);
 
 	/**
-	 * Provide a {@link Consumer} to configure the item listing footer section, using the {@link ItemListingSection}
-	 * API.
-	 * @param footerConfigurator The item listing footer section configurator (not null)
+	 * Provide a {@link Consumer} to configure the item listing footer section,
+	 * using the {@link ItemListingSection} API.
+	 * @param footerConfigurator The item listing footer section configurator (not
+	 *                           null)
 	 * @return this
 	 */
 	C footer(Consumer<EditableItemListingSection<P>> footerConfigurator);
@@ -690,7 +747,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the listing is editable.
 	 * <p>
-	 * Use <code>withEditorSaveListener</code> to register a listener for editor item save events.
+	 * Use <code>withEditorSaveListener</code> to register a listener for editor
+	 * item save events.
 	 * </p>
 	 * @param editable whether the listing is editable
 	 * @return this
@@ -706,16 +764,20 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * Set the {@link Component} to display when the column bound to given <code>property</code> is in editing mode.
-	 * @param property The property for which to set the editor component (not null)
+	 * Set the {@link Component} to display when the column bound to given
+	 * <code>property</code> is in editing mode.
+	 * @param property                The property for which to set the editor
+	 *                                component (not null)
 	 * @param editorComponentProvider The editor component provider (not null)
 	 * @return this
 	 */
 	C editorComponent(P property, Function<T, ? extends Component> editorComponentProvider);
 
 	/**
-	 * Set the {@link Component} to display when the column bound to given <code>property</code> is in editing mode.
-	 * @param property The property for which to set the editor component (not null)
+	 * Set the {@link Component} to display when the column bound to given
+	 * <code>property</code> is in editing mode.
+	 * @param property        The property for which to set the editor component
+	 *                        (not null)
 	 * @param editorComponent The editor component (not null)
 	 * @return this
 	 */
@@ -726,8 +788,9 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the editor is in buffered mode. Default is <code>true</code>.
 	 * <p>
-	 * When the editor is in buffered mode, edits are only committed when the user clicks the save button. In unbuffered
-	 * mode valid changes are automatically committed.
+	 * When the editor is in buffered mode, edits are only committed when the user
+	 * clicks the save button. In unbuffered mode valid changes are automatically
+	 * committed.
 	 * </p>
 	 * @param buffered Whether the editor is in buffered mode
 	 * @return this
@@ -765,11 +828,12 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Set whether the listing is <em>frozen</em>.
 	 * <p>
-	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is
+	 * performed from the data provider.
 	 * </p>
 	 * <p>
-	 * When the {@link ItemListing#refresh()} method is called, the frozen state is automatically set to
-	 * <code>false</code>.
+	 * When the {@link ItemListing#refresh()} method is called, the frozen state is
+	 * automatically set to <code>false</code>.
 	 * </p>
 	 * @param frozen Whether the listing is <em>frozen</em>
 	 * @since 5.2.2
@@ -779,7 +843,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 	/**
 	 * Sets whether the user can drag the grid rows or not.
-	 * @param rowsDraggable <code>true</code> if the rows can be dragged by the user, <code>false</code> if not
+	 * @param rowsDraggable <code>true</code> if the rows can be dragged by the
+	 *                      user, <code>false</code> if not
 	 * @return this
 	 */
 	C rowsDraggable(boolean rowsDraggable);
@@ -787,15 +852,18 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Sets the drag filter for this drag source.
 	 * <p>
-	 * When the rows dragging is enabled, by default all the visible rows can be dragged.
+	 * When the rows dragging is enabled, by default all the visible rows can be
+	 * dragged.
 	 * </p>
 	 * <p>
-	 * A drag filter function can be used to specify the rows that are available for dragging. The function receives an
-	 * item and returns <code>true</code> if the row can be dragged, <code>false</code> otherwise.
+	 * A drag filter function can be used to specify the rows that are available for
+	 * dragging. The function receives an item and returns <code>true</code> if the
+	 * row can be dragged, <code>false</code> otherwise.
 	 * </p>
 	 * <p>
-	 * <em>NOTE: If the filtering conditions change dynamically, remember to explicitly invoke
-	 * {@link ItemListing#refreshItem(Object)} for the relevant items to get the filters re-run for them.</em>
+	 * <em>NOTE: If the filtering conditions change dynamically, remember to
+	 * explicitly invoke {@link ItemListing#refreshItem(Object)} for the relevant
+	 * items to get the filters re-run for them.</em>
 	 * </p>
 	 * @param dragFilter The drag filter predicate (not null)
 	 * @return this
@@ -803,12 +871,14 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C dragFilter(Predicate<T> dragFilter);
 
 	/**
-	 * Sets a generator function for customizing drag data. The generated value will be accessible using the same
-	 * <code>type</code> as the generator is set here. The function is executed for each item in the listing during data
-	 * generation. Return a {@link String} to be appended to the row as <code>type</code> data.
-	 * @param type Type of the generated data. The generated value will be accessible during drop using this type (not
-	 *        null)
-	 * @param dragDataGenerator Function to be executed on row data generation (not null)
+	 * Sets a generator function for customizing drag data. The generated value will
+	 * be accessible using the same <code>type</code> as the generator is set here.
+	 * The function is executed for each item in the listing during data generation.
+	 * Return a {@link String} to be appended to the row as <code>type</code> data.
+	 * @param type              Type of the generated data. The generated value will
+	 *                          be accessible during drop using this type (not null)
+	 * @param dragDataGenerator Function to be executed on row data generation (not
+	 *                          null)
 	 * @return this
 	 */
 	C dragDataGenerator(String type, Function<T, String> dragDataGenerator);
@@ -828,29 +898,36 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	C withDragEndListener(ItemListingDnDListener<T, P, ItemListingDragEndEvent<T, P>> listener);
 
 	/**
-	 * Sets the drop mode of this drop target. When set to not <code>null</code>, the listing fires drop events upon
-	 * data drop over the listing or the listing rows.
+	 * Sets the drop mode of this drop target. When set to not <code>null</code>,
+	 * the listing fires drop events upon data drop over the listing or the listing
+	 * rows.
 	 * <p>
-	 * When using {@link GridDropMode#ON_TOP}, and the listing is either empty or has empty space after the last row,
-	 * the drop can still happen on the empty space, and the drop target item will not be available.
+	 * When using {@link GridDropMode#ON_TOP}, and the listing is either empty or
+	 * has empty space after the last row, the drop can still happen on the empty
+	 * space, and the drop target item will not be available.
 	 * </p>
 	 * <p>
-	 * When using {@link GridDropMode#BETWEEN} or {@link GridDropMode#ON_TOP_OR_BETWEEN}, and there is at least one row
-	 * in the listing, any drop after the last row in the grid will get the last row as the drop target item. If there
-	 * are no rows in the listing, then the drop target item will not be available.
+	 * When using {@link GridDropMode#BETWEEN} or
+	 * {@link GridDropMode#ON_TOP_OR_BETWEEN}, and there is at least one row in the
+	 * listing, any drop after the last row in the grid will get the last row as the
+	 * drop target item. If there are no rows in the listing, then the drop target
+	 * item will not be available.
 	 * </p>
 	 * <p>
-	 * If using {@link GridDropMode#ON_GRID}, then the drop will not happen on any row, but instead just "on the
-	 * listing". The target row will not be present in this case.
+	 * If using {@link GridDropMode#ON_GRID}, then the drop will not happen on any
+	 * row, but instead just "on the listing". The target row will not be present in
+	 * this case.
 	 * </p>
 	 * <p>
-	 * <em>NOTE: Prefer not using a row specific {@link GridDropMode} with a listing that enables sorting. If for
-	 * example a new row gets added to a specific location on drop event, it might not end up in the location of the
-	 * drop but rather where the active sorting configuration prefers to place it. This behavior might feel unexpected
-	 * for the users.</em>
+	 * <em>NOTE: Prefer not using a row specific {@link GridDropMode} with a listing
+	 * that enables sorting. If for example a new row gets added to a specific
+	 * location on drop event, it might not end up in the location of the drop but
+	 * rather where the active sorting configuration prefers to place it. This
+	 * behavior might feel unexpected for the users.</em>
 	 * </p>
-	 * @param dropMode Drop mode that describes the allowed drop locations within the listing's row. Can be
-	 *        <code>null</code> to disable dropping
+	 * @param dropMode Drop mode that describes the allowed drop locations within
+	 *                 the listing's row. Can be <code>null</code> to disable
+	 *                 dropping
 	 * @return this
 	 */
 	C dropMode(GridDropMode dropMode);
@@ -858,17 +935,21 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	/**
 	 * Sets the drop filter for this drag target.
 	 * <p>
-	 * When the drop mode of the grid has been set to one of {@link GridDropMode#BETWEEN}, {@link GridDropMode#ON_TOP}
-	 * or {@link GridDropMode#ON_TOP_OR_BETWEEN}, by default all the visible rows can be dropped over.
+	 * When the drop mode of the grid has been set to one of
+	 * {@link GridDropMode#BETWEEN}, {@link GridDropMode#ON_TOP} or
+	 * {@link GridDropMode#ON_TOP_OR_BETWEEN}, by default all the visible rows can
+	 * be dropped over.
 	 * </p>
 	 * <p>
-	 * A drop filter function can be used to specify the rows that are available for dropping over. The function
-	 * receives an item and should return <code>true</code> if the row can be dropped over, <code>false</code>
+	 * A drop filter function can be used to specify the rows that are available for
+	 * dropping over. The function receives an item and should return
+	 * <code>true</code> if the row can be dropped over, <code>false</code>
 	 * otherwise.
 	 * </p>
 	 * <p>
-	 * <em>NOTE: If the filtering conditions change dynamically, remember to explicitly invoke
-	 * {@link ItemListing#refreshItem(Object)} for the relevant items to get the filters re-run for them.</em>
+	 * <em>NOTE: If the filtering conditions change dynamically, remember to
+	 * explicitly invoke {@link ItemListing#refreshItem(Object)} for the relevant
+	 * items to get the filters re-run for them.</em>
 	 * </p>
 	 * @param dropFilter The drop filter predicate (not null)
 	 * @return this
@@ -881,6 +962,20 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C withDropListener(ItemListingDnDListener<T, P, ItemListingDropEvent<T, P>> listener);
+
+	/**
+	 * Add listener for column resize events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withColumnResizeListener(ColumnResizeListener<T, P> listener);
+
+	/**
+	 * Add listener for column reorder events.
+	 * @param listener The listener to add (not null)
+	 * @return this
+	 */
+	C withColumnReorderListener(ColumnReorderListener<T, P> listener);
 
 	// -------
 
@@ -949,13 +1044,15 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		/**
 		 * Enables or disables automatic width for the column.
 		 * <p>
-		 * Automatically sets the width of the column based on the columncontents when this is set to true.
+		 * Automatically sets the width of the column based on the columncontents when
+		 * this is set to true.
 		 * </p>
 		 * <p>
-		 * For performance reasons the column width is calculated automaticallyonly once when the grid items are
-		 * rendered for the first time and thecalculation only considers the rows which are currently rendered inDOM (a
-		 * bit more than what is currently visible). If the grid isscrolled, or the cell content changes, the column
-		 * width might notmatch the contents anymore.
+		 * For performance reasons the column width is calculated automaticallyonly once
+		 * when the grid items are rendered for the first time and thecalculation only
+		 * considers the rows which are currently rendered inDOM (a bit more than what
+		 * is currently visible). If the grid isscrolled, or the cell content changes,
+		 * the column width might notmatch the contents anymore.
 		 * </p>
 		 * @param autoWidth Whether to enable the column auto-width
 		 * @return this
@@ -966,13 +1063,15 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		/**
 		 * Enables automatic width for the column.
 		 * <p>
-		 * Automatically sets the width of the column based on the columncontents when this is set to true.
+		 * Automatically sets the width of the column based on the columncontents when
+		 * this is set to true.
 		 * </p>
 		 * <p>
-		 * For performance reasons the column width is calculated automaticallyonly once when the grid items are
-		 * rendered for the first time and thecalculation only considers the rows which are currently rendered inDOM (a
-		 * bit more than what is currently visible). If the grid isscrolled, or the cell content changes, the column
-		 * width might notmatch the contents anymore.
+		 * For performance reasons the column width is calculated automaticallyonly once
+		 * when the grid items are rendered for the first time and thecalculation only
+		 * considers the rows which are currently rendered inDOM (a bit more than what
+		 * is currently visible). If the grid isscrolled, or the cell content changes,
+		 * the column width might notmatch the contents anymore.
 		 * </p>
 		 * @return this
 		 * @since 5.3.0
@@ -1012,10 +1111,12 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		/**
 		 * Set the CSS style class name generator to use for the column.
 		 * <p>
-		 * Returning <code>null</code> from the generator results in no custom class name being set. Multiple class
-		 * names can be returned from the generator as space-separated.
+		 * Returning <code>null</code> from the generator results in no custom class
+		 * name being set. Multiple class names can be returned from the generator as
+		 * space-separated.
 		 * </p>
-		 * @param styleNameGenerator The function to use to generate the cell CSS style class name
+		 * @param styleNameGenerator The function to use to generate the cell CSS style
+		 *                           class name
 		 * @return this
 		 * @since 5.2.3
 		 */
@@ -1029,14 +1130,16 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		C sortComparator(Comparator<T> comparator);
 
 		/**
-		 * Set the properties to use to implement the sort logic to apply when the column is user-sorted.
+		 * Set the properties to use to implement the sort logic to apply when the
+		 * column is user-sorted.
 		 * @param sortProperties The properties to use to sort the column
 		 * @return this
 		 */
 		C sortUsing(List<P> sortProperties);
 
 		/**
-		 * Set the properties to use to implement the sort logic to apply when the column is user-sorted.
+		 * Set the properties to use to implement the sort logic to apply when the
+		 * column is user-sorted.
 		 * @param sortProperties The properties to use to sort the column
 		 * @return this
 		 */
@@ -1046,7 +1149,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		}
 
 		/**
-		 * Set the function to use to obtain the {@link ItemSort}s to use when the column is user-sorted.
+		 * Set the function to use to obtain the {@link ItemSort}s to use when the
+		 * column is user-sorted.
 		 * @param sortProvider Sort provider
 		 * @return this
 		 */
@@ -1070,7 +1174,7 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 		/**
 		 * Set the header text for the column.
-		 * @param defaultHeader The default column header text
+		 * @param defaultHeader     The default column header text
 		 * @param headerMessageCode The column header text translation message code
 		 * @return this
 		 */
@@ -1108,25 +1212,26 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		C displayAsFirst();
 
 		/**
-		 * Configure the column to be displayed after any other listing column by default.
+		 * Configure the column to be displayed after any other listing column by
+		 * default.
 		 * @return this
 		 */
 		C displayAsLast();
 
 		/**
-		 * Configure the column to be displayed before the column which corresponds to the id specified by the given
-		 * <code>beforeProperty</code>.
-		 * @param beforeProperty Property which represents the column before which this column has to be displayed (not
-		 *        null)
+		 * Configure the column to be displayed before the column which corresponds to
+		 * the id specified by the given <code>beforeProperty</code>.
+		 * @param beforeProperty Property which represents the column before which this
+		 *                       column has to be displayed (not null)
 		 * @return this
 		 */
 		C displayBefore(P beforeProperty);
 
 		/**
-		 * Configure the column to be displayed after the column which corresponds to the id specified by the given
-		 * <code>afterProperty</code>.
-		 * @param afterProperty Property which represents the column after which this column has to be displayed (not
-		 *        null)
+		 * Configure the column to be displayed after the column which corresponds to
+		 * the id specified by the given <code>afterProperty</code>.
+		 * @param afterProperty Property which represents the column after which this
+		 *                      column has to be displayed (not null)
 		 * @return this
 		 */
 		C displayAfter(P afterProperty);
@@ -1164,8 +1269,8 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	}
 
 	/**
-	 * A post processor which can be used to furtherly configure a listing column before adding it to the listing
-	 * component.
+	 * A post processor which can be used to furtherly configure a listing column
+	 * before adding it to the listing component.
 	 *
 	 * @param <P> Property type
 	 * 
@@ -1176,9 +1281,10 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 
 		/**
 		 * Configure the column which corresponds to given <code>property</code>.
-		 * @param property The property which identifies the column
-		 * @param header The column header
-		 * @param configurator The {@link ColumnConfigurator} which can be used to configure the column
+		 * @param property     The property which identifies the column
+		 * @param header       The column header
+		 * @param configurator The {@link ColumnConfigurator} which can be used to
+		 *                     configure the column
 		 */
 		void configureColumn(P property, String header, ColumnConfigurator configurator);
 
@@ -1240,9 +1346,9 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * The columns must be adjacent, and this row must be the out-most row.
 		 * </p>
 		 * <p>
-		 * The way that the client-side web component works also causes some limitations to which cells can be joined.
-		 * For example, if you join the first and second cell in the header, you cannot join the second and third cell
-		 * in the footer.
+		 * The way that the client-side web component works also causes some limitations
+		 * to which cells can be joined. For example, if you join the first and second
+		 * cell in the header, you cannot join the second and third cell in the footer.
 		 * </p>
 		 * @param properties The properties of the cells to join (not null)
 		 * @return the merged cell
@@ -1256,9 +1362,9 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 		 * The columns must be adjacent, and this row must be the out-most row.
 		 * </p>
 		 * <p>
-		 * The way that the client-side web component works also causes some limitations to which cells can be joined.
-		 * For example, if you join the first and second cell in the header, you cannot join the second and third cell
-		 * in the footer.
+		 * The way that the client-side web component works also causes some limitations
+		 * to which cells can be joined. For example, if you join the first and second
+		 * cell in the header, you cannot join the second and third cell in the footer.
 		 * </p>
 		 * @param properties The properties of the cells to join (not null)
 		 * @return the merged cell
