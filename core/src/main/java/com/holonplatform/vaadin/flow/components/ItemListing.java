@@ -31,7 +31,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
 /**
- * A component to display a set of items as tabular data, using the item properties as column ids.
+ * A component to display a set of items as tabular data, using the item
+ * properties as column ids.
  * 
  * @param <T> Item type
  * @param <P> Item property type
@@ -42,20 +43,24 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 	/**
 	 * Gets the listing visible columns, in the order thay are displayed.
-	 * @return The listing visible columns references, represented using the property id
+	 * @return The listing visible columns references, represented using the
+	 *         property id
 	 */
 	List<P> getVisibleColumns();
 
 	/**
 	 * Show or hide the column which corresponds to given <code>property</code> id.
 	 * @param property The property which represents the column (not null)
-	 * @param visible <code>true</code> to show the column, <code>false</code> to hide it
-	 * @throws IllegalArgumentException If the specified property is not bound to any column
+	 * @param visible  <code>true</code> to show the column, <code>false</code> to
+	 *                 hide it
+	 * @throws IllegalArgumentException If the specified property is not bound to
+	 *                                  any column
 	 */
 	void setColumnVisible(P property, boolean visible);
 
 	/**
-	 * Get the header text of the column identified by given property id, if available.
+	 * Get the header text of the column identified by given property id, if
+	 * available.
 	 * @param property The column property id (not null)
 	 * @return Optional header text of the column identified by given property id
 	 * @since 5.2.2
@@ -63,16 +68,20 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	Optional<String> getColumnHeader(P property);
 
 	/**
-	 * Gets whether the row details component for given <code>item</code> is visible.
-	 * @param item Item to check whether the row details component is visible (not null)
-	 * @return <code>true</code> if row details component is visible for given item, <code>false</code> otherwise
+	 * Gets whether the row details component for given <code>item</code> is
+	 * visible.
+	 * @param item Item to check whether the row details component is visible (not
+	 *             null)
+	 * @return <code>true</code> if row details component is visible for given item,
+	 *         <code>false</code> otherwise
 	 */
 	boolean isItemDetailsVisible(T item);
 
 	/**
 	 * Set whether to show the row details component for given <code>item</code>.
-	 * @param item Item for which to show or hide the row details (not null)
-	 * @param visible <code>true</code> to show the row details component, <code>false</code> to hide it
+	 * @param item    Item for which to show or hide the row details (not null)
+	 * @param visible <code>true</code> to show the row details component,
+	 *                <code>false</code> to hide it
 	 */
 	void setItemDetailsVisible(T item, boolean visible);
 
@@ -118,8 +127,8 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Gets whether this listing is editable.
 	 * <p>
-	 * When a listing is editable, the {@link #editItem(Object)} and {@link #cancelEditing()} methods can be used to
-	 * control item editing.
+	 * When a listing is editable, the {@link #editItem(Object)} and
+	 * {@link #cancelEditing()} methods can be used to control item editing.
 	 * </p>
 	 * @return Whether this listing is editable
 	 */
@@ -127,38 +136,45 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 	/**
 	 * Checks whether the listing is in edit mode.
-	 * @return If the listing is in edit mode, returns the currently item in editing. An empty Optional otherwise.
+	 * @return If the listing is in edit mode, returns the currently item in
+	 *         editing. An empty Optional otherwise.
 	 */
 	Optional<T> isEditing();
 
 	/**
-	 * If the listing {@link #isEditable()}, opens the editor interface for the provided item.
-	 * @param item the item to edit (not null) if already editing a different item in buffered mode
-	 * @throws IllegalArgumentException if the <code>item</code> is not in the backing data provider
-	 * @throws IllegalStateException If the listing is not editable
+	 * If the listing {@link #isEditable()}, opens the editor interface for the
+	 * provided item.
+	 * @param item the item to edit (not null) if already editing a different item
+	 *             in buffered mode
+	 * @throws IllegalArgumentException if the <code>item</code> is not in the
+	 *                                  backing data provider
+	 * @throws IllegalStateException    If the listing is not editable
 	 */
 	void editItem(T item);
 
 	/**
-	 * If the listing {@link #isEditable()}, closes the editor discarding any unsaved changes.
+	 * If the listing {@link #isEditable()}, closes the editor discarding any
+	 * unsaved changes.
 	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void cancelEditing();
 
 	/**
-	 * If the listing {@link #isEditable()}, saves the item which is currently in editing, if any.
+	 * If the listing {@link #isEditable()}, saves the item which is currently in
+	 * editing, if any.
 	 * <p>
-	 * When the listing editor is in buffered mode, this method will validate the item and will save any changes made to
-	 * the editor fields to the edited item if all validators pass. If the write fails then there will be no events and
+	 * When the listing editor is in buffered mode, this method will validate the
+	 * item and will save any changes made to the editor fields to the edited item
+	 * if all validators pass. If the write fails then there will be no events and
 	 * the editor will stay open.
 	 * </p>
 	 * <p>
-	 * A successful write will fire an editor <code>save</code> event and close the editor that will fire an editor
-	 * <code>close</code> event .
+	 * A successful write will fire an editor <code>save</code> event and close the
+	 * editor that will fire an editor <code>close</code> event .
 	 * </p>
 	 * <p>
-	 * NOTE: When the listing editor is not in buffered mode, calling save will have no effect and always return
-	 * <code>false</code>.
+	 * NOTE: When the listing editor is not in buffered mode, calling save will have
+	 * no effect and always return <code>false</code>.
 	 * </p>
 	 * @return <code>true</code> if save succeeded, <code>false</code> otherwise
 	 * @throws IllegalStateException If the listing is not editable
@@ -166,10 +182,13 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	boolean saveEditingItem();
 
 	/**
-	 * If the listing {@link #isEditable()}, refreshes the editor components for the current item being edited, if any.
+	 * If the listing {@link #isEditable()}, refreshes the editor components for the
+	 * current item being edited, if any.
 	 * <p>
-	 * This is useful when the state of the item is changed while the editor is open.
+	 * This is useful when the state of the item is changed while the editor is
+	 * open.
 	 * </p>
+	 * 
 	 * @throws IllegalStateException If the listing is not editable
 	 */
 	void refreshEditingItem();
@@ -191,7 +210,8 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Get whether the listing is <em>frozen</em>.
 	 * <p>
-	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is
+	 * performed from the data provider.
 	 * </p>
 	 * @return Whether the listing is <em>frozen</em>
 	 * @since 5.2.2
@@ -201,10 +221,12 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Set whether the listing is <em>frozen</em>.
 	 * <p>
-	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is performed from the data provider.
+	 * When the listing is <em>frozen</em>, it never shows any item and no fetch is
+	 * performed from the data provider.
 	 * </p>
 	 * <p>
-	 * When the {@link #refresh()} method is called, the frozen state is automatically set to <code>false</code>.
+	 * When the {@link #refresh()} method is called, the frozen state is
+	 * automatically set to <code>false</code>.
 	 * </p>
 	 * @param frozen Whether the listing is <em>frozen</em>
 	 * @since 5.2.2
@@ -214,10 +236,12 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Get the current additional items, if any.
 	 * <p>
-	 * Additional items are provided in addition to the ones returned by the concrete data provider, for example from a
-	 * backend service. They are always provided before any other item, and do not take part in filters and sorts.
+	 * Additional items are provided in addition to the ones returned by the
+	 * concrete data provider, for example from a backend service. They are always
+	 * provided before any other item, and do not take part in filters and sorts.
 	 * </p>
-	 * @return The additional items, in the order they were added. An empty list if none. The list is not modifiable.
+	 * @return The additional items, in the order they were added. An empty list if
+	 *         none. The list is not modifiable.
 	 * @see #addAdditionalItem(Object)
 	 * @since 5.2.2
 	 */
@@ -226,16 +250,18 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Add an additional item to the listing.
 	 * <p>
-	 * Additional items are provided in addition to the ones returned by the concrete data provider, for example from a
-	 * backend service. They are always provided before any other item, and do not take part in filters and sorts.
+	 * Additional items are provided in addition to the ones returned by the
+	 * concrete data provider, for example from a backend service. They are always
+	 * provided before any other item, and do not take part in filters and sorts.
 	 * </p>
 	 * <p>
-	 * The additional items should be used, for example, to edit item values before saving into the backend. Then they
-	 * should be removed from the listing.
+	 * The additional items should be used, for example, to edit item values before
+	 * saving into the backend. Then they should be removed from the listing.
 	 * </p>
 	 * <p>
-	 * NOTE: Additional items are identified in the same way than any other item, using the
-	 * {@link DataProvider#getId(Object)} method. So the id providing logic should be consistent with any other item.
+	 * NOTE: Additional items are identified in the same way than any other item,
+	 * using the {@link DataProvider#getId(Object)} method. So the id providing
+	 * logic should be consistent with any other item.
 	 * </p>
 	 * @param item The item to add (not null)
 	 * @see #removeAdditionalItem(Object)
@@ -245,8 +271,8 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	/**
 	 * Remove an additional item from the listing.
 	 * @param item The item to remove (not null)
-	 * @return <code>true</code> if given item was an additional item and it's been removed, <code>false</code>
-	 *         otherwise
+	 * @return <code>true</code> if given item was an additional item and it's been
+	 *         removed, <code>false</code> otherwise
 	 * @see #addAdditionalItem(Object)
 	 * @see #removeAdditionalItems()
 	 */
@@ -259,9 +285,34 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	void removeAdditionalItems();
 
 	/**
-	 * Updates the width of all columns which are configured for automatic width calculation.
+	 * Updates the width of all columns which are configured for automatic width
+	 * calculation.
 	 */
 	void recalculateColumnWidths();
+
+	/**
+	 * Scrolls to the given row index. Scrolls so that the row is shown at the start
+	 * of the visible area whenever possible.
+	 * <p>
+	 * NOTE: If the index parameter exceeds current item set size the grid will
+	 * scroll to the end.
+	 * </p>
+	 * @param rowIndex Zero based index of the item to scroll to in the current view
+	 * @since 5.4.0
+	 */
+	void scrollToIndex(int rowIndex);
+
+	/**
+	 * Scrolls to the beginning of the first data row.
+	 * @since 5.4.0
+	 */
+	void scrollToStart();
+
+	/**
+	 * Scrolls to the end of the last data row.
+	 * @since 5.4.0
+	 */
+	void scrollToEnd();
 
 	// ------- listing sections handlers
 
@@ -275,12 +326,14 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Get all the section rows, in order from top to bottom.
+		 * 
 		 * @return The section rows, an empty list if none
 		 */
 		List<R> getRows();
 
 		/**
 		 * Returns the first row of the section, if available.
+		 * 
 		 * @return Optional section first row
 		 */
 		default Optional<R> getFirstRow() {
@@ -298,12 +351,14 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Gets the cells that belong to this row as an unmodifiable list.
+		 * 
 		 * @return the cells on this row
 		 */
 		List<ItemListingCell> getCells();
 
 		/**
 		 * Get the cell on this row corresponding to the given property, if available.
+		 * 
 		 * @param property The property for which to obtain the cell (not null)
 		 * @return Optional cell bound to the given property
 		 */
@@ -321,6 +376,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		 * <p>
 		 * This will remove a component set with {@link #setComponent(Component)}.
 		 * </p>
+		 * 
 		 * @param text the localizable text to be shown in this cell
 		 * @see LocalizationProvider
 		 */
@@ -331,6 +387,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		 * <p>
 		 * This will remove a component set with {@link #setComponent(Component)}.
 		 * </p>
+		 * 
 		 * @param text the text to be shown in this cell
 		 */
 		default void setText(String text) {
@@ -338,13 +395,16 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		}
 
 		/**
-		 * Sets the text content of this cell using a localizable <code>messageCode</code>.
+		 * Sets the text content of this cell using a localizable
+		 * <code>messageCode</code>.
 		 * <p>
 		 * This will remove a component set with {@link #setComponent(Component)}.
 		 * </p>
-		 * @param defaultText Default text content if no translation is available for given <code>messageCode</code>.
+		 * 
+		 * @param defaultText Default text content if no translation is available for
+		 *                    given <code>messageCode</code>.
 		 * @param messageCode Text translation message key
-		 * @param arguments Optional translation arguments
+		 * @param arguments   Optional translation arguments
 		 * @see LocalizationProvider
 		 */
 		default void setText(String defaultText, String messageCode, Object... arguments) {
@@ -357,6 +417,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		 * <p>
 		 * This will remove text set with {@link #setText(String)}.
 		 * </p>
+		 * 
 		 * @param component the component to set
 		 */
 		void setComponent(Component component);
@@ -378,6 +439,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Called when the editor is opened.
+		 * 
 		 * @param event Editor event
 		 */
 		void onEditorOpen(ItemEditorEvent<T, P> event);
@@ -397,6 +459,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Called when the editor is closed.
+		 * 
 		 * @param event Editor event
 		 */
 		void onEditorClose(ItemEditorEvent<T, P> event);
@@ -416,6 +479,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Called when the editor is saved.
+		 * 
 		 * @param event Editor event
 		 */
 		void onEditorSave(ItemEditorEvent<T, P> event);
@@ -435,6 +499,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Called when the editor is cancelled.
+		 * 
 		 * @param event Editor event
 		 */
 		void onEditorCancel(ItemEditorEvent<T, P> event);
@@ -453,18 +518,21 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Get the {@link ItemListing} to which the ditor is bound.
+		 * 
 		 * @return The listing
 		 */
 		ItemListing<T, P> getListing();
 
 		/**
 		 * Get the item editor.
+		 * 
 		 * @return The editor
 		 */
 		Editor<T> getEditor();
 
 		/**
 		 * Gets the item being edited.
+		 * 
 		 * @return the item being edited
 		 */
 		T getItem();
@@ -472,8 +540,10 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		/**
 		 * Gets whether the item is an additional item.
 		 * <p>
-		 * Additional items are provided in addition to the ones returned by the concrete data provider.
+		 * Additional items are provided in addition to the ones returned by the
+		 * concrete data provider.
 		 * </p>
+		 * 
 		 * @return Whether the item is an additional item
 		 * @see ItemListingDataProviderAdapter
 		 */
@@ -482,7 +552,9 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 		}
 
 		/**
-		 * Get the available editor bindings, i.e. the {@link Input} component for each property.
+		 * Get the available editor bindings, i.e. the {@link Input} component for each
+		 * property.
+		 * 
 		 * @return A map of the editor bindings
 		 */
 		Map<P, Input<?>> getBindings();
@@ -492,8 +564,8 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 	// ------- ItemListing editor component group
 
 	/**
-	 * A {@link BoundComponentGroup} which represents the listing item editor {@link Input}s and their property
-	 * bindings.
+	 * A {@link BoundComponentGroup} which represents the listing item editor
+	 * {@link Input}s and their property bindings.
 	 * 
 	 * @param <P> Property type
 	 * @param <T> Item type
@@ -504,6 +576,7 @@ public interface ItemListing<T, P> extends ItemSet, Selectable<T>, HasComponent 
 
 		/**
 		 * Get the current editor item.
+		 * 
 		 * @return the editor item
 		 */
 		T getItem();
