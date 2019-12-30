@@ -54,6 +54,8 @@ import com.holonplatform.vaadin.flow.components.builders.HorizontalLayoutBuilder
 import com.holonplatform.vaadin.flow.components.builders.LabelBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.LabelConfigurator.BaseLabelConfigurator;
+import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.ListSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.PropertyListSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.LocalTimeInputBuilder;
@@ -101,6 +103,7 @@ import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -111,8 +114,9 @@ import com.vaadin.flow.server.VaadinService;
 /**
  * Main provider of UI components builders and configurators.
  * <p>
- * Provides static methods to obtain builder for common UI components type, allowing fluent and implementation-agnostic
- * components creation and configuration.
+ * Provides static methods to obtain builder for common UI components type,
+ * allowing fluent and implementation-agnostic components creation and
+ * configuration.
  * </p>
  * 
  * @since 5.2.0
@@ -122,12 +126,14 @@ public interface Components {
 	// Property configuration
 
 	/**
-	 * Configuration property which can be used for a {@link LocalTime} type {@link Property} to configure the
-	 * <em>steps</em> to show for the {@link Input} component bound to the property, i.e. the intervals for the
+	 * Configuration property which can be used for a {@link LocalTime} type
+	 * {@link Property} to configure the <em>steps</em> to show for the
+	 * {@link Input} component bound to the property, i.e. the intervals for the
 	 * displayed items in the time input dropdown.
 	 * <p>
-	 * If the step is less than 60 seconds, the format will be changed to <code>hh:mm:ss</code> and it can be in
-	 * <code>hh:mm:ss.fff</code> format, when the step is less than 1 second.
+	 * If the step is less than 60 seconds, the format will be changed to
+	 * <code>hh:mm:ss</code> and it can be in <code>hh:mm:ss.fff</code> format, when
+	 * the step is less than 1 second.
 	 * </p>
 	 * <p>
 	 * If the step is less than 900 seconds, the dropdown is hidden.
@@ -139,11 +145,13 @@ public interface Components {
 	// Configurators
 
 	/**
-	 * Get a {@link LabelConfigurator} to configure given <em>label</em> type component.
+	 * Get a {@link LabelConfigurator} to configure given <em>label</em> type
+	 * component.
 	 * <p>
-	 * The component must be a {@link HtmlContainer} and a {@link ClickNotifier}, such as {@link Span} or {@link Div}.
+	 * The component must be a {@link HtmlContainer} and a {@link ClickNotifier},
+	 * such as {@link Span} or {@link Div}.
 	 * </p>
-	 * @param <L> Label element type
+	 * @param <L>   Label element type
 	 * @param label The component to configure (not null)
 	 * @return A {@link LabelConfigurator}
 	 */
@@ -162,7 +170,8 @@ public interface Components {
 	}
 
 	/**
-	 * Get a {@link VerticalLayoutConfigurator} to configure given {@link VerticalLayout}.
+	 * Get a {@link VerticalLayoutConfigurator} to configure given
+	 * {@link VerticalLayout}.
 	 * @param layout Layout to configure
 	 * @return A new {@link VerticalLayoutConfigurator}
 	 */
@@ -171,7 +180,8 @@ public interface Components {
 	}
 
 	/**
-	 * Get a {@link HorizontalLayoutConfigurator} to configure given {@link HorizontalLayout}.
+	 * Get a {@link HorizontalLayoutConfigurator} to configure given
+	 * {@link HorizontalLayout}.
 	 * @param layout Layout to configure
 	 * @return A new {@link HorizontalLayoutConfigurator}
 	 */
@@ -180,7 +190,8 @@ public interface Components {
 	}
 
 	/**
-	 * Get a {@link BaseFormLayoutConfigurator} to configure given {@link FormLayout}.
+	 * Get a {@link BaseFormLayoutConfigurator} to configure given
+	 * {@link FormLayout}.
 	 * @param layout Layout to configure
 	 * @return A new {@link BaseFormLayoutConfigurator}
 	 */
@@ -191,83 +202,103 @@ public interface Components {
 	// Builders
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div} tag.
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div}
+	 * tag.
 	 * <p>
 	 * This is an alias for the {@link #div()} method.
 	 * </p>
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<Div> label() {
 		return div();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Span} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a
+	 * {@link Span} tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<Span> span() {
 		return LabelBuilder.span();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Div}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<Div> div() {
 		return LabelBuilder.div();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link Paragraph} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a
+	 * {@link Paragraph} tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<Paragraph> paragraph() {
 		return LabelBuilder.paragraph();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H1} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H1}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H1> h1() {
 		return LabelBuilder.h1();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H2} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H2}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H2> h2() {
 		return LabelBuilder.h2();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H3} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H3}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H3> h3() {
 		return LabelBuilder.h3();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H4} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H4}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H4> h4() {
 		return LabelBuilder.h4();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H5} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H5}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H5> h5() {
 		return LabelBuilder.h5();
 	}
 
 	/**
-	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H6} tag.
-	 * @return The {@link LabelBuilder} to configure and obtain the component instance
+	 * Obtain a {@link LabelBuilder} to create a label component using a {@link H6}
+	 * tag.
+	 * @return The {@link LabelBuilder} to configure and obtain the component
+	 *         instance
 	 */
 	static LabelBuilder<H6> h6() {
 		return LabelBuilder.h6();
@@ -282,8 +313,9 @@ public interface Components {
 	}
 
 	/**
-	 * Create a {@link Button} with given text and given <code>click</code> event listener.
-	 * @param text The button text
+	 * Create a {@link Button} with given text and given <code>click</code> event
+	 * listener.
+	 * @param text          The button text
 	 * @param clickListener The click listener (not null)
 	 * @return A new {@link Button}
 	 * @see #button()
@@ -293,9 +325,10 @@ public interface Components {
 	}
 
 	/**
-	 * Create a {@link Button} with given localizable text and given <code>click</code> event listener.
-	 * @param defaultText The default button text
-	 * @param messageCode The button text message localization code
+	 * Create a {@link Button} with given localizable text and given
+	 * <code>click</code> event listener.
+	 * @param defaultText   The default button text
+	 * @param messageCode   The button text message localization code
 	 * @param clickListener The click listener (not null)
 	 * @return A new {@link Button}
 	 * @see #button()
@@ -306,8 +339,9 @@ public interface Components {
 	}
 
 	/**
-	 * Create a {@link Button} with given localizable text and given <code>click</code> event listener.
-	 * @param text The {@link Localizable} button text
+	 * Create a {@link Button} with given localizable text and given
+	 * <code>click</code> event listener.
+	 * @param text          The {@link Localizable} button text
 	 * @param clickListener The click listener (not null)
 	 * @return A new {@link Button}
 	 * @see #button()
@@ -389,10 +423,11 @@ public interface Components {
 
 		/**
 		 * Show a message dialog with given localizable message text.
-		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current {@link Locale}
-		 * @param messageCode Dialog message translation message key
-		 * @param arguments Optional dialog message translation arguments
+		 * @param defaultMessage Default dialog message if no translation is available
+		 *                       for given <code>messageCode</code> for current
+		 *                       {@link Locale}
+		 * @param messageCode    Dialog message translation message key
+		 * @param arguments      Optional dialog message translation arguments
 		 * @see LocalizationProvider
 		 */
 		static void showMessage(String defaultMessage, String messageCode, Object... arguments) {
@@ -401,8 +436,8 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a message dialog with a <em>OK</em> button in the dialog toolbar which can be used to
-		 * close the dialog.
+		 * Get a builder to create a message dialog with a <em>OK</em> button in the
+		 * dialog toolbar which can be used to close the dialog.
 		 * <p>
 		 * The default <em>OK</em> button message localization code is
 		 * {@link DialogBuilder#DEFAULT_OK_BUTTON_MESSAGE_CODE}.
@@ -431,10 +466,11 @@ public interface Components {
 
 		/**
 		 * Show a confirm dialog with given localizable message text.
-		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current {@link Locale}.
-		 * @param messageCode Dialog message translation message key
-		 * @param arguments Optional dialog message translation arguments
+		 * @param defaultMessage Default dialog message if no translation is available
+		 *                       for given <code>messageCode</code> for current
+		 *                       {@link Locale}.
+		 * @param messageCode    Dialog message translation message key
+		 * @param arguments      Optional dialog message translation arguments
 		 * @see LocalizationProvider
 		 */
 		static void showConfirm(String defaultMessage, String messageCode, Object... arguments) {
@@ -443,14 +479,17 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a question dialog, with a <em>confirm</em> button and a <em>deny</em> button in the
-		 * dialog toolbar which will trigger the given <code>questionDialogCallback</code> to react to the user choice.
+		 * Get a builder to create a question dialog, with a <em>confirm</em> button and
+		 * a <em>deny</em> button in the dialog toolbar which will trigger the given
+		 * <code>questionDialogCallback</code> to react to the user choice.
 		 * <p>
 		 * The default <em>confirm</em> button message localization code is
-		 * {@link DialogBuilder#DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE}. The default <em>deny</em> button message
-		 * localization code is {@link DialogBuilder#DEFAULT_DENY_BUTTON_MESSAGE_CODE}.
+		 * {@link DialogBuilder#DEFAULT_CONFIRM_BUTTON_MESSAGE_CODE}. The default
+		 * <em>deny</em> button message localization code is
+		 * {@link DialogBuilder#DEFAULT_DENY_BUTTON_MESSAGE_CODE}.
 		 * </p>
-		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
+		 * @param questionDialogCallback The callback function use to react to the user
+		 *                               selection (not null)
 		 * @return A new {@link QuestionDialogBuilder}
 		 */
 		static QuestionDialogBuilder question(QuestionDialogCallback questionDialogCallback) {
@@ -459,8 +498,9 @@ public interface Components {
 
 		/**
 		 * Show a question dialog with given localizable message text.
-		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
-		 * @param message The dialog message text
+		 * @param questionDialogCallback The callback function use to react to the user
+		 *                               selection (not null)
+		 * @param message                The dialog message text
 		 */
 		static void showQuestion(QuestionDialogCallback questionDialogCallback, Localizable message) {
 			question(questionDialogCallback).text(message).open();
@@ -468,8 +508,9 @@ public interface Components {
 
 		/**
 		 * Show a question dialog with given message text.
-		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
-		 * @param message The dialog message text
+		 * @param questionDialogCallback The callback function use to react to the user
+		 *                               selection (not null)
+		 * @param message                The dialog message text
 		 */
 		static void showQuestion(QuestionDialogCallback questionDialogCallback, String message) {
 			showQuestion(questionDialogCallback, Localizable.of(message));
@@ -477,11 +518,13 @@ public interface Components {
 
 		/**
 		 * Show a question dialog with given localizable message text.
-		 * @param questionDialogCallback The callback function use to react to the user selection (not null)
-		 * @param defaultMessage Default dialog message if no translation is available for given
-		 *        <code>messageCode</code> for current {@link Locale}
-		 * @param messageCode Dialog message translation message key
-		 * @param arguments Optional dialog message translation arguments
+		 * @param questionDialogCallback The callback function use to react to the user
+		 *                               selection (not null)
+		 * @param defaultMessage         Default dialog message if no translation is
+		 *                               available for given <code>messageCode</code>
+		 *                               for current {@link Locale}
+		 * @param messageCode            Dialog message translation message key
+		 * @param arguments              Optional dialog message translation arguments
 		 * @see LocalizationProvider
 		 */
 		static void showQuestion(QuestionDialogCallback questionDialogCallback, String defaultMessage,
@@ -500,8 +543,9 @@ public interface Components {
 	static interface view {
 
 		/**
-		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given value type.
-		 * @param <T> Value type
+		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using
+		 * given value type.
+		 * @param <T>       Value type
 		 * @param valueType Value type (not null)
 		 * @return A {@link ViewComponentBuilder}
 		 */
@@ -510,9 +554,10 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given {@link Property} for label
-		 * and value presentation through the {@link Property#present(Object)} method.
-		 * @param <T> Value type
+		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using
+		 * given {@link Property} for label and value presentation through the
+		 * {@link Property#present(Object)} method.
+		 * @param <T>      Value type
 		 * @param property The property to use (not null)
 		 * @return A {@link ViewComponentBuilder}
 		 */
@@ -521,9 +566,9 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using given function to convert the
-		 * value to a {@link String} type representation.
-		 * @param <T> Value type
+		 * Get a {@link ViewComponentBuilder} to create a {@link ViewComponent} using
+		 * given function to convert the value to a {@link String} type representation.
+		 * @param <T>                  Value type
 		 * @param stringValueConverter Value converter function (not null)
 		 * @return A {@link ViewComponentBuilder}
 		 */
@@ -533,7 +578,7 @@ public interface Components {
 
 		/**
 		 * Create a {@link ViewComponent} using given value type.
-		 * @param <T> Value type
+		 * @param <T>       Value type
 		 * @param valueType Value type (not null)
 		 * @return A {@link ViewComponent} instance
 		 */
@@ -542,9 +587,9 @@ public interface Components {
 		}
 
 		/**
-		 * Create a {@link ViewComponent} using given {@link Property} for label and value presentation through the
-		 * {@link Property#present(Object)} method.
-		 * @param <T> Value type
+		 * Create a {@link ViewComponent} using given {@link Property} for label and
+		 * value presentation through the {@link Property#present(Object)} method.
+		 * @param <T>      Value type
 		 * @param property The property to use (not null)
 		 * @return A {@link ViewComponent} instance
 		 */
@@ -553,8 +598,9 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
-		 * @param <P> Property type
+		 * Get a {@link PropertyViewGroupBuilder} to create and setup a
+		 * {@link PropertyViewGroup}.
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyViewGroupBuilder}
 		 */
@@ -564,7 +610,8 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyViewGroupBuilder} to create and setup a {@link PropertyViewGroup}.
+		 * Get a {@link PropertyViewGroupBuilder} to create and setup a
+		 * {@link PropertyViewGroup}.
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyViewGroupBuilder}
 		 */
@@ -574,10 +621,10 @@ public interface Components {
 
 		/**
 		 * Get a builder to create a {@link PropertyViewForm} using given property set.
-		 * @param <C> Form content element type
-		 * @param <P> Property type
-		 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
-		 *        {@link Composer} (not null)
+		 * @param <C>        Form content element type
+		 * @param <P>        Property type
+		 * @param content    The form content, where the {@link ViewComponent}s will be
+		 *                   composed using the configured {@link Composer} (not null)
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyViewFormBuilder}
 		 */
@@ -589,9 +636,9 @@ public interface Components {
 
 		/**
 		 * Get a builder to create a {@link PropertyViewForm} using given property set.
-		 * @param <C> Form content element type
-		 * @param content The form content, where the {@link ViewComponent}s will be composed using the configured
-		 *        {@link Composer} (not null)
+		 * @param <C>        Form content element type
+		 * @param content    The form content, where the {@link ViewComponent}s will be
+		 *                   composed using the configured {@link Composer} (not null)
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyViewFormBuilder}
 		 */
@@ -600,14 +647,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link FormLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
 		 */
@@ -617,12 +665,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link FormLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link FormLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
@@ -632,14 +681,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link VerticalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
 		 */
@@ -649,12 +699,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link VerticalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link VerticalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
@@ -664,14 +715,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link HorizontalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
 		 */
@@ -681,12 +733,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyViewForm} using given property set and a {@link HorizontalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyViewForm} using given property set
+		 * and a {@link HorizontalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyViewFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyViewForm} builder
@@ -700,7 +753,8 @@ public interface Components {
 	// Inputs
 
 	/**
-	 * {@link Input}, {@link PropertyInputGroup} and {@link PropertyInputForm} builders provider.
+	 * {@link Input}, {@link PropertyInputGroup} and {@link PropertyInputForm}
+	 * builders provider.
 	 */
 	static interface input {
 
@@ -713,7 +767,8 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create {@link String} type {@link Input}s rendered as a <em>text area</em>.
+		 * Gets a builder to create {@link String} type {@link Input}s rendered as a
+		 * <em>text area</em>.
 		 * @return A {@link StringAreaInputBuilder}
 		 */
 		static StringAreaInputBuilder stringArea() {
@@ -721,8 +776,8 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create {@link String} type {@link Input}s which not display user input on screen, used to
-		 * enter secret text information like passwords.
+		 * Gets a builder to create {@link String} type {@link Input}s which not display
+		 * user input on screen, used to enter secret text information like passwords.
 		 * <p>
 		 * Alias for {@link #password()}.
 		 * </p>
@@ -733,8 +788,8 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create {@link String} type {@link Input}s which not display user input on screen, used to
-		 * enter secret text information like passwords.
+		 * Gets a builder to create {@link String} type {@link Input}s which not display
+		 * user input on screen, used to enter secret text information like passwords.
 		 * @return A {@link PasswordInputBuilder}
 		 */
 		static PasswordInputBuilder password() {
@@ -768,8 +823,8 @@ public interface Components {
 		/**
 		 * Gets a builder to create {@link Date} type {@link Input}s.
 		 * <p>
-		 * This Input use the {@link Date} type only for simple date representations (day, month, year), i.e. without
-		 * the time part.
+		 * This Input use the {@link Date} type only for simple date representations
+		 * (day, month, year), i.e. without the time part.
 		 * </p>
 		 * @return A {@link DateInputBuilder}
 		 */
@@ -778,7 +833,8 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create {@link Date} type {@link Input}s with time (hours and minutes) support.
+		 * Gets a builder to create {@link Date} type {@link Input}s with time (hours
+		 * and minutes) support.
 		 * <p>
 		 * Only the hours and minutes time parts are supported.
 		 * </p>
@@ -798,7 +854,7 @@ public interface Components {
 
 		/**
 		 * Gets a builder to create a numeric type {@link Input}.
-		 * @param <T> Number type
+		 * @param <T>         Number type
 		 * @param numberClass Number class (not null)
 		 * @return A new {@link NumberInputBuilder}
 		 */
@@ -807,13 +863,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link ComboBox} as input component.
+		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ComboBox} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
 		 * {@link #singleSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
-		 * @param <T> Value type
+		 * @param <T>  Value type
 		 * @param type Selection value type (not null)
 		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
@@ -822,19 +879,20 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link ComboBox} as input component.
+		 * Gets a builder to create a <em>filterable</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ComboBox} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
-		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
 		 * {@link #singleSelect(Class)} method can be used.
 		 * <p>
-		 * @param <T> Value type
-		 * @param <ITEM> Item type
-		 * @param type Selection value type (not null)
-		 * @param itemType Selection items type (not null)
-		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
-		 *        back (not null)
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
 		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> FilterableSingleSelectInputBuilder<T, ITEM> singleSelect(Class<T> type, Class<ITEM> itemType,
@@ -843,10 +901,12 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>filterable</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link ComboBox} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * Gets a builder to create a {@link Property} model based <em>filterable</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link ComboBox} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
 		 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 		 */
 		static <T> PropertyFilterableSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty) {
@@ -854,12 +914,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>filterable</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link ComboBox} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @param itemConverter The function to use to convert a selection value into the corresponding
-		 *        {@link PropertyBox} item
+		 * Gets a builder to create a {@link Property} model based <em>filterable</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link ComboBox} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
 		 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 		 */
 		static <T> PropertyFilterableSingleSelectInputBuilder<T> singleSelect(final Property<T> selectionProperty,
@@ -868,13 +930,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link Select} as input component.
+		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link Select} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
 		 * {@link #singleSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
-		 * @param <T> Value type
+		 * @param <T>  Value type
 		 * @param type Selection value type (not null)
 		 * @return A new {@link SingleSelectInputBuilder}
 		 */
@@ -883,19 +946,20 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link Select} as input component.
+		 * Gets a builder to create a <em>simple</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link Select} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
-		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
 		 * {@link #singleSelect(Class)} method can be used.
 		 * <p>
-		 * @param <T> Value type
-		 * @param <ITEM> Item type
-		 * @param type Selection value type (not null)
-		 * @param itemType Selection items type (not null)
-		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
-		 *        back (not null)
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
 		 * @return A new {@link SingleSelectInputBuilder}
 		 */
 		static <T, ITEM> SingleSelectInputBuilder<T, ITEM> singleSimpleSelect(Class<T> type, Class<ITEM> itemType,
@@ -904,10 +968,12 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>simple</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link Select} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * Gets a builder to create a {@link Property} model based <em>simple</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link Select} as input
+		 * component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
 		 * @return A new {@link PropertySingleSelectInputBuilder}
 		 */
 		static <T> PropertySingleSelectInputBuilder<T> singleSimpleSelect(final Property<T> selectionProperty) {
@@ -915,12 +981,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>simple</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link Select} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @param itemConverter The function to use to convert a selection value into the corresponding
-		 *        {@link PropertyBox} item
+		 * Gets a builder to create a {@link Property} model based <em>simple</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link Select} as input
+		 * component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
 		 * @return A new {@link PropertySingleSelectInputBuilder}
 		 */
 		static <T> PropertySingleSelectInputBuilder<T> singleSimpleSelect(final Property<T> selectionProperty,
@@ -929,13 +997,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link RadioButtonGroup} as input component.
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
 		 * {@link #singleOptionSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
-		 * @param <T> Value type
+		 * @param <T>  Value type
 		 * @param type Selection value type (not null)
 		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
@@ -944,19 +1013,20 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input}, which uses a
-		 * {@link RadioButtonGroup} as input component.
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
-		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
 		 * {@link #singleOptionSelect(Class)} method can be used.
 		 * <p>
-		 * @param <T> Value type
-		 * @param <ITEM> Item type
-		 * @param type Selection value type (not null)
-		 * @param itemType Selection items type (not null)
-		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
-		 *        back (not null)
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
 		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
 		static <T, ITEM> OptionsSingleSelectInputBuilder<T, ITEM> singleOptionSelect(Class<T> type,
@@ -965,10 +1035,12 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * Gets a builder to create a {@link Property} model based <em>options</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link RadioButtonGroup} as input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
 		 * @return A new {@link PropertyOptionsSingleSelectInputBuilder}
 		 */
 		static <T> PropertyOptionsSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty) {
@@ -976,12 +1048,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link SingleSelect} type
-		 * {@link Input}, which uses a {@link RadioButtonGroup} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @param itemConverter The function to use to convert a selection value into the corresponding
-		 *        {@link PropertyBox} item
+		 * Gets a builder to create a {@link Property} model based <em>options</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a
+		 * {@link RadioButtonGroup} as input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
 		 * @return A new {@link PropertyOptionsSingleSelectInputBuilder}
 		 */
 		static <T> PropertyOptionsSingleSelectInputBuilder<T> singleOptionSelect(final Property<T> selectionProperty,
@@ -990,13 +1064,81 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type {@link Input}, which uses a
-		 * {@link CheckboxGroup} as input component.
+		 * Gets a builder to create a <em>list</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ListBox} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are consistent. Use
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
+		 * {@link #singleListSelect(Class, Class, ItemConverter)} if not.
+		 * <p>
+		 * @param <T>  Value type
+		 * @param type Selection value type (not null)
+		 * @return A new {@link ListSingleSelectInputBuilder}
+		 */
+		static <T> ListSingleSelectInputBuilder<T, T> singleListSelect(Class<T> type) {
+			return Input.singleListSelect(type);
+		}
+
+		/**
+		 * Gets a builder to create a <em>list</em> {@link SingleSelect} type
+		 * {@link Input}, which uses a {@link ListBox} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
+		 * {@link #singleListSelect(Class)} method can be used.
+		 * <p>
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
+		 * @return A new {@link ListSingleSelectInputBuilder}
+		 */
+		static <T, ITEM> ListSingleSelectInputBuilder<T, ITEM> singleListSelect(Class<T> type, Class<ITEM> itemType,
+				ItemConverter<T, ITEM> itemConverter) {
+			return Input.singleListSelect(type, itemType, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>list</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link ListBox} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @return A new {@link PropertyListSingleSelectInputBuilder}
+		 */
+		static <T> PropertyListSingleSelectInputBuilder<T> singleListSelect(final Property<T> selectionProperty) {
+			return Input.singleListSelect(selectionProperty);
+		}
+
+		/**
+		 * Gets a builder to create a {@link Property} model based <em>list</em>
+		 * {@link SingleSelect} type {@link Input}, which uses a {@link ListBox} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
+		 * @return A new {@link PropertyListSingleSelectInputBuilder}
+		 */
+		static <T> PropertyListSingleSelectInputBuilder<T> singleListSelect(final Property<T> selectionProperty,
+				Function<T, Optional<PropertyBox>> itemConverter) {
+			return Input.singleListSelect(selectionProperty, itemConverter);
+		}
+
+		/**
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
+		 * <p>
+		 * This builder can be used when the selection items type and the selection
+		 * value type are consistent. Use
 		 * {@link #multiOptionSelect(Class, Class, ItemConverter)} if not.
 		 * <p>
-		 * @param <T> Value type
+		 * @param <T>  Value type
 		 * @param type Selection value type (not null)
 		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
@@ -1005,19 +1147,20 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type {@link Input}, which uses a
-		 * {@link CheckboxGroup} as input component.
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type
+		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
 		 * <p>
-		 * This builder can be used when the selection items type and the selection value type are not consistent (i.e.
-		 * of different type). When the the selection item and the selection value types are consistent, the
+		 * This builder can be used when the selection items type and the selection
+		 * value type are not consistent (i.e. of different type). When the the
+		 * selection item and the selection value types are consistent, the
 		 * {@link #multiOptionSelect(Class)} method can be used.
 		 * <p>
-		 * @param <T> Value type
-		 * @param <ITEM> Item type
-		 * @param type Selection value type (not null)
-		 * @param itemType Selection items type (not null)
-		 * @param itemConverter The item converter to use to convert a selection item into a selection (Input) value and
-		 *        back (not null)
+		 * @param <T>           Value type
+		 * @param <ITEM>        Item type
+		 * @param type          Selection value type (not null)
+		 * @param itemType      Selection items type (not null)
+		 * @param itemConverter The item converter to use to convert a selection item
+		 *                      into a selection (Input) value and back (not null)
 		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
 		static <T, ITEM> OptionsMultiSelectInputBuilder<T, ITEM> multiOptionSelect(Class<T> type, Class<ITEM> itemType,
@@ -1026,10 +1169,12 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect} type
-		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
+		 * Gets a builder to create a {@link Property} model based <em>options</em>
+		 * {@link MultiSelect} type {@link Input}, which uses a {@link CheckboxGroup} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
 		 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 		 */
 		static <T> PropertyOptionsMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty) {
@@ -1037,12 +1182,14 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link Property} model based <em>options</em> {@link MultiSelect} type
-		 * {@link Input}, which uses a {@link CheckboxGroup} as input component.
-		 * @param <T> Value type
-		 * @param selectionProperty The property to use to represent the selection value (not null)
-		 * @param itemConverter The function to use to convert a selection value into the corresponding
-		 *        {@link PropertyBox} item
+		 * Gets a builder to create a {@link Property} model based <em>options</em>
+		 * {@link MultiSelect} type {@link Input}, which uses a {@link CheckboxGroup} as
+		 * input component.
+		 * @param <T>               Value type
+		 * @param selectionProperty The property to use to represent the selection value
+		 *                          (not null)
+		 * @param itemConverter     The function to use to convert a selection value
+		 *                          into the corresponding {@link PropertyBox} item
 		 * @return A new {@link PropertyOptionsMultiSelectInputBuilder}
 		 */
 		static <T> PropertyOptionsMultiSelectInputBuilder<T> multiOptionSelect(final Property<T> selectionProperty,
@@ -1051,11 +1198,13 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a {@link SingleSelect} type {@link Input} for given <code>enum</code> type.
+		 * Gets a builder to create a {@link SingleSelect} type {@link Input} for given
+		 * <code>enum</code> type.
 		 * <p>
-		 * All the enum constants declared for the given enum type will be available as selection items.
+		 * All the enum constants declared for the given enum type will be available as
+		 * selection items.
 		 * </p>
-		 * @param <E> Enum type
+		 * @param <E>      Enum type
 		 * @param enumType Enum type (not null)
 		 * @return A new {@link FilterableSingleSelectInputBuilder}
 		 */
@@ -1064,12 +1213,13 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type {@link Input} for given
-		 * <code>enum</code> type.
+		 * Gets a builder to create a <em>options</em> {@link SingleSelect} type
+		 * {@link Input} for given <code>enum</code> type.
 		 * <p>
-		 * All the enum constants declared for the given enum type will be available as selection items.
+		 * All the enum constants declared for the given enum type will be available as
+		 * selection items.
 		 * </p>
-		 * @param <E> Enum type
+		 * @param <E>      Enum type
 		 * @param enumType Enum type (not null)
 		 * @return A new {@link OptionsSingleSelectInputBuilder}
 		 */
@@ -1078,11 +1228,13 @@ public interface Components {
 		}
 
 		/**
-		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type Input for given <code>enum</code> type.
+		 * Gets a builder to create a <em>options</em> {@link MultiSelect} type Input
+		 * for given <code>enum</code> type.
 		 * <p>
-		 * All the enum constants declared for the given enum type will be available as selection items.
+		 * All the enum constants declared for the given enum type will be available as
+		 * selection items.
 		 * </p>
-		 * @param <E> Enum type
+		 * @param <E>      Enum type
 		 * @param enumType Enum type (not null)
 		 * @return A new {@link OptionsMultiSelectInputBuilder}
 		 */
@@ -1091,8 +1243,9 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
-		 * @param <P> Property type
+		 * Get a {@link PropertyInputGroupBuilder} to create and setup a
+		 * {@link PropertyInputGroup}.
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyInputGroupBuilder}
 		 */
@@ -1102,7 +1255,8 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyInputGroupBuilder} to create and setup a {@link PropertyInputGroup}.
+		 * Get a {@link PropertyInputGroupBuilder} to create and setup a
+		 * {@link PropertyInputGroup}.
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyInputGroupBuilder}
 		 */
@@ -1112,10 +1266,10 @@ public interface Components {
 
 		/**
 		 * Get a builder to create a {@link PropertyInputForm} using given property set.
-		 * @param <C> Form content element type
-		 * @param <P> Property type
-		 * @param content The form content, where the {@link Input}s will be composed using the configured
-		 *        {@link Composer} (not null)
+		 * @param <C>        Form content element type
+		 * @param <P>        Property type
+		 * @param content    The form content, where the {@link Input}s will be composed
+		 *                   using the configured {@link Composer} (not null)
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyInputFormBuilder}
 		 */
@@ -1127,9 +1281,9 @@ public interface Components {
 
 		/**
 		 * Get a builder to create a {@link PropertyInputForm} using given property set.
-		 * @param <C> Form content element type
-		 * @param content The form content, where the {@link Input}s will be composed using the configured
-		 *        {@link Composer} (not null)
+		 * @param <C>        Form content element type
+		 * @param content    The form content, where the {@link Input}s will be composed
+		 *                   using the configured {@link Composer} (not null)
 		 * @param properties The property set (not null)
 		 * @return A new {@link PropertyInputFormBuilder}
 		 */
@@ -1138,14 +1292,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link FormLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link FormLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
 		 */
@@ -1155,12 +1310,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link FormLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link FormLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
@@ -1170,14 +1326,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link VerticalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link VerticalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
 		 */
@@ -1187,12 +1344,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link VerticalLayout} as
-		 * content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link VerticalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
@@ -1202,14 +1360,15 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link HorizontalLayout}
-		 * as content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link HorizontalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
-		 * @param <P> Property type
+		 * @param <P>        Property type
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
 		 */
@@ -1219,12 +1378,13 @@ public interface Components {
 		}
 
 		/**
-		 * Get a builder to create a {@link PropertyInputForm} using given property set and a {@link HorizontalLayout}
-		 * as content layout.
+		 * Get a builder to create a {@link PropertyInputForm} using given property set
+		 * and a {@link HorizontalLayout} as content layout.
 		 * <p>
-		 * A default composer is configured using {@link Composable#componentContainerComposer()}. Use
-		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)} to
-		 * provide a custom components composer.
+		 * A default composer is configured using
+		 * {@link Composable#componentContainerComposer()}. Use
+		 * {@link PropertyInputFormBuilder#composer(com.holonplatform.vaadin.flow.components.Composable.Composer)}
+		 * to provide a custom components composer.
 		 * </p>
 		 * @param properties The property set (not null)
 		 * @return A {@link PropertyInputForm} builder
@@ -1243,8 +1403,9 @@ public interface Components {
 	static interface listing {
 
 		/**
-		 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing} using given <code>beanType</code>.
-		 * @param <T> Bean type
+		 * Get a {@link BeanListingBuilder} to create and setup a {@link BeanListing}
+		 * using given <code>beanType</code>.
+		 * @param <T>      Bean type
 		 * @param beanType The bean class, i.e. the item type (not null)
 		 * @return A new {@link BeanListingBuilder}
 		 */
@@ -1253,8 +1414,9 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
-		 * @param <P> Property type
+		 * Get a {@link PropertyListingBuilder} to create and setup a
+		 * {@link PropertyListing}.
+		 * @param <P>        Property type
 		 * @param properties The listing property set (not null)
 		 * @return A new {@link PropertyListingBuilder}
 		 */
@@ -1264,7 +1426,8 @@ public interface Components {
 		}
 
 		/**
-		 * Get a {@link PropertyListingBuilder} to create and setup a {@link PropertyListing}.
+		 * Get a {@link PropertyListingBuilder} to create and setup a
+		 * {@link PropertyListing}.
 		 * @param properties The listing property set (not null)
 		 * @return A new {@link PropertyListingBuilder}
 		 */
@@ -1281,11 +1444,14 @@ public interface Components {
 	 * <p>
 	 * The current {@link Locale} retrieving strategy is:
 	 * <ul>
-	 * <li>If a current {@link UI} is available and a UI {@link Locale} is configured, the UI locale is returned.</li>
-	 * <li>If a {@link LocalizationContext} is available as a {@link Context} resource and it is localized, the
-	 * {@link LocalizationContext} {@link Locale} is returned.</li>
-	 * <li>If a {@link I18NProvider} is available from the {@link VaadinService}, the first {@link Locale} from
-	 * {@link I18NProvider#getProvidedLocales()} is returned, if available.</li>
+	 * <li>If a current {@link UI} is available and a UI {@link Locale} is
+	 * configured, the UI locale is returned.</li>
+	 * <li>If a {@link LocalizationContext} is available as a {@link Context}
+	 * resource and it is localized, the {@link LocalizationContext} {@link Locale}
+	 * is returned.</li>
+	 * <li>If a {@link I18NProvider} is available from the {@link VaadinService},
+	 * the first {@link Locale} from {@link I18NProvider#getProvidedLocales()} is
+	 * returned, if available.</li>
 	 * </ul>
 	 * @return Optional current {@link Locale}
 	 * @see LocalizationContext#getCurrent()
@@ -1295,18 +1461,24 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for given <code>locale</code>, using the provided {@link Localizable} to obtain the
-	 * message localization key ({@link Localizable#getMessageCode()}) and the optional localization arguments.
+	 * Get the message localization for given <code>locale</code>, using the
+	 * provided {@link Localizable} to obtain the message localization key
+	 * ({@link Localizable#getMessageCode()}) and the optional localization
+	 * arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
-	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
-	 * @param localizable The {@link Localizable} which represents the message to localize (not null)
-	 * @return The localized message, if available. If the given <code>localizable</code> provides a default message
-	 *         ({@link Localizable#getMessage()}) and a message localization is not available, the default message is
-	 *         returned
+	 * @param locale      The {@link Locale} for which to obtain the message
+	 *                    localization (not null)
+	 * @param localizable The {@link Localizable} which represents the message to
+	 *                    localize (not null)
+	 * @return The localized message, if available. If the given
+	 *         <code>localizable</code> provides a default message
+	 *         ({@link Localizable#getMessage()}) and a message localization is not
+	 *         available, the default message is returned
 	 * @see LocalizationContext#getCurrent()
 	 */
 	static Optional<String> getLocalization(Locale locale, Localizable localizable) {
@@ -1314,16 +1486,19 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for given <code>locale</code>, using the provided <code>messageCode</code> as
-	 * message localization key and the optional localization arguments.
+	 * Get the message localization for given <code>locale</code>, using the
+	 * provided <code>messageCode</code> as message localization key and the
+	 * optional localization arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
-	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
+	 * @param locale      The {@link Locale} for which to obtain the message
+	 *                    localization (not null)
 	 * @param messageCode The message localization key (not null)
-	 * @param arguments Optional message localization arguments
+	 * @param arguments   Optional message localization arguments
 	 * @return The localized message, if available
 	 * @see LocalizationContext#getCurrent()
 	 */
@@ -1332,19 +1507,24 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for given <code>locale</code>, using the provided <code>messageCode</code> as
-	 * message localization key and the optional localization arguments.
+	 * Get the message localization for given <code>locale</code>, using the
+	 * provided <code>messageCode</code> as message localization key and the
+	 * optional localization arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
-	 * @param locale The {@link Locale} for which to obtain the message localization (not null)
-	 * @param defaultMessage The default message to use when a message localization is not available for the provided
-	 *        {@link Locale} and message code
-	 * @param messageCode The message localization key (not null)
-	 * @param arguments Optional message localization arguments
-	 * @return The localized message, or the <code>defaultMessage</code> if not available
+	 * @param locale         The {@link Locale} for which to obtain the message
+	 *                       localization (not null)
+	 * @param defaultMessage The default message to use when a message localization
+	 *                       is not available for the provided {@link Locale} and
+	 *                       message code
+	 * @param messageCode    The message localization key (not null)
+	 * @param arguments      Optional message localization arguments
+	 * @return The localized message, or the <code>defaultMessage</code> if not
+	 *         available
 	 * @see LocalizationContext#getCurrent()
 	 */
 	static String getLocalization(Locale locale, String defaultMessage, String messageCode, Object... arguments) {
@@ -1352,20 +1532,26 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for the current {@link Locale}, using the provided {@link Localizable} to obtain the
-	 * message localization key ({@link Localizable#getMessageCode()}) and the optional localization arguments.
+	 * Get the message localization for the current {@link Locale}, using the
+	 * provided {@link Localizable} to obtain the message localization key
+	 * ({@link Localizable#getMessageCode()}) and the optional localization
+	 * arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
 	 * <p>
-	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * The message localization will be performed only if a current {@link Locale}
+	 * is available.
 	 * </p>
-	 * @param localizable The {@link Localizable} which represents the message to localize (not null)
-	 * @return The localized message, if available. If the given <code>localizable</code> provides a default message
-	 *         ({@link Localizable#getMessage()}) and a message localization is not available, the default message is
-	 *         returned
+	 * @param localizable The {@link Localizable} which represents the message to
+	 *                    localize (not null)
+	 * @return The localized message, if available. If the given
+	 *         <code>localizable</code> provides a default message
+	 *         ({@link Localizable#getMessage()}) and a message localization is not
+	 *         available, the default message is returned
 	 * @see #getCurrentLocale()
 	 */
 	static Optional<String> localize(Localizable localizable) {
@@ -1373,18 +1559,21 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for the current {@link Locale}, using the provided <code>messageCode</code> as
-	 * message localization key and the optional localization arguments.
+	 * Get the message localization for the current {@link Locale}, using the
+	 * provided <code>messageCode</code> as message localization key and the
+	 * optional localization arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
 	 * <p>
-	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * The message localization will be performed only if a current {@link Locale}
+	 * is available.
 	 * </p>
 	 * @param messageCode The message localization key (not null)
-	 * @param arguments Optional message localization arguments
+	 * @param arguments   Optional message localization arguments
 	 * @return The localized message, if available
 	 * @see #getCurrentLocale()
 	 */
@@ -1393,21 +1582,26 @@ public interface Components {
 	}
 
 	/**
-	 * Get the message localization for the current {@link Locale}, using the provided <code>messageCode</code> as
-	 * message localization key and the optional localization arguments.
+	 * Get the message localization for the current {@link Locale}, using the
+	 * provided <code>messageCode</code> as message localization key and the
+	 * optional localization arguments.
 	 * <p>
-	 * If a {@link I18NProvider} is available from the current {@link VaadinService}, it is used for message
-	 * localization. Otherwise, the current {@link LocalizationContext} is used, if it is available as a {@link Context}
-	 * resource and it is localized.
+	 * If a {@link I18NProvider} is available from the current
+	 * {@link VaadinService}, it is used for message localization. Otherwise, the
+	 * current {@link LocalizationContext} is used, if it is available as a
+	 * {@link Context} resource and it is localized.
 	 * </p>
 	 * <p>
-	 * The message localization will be performed only if a current {@link Locale} is available.
+	 * The message localization will be performed only if a current {@link Locale}
+	 * is available.
 	 * </p>
-	 * @param defaultMessage The default message to use when a message localization is not available for the provided
-	 *        {@link Locale} and message code
-	 * @param messageCode The message localization key (not null)
-	 * @param arguments Optional message localization arguments
-	 * @return The localized message, or the <code>defaultMessage</code> if not available
+	 * @param defaultMessage The default message to use when a message localization
+	 *                       is not available for the provided {@link Locale} and
+	 *                       message code
+	 * @param messageCode    The message localization key (not null)
+	 * @param arguments      Optional message localization arguments
+	 * @return The localized message, or the <code>defaultMessage</code> if not
+	 *         available
 	 * @see #getCurrentLocale()
 	 */
 	static String localize(String defaultMessage, String messageCode, Object... arguments) {

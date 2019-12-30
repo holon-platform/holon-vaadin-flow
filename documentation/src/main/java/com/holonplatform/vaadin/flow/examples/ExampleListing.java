@@ -203,7 +203,13 @@ public class ExampleListing {
 				.heightByRows(true) // <5>
 				.verticalScrollingEnabled(true) // <6>
 				.multiSort(true) // <7>
-				.build();
+				.autoWidth(ID) // <8>
+				.columnsAutoWidth() // <9>
+				.withColumnResizeListener(evt -> { // <10>
+					// ...
+				}).withColumnReorderListener(evt -> { // <11>
+					// ...
+				}).build();
 		// end::listing11[]
 	}
 
