@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.holon-platform.vaadin</groupId>
 		<artifactId>holon-vaadin-flow-root</artifactId>
-		<version>5.4.1-SNAPSHOT</version>
+		<version>5.4.2</version>
 	</parent>
 
 	<artifactId>holon-vaadin-flow-spring-boot</artifactId>
