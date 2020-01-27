@@ -20,6 +20,7 @@ import java.util.function.Function;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
+import com.holonplatform.vaadin.flow.data.AdditionalItemsProvider;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
@@ -27,16 +28,17 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
  * Configurator for components which supports a {@link DatastoreDataProvider}.
  * 
  * @param <ITEM> Item data type
- * @param <C> Concrete configurator type
+ * @param <C>    Concrete configurator type
  * 
  * @since 5.2.0
  */
 public interface DatastoreDataProviderConfigurator<ITEM, C extends DatastoreDataProviderConfigurator<ITEM, C>> {
 
 	/**
-	 * Add a {@link QueryConfigurationProvider} to provide additional query configuration parameters, such as
-	 * {@link QueryFilter} and {@link QuerySort}.
-	 * @param queryConfigurationProvider the {@link QueryConfigurationProvider} to add (not null)
+	 * Add a {@link QueryConfigurationProvider} to provide additional query
+	 * configuration parameters, such as {@link QueryFilter} and {@link QuerySort}.
+	 * @param queryConfigurationProvider the {@link QueryConfigurationProvider} to
+	 *                                   add (not null)
 	 * @return this
 	 */
 	C withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
@@ -65,7 +67,8 @@ public interface DatastoreDataProviderConfigurator<ITEM, C extends DatastoreData
 	/**
 	 * Add a default {@link QuerySort} to the data provider queries.
 	 * <p>
-	 * The provided sort will be used when no other sort is available for the queries.
+	 * The provided sort will be used when no other sort is available for the
+	 * queries.
 	 * </p>
 	 * @param defaultQuerySort The default sort to add
 	 * @return this
@@ -74,21 +77,42 @@ public interface DatastoreDataProviderConfigurator<ITEM, C extends DatastoreData
 
 	/**
 	 * Set the function to use to obtain the item identifiers.
-	 * @param itemIdentifierProvider the function to use to obtain the item identifiers (not null)
+	 * @param itemIdentifierProvider the function to use to obtain the item
+	 *                               identifiers (not null)
 	 * @return this
 	 */
 	C itemIdentifierProvider(Function<ITEM, Object> itemIdentifierProvider);
 
 	/**
-	 * Set the function to use to convert a {@link QuerySortOrder} declaration into a {@link QuerySort}.
+	 * Set the function to use to convert a {@link QuerySortOrder} declaration into
+	 * a {@link QuerySort}.
 	 * <p>
-	 * By default, a property with a matching path name is used to obtain the {@link QuerySort}, if available in the
-	 * configured query projection property set.
+	 * By default, a property with a matching path name is used to obtain the
+	 * {@link QuerySort}, if available in the configured query projection property
+	 * set.
 	 * </p>
-	 * @param querySortOrderConverter the function to use to convert a {@link QuerySortOrder} declaration into a
-	 *        {@link QuerySort} (not null)
+	 * @param querySortOrderConverter the function to use to convert a
+	 *                                {@link QuerySortOrder} declaration into a
+	 *                                {@link QuerySort} (not null)
 	 * @return this
 	 */
 	C querySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter);
 
+	/**
+	 * DatastoreDataProviderConfigurator for select type input components.
+	 *
+	 * @param <ITEM> Item type
+	 * @param <C>    Concrete configurator type
+	 */
+	public interface DatastoreDataProviderSelectConfigurator<ITEM, C extends DatastoreDataProviderSelectConfigurator<ITEM, C>>
+			extends DatastoreDataProviderConfigurator<ITEM, C> {
+
+		/**
+		 * Configure an additional items provider.
+		 * @param additionalItemsProvider The additional items provider to set
+		 * @return this
+		 */
+		C additionalItemsProvider(AdditionalItemsProvider<ITEM> additionalItemsProvider);
+
+	}
 }

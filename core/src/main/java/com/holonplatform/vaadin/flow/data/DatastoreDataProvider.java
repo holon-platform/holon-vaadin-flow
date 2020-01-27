@@ -35,7 +35,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
 /**
- * A {@link DataProvider} which uses a {@link Datastore} for fetching data from a backend.
+ * A {@link DataProvider} which uses a {@link Datastore} for fetching data from
+ * a backend.
  * 
  * @param <T> Data type
  * @param <F> Query filter type
@@ -64,7 +65,8 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 	/**
 	 * Add a {@link QueryConfigurationProvider}.
-	 * @param queryConfigurationProvider The {@link QueryConfigurationProvider} to add (not null)
+	 * @param queryConfigurationProvider The {@link QueryConfigurationProvider} to
+	 *                                   add (not null)
 	 */
 	void addQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
 
@@ -81,25 +83,30 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	void setDefaultSort(QuerySort defaultSort);
 
 	/**
-	 * Get the function to use to convert a {@link QuerySortOrder} declaration into a {@link QuerySort}.
+	 * Get the function to use to convert a {@link QuerySortOrder} declaration into
+	 * a {@link QuerySort}.
 	 * @return the {@link QuerySortOrder} converter function
 	 */
 	Function<QuerySortOrder, QuerySort> getQuerySortOrderConverter();
 
 	/**
-	 * Set the function to use to convert a {@link QuerySortOrder} declaration into a {@link QuerySort}.
-	 * @param querySortOrderConverter the query sort order converter to set (not null)
+	 * Set the function to use to convert a {@link QuerySortOrder} declaration into
+	 * a {@link QuerySort}.
+	 * @param querySortOrderConverter the query sort order converter to set (not
+	 *                                null)
 	 */
 	void setQuerySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter);
 
 	/**
-	 * Get the function to use to convert the data provider filter type to a {@link QueryFilter} type.
+	 * Get the function to use to convert the data provider filter type to a
+	 * {@link QueryFilter} type.
 	 * @return The filter converter
 	 */
 	Function<F, QueryFilter> getFilterConverter();
 
 	/**
-	 * Set the function to use to convert the data provider filter type to a {@link QueryFilter} type.
+	 * Set the function to use to convert the data provider filter type to a
+	 * {@link QueryFilter} type.
 	 * @param filterConverter The filter converter to set (not null)
 	 */
 	void setFilterConverter(Function<F, QueryFilter> filterConverter);
@@ -110,13 +117,25 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	 */
 	Optional<QueryFilter> getQueryFilter();
 
+	/**
+	 * Get the additional items provider, if any.
+	 * @return Optional additional items provider
+	 */
+	Optional<AdditionalItemsProvider<T>> getAdditionalItemsProvider();
+
+	/**
+	 * Set the additionals item provider.
+	 * @param additionalItemsProvider the additional items provider to set
+	 */
+	void setAdditionalItemsProvider(AdditionalItemsProvider<T> additionalItemsProvider);
+
 	// ------- builders
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type and {@link QueryFilter} type
-	 * data provider filters.
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox}
+	 * items type and {@link QueryFilter} type data provider filters.
+	 * @param datastore   The {@link Datastore} to use (not null)
+	 * @param target      The {@link DataTarget} to use as query target (not null)
 	 * @param propertySet The property set to use as query projection (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
@@ -126,10 +145,10 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type and {@link QueryFilter} type
-	 * data provider filters.
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox}
+	 * items type and {@link QueryFilter} type data provider filters.
+	 * @param datastore  The {@link Datastore} to use (not null)
+	 * @param target     The {@link DataTarget} to use as query target (not null)
 	 * @param properties The property set to use as query projection (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
@@ -139,13 +158,15 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type.
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param propertySet The property set to use as query projection (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox}
+	 * items type.
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param propertySet     The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
 	static <F> DatastoreDataProvider<PropertyBox, F> create(Datastore datastore, DataTarget<?> target,
@@ -154,13 +175,15 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items type.
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param properties The property set to use as query projection (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * Create a new {@link DatastoreDataProvider} which uses {@link PropertyBox}
+	 * items type.
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param properties      The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
 	static <F> DatastoreDataProvider<PropertyBox, F> create(Datastore datastore, DataTarget<?> target,
@@ -169,12 +192,13 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses given <code>beanType</code> as items type and
-	 * {@link QueryFilter} type data provider filters.
-	 * @param <T> Bean type
+	 * Create a new {@link DatastoreDataProvider} which uses given
+	 * <code>beanType</code> as items type and {@link QueryFilter} type data
+	 * provider filters.
+	 * @param <T>       Bean type
 	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param beanType The bean class (not null)
+	 * @param target    The {@link DataTarget} to use as query target (not null)
+	 * @param beanType  The bean class (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
 	static <T> DatastoreDataProvider<T, QueryFilter> create(Datastore datastore, DataTarget<?> target,
@@ -183,14 +207,16 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Create a new {@link DatastoreDataProvider} which uses given <code>beanType</code> as items type.
-	 * @param <T> Bean type
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param beanType The bean class (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * Create a new {@link DatastoreDataProvider} which uses given
+	 * <code>beanType</code> as items type.
+	 * @param <T>             Bean type
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param beanType        The bean class (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
 	static <T, F> DatastoreDataProvider<T, F> create(Datastore datastore, DataTarget<?> target, Class<T> beanType,
@@ -200,15 +226,17 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 	/**
 	 * Create a new {@link DatastoreDataProvider}.
-	 * @param <T> Data type
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param propertySet The property set to use as query projection (not null)
-	 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-	 *        required item type (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * @param <T>             Data type
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param propertySet     The property set to use as query projection (not null)
+	 * @param itemConverter   The function to use to convert the Datastore
+	 *                        {@link PropertyBox} type results into the required
+	 *                        item type (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return A new {@link DatastoreDataProvider}
 	 */
 	static <T, F> DatastoreDataProvider<T, F> create(Datastore datastore, DataTarget<?> target,
@@ -218,10 +246,11 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
-	 * type and {@link QueryFilter} type data provider filters.
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * which uses {@link PropertyBox} items type and {@link QueryFilter} type data
+	 * provider filters.
+	 * @param datastore   The {@link Datastore} to use (not null)
+	 * @param target      The {@link DataTarget} to use as query target (not null)
 	 * @param propertySet The property set to use as query projection (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
@@ -232,10 +261,11 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
-	 * type and {@link QueryFilter} type data provider filters.
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * which uses {@link PropertyBox} items type and {@link QueryFilter} type data
+	 * provider filters.
+	 * @param datastore  The {@link Datastore} to use (not null)
+	 * @param target     The {@link DataTarget} to use as query target (not null)
 	 * @param properties The property set to use as query projection (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
@@ -246,14 +276,15 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
-	 * type.
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param propertySet The property set to use as query projection (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * which uses {@link PropertyBox} items type.
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param propertySet     The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
 	static <F> PropertyBoxItemBuilder<F> builder(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
@@ -263,14 +294,15 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} which uses {@link PropertyBox} items
-	 * type.
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param properties The property set to use as query projection (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * which uses {@link PropertyBox} items type.
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param properties      The property set to use as query projection (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
 	static <F> PropertyBoxItemBuilder<F> builder(Datastore datastore, DataTarget<?> target,
@@ -280,15 +312,17 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} using given <code>beanType</code> as
-	 * item type and {@link QueryFilter} type data provider filters.
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * using given <code>beanType</code> as item type and {@link QueryFilter} type
+	 * data provider filters.
 	 * <p>
-	 * The provided <code>beanType</code> class must be compliant with the JavaBeans specifications.
+	 * The provided <code>beanType</code> class must be compliant with the JavaBeans
+	 * specifications.
 	 * </p>
-	 * @param <T> Bean type
+	 * @param <T>       Bean type
 	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param beanType The bean type (not null)
+	 * @param target    The {@link DataTarget} to use as query target (not null)
+	 * @param beanType  The bean type (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
 	static <T> Builder<T, QueryFilter> builder(Datastore datastore, DataTarget<?> target, Class<T> beanType) {
@@ -298,18 +332,20 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	}
 
 	/**
-	 * Get a builder to create and configure a new {@link DatastoreDataProvider} using given <code>beanType</code> as
-	 * item type.
+	 * Get a builder to create and configure a new {@link DatastoreDataProvider}
+	 * using given <code>beanType</code> as item type.
 	 * <p>
-	 * The provided <code>beanType</code> class must be compliant with the JavaBeans specifications.
+	 * The provided <code>beanType</code> class must be compliant with the JavaBeans
+	 * specifications.
 	 * </p>
-	 * @param <T> Data type
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param beanType The bean type (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * @param <T>             Data type
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param beanType        The bean type (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
 	static <T, F> Builder<T, F> builder(Datastore datastore, DataTarget<?> target, Class<T> beanType,
@@ -321,15 +357,17 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 	/**
 	 * Get a builder to create and configure a new {@link DatastoreDataProvider}.
-	 * @param <T> Data type
-	 * @param <F> Query filter type
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param propertySet The property set to use as query projection (not null)
-	 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-	 *        required item type (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * @param <T>             Data type
+	 * @param <F>             Query filter type
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param propertySet     The property set to use as query projection (not null)
+	 * @param itemConverter   The function to use to convert the Datastore
+	 *                        {@link PropertyBox} type results into the required
+	 *                        item type (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 * @return a new {@link DatastoreDataProvider} builder
 	 */
 	static <T, F> Builder<T, F> builder(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
@@ -342,7 +380,7 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 	/**
 	 * Convert given properties into a {@link PropertySet}.
-	 * @param <P> Property type
+	 * @param <P>        Property type
 	 * @param properties The properties to convert (not null)
 	 * @return A {@link PropertySet} with given properties
 	 */
@@ -373,9 +411,10 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 	public interface Builder<T, F> {
 
 		/**
-		 * Add a {@link QueryConfigurationProvider} to provide additional query configuration parameters, such as
-		 * {@link QueryFilter} and {@link QuerySort}.
-		 * @param queryConfigurationProvider the {@link QueryConfigurationProvider} to add (not null)
+		 * Add a {@link QueryConfigurationProvider} to provide additional query
+		 * configuration parameters, such as {@link QueryFilter} and {@link QuerySort}.
+		 * @param queryConfigurationProvider the {@link QueryConfigurationProvider} to
+		 *                                   add (not null)
 		 * @return this
 		 */
 		Builder<T, F> withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider);
@@ -404,7 +443,8 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 		/**
 		 * Add a default {@link QuerySort} to the data provider queries.
 		 * <p>
-		 * The provided sort will be used when no other sort is available for the queries.
+		 * The provided sort will be used when no other sort is available for the
+		 * queries.
 		 * </p>
 		 * @param defaultQuerySort The default sort to add
 		 * @return this
@@ -413,22 +453,33 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 		/**
 		 * Set the function to use to obtain the item identifiers.
-		 * @param itemIdentifierProvider the function to use to obtain the item identifiers (not null)
+		 * @param itemIdentifierProvider the function to use to obtain the item
+		 *                               identifiers (not null)
 		 * @return this
 		 */
 		Builder<T, F> itemIdentifierProvider(Function<T, Object> itemIdentifierProvider);
 
 		/**
-		 * Set the function to use to convert a {@link QuerySortOrder} declaration into a {@link QuerySort}.
+		 * Set the function to use to convert a {@link QuerySortOrder} declaration into
+		 * a {@link QuerySort}.
 		 * <p>
-		 * By default, a property with a matching path name is used to obtain the {@link QuerySort}, if available in the
-		 * configured query projection property set.
+		 * By default, a property with a matching path name is used to obtain the
+		 * {@link QuerySort}, if available in the configured query projection property
+		 * set.
 		 * </p>
-		 * @param querySortOrderConverter the function to use to convert a {@link QuerySortOrder} declaration into a
-		 *        {@link QuerySort} (not null)
+		 * @param querySortOrderConverter the function to use to convert a
+		 *                                {@link QuerySortOrder} declaration into a
+		 *                                {@link QuerySort} (not null)
 		 * @return this
 		 */
 		Builder<T, F> querySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter);
+
+		/**
+		 * Set the additional items provider.
+		 * @param additionalItemsProvider The additional items provider to set
+		 * @return this
+		 */
+		Builder<T, F> additionalItemsProvider(AdditionalItemsProvider<T> additionalItemsProvider);
 
 		/**
 		 * Build the {@link DatastoreDataProvider}.
@@ -447,7 +498,8 @@ public interface DatastoreDataProvider<T, F> extends DataProvider<T, F> {
 
 		/**
 		 * Use given <code>identifierProperty</code> value as items identifier.
-		 * @param identifierProperty The property which acts as item identifier (not null)
+		 * @param identifierProperty The property which acts as item identifier (not
+		 *                           null)
 		 * @return this
 		 */
 		Builder<PropertyBox, F> itemIdentifier(Property<?> identifierProperty);

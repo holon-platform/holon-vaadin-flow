@@ -28,6 +28,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator.DatastoreDataProviderSelectConfigurator;
 import com.holonplatform.vaadin.flow.components.events.CustomValueSetListener;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultFilterableSingleSelectInputBuilder;
@@ -223,7 +224,7 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	 */
 	public interface DatastorePropertyFilterableSingleSelectInputConfigurator<T, C extends DatastorePropertyFilterableSingleSelectInputConfigurator<T, C>>
 			extends FilterableSingleSelectConfigurator<T, PropertyBox, C>,
-			DatastoreDataProviderConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
+			DatastoreDataProviderSelectConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
 
 		/**
 		 * Set the function to use to convert the {@link String} type user filter into a {@link QueryFilter} type, to be

@@ -32,7 +32,6 @@ import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.internal.utils.TypeUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
@@ -46,6 +45,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.ListSingleSelectConfigurator.PropertyListSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
+import com.holonplatform.vaadin.flow.data.AdditionalItemsProvider;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -67,13 +67,10 @@ import com.vaadin.flow.dom.Element;
  *
  * @since 5.4.0
  */
-public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyListSingleSelectInputBuilder<T> {
+public class DefaultPropertyListSingleSelectInputBuilder<T> extends AbstractPropertySelectInputBuilder<T>
+		implements PropertyListSingleSelectInputBuilder<T> {
 
 	private final ListSingleSelectInputBuilder<T, PropertyBox> builder;
-
-	private final Property<T> selectionProperty;
-
-	private PropertyItemConverter<T> propertyItemConverter;
 
 	/**
 	 * Constructor.
@@ -104,9 +101,7 @@ public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyL
 	 */
 	protected DefaultPropertyListSingleSelectInputBuilder(Property<T> selectionProperty,
 			ItemConverter<T, PropertyBox> itemConverter) {
-		super();
-		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
-		this.selectionProperty = selectionProperty;
+		super(selectionProperty);
 		this.builder = new DefaultListSingleSelectInputBuilder<>(selectionProperty.getType(), PropertyBox.class,
 				itemConverter);
 		this.builder.itemCaptionGenerator(item -> {
@@ -117,23 +112,6 @@ public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyL
 		});
 		if (itemConverter instanceof PropertyItemConverter) {
 			this.propertyItemConverter = (PropertyItemConverter<T>) itemConverter;
-		}
-	}
-
-	/**
-	 * Setup a item converter function if the current item converter is a
-	 * {@link PropertyItemConverter}, using the selection property to retrieve an
-	 * item.
-	 * @param datastore   The datastore
-	 * @param target      The query target
-	 * @param propertySet The query projection
-	 */
-	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
-		if (propertyItemConverter != null && propertyItemConverter.getToItemConverter() == null) {
-			propertyItemConverter.setToItemConverter(value -> {
-				return (value == null) ? Optional.empty()
-						: datastore.query(target).filter(QueryFilter.eq(selectionProperty, value)).findOne(propertySet);
-			});
 		}
 	}
 
@@ -158,7 +136,8 @@ public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyL
 					return null;
 				});
 		builder.dataSource(datastoreDataProvider);
-		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
+		setupDatastoreItemConverter(datastoreDataProvider, datastore, target,
+				DatastoreDataProvider.asPropertySet(properties));
 		return new DefaultDatastorePropertyListSingleSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
@@ -1286,6 +1265,13 @@ public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyL
 			this.datastoreDataProvider = datastoreDataProvider;
 		}
 
+		@Override
+		public DatastorePropertyListSingleSelectInputBuilder<T> additionalItemsProvider(
+				AdditionalItemsProvider<PropertyBox> additionalItemsProvider) {
+			this.datastoreDataProvider.setAdditionalItemsProvider(additionalItemsProvider);
+			return withAttachListener(e -> this.datastoreDataProvider.refreshAll());
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -1805,6 +1791,13 @@ public class DefaultPropertyListSingleSelectInputBuilder<T> implements PropertyL
 			super();
 			this.builder = builder;
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
+		}
+
+		@Override
+		public ValidatableDatastorePropertyListSingleSelectInputBuilder<T> additionalItemsProvider(
+				AdditionalItemsProvider<PropertyBox> additionalItemsProvider) {
+			builder.additionalItemsProvider(additionalItemsProvider);
+			return this;
 		}
 
 		/*

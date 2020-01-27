@@ -31,9 +31,7 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyBox;
-import com.holonplatform.core.property.PropertySet;
 import com.holonplatform.core.query.QueryConfigurationProvider;
-import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
@@ -45,6 +43,7 @@ import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener;
 import com.holonplatform.vaadin.flow.components.builders.OptionsMultiSelectConfigurator.PropertyOptionsMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.events.ReadonlyChangeListener;
+import com.holonplatform.vaadin.flow.data.AdditionalItemsProvider;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.data.PropertyItemConverter;
@@ -64,17 +63,15 @@ import com.vaadin.flow.dom.Element;
  *
  * @since 5.2.0
  */
-public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements PropertyOptionsMultiSelectInputBuilder<T> {
+public class DefaultPropertyOptionsMultiSelectInputBuilder<T> extends AbstractPropertySelectInputBuilder<T>
+		implements PropertyOptionsMultiSelectInputBuilder<T> {
 
 	private final OptionsMultiSelectInputBuilder<T, PropertyBox> builder;
 
-	private final Property<T> selectionProperty;
-
-	private PropertyItemConverter<T> propertyItemConverter;
-
 	/**
 	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
 	 */
 	public DefaultPropertyOptionsMultiSelectInputBuilder(final Property<T> selectionProperty) {
 		this(selectionProperty, new PropertyItemConverter<>(selectionProperty));
@@ -82,8 +79,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/**
 	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param itemConverter The function to use to convert a selection value into the corresponding selection item
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @param itemConverter     The function to use to convert a selection value
+	 *                          into the corresponding selection item
 	 */
 	public DefaultPropertyOptionsMultiSelectInputBuilder(Property<T> selectionProperty,
 			Function<T, Optional<PropertyBox>> itemConverter) {
@@ -92,14 +91,13 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/**
 	 * Constructor.
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param itemConverter The item converter to use (not null)
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @param itemConverter     The item converter to use (not null)
 	 */
 	protected DefaultPropertyOptionsMultiSelectInputBuilder(Property<T> selectionProperty,
 			ItemConverter<T, PropertyBox> itemConverter) {
-		super();
-		ObjectUtils.argumentNotNull(selectionProperty, "Selection property must be not null");
-		this.selectionProperty = selectionProperty;
+		super(selectionProperty);
 		this.builder = new DefaultOptionsMultiSelectInputBuilder<>(selectionProperty.getType(), PropertyBox.class,
 				itemConverter);
 		this.builder.itemCaptionGenerator(item -> {
@@ -113,25 +111,12 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		}
 	}
 
-	/**
-	 * Setup a item converter function if the current item converter is a {@link PropertyItemConverter}, using the
-	 * selection property to retrieve an item.
-	 * @param datastore The datastore
-	 * @param target The query target
-	 * @param propertySet The query projection
-	 */
-	protected void setupDatastoreItemConverter(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet) {
-		if (propertyItemConverter != null && propertyItemConverter.getToItemConverter() == null) {
-			propertyItemConverter.setToItemConverter(value -> {
-				return (value == null) ? Optional.empty()
-						: datastore.query(target).filter(QueryFilter.eq(selectionProperty, value)).findOne(propertySet);
-			});
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+	 * #withSelectionListener(com.
 	 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 	 */
 	@Override
@@ -142,8 +127,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com.
 	 * vaadin.flow.function.SerializablePredicate)
 	 */
 	@Override
@@ -154,8 +140,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com.
 	 * holonplatform.vaadin.flow.components.ItemSet.ItemCaptionGenerator)
 	 */
 	@Override
@@ -167,7 +154,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * PropertySelectInputConfigurator#itemCaptionProperty(com.
 	 * holonplatform.core.property.Property)
 	 */
 	@Override
@@ -178,8 +167,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
-	 * Object, com.holonplatform.core.i18n.Localizable)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * SelectModeSingleSelectInputBuilder#itemCaption(java.lang. Object,
+	 * com.holonplatform.core.i18n.Localizable)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> itemCaption(PropertyBox item, Localizable caption) {
@@ -189,6 +180,7 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 	 */
 	@Override
@@ -198,7 +190,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 	 */
 	@Override
 	public ValidatablePropertyOptionsMultiSelectInputBuilder<T> validatable() {
@@ -207,7 +201,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
+	 * boolean)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> readOnly(boolean readOnly) {
@@ -217,8 +214,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
+	 * withValueChangeListener(com.holonplatform.
 	 * vaadin.flow.components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
@@ -236,7 +234,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+	 * boolean)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> required(boolean required) {
@@ -246,7 +247,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+	 * )
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> required() {
@@ -262,7 +266,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+	 * java.lang.String)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> id(String id) {
@@ -272,7 +279,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+	 * visible(boolean)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> visible(boolean visible) {
@@ -282,9 +291,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.function.
-	 * Consumer)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+	 * elementConfiguration(java.util.function. Consumer)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
@@ -294,8 +303,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+	 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withAttachListener(ComponentEventListener<AttachEvent> listener) {
@@ -305,8 +315,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+	 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withDetachListener(ComponentEventListener<DetachEvent> listener) {
@@ -316,7 +327,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+	 * withThemeName(java.lang.String)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withThemeName(String themeName) {
@@ -326,8 +340,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-	 * com.vaadin.flow.dom.DomEventListener)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+	 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType, DomEventListener listener) {
@@ -337,8 +353,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-	 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+	 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+	 * java.lang.String)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType, DomEventListener listener,
@@ -349,7 +368,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+	 * styleNames(java.lang.String[])
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> styleNames(String... styleNames) {
@@ -359,7 +380,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+	 * styleName(java.lang.String)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> styleName(String styleName) {
@@ -369,7 +392,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+	 * enabled(boolean)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> enabled(boolean enabled) {
@@ -379,9 +405,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization(
-	 * boolean)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * DeferrableLocalizationConfigurator#withDeferredLocalization( boolean)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> withDeferredLocalization(boolean deferredLocalization) {
@@ -391,7 +417,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
+	 * isDeferredLocalizationEnabled()
 	 */
 	@Override
 	public boolean isDeferredLocalizationEnabled() {
@@ -400,9 +429,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(com.
-	 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(com.
+	 * holonplatform.core.datastore.Datastore,
+	 * com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -411,15 +442,18 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 		final DatastoreDataProvider<PropertyBox, ?> datastoreDataProvider = DatastoreDataProvider.create(datastore,
 				target, DatastoreDataProvider.asPropertySet(properties));
 		builder.dataSource(datastoreDataProvider);
-		setupDatastoreItemConverter(datastore, target, DatastoreDataProvider.asPropertySet(properties));
+		setupDatastoreItemConverter(datastoreDataProvider, datastore, target,
+				DatastoreDataProvider.asPropertySet(properties));
 		return new DefaultDatastorePropertyOptionsMultiSelectInputBuilder<>(this, datastoreDataProvider);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder.
-	 * PropertyOptionsModeSingleSelectInputBuilder#dataSource(com.holonplatform.core.datastore.Datastore,
-	 * com.holonplatform.core.datastore.DataTarget)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * OptionsModeSingleSelectInputBuilder.
+	 * PropertyOptionsModeSingleSelectInputBuilder#dataSource(com.holonplatform.core
+	 * .datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 	 */
 	@Override
 	public DatastorePropertyOptionsMultiSelectInputBuilder<T> dataSource(Datastore datastore, DataTarget<?> target) {
@@ -428,9 +462,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#dataSource(com.vaadin.flow.data.
-	 * provider.DataProvider)
+	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+	 * #dataSource(com.vaadin.flow.data. provider.DataProvider)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> dataSource(DataProvider<PropertyBox, ?> dataProvider) {
@@ -440,7 +475,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Object[])
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+	 * #items(java.lang.Object[])
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> items(PropertyBox... items) {
@@ -449,8 +487,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.flow.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.
+	 * SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.flow.
 	 * data.provider.ListDataProvider)
 	 */
 	@Override
@@ -461,7 +500,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(java.lang.Iterable)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(
+	 * java.lang.Iterable)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> items(Iterable<PropertyBox> items) {
@@ -471,7 +513,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#addItem(java.lang.Object)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#
+	 * addItem(java.lang.Object)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> addItem(PropertyBox item) {
@@ -481,8 +525,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
+	 * com.holonplatform.core.i18n. Localizable)
 	 */
 	@Override
 	public PropertyOptionsMultiSelectInputBuilder<T> label(Localizable label) {
@@ -507,9 +553,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder.
-		 * PropertyOptionsModeMultiSelectInputConfigurator#dataSource(com.holonplatform.core.datastore.Datastore,
-		 * com.holonplatform.core.datastore.DataTarget)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder.
+		 * PropertyOptionsModeMultiSelectInputConfigurator#dataSource(com.holonplatform.
+		 * core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> dataSource(Datastore datastore,
@@ -520,8 +568,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
 		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
@@ -533,9 +582,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
-		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
+		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
+		 * ItemCaptionGenerator)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> itemCaptionGenerator(
@@ -546,9 +597,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemCaption(java.lang.
-		 * Object, com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaption(java.lang. Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> itemCaption(PropertyBox item, Localizable caption) {
@@ -558,8 +610,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
@@ -571,7 +624,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+		 * #withSelectionListener(com.
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
@@ -583,7 +639,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
+		 * boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> readOnly(boolean readOnly) {
@@ -593,8 +652,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
+		 * withValueChangeListener(com.holonplatform
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
@@ -613,7 +673,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * java.lang.String)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> id(String id) {
@@ -623,7 +686,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * visible(boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> visible(boolean visible) {
@@ -633,8 +698,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
-		 * function.Consumer)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
@@ -644,9 +710,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withAttachListener(
@@ -657,9 +723,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withDetachListener(
@@ -670,7 +736,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withThemeName(java.lang.String)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withThemeName(String themeName) {
@@ -680,9 +749,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -693,9 +763,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+		 * java.lang.String)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -706,7 +778,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleNames(java.lang.String[])
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> styleNames(String... styleNames) {
@@ -716,7 +790,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleName(java.lang.String)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> styleName(String styleName) {
@@ -726,7 +802,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+		 * enabled(boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> enabled(boolean enabled) {
@@ -736,9 +815,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization
-		 * (boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withDeferredLocalization(
@@ -749,8 +828,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
+		 * isDeferredLocalizationEnabled()
 		 */
 		@Override
 		public boolean isDeferredLocalizationEnabled() {
@@ -759,9 +840,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-		 * Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
+		 * com.holonplatform.core.i18n. Localizable)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> label(Localizable label) {
@@ -771,9 +853,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(
-		 * com.holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * HasPropertyBoxDatastoreDataProviderConfigurator#dataSource(
+		 * com.holonplatform.core.datastore.Datastore,
+		 * com.holonplatform.core.datastore.DataTarget, java.lang.Iterable)
 		 */
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -785,9 +869,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#dataSource(com.vaadin.flow.data
-		 * .provider.DataProvider)
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #dataSource(com.vaadin.flow.data .provider.DataProvider)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> dataSource(
@@ -798,7 +883,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Iterable)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #items(java.lang.Iterable)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> items(Iterable<PropertyBox> items) {
@@ -808,7 +896,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#items(java.lang.Object[])
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #items(java.lang.Object[])
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> items(PropertyBox... items) {
@@ -818,7 +909,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator#addItem(java.lang.Object)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * #addItem(java.lang.Object)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> addItem(PropertyBox item) {
@@ -828,8 +922,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * PropertySelectInputConfigurator#itemCaptionProperty(com.
 		 * holonplatform.core.property.Property)
 		 */
 		@Override
@@ -840,8 +935,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#withValidator(com.
-		 * holonplatform.core.Validator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#withValidator(com. holonplatform.core.Validator)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> withValidator(Validator<Set<T>> validator) {
@@ -851,8 +947,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validationStatusHandler(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
@@ -864,8 +961,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> validateOnValueChange(
@@ -876,9 +974,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#required(com.holonplatform.
-		 * core.Validator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#required(com.holonplatform. core.Validator)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> required(Validator<Set<T>> validator) {
@@ -888,8 +986,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#required(com.holonplatform.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#required(com.holonplatform.
 		 * core.i18n.Localizable)
 		 */
 		@Override
@@ -900,7 +999,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * boolean)
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> required(boolean required) {
@@ -910,7 +1012,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * )
 		 */
 		@Override
 		public ValidatablePropertyOptionsMultiSelectInputBuilder<T> required() {
@@ -926,7 +1031,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder
+		 * #build()
 		 */
 		@Override
 		public ValidatableMultiSelect<T> build() {
@@ -949,10 +1057,18 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 			this.datastoreDataProvider = datastoreDataProvider;
 		}
 
+		@Override
+		public DatastorePropertyOptionsMultiSelectInputBuilder<T> additionalItemsProvider(
+				AdditionalItemsProvider<PropertyBox> additionalItemsProvider) {
+			this.datastoreDataProvider.setAdditionalItemsProvider(additionalItemsProvider);
+			return withAttachListener(e -> this.datastoreDataProvider.refreshAll());
+		}
+
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeSingleSelectInputBuilder#itemEnabledProvider(com
 		 * .vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
@@ -964,9 +1080,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com
-		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * SelectModeSingleSelectInputBuilder#itemCaptionGenerator(com
+		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
+		 * ItemCaptionGenerator)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> itemCaptionGenerator(
@@ -977,8 +1095,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * PropertySelectInputConfigurator#itemCaptionProperty(com.
 		 * holonplatform.core.property.Property)
 		 */
 		@Override
@@ -989,9 +1108,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#itemCaption(java.lang.
-		 * Object, com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * SelectModeSingleSelectInputBuilder#itemCaption(java.lang. Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> itemCaption(PropertyBox item, Localizable caption) {
@@ -1001,8 +1121,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * SelectModeSingleSelectInputBuilder#dataSource(com.vaadin.
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
@@ -1014,7 +1135,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputBuilder#validatable()
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> validatable() {
@@ -1023,7 +1146,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
+		 * boolean)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> readOnly(boolean readOnly) {
@@ -1033,8 +1159,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
+		 * withValueChangeListener(com.holonplatform
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
@@ -1053,7 +1180,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * boolean)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> required(boolean required) {
@@ -1063,7 +1193,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * )
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> required() {
@@ -1079,7 +1212,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> id(String id) {
@@ -1089,7 +1225,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * visible(boolean)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> visible(boolean visible) {
@@ -1099,8 +1237,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
-		 * function.Consumer)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> elementConfiguration(Consumer<Element> element) {
@@ -1110,9 +1249,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withAttachListener(
@@ -1123,9 +1262,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withDetachListener(
@@ -1136,7 +1275,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withThemeName(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withThemeName(String themeName) {
@@ -1146,9 +1288,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -1159,9 +1302,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -1172,7 +1317,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+		 * #withSelectionListener(com.
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
@@ -1184,7 +1332,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleNames(java.lang.String[])
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> styleNames(String... styleNames) {
@@ -1194,7 +1344,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleName(java.lang.String)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> styleName(String styleName) {
@@ -1204,7 +1356,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+		 * enabled(boolean)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> enabled(boolean enabled) {
@@ -1214,9 +1369,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization
-		 * (boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withDeferredLocalization(
@@ -1227,8 +1382,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
+		 * isDeferredLocalizationEnabled()
 		 */
 		@Override
 		public boolean isDeferredLocalizationEnabled() {
@@ -1237,9 +1394,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-		 * Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
+		 * com.holonplatform.core.i18n. Localizable)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> label(Localizable label) {
@@ -1249,8 +1407,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
-		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query.
+		 * QueryConfigurationProvider)
 		 */
 		@Override
 		public DatastorePropertyOptionsMultiSelectInputBuilder<T> withQueryConfigurationProvider(
@@ -1261,8 +1422,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
@@ -1273,8 +1435,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#itemIdentifierProvider(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#itemIdentifierProvider(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -1286,8 +1449,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#querySortOrderConverter(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#querySortOrderConverter(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -1299,6 +1463,7 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.InputBuilder#build()
 		 */
 		@Override
@@ -1321,10 +1486,18 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 			this.validatableInputConfigurator = new DefaultValidatableInputConfigurator<>();
 		}
 
+		@Override
+		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> additionalItemsProvider(
+				AdditionalItemsProvider<PropertyBox> additionalItemsProvider) {
+			builder.additionalItemsProvider(additionalItemsProvider);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemEnabledProvider(com.
 		 * vaadin.flow.function.SerializablePredicate)
 		 */
 		@Override
@@ -1336,9 +1509,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
-		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaptionGenerator(com
+		 * .holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.
+		 * ItemCaptionGenerator)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> itemCaptionGenerator(
@@ -1349,9 +1524,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#itemCaption(java.lang.
-		 * Object, com.holonplatform.core.i18n.Localizable)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#itemCaption(java.lang. Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> itemCaption(PropertyBox item,
@@ -1362,8 +1538,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * OptionsModeMultiSelectInputBuilder#dataSource(com.vaadin.
 		 * flow.data.provider.ListDataProvider)
 		 */
 		@Override
@@ -1375,7 +1552,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator#withSelectionListener(com.
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.SelectableInputConfigurator
+		 * #withSelectionListener(com.
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
@@ -1387,7 +1567,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
+		 * boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> readOnly(boolean readOnly) {
@@ -1397,8 +1580,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValueChangeListener(com.holonplatform
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#
+		 * withValueChangeListener(com.holonplatform
 		 * .vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
@@ -1417,7 +1601,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * java.lang.String)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> id(String id) {
@@ -1427,7 +1614,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#visible(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * visible(boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> visible(boolean visible) {
@@ -1437,8 +1626,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#elementConfiguration(java.util.
-		 * function.Consumer)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * elementConfiguration(java.util. function.Consumer)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> elementConfiguration(
@@ -1449,9 +1639,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withAttachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withAttachListener(
@@ -1462,9 +1652,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#withDetachListener(com.vaadin.flow.
-		 * component.ComponentEventListener)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
+		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withDetachListener(
@@ -1475,7 +1665,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withThemeName(java.lang.String)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withThemeName(java.lang.String)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withThemeName(String themeName) {
@@ -1485,9 +1678,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -1498,9 +1692,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
-		 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
+		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
+		 * java.lang.String)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withEventListener(String eventType,
@@ -1511,7 +1707,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleNames(java.lang.String[])
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> styleNames(String... styleNames) {
@@ -1521,7 +1719,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
+		 * styleName(java.lang.String)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> styleName(String styleName) {
@@ -1531,7 +1731,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#enabled(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
+		 * enabled(boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> enabled(boolean enabled) {
@@ -1541,9 +1744,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DeferrableLocalizationConfigurator#withDeferredLocalization
-		 * (boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DeferrableLocalizationConfigurator#withDeferredLocalization (boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withDeferredLocalization(
@@ -1554,8 +1757,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#isDeferredLocalizationEnabled()
+		 * com.holonplatform.vaadin.flow.components.builders.HasDeferrableLocalization#
+		 * isDeferredLocalizationEnabled()
 		 */
 		@Override
 		public boolean isDeferredLocalizationEnabled() {
@@ -1564,9 +1769,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-		 * Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
+		 * com.holonplatform.core.i18n. Localizable)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> label(Localizable label) {
@@ -1576,8 +1782,11 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#
-		 * withQueryConfigurationProvider(com.holonplatform.core.query.QueryConfigurationProvider)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query.
+		 * QueryConfigurationProvider)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withQueryConfigurationProvider(
@@ -1588,8 +1797,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
 		 * holonplatform.core.query.QuerySort)
 		 */
 		@Override
@@ -1601,8 +1811,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#itemIdentifierProvider(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#itemIdentifierProvider(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -1614,8 +1825,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator#querySortOrderConverter(
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * DatastoreDataProviderConfigurator#querySortOrderConverter(
 		 * java.util.function.Function)
 		 */
 		@Override
@@ -1627,8 +1839,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.PropertySelectInputConfigurator#itemCaptionProperty(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * PropertySelectInputConfigurator#itemCaptionProperty(com.
 		 * holonplatform.core.property.Property)
 		 */
 		@Override
@@ -1639,8 +1852,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#withValidator(com.
-		 * holonplatform.core.Validator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#withValidator(com. holonplatform.core.Validator)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> withValidator(
@@ -1651,8 +1865,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validationStatusHandler(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
@@ -1664,8 +1879,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#validateOnValueChange(boolean)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#validateOnValueChange(boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> validateOnValueChange(
@@ -1676,9 +1892,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#required(com.holonplatform.
-		 * core.Validator)
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#required(com.holonplatform. core.Validator)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> required(Validator<Set<T>> validator) {
@@ -1688,8 +1904,9 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ValidatableInputConfigurator#required(com.holonplatform.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.components.builders.
+		 * ValidatableInputConfigurator#required(com.holonplatform.
 		 * core.i18n.Localizable)
 		 */
 		@Override
@@ -1700,7 +1917,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(boolean)
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * boolean)
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> required(boolean required) {
@@ -1710,7 +1930,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
+		 * )
 		 */
 		@Override
 		public ValidatableDatastorePropertyOptionsMultiSelectInputBuilder<T> required() {
@@ -1726,7 +1949,10 @@ public class DefaultPropertyOptionsMultiSelectInputBuilder<T> implements Propert
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder#build()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.BaseValidatableInputBuilder
+		 * #build()
 		 */
 		@Override
 		public ValidatableMultiSelect<T> build() {

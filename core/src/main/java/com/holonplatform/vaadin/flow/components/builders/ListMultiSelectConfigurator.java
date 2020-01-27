@@ -28,6 +28,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.MultiSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableMultiSelect;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator.DatastoreDataProviderSelectConfigurator;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultListMultiSelectInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyListMultiSelectInputBuilder;
@@ -145,7 +146,7 @@ public interface ListMultiSelectConfigurator<T, ITEM, B extends ListMultiSelectC
 	 * @param <C> Concrete configurator type
 	 */
 	public interface DatastorePropertyListMultiSelectInputConfigurator<T, C extends DatastorePropertyListMultiSelectInputConfigurator<T, C>>
-			extends ListMultiSelectConfigurator<T, PropertyBox, C>, DatastoreDataProviderConfigurator<PropertyBox, C>,
+			extends ListMultiSelectConfigurator<T, PropertyBox, C>, DatastoreDataProviderSelectConfigurator<PropertyBox, C>,
 			PropertySelectInputConfigurator<Set<T>, T, C> {
 
 	}

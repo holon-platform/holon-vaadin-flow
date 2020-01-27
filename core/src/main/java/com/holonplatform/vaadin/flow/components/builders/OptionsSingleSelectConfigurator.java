@@ -27,6 +27,7 @@ import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
 import com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeEvent;
+import com.holonplatform.vaadin.flow.components.builders.DatastoreDataProviderConfigurator.DatastoreDataProviderSelectConfigurator;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultOptionsSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.internal.components.builders.DefaultPropertyOptionsSingleSelectInputBuilder;
@@ -117,7 +118,7 @@ public interface OptionsSingleSelectConfigurator<T, ITEM, B extends OptionsSingl
 	 */
 	public interface DatastorePropertyOptionsSingleSelectInputConfigurator<T, C extends DatastorePropertyOptionsSingleSelectInputConfigurator<T, C>>
 			extends OptionsSingleSelectConfigurator<T, PropertyBox, C>,
-			DatastoreDataProviderConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
+			DatastoreDataProviderSelectConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
 
 	}
 

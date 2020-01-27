@@ -37,6 +37,7 @@ import com.holonplatform.core.query.QueryConfigurationProvider;
 import com.holonplatform.core.query.QueryFilter;
 import com.holonplatform.core.query.QuerySort;
 import com.holonplatform.core.query.QuerySort.SortDirection;
+import com.holonplatform.vaadin.flow.data.AdditionalItemsProvider;
 import com.holonplatform.vaadin.flow.data.DatastoreDataProvider;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
@@ -101,14 +102,21 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	private QuerySort defaultSort;
 
 	/**
+	 * Additional items provider
+	 */
+	private AdditionalItemsProvider<T> additionalItemsProvider;
+
+	/**
 	 * Constructor.
-	 * @param datastore The {@link Datastore} to use (not null)
-	 * @param target The {@link DataTarget} to use as query target (not null)
-	 * @param propertySet The property set to use as query projection (not null)
-	 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-	 *        required item type (not null)
-	 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter} (not
-	 *        null)
+	 * @param datastore       The {@link Datastore} to use (not null)
+	 * @param target          The {@link DataTarget} to use as query target (not
+	 *                        null)
+	 * @param propertySet     The property set to use as query projection (not null)
+	 * @param itemConverter   The function to use to convert the Datastore
+	 *                        {@link PropertyBox} type results into the required
+	 *                        item type (not null)
+	 * @param filterConverter The function to use to convert the data provider
+	 *                        filters into a {@link QueryFilter} (not null)
 	 */
 	public DefaultDatastoreDataProvider(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 			Function<PropertyBox, T> itemConverter, Function<F, QueryFilter> filterConverter) {
@@ -128,7 +136,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getItemIdentifier()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getItemIdentifier()
 	 */
 	@Override
 	public Optional<Function<T, Object>> getItemIdentifier() {
@@ -137,7 +147,10 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setItemIdentifier(java.util.function.Function)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setItemIdentifier(
+	 * java.util.function.Function)
 	 */
 	@Override
 	public void setItemIdentifier(Function<T, Object> itemIdentifier) {
@@ -146,7 +159,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getFilterConverter()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getFilterConverter()
 	 */
 	@Override
 	public Function<F, QueryFilter> getFilterConverter() {
@@ -155,7 +170,10 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setFilterConverter(java.util.function.Function)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setFilterConverter(
+	 * java.util.function.Function)
 	 */
 	@Override
 	public void setFilterConverter(Function<F, QueryFilter> filterConverter) {
@@ -165,7 +183,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getQueryConfigurationProviders()
+	 * 
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#
+	 * getQueryConfigurationProviders()
 	 */
 	@Override
 	public Set<QueryConfigurationProvider> getQueryConfigurationProviders() {
@@ -174,8 +194,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#addQueryConfigurationProvider(com.holonplatform.core.
+	 * 
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#
+	 * addQueryConfigurationProvider(com.holonplatform.core.
 	 * query.QueryConfigurationProvider)
 	 */
 	@Override
@@ -186,7 +207,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getDefaultSort()
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getDefaultSort()
 	 */
 	@Override
 	public Optional<QuerySort> getDefaultSort() {
@@ -195,8 +218,10 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
-	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setDefaultSort(com.holonplatform.core.query.QuerySort)
+	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setDefaultSort(com.
+	 * holonplatform.core.query.QuerySort)
 	 */
 	@Override
 	public void setDefaultSort(QuerySort defaultSort) {
@@ -205,7 +230,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#getQuerySortOrderConverter()
+	 * 
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#
+	 * getQuerySortOrderConverter()
 	 */
 	@Override
 	public Function<QuerySortOrder, QuerySort> getQuerySortOrderConverter() {
@@ -214,8 +241,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider#setQuerySortOrderConverter(java.util.function.Function)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider#
+	 * setQuerySortOrderConverter(java.util.function.Function)
 	 */
 	@Override
 	public void setQuerySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
@@ -223,8 +251,19 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 		this.querySortOrderConverter = querySortOrderConverter;
 	}
 
+	@Override
+	public Optional<AdditionalItemsProvider<T>> getAdditionalItemsProvider() {
+		return Optional.ofNullable(additionalItemsProvider);
+	}
+
+	@Override
+	public void setAdditionalItemsProvider(AdditionalItemsProvider<T> additionalItemsProvider) {
+		this.additionalItemsProvider = additionalItemsProvider;
+	}
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.vaadin.flow.data.provider.DataProvider#isInMemory()
 	 */
 	@Override
@@ -234,6 +273,7 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.vaadin.flow.data.provider.DataProvider#getId(java.lang.Object)
 	 */
 	@Override
@@ -258,26 +298,73 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
-	 * com.vaadin.flow.data.provider.AbstractBackEndDataProvider#fetchFromBackEnd(com.vaadin.flow.data.provider.Query)
+	 * com.vaadin.flow.data.provider.AbstractBackEndDataProvider#fetchFromBackEnd(
+	 * com.vaadin.flow.data.provider.Query)
 	 */
 	@Override
 	protected Stream<T> fetchFromBackEnd(Query<T, F> query) {
+		final List<T> additional = _fetchAdditional();
+		if (!additional.isEmpty()) {
+			int additionalSize = additional.size();
+			if (query.getLimit() < Integer.MAX_VALUE && additionalSize > query.getLimit()) {
+				additionalSize = query.getLimit();
+			}
+			// check page
+			if (query.getLimit() < Integer.MAX_VALUE) {
+				if (query.getOffset() == 0) {
+					return Stream.concat(additional.stream(), _fetch(modifyQuery(query, -additionalSize, 0)));
+				} else {
+					return _fetch(modifyQuery(query, 0, -additionalSize));
+				}
+			}
+			return Stream.concat(additional.stream(), _fetch(query));
+		}
+		return _fetch(query);
+	}
+
+	private Stream<T> _fetch(Query<T, F> query) {
 		return _query(query, true).stream(propertySet).map(item -> itemConverter.apply(item));
+	}
+
+	private List<T> _fetchAdditional() {
+		return getAdditionalItemsProvider().map(p -> p.getAdditionalItems(datastore, target, propertySet))
+				.orElse(Collections.emptyList());
+	}
+
+	private static <QT, QF> Query<QT, QF> modifyQuery(Query<QT, QF> query, int limit, int offset) {
+		return new Query<>(query.getOffset() + offset, query.getLimit() + limit, query.getSortOrders(),
+				query.getInMemorySorting(), query.getFilter().orElse(null));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.vaadin.flow.data.provider.AbstractBackEndDataProvider#sizeInBackEnd(com.vaadin.flow.data.provider.Query)
+	 * 
+	 * @see
+	 * com.vaadin.flow.data.provider.AbstractBackEndDataProvider#sizeInBackEnd(com.
+	 * vaadin.flow.data.provider.Query)
 	 */
 	@Override
 	protected int sizeInBackEnd(Query<T, F> query) {
-		return Long.valueOf(_query(query, false).count()).intValue();
+		return Long.valueOf(_query(query, false).count()).intValue() + _sizeAdditional(query);
+
+	}
+
+	private int _sizeAdditional(Query<T, F> query) {
+		return getAdditionalItemsProvider().map(p -> p.getAdditionalItemsCount(datastore, target, propertySet))
+				.map(size -> {
+					if (query.getLimit() < Integer.MAX_VALUE && size > query.getLimit()) {
+						return query.getLimit();
+					}
+					return size;
+				}).orElse(0);
 	}
 
 	/**
-	 * Build a {@link Query} using the Datastore and configure it with the query filters and sorts.
-	 * @param query The data provider query
+	 * Build a {@link Query} using the Datastore and configure it with the query
+	 * filters and sorts.
+	 * @param query     The data provider query
 	 * @param withSorts Whether to apply the query sorts, if any
 	 * @return A new Datastore query
 	 */
@@ -362,12 +449,13 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	// ------- Default query sort order conversion functions
 
 	/**
-	 * Get a {@link QuerySort} from given {@link QuerySortOrder}, using the provided property set.
+	 * Get a {@link QuerySort} from given {@link QuerySortOrder}, using the provided
+	 * property set.
 	 * @param propertySet The property set to use to detect the sort properties
-	 * @param order The {@link QuerySortOrder} to convert
+	 * @param order       The {@link QuerySortOrder} to convert
 	 * @return The {@link QuerySort} which represents given {@link QuerySortOrder}
-	 * @throws IllegalArgumentException If a property with the required sort name is not available in the provided
-	 *         property set
+	 * @throws IllegalArgumentException If a property with the required sort name is
+	 *                                  not available in the provided property set
 	 */
 	private static QuerySort fromOrder(PropertySet<?> propertySet, QuerySortOrder order) {
 		final Path<?> path = getPathByName(propertySet, order.getSorted())
@@ -381,11 +469,12 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	}
 
 	/**
-	 * Try to obtain a {@link Path} which corresponds to given <code>propertyName</code>, using the provided property
-	 * set.
-	 * @param propertySet The property set to use
+	 * Try to obtain a {@link Path} which corresponds to given
+	 * <code>propertyName</code>, using the provided property set.
+	 * @param propertySet  The property set to use
 	 * @param propertyName The property name to look for
-	 * @return Optional {@link Path} which corresponds to given <code>propertyName</code>
+	 * @return Optional {@link Path} which corresponds to given
+	 *         <code>propertyName</code>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Optional<Path<?>> getPathByName(PropertySet propertySet, String propertyName) {
@@ -405,19 +494,21 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 	 * @param <F> Query filter type
 	 * @param <B> Concrete builder type
 	 */
-	static abstract class AbstractBuilder<T, F, B extends Builder<T, F>> implements Builder<T, F> {
+	abstract static class AbstractBuilder<T, F, B extends Builder<T, F>> implements Builder<T, F> {
 
 		protected final DefaultDatastoreDataProvider<T, F> dataProvider;
 
 		/**
 		 * Constructor.
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param propertySet The property set to use as query projection (not null)
-		 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-		 *        required item type (not null)
-		 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter}
-		 *        (not null)
+		 * @param datastore       The {@link Datastore} to use (not null)
+		 * @param target          The {@link DataTarget} to use as query target (not
+		 *                        null)
+		 * @param propertySet     The property set to use as query projection (not null)
+		 * @param itemConverter   The function to use to convert the Datastore
+		 *                        {@link PropertyBox} type results into the required
+		 *                        item type (not null)
+		 * @param filterConverter The function to use to convert the data provider
+		 *                        filters into a {@link QueryFilter} (not null)
 		 */
 		public AbstractBuilder(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 				Function<PropertyBox, T> itemConverter, Function<F, QueryFilter> filterConverter) {
@@ -432,57 +523,36 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 		 */
 		protected abstract B getBuilder();
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider.Builder#withQueryConfigurationProvider(com.
-		 * holonplatform.core.query.QueryConfigurationProvider)
-		 */
 		@Override
 		public B withQueryConfigurationProvider(QueryConfigurationProvider queryConfigurationProvider) {
 			dataProvider.addQueryConfigurationProvider(queryConfigurationProvider);
 			return getBuilder();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider.Builder#withDefaultQuerySort(com.holonplatform.core.
-		 * query.QuerySort)
-		 */
 		@Override
 		public B withDefaultQuerySort(QuerySort defaultQuerySort) {
 			dataProvider.setDefaultSort(defaultQuerySort);
 			return getBuilder();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider.Builder#itemIdentifierProvider(java.util.function.
-		 * Function)
-		 */
 		@Override
 		public B itemIdentifierProvider(Function<T, Object> itemIdentifierProvider) {
 			dataProvider.setItemIdentifier(itemIdentifierProvider);
 			return getBuilder();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.data.DatastoreDataProvider.Builder#querySortOrderConverter(java.util.function.
-		 * Function)
-		 */
 		@Override
 		public B querySortOrderConverter(Function<QuerySortOrder, QuerySort> querySortOrderConverter) {
 			dataProvider.setQuerySortOrderConverter(querySortOrderConverter);
 			return getBuilder();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider.Builder#build()
-		 */
+		@Override
+		public Builder<T, F> additionalItemsProvider(AdditionalItemsProvider<T> additionalItemsProvider) {
+			dataProvider.setAdditionalItemsProvider(additionalItemsProvider);
+			return getBuilder();
+		}
+
 		@Override
 		public DatastoreDataProvider<T, F> build() {
 			return dataProvider;
@@ -500,13 +570,15 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 		/**
 		 * Constructor.
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param propertySet The property set to use as query projection (not null)
-		 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-		 *        required item type (not null)
-		 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter}
-		 *        (not null)
+		 * @param datastore       The {@link Datastore} to use (not null)
+		 * @param target          The {@link DataTarget} to use as query target (not
+		 *                        null)
+		 * @param propertySet     The property set to use as query projection (not null)
+		 * @param itemConverter   The function to use to convert the Datastore
+		 *                        {@link PropertyBox} type results into the required
+		 *                        item type (not null)
+		 * @param filterConverter The function to use to convert the data provider
+		 *                        filters into a {@link QueryFilter} (not null)
 		 */
 		public DefaultBuilder(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 				Function<PropertyBox, T> itemConverter, Function<F, QueryFilter> filterConverter) {
@@ -515,7 +587,10 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.internal.data.DefaultDatastoreDataProvider.AbstractBuilder#getBuilder()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.internal.data.DefaultDatastoreDataProvider.
+		 * AbstractBuilder#getBuilder()
 		 */
 		@Override
 		protected Builder<T, F> getBuilder() {
@@ -534,13 +609,15 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 		/**
 		 * Constructor.
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param propertySet The property set to use as query projection (not null)
-		 * @param itemConverter The function to use to convert the Datastore {@link PropertyBox} type results into the
-		 *        required item type (not null)
-		 * @param filterConverter The function to use to convert the data provider filters into a {@link QueryFilter}
-		 *        (not null)
+		 * @param datastore       The {@link Datastore} to use (not null)
+		 * @param target          The {@link DataTarget} to use as query target (not
+		 *                        null)
+		 * @param propertySet     The property set to use as query projection (not null)
+		 * @param itemConverter   The function to use to convert the Datastore
+		 *                        {@link PropertyBox} type results into the required
+		 *                        item type (not null)
+		 * @param filterConverter The function to use to convert the data provider
+		 *                        filters into a {@link QueryFilter} (not null)
 		 */
 		public DefaultPropertyBoxItemBuilder(Datastore datastore, DataTarget<?> target, PropertySet<?> propertySet,
 				Function<PropertyBox, PropertyBox> itemConverter, Function<F, QueryFilter> filterConverter) {
@@ -549,7 +626,9 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider.PropertyBoxItemBuilder#itemIdentifier(com.
+		 * 
+		 * @see com.holonplatform.vaadin.flow.data.DatastoreDataProvider.
+		 * PropertyBoxItemBuilder#itemIdentifier(com.
 		 * holonplatform.core.property.Property)
 		 */
 		@Override
@@ -568,7 +647,10 @@ public class DefaultDatastoreDataProvider<T, F> extends AbstractBackEndDataProvi
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.internal.data.DefaultDatastoreDataProvider.AbstractBuilder#getBuilder()
+		 * 
+		 * @see
+		 * com.holonplatform.vaadin.flow.internal.data.DefaultDatastoreDataProvider.
+		 * AbstractBuilder#getBuilder()
 		 */
 		@Override
 		protected PropertyBoxItemBuilder<F> getBuilder() {
