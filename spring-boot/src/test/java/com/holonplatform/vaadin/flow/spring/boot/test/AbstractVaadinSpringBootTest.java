@@ -30,8 +30,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.InitParameters;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinServletService;
@@ -135,7 +135,7 @@ public abstract class AbstractVaadinSpringBootTest {
 	 */
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
+		properties.put(InitParameters.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
 		return properties;
 	}
 

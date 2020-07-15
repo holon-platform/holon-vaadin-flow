@@ -244,7 +244,7 @@ public interface Input<T> extends ValueHolder<T, ValueChangeEvent<T>>, ValueComp
 	static <T, V> Input<T> from(Input<V> input, Property<T> property, PropertyValueConverter<T, V> converter) {
 		ObjectUtils.argumentNotNull(converter, "PropertyValueConverter must be not null");
 		return new InputConverterAdapter<>(input, Converter.from(value -> converter.fromModel(value, property),
-				value -> converter.toModel(value, property), e -> e.getMessage()));
+				value -> converter.toModel(value, property), Exception::getMessage));
 	}
 
 	/**

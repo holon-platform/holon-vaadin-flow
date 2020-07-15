@@ -31,8 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.InitParameters;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -130,7 +130,7 @@ public abstract class AbstractSessionTest {
 
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
+		properties.put(InitParameters.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
 		return properties;
 	}
 

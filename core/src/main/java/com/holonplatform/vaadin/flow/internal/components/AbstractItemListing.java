@@ -159,7 +159,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Logger
 	 */
-	protected final static Logger LOGGER = VaadinLogger.create();
+	protected static final Logger LOGGER = VaadinLogger.create();
 
 	/**
 	 * Selection mode
@@ -169,7 +169,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Optional visible columns
 	 */
-	private List<P> visibileColumns = Collections.emptyList();
+	private transient List<P> visibileColumns = Collections.emptyList();
 
 	/**
 	 * Grid
@@ -185,22 +185,22 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	 * A list of the item properties which correspond to a listing column, in the
 	 * display order
 	 */
-	private final LinkedList<P> properties = new LinkedList<>();
+	private final transient LinkedList<P> properties = new LinkedList<>();
 
 	/**
 	 * Optional {@link PropertyRendererRegistry} to use
 	 */
-	private PropertyRendererRegistry propertyRendererRegistry;
+	private transient PropertyRendererRegistry propertyRendererRegistry;
 
 	/**
 	 * Item property column definitions
 	 */
-	private final Map<P, ItemListingColumn<P, T, ?>> propertyColumns = new HashMap<>();
+	private final transient Map<P, ItemListingColumn<P, T, ?>> propertyColumns = new HashMap<>();
 
 	/**
 	 * Column headers.
 	 */
-	private final Map<P, String> columnsHeaders = new HashMap<>();
+	private final transient Map<P, String> columnsHeaders = new HashMap<>();
 
 	/**
 	 * Column key suffix generator to ensure unique column names
@@ -210,7 +210,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Property for which to expand the corresponding column
 	 */
-	private P propertyToExpand;
+	private transient P propertyToExpand;
 
 	/**
 	 * Default auto-width for columns
@@ -220,7 +220,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Listing columns post processors
 	 */
-	private final List<ColumnPostProcessor<P>> columnPostProcessors = new LinkedList<>();
+	private final transient List<ColumnPostProcessor<P>> columnPostProcessors = new LinkedList<>();
 
 	/**
 	 * Whether the listing is editable
@@ -230,13 +230,13 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Property editors
 	 */
-	private final Map<P, Input<?>> editors = new LinkedHashMap<>();
-	private final Map<com.vaadin.flow.data.binder.Binder.Binding<T, ?>, P> editorBindings = new HashMap<>();
+	private final transient Map<P, Input<?>> editors = new LinkedHashMap<>();
+	private final transient Map<com.vaadin.flow.data.binder.Binder.Binding<T, ?>, P> editorBindings = new HashMap<>();
 
 	/**
 	 * Property editor post-processors
 	 */
-	private final List<BiConsumer<P, Input<?>>> postProcessors = new LinkedList<>();
+	private final transient List<BiConsumer<P, Input<?>>> postProcessors = new LinkedList<>();
 
 	/**
 	 * Value change listeners
@@ -266,7 +266,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * The previous editor value
 	 */
-	private T oldEditorValue;
+	private transient T oldEditorValue;
 
 	/**
 	 * Selection listeners

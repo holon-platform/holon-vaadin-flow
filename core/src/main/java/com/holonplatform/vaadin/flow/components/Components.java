@@ -73,6 +73,7 @@ import com.holonplatform.vaadin.flow.components.builders.PropertyInputGroupBuild
 import com.holonplatform.vaadin.flow.components.builders.PropertyListingBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewFormBuilder;
 import com.holonplatform.vaadin.flow.components.builders.PropertyViewGroupBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ScrollerBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurator.PropertySingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.SingleSelectConfigurator.SingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.StringAreaInputBuilder;
@@ -108,6 +109,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.Scroller.ScrollDirection;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.select.Select;
@@ -391,6 +394,36 @@ public interface Components {
 	 */
 	static ContextMenuBuilder contextMenu() {
 		return ContextMenuBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create a {@link Scroller}.
+	 * @return A new {@link ScrollerBuilder}
+	 * @since 5.5.0
+	 */
+	static ScrollerBuilder scroller() {
+		return ScrollerBuilder.create();
+	}
+
+	/**
+	 * Gets a builder to create a {@link Scroller}.
+	 * @param content The content of the scroller
+	 * @return A new {@link ScrollerBuilder}
+	 * @since 5.5.0
+	 */
+	static ScrollerBuilder scroller(Component content) {
+		return ScrollerBuilder.create().content(content);
+	}
+
+	/**
+	 * Gets a builder to create a {@link Scroller}.
+	 * @param content         The content of the scroller
+	 * @param scrollDirection The scroll direction (not null)
+	 * @return A new {@link ScrollerBuilder}
+	 * @since 5.5.0
+	 */
+	static ScrollerBuilder scroller(Component content, ScrollDirection scrollDirection) {
+		return ScrollerBuilder.create().content(content).scrollDirection(scrollDirection);
 	}
 
 	// Dialogs

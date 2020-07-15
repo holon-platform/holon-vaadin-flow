@@ -22,10 +22,11 @@ import com.holonplatform.core.ContextScope;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
- * A {@link ContextScope} bound to current {@link VaadinSession}, looking up context resources using Vaadin Session
- * attributes.
+ * A {@link ContextScope} bound to current {@link VaadinSession}, looking up
+ * context resources using Vaadin Session attributes.
  * <p>
- * This scope uses {@link VaadinSession#getCurrent()} to obtain the current Vaadin session.
+ * This scope uses {@link VaadinSession#getCurrent()} to obtain the current
+ * Vaadin session.
  * </p>
  * 
  * @since 5.2.0
@@ -35,7 +36,7 @@ public interface VaadinSessionScope extends ContextScope {
 	/**
 	 * Scope name
 	 */
-	public final static String NAME = "vaadin-session";
+	public static final String NAME = "vaadin-session";
 
 	/**
 	 * Get the Vaadin Session scope from current context.

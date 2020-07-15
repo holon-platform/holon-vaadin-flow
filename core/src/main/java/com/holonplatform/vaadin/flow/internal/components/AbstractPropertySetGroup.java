@@ -52,12 +52,12 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 	/**
 	 * Current value
 	 */
-	private PropertyBox value;
+	private transient PropertyBox value;
 
 	/**
 	 * Property set
 	 */
-	private final PropertySet<?> propertySet;
+	private final transient PropertySet<?> propertySet;
 
 	/**
 	 * Value change listeners
@@ -67,12 +67,12 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 	/**
 	 * Optional {@link PropertyRendererRegistry} to use
 	 */
-	private PropertyRendererRegistry propertyRendererRegistry;
+	private transient PropertyRendererRegistry propertyRendererRegistry;
 
 	/**
 	 * Post-processors
 	 */
-	private final List<BiConsumer<Property<?>, C>> postProcessors = new LinkedList<>();
+	private final transient List<BiConsumer<Property<?>, C>> postProcessors = new LinkedList<>();
 
 	/**
 	 * Constructor.
@@ -124,6 +124,7 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
 	 */
 	@Override
@@ -133,6 +134,7 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.components.PropertyViewGroup#clear()
 	 */
 	@Override
@@ -150,8 +152,10 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
-	 * components.ValueHolder.ValueChangeListener)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(
+	 * com.holonplatform.vaadin.flow. components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
 	public Registration addValueChangeListener(
@@ -172,7 +176,8 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 	}
 
 	/**
-	 * Get the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * Get the specific {@link PropertyRendererRegistry} to use to render the
+	 * components.
 	 * @return Optional property renderer registry
 	 */
 	protected Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
@@ -180,7 +185,8 @@ public abstract class AbstractPropertySetGroup<C extends ValueComponent<?>, G ex
 	}
 
 	/**
-	 * Set the specific {@link PropertyRendererRegistry} to use to render the components.
+	 * Set the specific {@link PropertyRendererRegistry} to use to render the
+	 * components.
 	 * @param propertyRendererRegistry the property renderer registry to set
 	 */
 	protected void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {

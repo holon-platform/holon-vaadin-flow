@@ -59,7 +59,7 @@ public abstract class AbstractComposablePropertyForm<C extends Component, E exte
 	/**
 	 * Custom property captions
 	 */
-	private final Map<Property<?>, Localizable> propertyCaptions = new HashMap<>(8);
+	private final transient Map<Property<?>, Localizable> propertyCaptions = new HashMap<>(8);
 
 	/**
 	 * Hidden property captions

@@ -27,6 +27,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.dialog.Dialog.DialogResizeEvent;
 import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
 
 /**
@@ -65,8 +66,10 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(
+	 * com.holonplatform.core.i18n. Localizable)
 	 */
 	@Override
 	public C text(Localizable text) {
@@ -76,9 +79,9 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#withComponent(com.vaadin.flow.component.
-	 * Component)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#
+	 * withComponent(com.vaadin.flow.component. Component)
 	 */
 	@Override
 	public C withComponent(Component component) {
@@ -88,8 +91,9 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#withToolbarComponent(com.vaadin.flow.
-	 * component.Component)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#
+	 * withToolbarComponent(com.vaadin.flow. component.Component)
 	 */
 	@Override
 	public C withToolbarComponent(Component component) {
@@ -99,13 +103,39 @@ public abstract class AbstractDialogConfigurator<C extends DialogConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#withOpenedChangeListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.DialogConfigurator#
+	 * withOpenedChangeListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public C withOpenedChangeListener(ComponentEventListener<OpenedChangeEvent<Dialog>> listener) {
 		ObjectUtils.argumentNotNull(listener, "Event listener must be not null");
+		getComponent().addOpenedChangeListener(listener);
+		return getConfigurator();
+	}
+
+	@Override
+	public C withResizeListener(ComponentEventListener<DialogResizeEvent> listener) {
+		ObjectUtils.argumentNotNull(listener, "Event listener must be not null");
+		getComponent().addResizeListener(listener);
+		return getConfigurator();
+	}
+
+	@Override
+	public C resizable(boolean resizable) {
+		getComponent().setResizable(resizable);
+		return getConfigurator();
+	}
+
+	@Override
+	public C draggable(boolean draggable) {
+		getComponent().setDraggable(draggable);
+		return getConfigurator();
+	}
+
+	@Override
+	public C modal(boolean modal) {
+		getComponent().setModal(modal);
 		return getConfigurator();
 	}
 

@@ -58,8 +58,8 @@ import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.internal.RouteUtil;
-import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.InitParameters;
 import com.vaadin.flow.server.InvalidRouteConfigurationException;
 import com.vaadin.flow.server.RouteRegistry;
 import com.vaadin.flow.server.VaadinRequest;
@@ -114,8 +114,8 @@ public abstract class AbstractNavigatorTest {
 
 		ui = new UI();
 		ui.getInternals().setSession(vaadinSession);
-		//ui.getInternals().setAppId(TEST_UIID);
-		//ui.doInit(request, TEST_UIID);
+		// ui.getInternals().setAppId(TEST_UIID);
+		// ui.doInit(request, TEST_UIID);
 
 		ui.addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
 		ui.addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());
@@ -165,7 +165,7 @@ public abstract class AbstractNavigatorTest {
 		when(session.hasLock()).thenReturn(true);
 		when(session.getLocale()).thenReturn(locale != null ? locale : Locale.US);
 		Properties p = new Properties();
-		p.setProperty(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
+		p.setProperty(InitParameters.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
 		when(session.getConfiguration()).thenReturn(new DefaultDeploymentConfiguration(getClass(), p));
 		return session;
 	}
@@ -202,7 +202,7 @@ public abstract class AbstractNavigatorTest {
 
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
+		properties.put(InitParameters.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
 		return properties;
 	}
 

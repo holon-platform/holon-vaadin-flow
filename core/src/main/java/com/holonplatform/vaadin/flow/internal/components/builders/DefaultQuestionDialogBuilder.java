@@ -56,13 +56,16 @@ public class DefaultQuestionDialogBuilder extends AbstractDialogConfigurator<Que
 
 		getComponent().setCloseOnEsc(false);
 		getComponent().setCloseOnOutsideClick(false);
+
+		// since 5.5.0: set modal by default
+		getComponent().setModal(true);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogBuilder#confirmButtonConfigurator(
-	 * java.util.function.Consumer)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.DialogBuilder.
+	 * QuestionDialogBuilder#confirmButtonConfigurator( java.util.function.Consumer)
 	 */
 	@Override
 	public QuestionDialogBuilder confirmButtonConfigurator(Consumer<BaseButtonConfigurator> configurator) {
@@ -73,9 +76,9 @@ public class DefaultQuestionDialogBuilder extends AbstractDialogConfigurator<Que
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DialogBuilder.QuestionDialogBuilder#denialButtonConfigurator(
-	 * java.util.function.Consumer)
+	 * 
+	 * @see com.holonplatform.vaadin.flow.components.builders.DialogBuilder.
+	 * QuestionDialogBuilder#denialButtonConfigurator( java.util.function.Consumer)
 	 */
 	@Override
 	public QuestionDialogBuilder denialButtonConfigurator(Consumer<BaseButtonConfigurator> configurator) {
@@ -86,7 +89,9 @@ public class DefaultQuestionDialogBuilder extends AbstractDialogConfigurator<Que
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.internal.components.builders.AbstractComponentConfigurator#getConfigurator()
+	 * 
+	 * @see com.holonplatform.vaadin.flow.internal.components.builders.
+	 * AbstractComponentConfigurator#getConfigurator()
 	 */
 	@Override
 	protected QuestionDialogBuilder getConfigurator() {
@@ -95,6 +100,7 @@ public class DefaultQuestionDialogBuilder extends AbstractDialogConfigurator<Que
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.DialogBuilder#build()
 	 */
 	@Override

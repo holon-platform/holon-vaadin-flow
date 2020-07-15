@@ -40,7 +40,7 @@ public class DefaultVaadinSessionScope implements VaadinSessionScope {
 	/**
 	 * Context order
 	 */
-	public final static int ORDER = Integer.MIN_VALUE + 1500;
+	public static final int ORDER = Integer.MIN_VALUE + 1500;
 
 	/*
 	 * (non-Javadoc)
