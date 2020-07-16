@@ -101,6 +101,14 @@ public interface BaseTemporalInputConfigurator<D, C extends BaseTemporalInputCon
 	 * @return A {@link CalendarLocalizationBuilder} to setup the Date Input calendar localization messages
 	 */
 	CalendarLocalizationBuilder<D, C> localization();
+	
+	/**
+	 * When auto open is enabled, the dropdown will open when the field is clicked.
+	 * @param autoOpen Whether auto open is eanbled or disabled
+	 * @return this
+	 * @since 5.5.0
+	 */
+	C autoOpen(boolean autoOpen);
 
 	// calendar localization
 

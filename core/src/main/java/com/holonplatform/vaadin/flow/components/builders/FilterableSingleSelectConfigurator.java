@@ -38,11 +38,12 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.renderer.Renderer;
 
 /**
- * Filterable {@link SingleSelect} input builder using a {@link ComboBox} as input component.
+ * Filterable {@link SingleSelect} input builder using a {@link ComboBox} as
+ * input component.
  *
- * @param <T> Value type
+ * @param <T>    Value type
  * @param <ITEM> Item type
- * @param <B> Concrete builder type
+ * @param <B>    Concrete builder type
  *
  * @since 5.2.0
  */
@@ -52,22 +53,27 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 		FocusableConfigurator<Component, B> {
 
 	/**
-	 * Sets the {@link Renderer} responsible to render the individual items in the list of possible choices.
+	 * Sets the {@link Renderer} responsible to render the individual items in the
+	 * list of possible choices.
 	 * <p>
-	 * It doesn't affect how the selected item is rendered - that can be configured by using
+	 * It doesn't affect how the selected item is rendered - that can be configured
+	 * by using
 	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}.
 	 * </p>
-	 * @param renderer a renderer for the items in the selection list, not <code>null</code>
+	 * @param renderer a renderer for the items in the selection list, not
+	 *                 <code>null</code>
 	 * @return this
 	 */
 	B renderer(Renderer<ITEM> renderer);
 
 	/**
-	 * Sets the item label generator that is used to produce the strings shown in the input for each item.
+	 * Sets the item label generator that is used to produce the strings shown in
+	 * the input for each item.
 	 * <p>
 	 * When a {@link #renderer(Renderer)} or a
 	 * {@link #itemCaptionGenerator(com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator)}
-	 * is defined, the itemL label generator is only used to show the selected item label.
+	 * is defined, the itemL label generator is only used to show the selected item
+	 * label.
 	 * </p>
 	 * @param itemLabelGenerator The item label generator to set (not null)
 	 * @return this
@@ -75,20 +81,23 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	B itemLabelGenerator(Function<ITEM, String> itemLabelGenerator);
 
 	/**
-	 * Sets the page size, which is the number of items fetched at a time from the data provider.
+	 * Sets the page size, which is the number of items fetched at a time from the
+	 * data provider.
 	 * <p>
-	 * The page size is also the largest number of items that can support client-side filtering. If you provide more
-	 * items than the page size, the component has to fall back to server-side filtering.
+	 * The page size is also the largest number of items that can support
+	 * client-side filtering. If you provide more items than the page size, the
+	 * component has to fall back to server-side filtering.
 	 * <p>
 	 * The default page size is 50.
-	 * @param pageSize the maximum number of items sent per request, must be greater than zero
+	 * @param pageSize the maximum number of items sent per request, must be greater
+	 *                 than zero
 	 * @return this
 	 */
 	B pageSize(int pageSize);
 
 	/**
-	 * Set whether custom values are allowed. If <code>true</code>, the user can input a value that is not present in
-	 * the items list.
+	 * Set whether custom values are allowed. If <code>true</code>, the user can
+	 * input a value that is not present in the items list.
 	 * @param allowCustomValue Whether custom values are allowed
 	 * @return this
 	 * @since 5.2.13
@@ -96,11 +105,12 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	B allowCustomValue(boolean allowCustomValue);
 
 	/**
-	 * Add a listener for custom value set event, which is fired when user types in a value that don't already exist in
-	 * the select items set.
+	 * Add a listener for custom value set event, which is fired when user types in
+	 * a value that don't already exist in the select items set.
 	 * <p>
-	 * As a side effect makes the select allow custom values. If you don't want to allow a user to add new values to the
-	 * list once the listener is added please disable it explicitly via the {@link #allowCustomValue(boolean)} method.
+	 * As a side effect makes the select allow custom values. If you don't want to
+	 * allow a user to add new values to the list once the listener is added please
+	 * disable it explicitly via the {@link #allowCustomValue(boolean)} method.
 	 * </p>
 	 * @param customValueSetListener The listener to add (not null)
 	 * @return this
@@ -109,22 +119,35 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	B withCustomValueSetListener(CustomValueSetListener<T> customValueSetListener);
 
 	/**
-	 * Set whether to show a <em>clear</em> button which can be used to clear the input value.
-	 * @param clearButtonVisible <code>true</code> to show the clear button, <code>false</code> to hide it
+	 * Set whether to show a <em>clear</em> button which can be used to clear the
+	 * input value.
+	 * @param clearButtonVisible <code>true</code> to show the clear button,
+	 *                           <code>false</code> to hide it
 	 * @return this
 	 * @since 5.3.0
 	 */
 	B clearButtonVisible(boolean clearButtonVisible);
+
+	/**
+	 * Enables or disables the dropdown opening automatically. If <code>false</code>
+	 * the dropdown is only opened when clicking the toggle button or pressing Up or
+	 * Down arrow keys.
+	 * @param autoOpen <code>false</code> to prevent the dropdown from opening
+	 *                 automatically
+	 * @return this
+	 * @since 5.5.0
+	 */
+	B autoOpen(boolean autoOpen);
 
 	// ------- specific configurators
 
 	/**
 	 * Filterable {@link SingleSelect} input configurator.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
-	 * @param <D> Datastore data source configurator type
-	 * @param <C> Concrete configurator type
+	 * @param <D>    Datastore data source configurator type
+	 * @param <C>    Concrete configurator type
 	 */
 	public interface FilterableSingleSelectInputConfigurator<T, ITEM, D extends DatastoreDataProviderConfigurator<ITEM, D>, C extends FilterableSingleSelectInputConfigurator<T, ITEM, D, C>>
 			extends FilterableSingleSelectConfigurator<T, ITEM, C>,
@@ -133,11 +156,12 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * Filterable {@link SingleSelect} input configurator with {@link DatastoreDataProviderConfigurator} support.
+	 * Filterable {@link SingleSelect} input configurator with
+	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
-	 * @param <C> Concrete configurator type
+	 * @param <C>    Concrete configurator type
 	 */
 	public interface DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, C extends DatastoreFilterableSingleSelectInputConfigurator<T, ITEM, C>>
 			extends FilterableSingleSelectConfigurator<T, ITEM, C>, DatastoreDataProviderConfigurator<ITEM, C> {
@@ -145,7 +169,8 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * {@link Property} model based filterable {@link SingleSelect} input configurator.
+	 * {@link Property} model based filterable {@link SingleSelect} input
+	 * configurator.
 	 *
 	 * @param <T> Value type
 	 * @param <D> Datastore data source configurator type
@@ -157,13 +182,14 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 			PropertySelectInputConfigurator<T, T, C> {
 
 		/**
-		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
-		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * Set the data provider which acts as items data source, using given
+		 * {@link Datastore} as backend data handler, given {@link DataTarget} as query
+		 * target and given <code>properties</code> as query projection.
+		 * @param datastore  The {@link Datastore} to use (not null)
+		 * @param target     The {@link DataTarget} to use as query target (not null)
 		 * @param properties The property set to use as query projection (not null)
-		 * @return An extended builder which allow further data provider configuration, for example to add fixed
-		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @return An extended builder which allow further data provider configuration,
+		 *         for example to add fixed {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
 		default D dataSource(Datastore datastore, DataTarget<?> target, Property<?>... properties) {
@@ -171,44 +197,51 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 		}
 
 		/**
-		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
-		 * given {@link DataTarget} as query target and given <code>properties</code> as query projection.
-		 * @param <P> Property type
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
+		 * Set the data provider which acts as items data source, using given
+		 * {@link Datastore} as backend data handler, given {@link DataTarget} as query
+		 * target and given <code>properties</code> as query projection.
+		 * @param <P>        Property type
+		 * @param datastore  The {@link Datastore} to use (not null)
+		 * @param target     The {@link DataTarget} to use as query target (not null)
 		 * @param properties The property set to use as query projection (not null)
-		 * @return An extended builder which allow further data provider configuration, for example to add fixed
-		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @return An extended builder which allow further data provider configuration,
+		 *         for example to add fixed {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
 		@SuppressWarnings("rawtypes")
 		<P extends Property> D dataSource(Datastore datastore, DataTarget<?> target, Iterable<P> properties);
 
 		/**
-		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
-		 * given {@link DataTarget} as query target.
+		 * Set the data provider which acts as items data source, using given
+		 * {@link Datastore} as backend data handler, given {@link DataTarget} as query
+		 * target.
 		 * <p>
-		 * The query projection property set will be represented by the selection property only.
+		 * The query projection property set will be represented by the selection
+		 * property only.
 		 * </p>
 		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @return An extended builder which allow further data provider configuration, for example to add fixed
-		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @param target    The {@link DataTarget} to use as query target (not null)
+		 * @return An extended builder which allow further data provider configuration,
+		 *         for example to add fixed {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
 		D dataSource(Datastore datastore, DataTarget<?> target);
 
 		/**
-		 * Set the data provider which acts as items data source, using given {@link Datastore} as backend data handler,
-		 * given {@link DataTarget} as query target.
+		 * Set the data provider which acts as items data source, using given
+		 * {@link Datastore} as backend data handler, given {@link DataTarget} as query
+		 * target.
 		 * <p>
-		 * The query projection property set will be represented by the selection property only.
+		 * The query projection property set will be represented by the selection
+		 * property only.
 		 * </p>
-		 * @param datastore The {@link Datastore} to use (not null)
-		 * @param target The {@link DataTarget} to use as query target (not null)
-		 * @param filterConverter Data provider filter type to {@link QueryFilter} converter (not null)
-		 * @return An extended builder which allow further data provider configuration, for example to add fixed
-		 *         {@link QueryFilter} and {@link QuerySort}.
+		 * @param datastore       The {@link Datastore} to use (not null)
+		 * @param target          The {@link DataTarget} to use as query target (not
+		 *                        null)
+		 * @param filterConverter Data provider filter type to {@link QueryFilter}
+		 *                        converter (not null)
+		 * @return An extended builder which allow further data provider configuration,
+		 *         for example to add fixed {@link QueryFilter} and {@link QuerySort}.
 		 * @see DatastoreDataProviderConfigurator
 		 */
 		D dataSource(Datastore datastore, DataTarget<?> target, Function<String, QueryFilter> filterConverter);
@@ -216,8 +249,8 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * {@link Property} model based filterable {@link SingleSelect} input configurator with
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * {@link Property} model based filterable {@link SingleSelect} input
+	 * configurator with {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 * @param <C> Concrete configurator type
@@ -227,17 +260,20 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 			DatastoreDataProviderSelectConfigurator<PropertyBox, C>, PropertySelectInputConfigurator<T, T, C> {
 
 		/**
-		 * Set the function to use to convert the {@link String} type user filter into a {@link QueryFilter} type, to be
-		 * used with a Datastore query. The {@link String} type user filter represents the user text input which can be
+		 * Set the function to use to convert the {@link String} type user filter into a
+		 * {@link QueryFilter} type, to be used with a Datastore query. The
+		 * {@link String} type user filter represents the user text input which can be
 		 * used to filter the select suggestions within the available item set.
-		 * @param filterConverter The {@link String} type user filter to {@link QueryFilter} converter (not null)
+		 * @param filterConverter The {@link String} type user filter to
+		 *                        {@link QueryFilter} converter (not null)
 		 * @return this
 		 */
 		C filterConverter(Function<String, QueryFilter> filterConverter);
 
 		/**
-		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
-		 * providing a filter to check if the property value <em>contains</em> the user filter text, ignoring case.
+		 * Set to use given property to convert the {@link String} type user filter into
+		 * a {@link QueryFilter}, providing a filter to check if the property value
+		 * <em>contains</em> the user filter text, ignoring case.
 		 * @param property The property to use for the query filter (not null)
 		 * @return this
 		 * @see #filterConverter(Function)
@@ -247,9 +283,10 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 		}
 
 		/**
-		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
-		 * providing a filter to check if the property value <em>contains</em> the user filter text.
-		 * @param property The property to use for the query filter (not null)
+		 * Set to use given property to convert the {@link String} type user filter into
+		 * a {@link QueryFilter}, providing a filter to check if the property value
+		 * <em>contains</em> the user filter text.
+		 * @param property   The property to use for the query filter (not null)
 		 * @param ignoreCase Whether to ignore case
 		 * @return this
 		 * @see #filterConverter(Function)
@@ -259,8 +296,9 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 		}
 
 		/**
-		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
-		 * providing a filter to check if the property value <em>starts with</em> the user filter text, ignoring case.
+		 * Set to use given property to convert the {@link String} type user filter into
+		 * a {@link QueryFilter}, providing a filter to check if the property value
+		 * <em>starts with</em> the user filter text, ignoring case.
 		 * @param property The property to use for the query filter (not null)
 		 * @return this
 		 * @see #filterConverter(Function)
@@ -270,9 +308,10 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 		}
 
 		/**
-		 * Set to use given property to convert the {@link String} type user filter into a {@link QueryFilter},
-		 * providing a filter to check if the property value <em>starts with</em> the user filter text.
-		 * @param property The property to use for the query filter (not null)
+		 * Set to use given property to convert the {@link String} type user filter into
+		 * a {@link QueryFilter}, providing a filter to check if the property value
+		 * <em>starts with</em> the user filter text.
+		 * @param property   The property to use for the query filter (not null)
 		 * @param ignoreCase Whether to ignore case
 		 * @return this
 		 * @see #filterConverter(Function)
@@ -288,7 +327,7 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	/**
 	 * Filterable {@link SingleSelect} input builder with validation support.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
 	 */
 	public interface ValidatableFilterableSingleSelectInputBuilder<T, ITEM> extends
@@ -298,10 +337,10 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * Filterable {@link SingleSelect} input builder with validation and {@link DatastoreDataProviderConfigurator}
-	 * support.
+	 * Filterable {@link SingleSelect} input builder with validation and
+	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
 	 */
 	public interface ValidatableDatastoreFilterableSingleSelectInputBuilder<T, ITEM> extends
@@ -313,7 +352,7 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	/**
 	 * Filterable {@link SingleSelect} input builder.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
 	 */
 	public interface FilterableSingleSelectInputBuilder<T, ITEM> extends
@@ -323,9 +362,10 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * Filterable {@link SingleSelect} input builder with {@link DatastoreDataProviderConfigurator} support.
+	 * Filterable {@link SingleSelect} input builder with
+	 * {@link DatastoreDataProviderConfigurator} support.
 	 *
-	 * @param <T> Value type
+	 * @param <T>    Value type
 	 * @param <ITEM> Item type
 	 */
 	public interface DatastoreFilterableSingleSelectInputBuilder<T, ITEM> extends
@@ -337,7 +377,8 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	// ------- builders using property model
 
 	/**
-	 * {@link Property} model based filterable {@link SingleSelect} input builder with validation support.
+	 * {@link Property} model based filterable {@link SingleSelect} input builder
+	 * with validation support.
 	 *
 	 * @param <T> Value type
 	 */
@@ -347,8 +388,8 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * {@link Property} model based filterable {@link SingleSelect} input builder with validation and
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * {@link Property} model based filterable {@link SingleSelect} input builder
+	 * with validation and {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 */
@@ -369,8 +410,8 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * {@link Property} model based filterable {@link SingleSelect} input builder with
-	 * {@link DatastoreDataProviderConfigurator} support.
+	 * {@link Property} model based filterable {@link SingleSelect} input builder
+	 * with {@link DatastoreDataProviderConfigurator} support.
 	 *
 	 * @param <T> Value type
 	 */
@@ -383,12 +424,12 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	// ------ builders
 
 	/**
-	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable {@link SingleSelect}, which uses a
-	 * {@link ComboBox} as input component.
-	 * @param <T> Value type
-	 * @param <ITEM> Item type
-	 * @param type Selection value type (not null)
-	 * @param itemType Selection items type (not null)
+	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable
+	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
+	 * @param <T>           Value type
+	 * @param <ITEM>        Item type
+	 * @param type          Selection value type (not null)
+	 * @param itemType      Selection items type (not null)
 	 * @param itemConverter The item converter to use (not null)
 	 * @return A new {@link FilterableSingleSelectInputBuilder}
 	 */
@@ -398,10 +439,10 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable {@link SingleSelect}, which uses a
-	 * {@link ComboBox} as input component.
+	 * Get a new {@link FilterableSingleSelectInputBuilder} to create a filterable
+	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
 	 * @param type Selection value type (not null)
-	 * @param <T> Value type
+	 * @param <T>  Value type
 	 * @return A new {@link FilterableSingleSelectInputBuilder}
 	 */
 	static <T> FilterableSingleSelectInputBuilder<T, T> create(Class<T> type) {
@@ -411,10 +452,12 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	// property
 
 	/**
-	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a {@link Property} model based filterable
-	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
-	 * @param <T> Value type
-	 * @param selectionProperty The property to use to represent the selection value (not null)
+	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a
+	 * {@link Property} model based filterable {@link SingleSelect}, which uses a
+	 * {@link ComboBox} as input component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
 	 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 	 */
 	static <T> PropertyFilterableSingleSelectInputBuilder<T> create(final Property<T> selectionProperty) {
@@ -422,12 +465,14 @@ public interface FilterableSingleSelectConfigurator<T, ITEM, B extends Filterabl
 	}
 
 	/**
-	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a {@link Property} model based filterable
-	 * {@link SingleSelect}, which uses a {@link ComboBox} as input component.
-	 * @param <T> Value type
-	 * @param selectionProperty The property to use to represent the selection value (not null)
-	 * @param itemConverter The function to use to convert a selection value into the corresponding {@link PropertyBox}
-	 *        item
+	 * Get a new {@link PropertyFilterableSingleSelectInputBuilder} to create a
+	 * {@link Property} model based filterable {@link SingleSelect}, which uses a
+	 * {@link ComboBox} as input component.
+	 * @param <T>               Value type
+	 * @param selectionProperty The property to use to represent the selection value
+	 *                          (not null)
+	 * @param itemConverter     The function to use to convert a selection value
+	 *                          into the corresponding {@link PropertyBox} item
 	 * @return A new {@link PropertyFilterableSingleSelectInputBuilder}
 	 */
 	static <T> PropertyFilterableSingleSelectInputBuilder<T> create(final Property<T> selectionProperty,

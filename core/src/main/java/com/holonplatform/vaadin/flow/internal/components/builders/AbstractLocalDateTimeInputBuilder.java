@@ -211,6 +211,12 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 		return getConfigurator();
 	}
 
+	@Override
+	public C autoOpen(boolean autoOpen) {
+		getComponent().setAutoOpen(autoOpen);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

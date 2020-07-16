@@ -193,6 +193,12 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		return getConfigurator();
 	}
 
+	@Override
+	public C autoOpen(boolean autoOpen) {
+		getComponent().setAutoOpen(autoOpen);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.

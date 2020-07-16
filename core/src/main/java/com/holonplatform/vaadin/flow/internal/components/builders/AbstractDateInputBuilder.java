@@ -224,6 +224,18 @@ public abstract class AbstractDateInputBuilder<C extends DateInputConfigurator<C
 		return getConfigurator();
 	}
 
+	@Override
+	public C autoOpen(boolean autoOpen) {
+		localDateInputBuilder.autoOpen(autoOpen);
+		return getConfigurator();
+	}
+
+	@Override
+	public C required(boolean required) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#weekNumbersVisible(boolean)

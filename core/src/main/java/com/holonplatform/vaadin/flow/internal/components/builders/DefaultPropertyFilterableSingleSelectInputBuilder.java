@@ -300,6 +300,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		return this;
 	}
 
+	@Override
+	public PropertyFilterableSingleSelectInputBuilder<T> autoOpen(boolean autoOpen) {
+		builder.autoOpen(autoOpen);
+		return this;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -944,6 +950,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		@Override
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(boolean clearButtonVisible) {
 			builder.clearButtonVisible(clearButtonVisible);
+			return this;
+		}
+
+		@Override
+		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> autoOpen(boolean autoOpen) {
+			builder.autoOpen(autoOpen);
 			return this;
 		}
 
@@ -1692,6 +1704,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 			return this;
 		}
 
+		@Override
+		public DatastorePropertyFilterableSingleSelectInputBuilder<T> autoOpen(boolean autoOpen) {
+			builder.autoOpen(autoOpen);
+			return this;
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -2393,6 +2411,12 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> clearButtonVisible(
 				boolean clearButtonVisible) {
 			builder.clearButtonVisible(clearButtonVisible);
+			return this;
+		}
+
+		@Override
+		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> autoOpen(boolean autoOpen) {
+			builder.autoOpen(autoOpen);
 			return this;
 		}
 

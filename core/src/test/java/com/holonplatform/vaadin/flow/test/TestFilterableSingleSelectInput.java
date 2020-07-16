@@ -50,10 +50,10 @@ import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.Selectable.SelectionMode;
 import com.holonplatform.vaadin.flow.components.SingleSelect;
 import com.holonplatform.vaadin.flow.components.ValidatableSingleSelect;
-import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.FilterableSingleSelectInputBuilder;
 import com.holonplatform.vaadin.flow.components.builders.FilterableSingleSelectConfigurator.PropertyFilterableSingleSelectInputBuilder;
+import com.holonplatform.vaadin.flow.components.builders.ItemSetConfigurator.ItemCaptionGenerator;
 import com.holonplatform.vaadin.flow.components.support.Unit;
 import com.holonplatform.vaadin.flow.data.ItemConverter;
 import com.holonplatform.vaadin.flow.test.util.BeanTest1;
@@ -348,6 +348,19 @@ public class TestFilterableSingleSelectInput {
 
 		input = Input.singleSelect(String.class).autofocus(true).build();
 		assertTrue(((ComboBox<?>) input.getComponent()).isAutofocus());
+
+	}
+
+	@Test
+	public void testAutoOpen() {
+
+		Input<String> input = Input.singleSelect(String.class).autoOpen(true).build();
+		assertTrue(input.getComponent() instanceof ComboBox<?>);
+		assertTrue(((ComboBox<?>) input.getComponent()).isAutoOpen());
+
+		input = Input.singleSelect(String.class).autoOpen(false).build();
+		assertTrue(input.getComponent() instanceof ComboBox<?>);
+		assertFalse(((ComboBox<?>) input.getComponent()).isAutoOpen());
 
 	}
 
@@ -921,32 +934,32 @@ public class TestFilterableSingleSelectInput {
 
 	@Test
 	public void testValidatable() {
-		
-		ValidatableSingleSelect<String> input = Input.singleSelect(String.class).validatable()
-				.label("test").withValidator(Validator.notNull()).id("testid").addItem("a").addItem("b").build();
-		
+
+		ValidatableSingleSelect<String> input = Input.singleSelect(String.class).validatable().label("test")
+				.withValidator(Validator.notNull()).id("testid").addItem("a").addItem("b").build();
+
 		assertEquals("test", ComponentTestUtils.getLabel(input));
 		assertTrue(input.getComponent().getId().isPresent());
 		assertEquals("testid", input.getComponent().getId().get());
-		
+
 		Assertions.assertThrows(ValidationException.class, () -> input.validate());
-		
-		ValidatableSingleSelect<String> input2 = Input.singleSelect(String.class).validatable()
-				.label("test2").required().addItem("a").addItem("b").build();
-		
+
+		ValidatableSingleSelect<String> input2 = Input.singleSelect(String.class).validatable().label("test2")
+				.required().addItem("a").addItem("b").build();
+
 		assertEquals("test2", ComponentTestUtils.getLabel(input2));
-		
+
 		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
-		
+
 		input2.setValue("a");
 		Assertions.assertDoesNotThrow(() -> input2.validate());
-		
+
 		input2.clear();
 		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
-		
+
 		input2.select("b");
 		Assertions.assertDoesNotThrow(() -> input2.validate());
-		
+
 		input2.clear();
 		Assertions.assertThrows(ValidationException.class, () -> input2.validate());
 	}
