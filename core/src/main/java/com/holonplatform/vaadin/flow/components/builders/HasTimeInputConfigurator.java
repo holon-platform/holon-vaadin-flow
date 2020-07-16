@@ -24,20 +24,25 @@ import java.time.Duration;
  * 
  * @since 5.2.0
  */
+@Deprecated
 public interface HasTimeInputConfigurator<C extends HasTimeInputConfigurator<C>> {
 
 	/**
 	 * Set whether to display a space between the <code>date</code>, <code>time</code> input fields.
 	 * @param spacing whether to enable spacing
 	 * @return this
+	 * @deprecated Since 5.5.0 Vaadin DateTimePicker is used. Use CSS to configure spacing.
 	 */
+	@Deprecated
 	C spacing(boolean spacing);
 
 	/**
 	 * Set the time input width.
 	 * @param timeInputWidth the time input width to set
 	 * @return this
+	 * @deprecated Since 5.5.0 Vaadin DateTimePicker is used. Use CSS to configure time input width.
 	 */
+	@Deprecated
 	C timeInputWidth(String timeInputWidth);
 
 	/**
@@ -57,7 +62,9 @@ public interface HasTimeInputConfigurator<C extends HasTimeInputConfigurator<C>>
 	 * @param step the step to set, not <code>null</code> and should divide a day or an hour evenly
 	 * @return this
 	 * @since 5.2.3
+	 * @deprecated Since 5.5.0 Vaadin DateTimePicker is used. Time step setting not supported.
 	 */
+	@Deprecated
 	C timeStep(Duration step);
 
 }

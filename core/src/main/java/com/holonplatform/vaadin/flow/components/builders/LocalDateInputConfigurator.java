@@ -27,6 +27,6 @@ import com.holonplatform.vaadin.flow.components.Input;
  * @since 5.2.2
  */
 public interface LocalDateInputConfigurator<C extends LocalDateInputConfigurator<C>>
-		extends BaseTemporalInputConfigurator<LocalDate, C> {
+		extends BaseDateInputConfigurator<LocalDate, C> {
 
 }

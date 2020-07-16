@@ -36,7 +36,8 @@ import com.holonplatform.vaadin.flow.internal.components.EnumItemCaptionGenerato
 import com.holonplatform.vaadin.flow.internal.converters.DateToLocalTimeConverter;
 
 /**
- * Default {@link PropertyRenderer} to create {@link Input} type {@link Property} representations.
+ * Default {@link PropertyRenderer} to create {@link Input} type
+ * {@link Property} representations.
  * 
  * @param <T> Property type
  *
@@ -48,6 +49,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.holonplatform.core.property.PropertyRenderer#getRenderType()
 	 */
 	@Override
@@ -57,7 +59,10 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.core.property.Property)
+	 * 
+	 * @see
+	 * com.holonplatform.vaadin.property.PropertyRenderer#render(com.holonplatform.
+	 * core.property.Property)
 	 */
 	@Override
 	public Input render(Property<? extends T> property) {
@@ -104,8 +109,9 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	}
 
 	/**
-	 * Create an {@link Input} to handle given value <code>type</code>, if available.
-	 * @param <V> Value type
+	 * Create an {@link Input} to handle given value <code>type</code>, if
+	 * available.
+	 * @param <V>  Value type
 	 * @param type The value type (not null)
 	 * @return Optional {@link Input} component
 	 */
@@ -198,9 +204,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 */
 	protected Input<LocalTime> renderLocalTime(Property<? extends T> property) {
 		final LocalTimeInputBuilder builder = Input.localTime().label(property).readOnly(property.isReadOnly());
-		property.getConfiguration().getParameter(Components.TIME_INPUT_STEP).ifPresent(s -> {
-			builder.step(s);
-		});
+		property.getConfiguration().getParameter(Components.TIME_INPUT_STEP).ifPresent(builder::step);
 		return builder.build();
 	}
 
@@ -210,7 +214,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 	 * @return The {@link Input} instance
 	 */
 	protected Input<LocalDateTime> renderLocalDateTime(Property<? extends T> property) {
-		return Input.localDateTime().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
+		return Input.localDateTime().label(property).readOnly(property.isReadOnly()).build();
 	}
 
 	/**
@@ -225,7 +229,7 @@ public class DefaultInputPropertyRenderer<T> implements PropertyRenderer<Input, 
 			return Input.from(Input.localTime().label(property).readOnly(property.isReadOnly()).build(),
 					new DateToLocalTimeConverter());
 		case DATE_TIME:
-			return Input.dateTime().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();
+			return Input.dateTime().label(property).readOnly(property.isReadOnly()).build();
 		case DATE:
 		default:
 			return Input.date().label(property).clearButtonVisible(true).readOnly(property.isReadOnly()).build();

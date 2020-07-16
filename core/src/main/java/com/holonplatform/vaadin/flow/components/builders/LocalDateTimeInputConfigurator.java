@@ -26,6 +26,7 @@ import com.holonplatform.vaadin.flow.components.Input;
  * 
  * @since 5.2.2
  */
+@SuppressWarnings("deprecation")
 public interface LocalDateTimeInputConfigurator<C extends LocalDateTimeInputConfigurator<C>>
 		extends BaseTemporalInputConfigurator<LocalDateTime, C>, HasTimeInputConfigurator<C> {
 

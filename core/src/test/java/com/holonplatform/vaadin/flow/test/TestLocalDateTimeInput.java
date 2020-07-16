@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collection;
@@ -39,12 +38,12 @@ import com.holonplatform.vaadin.flow.components.Components;
 import com.holonplatform.vaadin.flow.components.Input;
 import com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder;
 import com.holonplatform.vaadin.flow.components.support.Unit;
-import com.holonplatform.vaadin.flow.internal.components.DateTimeField;
 import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestLocalDateTimeInput {
@@ -296,8 +295,8 @@ public class TestLocalDateTimeInput {
 	public void testFocus() {
 
 		Input<LocalDateTime> input = Input.localDateTime().tabIndex(77).build();
-		assertTrue(input.getComponent() instanceof DateTimeField);
-		assertEquals(77, ((DateTimeField) input.getComponent()).getTabIndex());
+		assertTrue(input.getComponent() instanceof DateTimePicker);
+		assertEquals(77, ((DateTimePicker) input.getComponent()).getTabIndex());
 
 	}
 
@@ -342,54 +341,42 @@ public class TestLocalDateTimeInput {
 	public void testConfiguration() {
 
 		Input<LocalDateTime> input = Input.localDateTime().locale(Locale.ITALIAN).build();
-		assertTrue(input.getComponent() instanceof DateTimeField);
-		assertEquals(Locale.ITALIAN, ((DateTimeField) input.getComponent()).getLocale());
+		assertTrue(input.getComponent() instanceof DateTimePicker);
+		assertEquals(Locale.ITALIAN, ((DateTimePicker) input.getComponent()).getLocale());
 
 		final Input<LocalDateTime> input2 = Input.localDateTime().updateLocaleOnAttach(true).build();
 
-		assertEquals(Locale.US, ((DateTimeField) input2.getComponent()).getLocale());
+		assertEquals(Locale.US, ((DateTimePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.FRANCE);
 		ComponentUtil.onComponentAttach(input2.getComponent(), true);
-		assertEquals(Locale.FRANCE, ((DateTimeField) input2.getComponent()).getLocale());
+		assertEquals(Locale.FRANCE, ((DateTimePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.US);
 
 		input = Input.localDateTime().min(LocalDateTime.of(2018, Month.OCTOBER, 22, 0, 0))
 				.max(LocalDateTime.of(2018, Month.OCTOBER, 23, 0, 0)).build();
-		assertEquals(LocalDate.of(2018, Month.OCTOBER, 22), ((DateTimeField) input.getComponent()).getMin());
-		assertEquals(LocalDate.of(2018, Month.OCTOBER, 23), ((DateTimeField) input.getComponent()).getMax());
-
-		input = Input.localDateTime().initialPosition(LocalDateTime.of(2018, Month.OCTOBER, 22, 0, 0)).build();
-		assertEquals(LocalDateTime.of(2018, Month.OCTOBER, 22, 0, 0),
-				((DateTimeField) input.getComponent()).getInitialPosition());
+		assertEquals(LocalDateTime.of(2018, Month.OCTOBER, 22, 0, 0), ((DateTimePicker) input.getComponent()).getMin());
+		assertEquals(LocalDateTime.of(2018, Month.OCTOBER, 23, 0, 0), ((DateTimePicker) input.getComponent()).getMax());
 
 		input = Input.localDateTime().weekNumbersVisible(true).build();
-		assertTrue(((DateTimeField) input.getComponent()).isWeekNumbersVisible());
+		assertTrue(((DateTimePicker) input.getComponent()).isWeekNumbersVisible());
 		input = Input.localDateTime().weekNumbersVisible(false).build();
-		assertFalse(((DateTimeField) input.getComponent()).isWeekNumbersVisible());
+		assertFalse(((DateTimePicker) input.getComponent()).isWeekNumbersVisible());
 
 		input = Input.localDateTime().localization().today("_today").set().build();
-		assertEquals("_today", ((DateTimeField) input.getComponent()).getI18n().getToday());
+		assertEquals("_today", ((DateTimePicker) input.getComponent()).getDatePickerI18n().getToday());
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<LocalDateTime> input3 = Input.localDateTime().localization().today("test", "test.code").set().build();
-			assertEquals("TestUS", ((DateTimeField) input3.getComponent()).getI18n().getToday());
+			assertEquals("TestUS", ((DateTimePicker) input3.getComponent()).getDatePickerI18n().getToday());
 		});
 
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<LocalDateTime> input3 = Input.localDateTime().deferLocalization().localization()
 					.today("test", "test.code").set().build();
-			assertNull(((DateTimeField) input3.getComponent()).getI18n());
+			assertNull(((DateTimePicker) input3.getComponent()).getDatePickerI18n());
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
-			assertEquals("TestUS", ((DateTimeField) input3.getComponent()).getI18n().getToday());
+			assertEquals("TestUS", ((DateTimePicker) input3.getComponent()).getDatePickerI18n().getToday());
 		});
-
-		input = Input.localDateTime().spacing(true).build();
-		assertTrue(((DateTimeField) input.getComponent()).isSpacing());
-		input = Input.localDateTime().spacing(false).build();
-		assertFalse(((DateTimeField) input.getComponent()).isSpacing());
-
-		input = Input.localDateTime().timeInputWidth("50px").build();
-		assertEquals("50px", ((DateTimeField) input.getComponent()).getTimeInputWidth());
 	}
 
 	@Test
