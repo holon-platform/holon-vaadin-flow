@@ -1,6 +1,6 @@
 # Holon platform Vaadin Flow module
 
-> Latest release: [5.4.2](#obtain-the-artifacts)
+> Latest release: [5.5.0](#obtain-the-artifacts)
 
 This is the __Vaadin Flow UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin Flow](https://vaadin.com/flow) web applications platform, focusing on the user interface components, navigation and data binding features.
 
@@ -139,7 +139,7 @@ _Maven BOM:_
     <dependency>
         <groupId>com.holon-platform.vaadin</groupId>
         <artifactId>holon-vaadin-flow-bom</artifactId>
-        <version>5.4.2</version>
+        <version>5.5.0</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency>
