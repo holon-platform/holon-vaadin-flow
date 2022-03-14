@@ -41,7 +41,7 @@ public class EnumItemCaptionGenerator<E extends Enum<E>> implements ItemCaptionG
 		if (item != null) {
 			return LocalizationProvider.localize(DefaultEnumCaptionRegistry.getEnumCaption(item)).orElse(item.name());
 		}
-		return null;
+		return "";
 	}
 
 }
