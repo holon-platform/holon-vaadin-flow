@@ -91,9 +91,7 @@ import com.vaadin.flow.function.ValueProvider;
 
 /**
  * Default {@link BeanListing} implementation.
- *
  * @param <T> Bean type
- * 
  * @since 5.2.0
  */
 public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implements BeanListing<T> {
@@ -140,7 +138,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasPropertySet#getProperties()
 	 */
 	@Override
@@ -161,7 +158,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * isReadOnlyByDefault(java.lang.Object)
 	 */
@@ -172,7 +168,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * generateColumnKey(java.lang.Object)
 	 */
@@ -183,10 +178,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
-	 * generateDefaultGridColumn(com.holonplatform
-	 * .vaadin.flow.internal.components.support.ItemListingColumn)
+	 * generateDefaultGridColumn(com.holonplatform .vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
 	protected Column<T> generateDefaultGridColumn(ItemListingColumn<String, T, ?> configuration) {
@@ -198,10 +191,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
-	 * preProcessConfiguration(com.holonplatform.
-	 * vaadin.flow.internal.components.support.ItemListingColumn)
+	 * preProcessConfiguration(com.holonplatform. vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@Override
 	protected ItemListingColumn<String, T, ?> preProcessConfiguration(ItemListingColumn<String, T, ?> configuration) {
@@ -216,7 +207,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * getSortPropertyName(java.lang.Object)
 	 */
@@ -227,7 +217,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * getDefaultColumnHeader(java.lang.Object)
 	 */
@@ -244,9 +233,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
-	 * getPropertyType(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing# getPropertyType(java.lang.Object)
 	 */
 	@Override
 	protected Class<?> getPropertyType(String property) {
@@ -255,7 +242,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * getPropertyValueGetter(java.lang.Object)
 	 */
@@ -266,7 +252,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * getPropertyValueSetter(java.lang.Object)
 	 */
@@ -277,10 +262,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
-	 * buildPropertyEditor(com.holonplatform.
-	 * vaadin.flow.internal.components.support.ItemListingColumn)
+	 * buildPropertyEditor(com.holonplatform. vaadin.flow.internal.components.support.ItemListingColumn)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -305,7 +288,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
 	 * getDefaultPropertyValidators(java.lang. Object)
 	 */
@@ -316,9 +298,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing#
-	 * refreshVirtualProperties()
+	 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing# refreshVirtualProperties()
 	 */
 	@Override
 	protected void refreshVirtualProperties() {
@@ -329,7 +309,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 	/**
 	 * Default {@link BeanListingBuilder} implementation.
-	 * 
 	 * @param <T> Bean type
 	 */
 	public static class DefaultBeanListingBuilder<T> extends
@@ -342,9 +321,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.
-		 * AbstractItemListingConfigurator# getItemListing()
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing. AbstractItemListingConfigurator#
+		 * getItemListing()
 		 */
 		@Override
 		protected BeanListing<T> getItemListing() {
@@ -353,9 +331,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder#
-		 * withValidator(java.lang.String, com.holonplatform.core.Validator)
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder# withValidator(java.lang.String,
+		 * com.holonplatform.core.Validator)
 		 */
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
@@ -368,10 +345,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder#editor(
-		 * java.lang.String, com.holonplatform.vaadin.flow.components.Input)
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingBuilder#editor( java.lang.String,
+		 * com.holonplatform.vaadin.flow.components.Input)
 		 */
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
@@ -384,11 +359,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
-		 * BeanInputGroupConfigurator# defaultValue(java.lang.String,
-		 * java.util.function.Function)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator. BeanInputGroupConfigurator#
+		 * defaultValue(java.lang.String, java.util.function.Function)
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
@@ -400,10 +372,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
-		 * BeanInputGroupConfigurator# withValueChangeListener(java.lang.String,
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator. BeanInputGroupConfigurator#
+		 * withValueChangeListener(java.lang.String,
 		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -417,9 +387,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withComponentColumn(com.vaadin.flow .function.ValueProvider)
 		 */
 		@Override
@@ -433,9 +401,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withColumn(com.vaadin.flow.function .ValueProvider)
 		 */
 		@Override
@@ -449,12 +415,9 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * HasDatastoreDataProviderConfigurator#dataSource(com.
-		 * holonplatform.core.datastore.Datastore,
-		 * com.holonplatform.core.datastore.DataTarget, java.util.function.Function,
-		 * java.lang.Iterable)
+		 * @see com.holonplatform.vaadin.flow.components.builders. HasDatastoreDataProviderConfigurator#dataSource(com.
+		 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget,
+		 * java.util.function.Function, java.lang.Iterable)
 		 */
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -468,11 +431,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * HasDatastoreDataProviderConfigurator#dataSource(com.
-		 * holonplatform.core.datastore.Datastore,
-		 * com.holonplatform.core.datastore.DataTarget, java.lang.Class)
+		 * @see com.holonplatform.vaadin.flow.components.builders. HasDatastoreDataProviderConfigurator#dataSource(com.
+		 * holonplatform.core.datastore.Datastore, com.holonplatform.core.datastore.DataTarget, java.lang.Class)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> dataSource(Datastore datastore, DataTarget<?> target) {
@@ -484,9 +444,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing.
-		 * AbstractItemListingConfigurator# getConfigurator()
+		 * @see com.holonplatform.vaadin.flow.internal.components.AbstractItemListing. AbstractItemListingConfigurator#
+		 * getConfigurator()
 		 */
 		@Override
 		public BeanListingBuilder<T> getConfigurator() {
@@ -495,9 +454,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
 		 */
 		@Override
 		public BeanListing<T> build() {
@@ -520,9 +477,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#
 		 * withValidator(java.lang.String, com.holonplatform.core.Validator)
 		 */
 		@Override
@@ -533,10 +488,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator#
-		 * editor(java.lang.String, com.holonplatform.vaadin.flow.components.Input)
+		 * @see com.holonplatform.vaadin.flow.components.builders.BeanListingConfigurator# editor(java.lang.String,
+		 * com.holonplatform.vaadin.flow.components.Input)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> editor(String property, Input<?> editor) {
@@ -546,11 +499,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * DatastoreDataProviderConfigurator#
-		 * withQueryConfigurationProvider(com.holonplatform.core.query.
-		 * QueryConfigurationProvider)
+		 * @see com.holonplatform.vaadin.flow.components.builders. DatastoreDataProviderConfigurator#
+		 * withQueryConfigurationProvider(com.holonplatform.core.query. QueryConfigurationProvider)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withQueryConfigurationProvider(
@@ -561,10 +511,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * DatastoreDataProviderConfigurator#withDefaultQuerySort(com.
-		 * holonplatform.core.query.QuerySort)
+		 * DatastoreDataProviderConfigurator#withDefaultQuerySort(com. holonplatform.core.query.QuerySort)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withDefaultQuerySort(QuerySort defaultQuerySort) {
@@ -574,10 +522,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * DatastoreDataProviderConfigurator#itemIdentifierProvider(
-		 * java.util.function.Function)
+		 * DatastoreDataProviderConfigurator#itemIdentifierProvider( java.util.function.Function)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> itemIdentifierProvider(Function<T, Object> itemIdentifierProvider) {
@@ -587,10 +533,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * DatastoreDataProviderConfigurator#querySortOrderConverter(
-		 * java.util.function.Function)
+		 * DatastoreDataProviderConfigurator#querySortOrderConverter( java.util.function.Function)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> querySortOrderConverter(
@@ -601,9 +545,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * editorComponent(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
@@ -615,9 +557,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAsFirst(java.lang.Object)
 		 */
 		@Override
@@ -628,9 +568,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAsLast(java.lang.Object)
 		 */
 		@Override
@@ -641,9 +579,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayBefore(java.lang.Object, java.lang.Object)
 		 */
 		@Override
@@ -654,9 +590,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAfter(java.lang.Object, java.lang.Object)
 		 */
 		@Override
@@ -667,9 +601,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * visibleColumns(java.util.List)
 		 */
 		@Override
@@ -680,10 +612,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * sortable(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# sortable(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> sortable(boolean sortable) {
@@ -693,10 +622,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * sortable(java.lang.Object, boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# sortable(java.lang.Object,
+		 * boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> sortable(String property, boolean sortable) {
@@ -706,10 +633,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * resizable(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# resizable(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> resizable(boolean resizable) {
@@ -719,10 +643,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * resizable(java.lang.Object, boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# resizable(java.lang.Object,
+		 * boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> resizable(String property, boolean resizable) {
@@ -732,10 +654,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * visible(java.lang.Object, boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# visible(java.lang.Object,
+		 * boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> visible(String property, boolean visible) {
@@ -745,10 +665,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * readOnly(java.lang.Object, boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# readOnly(java.lang.Object,
+		 * boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> readOnly(String property, boolean readOnly) {
@@ -758,10 +676,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * frozen(java.lang.Object, boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# frozen(java.lang.Object,
+		 * boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> frozen(String property, boolean frozen) {
@@ -771,10 +687,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * frozenColumns(int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# frozenColumns(int)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> frozenColumns(int frozenColumnsCount) {
@@ -784,10 +697,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * width(java.lang.Object, java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# width(java.lang.Object,
+		 * java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> width(String property, String width) {
@@ -797,10 +708,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * flexGrow(java.lang.Object, int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# flexGrow(java.lang.Object,
+		 * int)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> flexGrow(String property, int flexGrow) {
@@ -810,10 +719,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * styleNameGenerator(java.util. function.Function)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# styleNameGenerator(java.util.
+		 * function.Function)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> styleNameGenerator(Function<T, String> styleNameGenerator) {
@@ -823,10 +730,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * styleNameGenerator(java.lang. Object, java.util.function.Function)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# styleNameGenerator(java.lang.
+		 * Object, java.util.function.Function)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> styleNameGenerator(String property,
@@ -837,10 +742,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * expand(java.lang.Object)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# expand(java.lang.Object)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> expand(String property) {
@@ -862,12 +764,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * alignment(java.lang.Object,
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
-		 * ColumnAlignment)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# alignment(java.lang.Object,
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator. ColumnAlignment)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> alignment(String property, ColumnAlignment alignment) {
@@ -877,10 +775,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * renderer(java.lang.Object, com.vaadin.flow.data.renderer.Renderer)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# renderer(java.lang.Object,
+		 * com.vaadin.flow.data.renderer.Renderer)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> renderer(String property, Renderer<T> renderer) {
@@ -890,9 +786,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * valueProvider(java.lang.Object, com.vaadin.flow.function.ValueProvider)
 		 */
 		@Override
@@ -903,9 +797,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortComparator(java.lang.Object, java.util.Comparator)
 		 */
 		@Override
@@ -916,10 +808,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * sortUsing(java.lang.Object, java.util.List)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# sortUsing(java.lang.Object,
+		 * java.util.List)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> sortUsing(String property, List<String> sortProperties) {
@@ -929,9 +819,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortProvider(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
@@ -943,10 +831,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * header(java.lang.Object, com.holonplatform.core.i18n.Localizable)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# header(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> header(String property, Localizable header) {
@@ -956,9 +842,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * headerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
@@ -969,10 +853,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * footer(java.lang.Object, com.holonplatform.core.i18n.Localizable)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# footer(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> footer(String property, Localizable footer) {
@@ -982,9 +864,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * footerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
@@ -1001,10 +881,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * pageSize(int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# pageSize(int)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> pageSize(int pageSize) {
@@ -1014,10 +891,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * heightByRows(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# heightByRows(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> heightByRows(boolean heightByRows) {
@@ -1027,9 +901,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * columnReorderingAllowed(boolean)
 		 */
 		@Override
@@ -1040,9 +912,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * itemDetailsRenderer(com.vaadin.flow .data.renderer.Renderer)
 		 */
 		@Override
@@ -1053,9 +923,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * itemDetailsVisibleOnClick(boolean)
 		 */
 		@Override
@@ -1066,11 +934,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * selectionMode(com.holonplatform.
-		 * vaadin.flow.components.Selectable.SelectionMode)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * selectionMode(com.holonplatform. vaadin.flow.components.Selectable.SelectionMode)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> selectionMode(SelectionMode selectionMode) {
@@ -1087,10 +952,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withSelectionListener(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# withSelectionListener(com.
 		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
@@ -1101,10 +963,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * multiSort(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# multiSort(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> multiSort(boolean multiSort) {
@@ -1114,9 +973,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * verticalScrollingEnabled(boolean)
 		 */
 		@Override
@@ -1127,10 +984,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * contextMenu()
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# contextMenu()
 		 */
 		@Override
 		public ItemListingContextMenuBuilder<T, String, BeanListing<T>, DatastoreBeanListingBuilder<T>> contextMenu() {
@@ -1140,9 +994,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * header(java.util.function.Consumer)
 		 */
 		@Override
@@ -1153,9 +1005,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * footer(java.util.function.Consumer)
 		 */
 		@Override
@@ -1166,10 +1016,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * editable(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# editable(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> editable(boolean editable) {
@@ -1179,10 +1026,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * editorBuffered(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# editorBuffered(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> editorBuffered(boolean buffered) {
@@ -1192,11 +1036,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorSaveListener(com.vaadin.
-		 * flow.component.grid.editor.EditorSaveListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorSaveListener(com.vaadin. flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withEditorSaveListener(EditorSaveListener<T, String> listener) {
@@ -1206,11 +1047,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorCancelListener(com.vaadin
-		 * .flow.component.grid.editor.EditorCancelListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCancelListener(com.vaadin .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withEditorCancelListener(EditorCancelListener<T, String> listener) {
@@ -1220,11 +1058,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorOpenListener(com.vaadin.
-		 * flow.component.grid.editor.EditorOpenListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorOpenListener(com.vaadin. flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withEditorOpenListener(EditorOpenListener<T, String> listener) {
@@ -1234,11 +1069,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorCloseListener(com.vaadin.
-		 * flow.component.grid.editor.EditorCloseListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCloseListener(com.vaadin. flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withEditorCloseListener(EditorCloseListener<T, String> listener) {
@@ -1248,9 +1080,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withValidator(com.holonplatform. core.Validator)
 		 */
 		@Override
@@ -1261,11 +1091,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
-		 * BeanInputGroupConfigurator# defaultValue(java.lang.String,
-		 * java.util.function.Function)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator. BeanInputGroupConfigurator#
+		 * defaultValue(java.lang.String, java.util.function.Function)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> defaultValue(String property, Supplier<Object> defaultValueProvider) {
@@ -1275,10 +1102,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator.
-		 * BeanInputGroupConfigurator# withValueChangeListener(java.lang.String,
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator. BeanInputGroupConfigurator#
+		 * withValueChangeListener(java.lang.String,
 		 * com.holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
@@ -1290,10 +1115,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * required(java.lang.Object)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator# required(java.lang.Object)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> required(String property) {
@@ -1303,10 +1125,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * required(java.lang.Object, com.holonplatform.core.i18n.Localizable)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator# required(java.lang.Object,
+		 * com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> required(String property, Localizable message) {
@@ -1316,9 +1136,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * withPostProcessor(java.util.function .BiConsumer)
 		 */
 		@Override
@@ -1329,10 +1147,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * validationStatusHandler(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator# validationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
@@ -1344,11 +1159,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * groupValidationStatusHandler(com.
-		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * groupValidationStatusHandler(com. holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> groupValidationStatusHandler(
@@ -1359,11 +1171,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * validationStatusHandler(java.lang. Object,
-		 * com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * validationStatusHandler(java.lang. Object, com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> validationStatusHandler(String property,
@@ -1374,9 +1183,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * enableRefreshOnValueChange(boolean)
 		 */
 		@Override
@@ -1387,11 +1194,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
-		 * usePropertyRendererRegistry(com.
-		 * holonplatform.core.property.PropertyRendererRegistry)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * usePropertyRendererRegistry(com. holonplatform.core.property.PropertyRendererRegistry)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> usePropertyRendererRegistry(
@@ -1402,11 +1206,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
-		 * withValueChangeListener(com.
-		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * withValueChangeListener(com. holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withValueChangeListener(
@@ -1417,9 +1218,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withComponentColumn(com.vaadin.flow .function.ValueProvider)
 		 */
 		@Override
@@ -1433,9 +1232,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withColumn(com.vaadin.flow.function .ValueProvider)
 		 */
 		@Override
@@ -1450,10 +1247,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withItemClickListener(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# withItemClickListener(com.
 		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
 		 */
 		@Override
@@ -1465,10 +1259,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withItemRefreshListener(com.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# withItemRefreshListener(com.
 		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
@@ -1480,10 +1271,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
-		 * java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id( java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> id(String id) {
@@ -1493,9 +1281,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * visible(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator# visible(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> visible(boolean visible) {
@@ -1505,9 +1291,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
-		 * elementConfiguration(java.util. function.Consumer)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator# elementConfiguration(java.util.
+		 * function.Consumer)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> elementConfiguration(Consumer<Element> element) {
@@ -1517,7 +1302,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
 		 * withAttachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -1529,7 +1313,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#
 		 * withDetachListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -1541,9 +1324,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
 		 * withThemeName(java.lang.String)
 		 */
 		@Override
@@ -1554,9 +1335,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
 		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener)
 		 */
 		@Override
@@ -1567,11 +1346,8 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
-		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener,
-		 * java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#
+		 * withEventListener(java.lang.String, com.vaadin.flow.dom.DomEventListener, java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> withEventListener(String eventType, DomEventListener listener,
@@ -1582,10 +1358,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
-		 * java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width( java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> width(String width) {
@@ -1595,10 +1368,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
-		 * java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height( java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> height(String height) {
@@ -1608,9 +1378,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minWidth(java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator# minWidth(java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> minWidth(String minWidth) {
@@ -1620,9 +1388,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxWidth(java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator# maxWidth(java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> maxWidth(String maxWidth) {
@@ -1632,9 +1398,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * minHeight(java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator# minHeight(java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> minHeight(String minHeight) {
@@ -1644,9 +1408,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#
-		 * maxHeight(java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator# maxHeight(java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> maxHeight(String maxHeight) {
@@ -1656,9 +1418,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
-		 * styleNames(java.lang.String[])
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator# styleNames(java.lang.String[])
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> styleNames(String... styleNames) {
@@ -1668,9 +1428,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
-		 * styleName(java.lang.String)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator# styleName(java.lang.String)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> styleName(String styleName) {
@@ -1680,10 +1438,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
-		 * enabled(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator# enabled(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> enabled(boolean enabled) {
@@ -1693,9 +1448,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
-		 * tabIndex(int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator# tabIndex(int)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> tabIndex(int tabIndex) {
@@ -1705,7 +1458,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withFocusListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -1718,7 +1470,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withBlurListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -1730,7 +1481,6 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withFocusShortcut(com.vaadin.flow. component.Key)
 		 */
@@ -1741,9 +1491,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator
 		 * #withThemeVariants(java.lang. Enum[])
 		 */
 		@Override
@@ -1754,10 +1502,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * frozen(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# frozen(boolean)
 		 */
 		@Override
 		public DatastoreBeanListingBuilder<T> frozen(boolean frozen) {
@@ -1830,9 +1575,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingBuilder#build()
 		 */
 		@Override
 		public BeanListing<T> build() {
