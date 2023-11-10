@@ -70,7 +70,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.GeneratedVaadinComboBox.CustomValueSetEvent;
+import com.vaadin.flow.component.combobox.ComboBoxBase.CustomValueSetEvent;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.QuerySortOrder;

@@ -22,9 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -36,6 +40,7 @@ import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -48,8 +53,28 @@ import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestStringAreaInput {
+	
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -98,6 +123,7 @@ public class TestStringAreaInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -217,6 +243,7 @@ public class TestStringAreaInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<String> input2 = Input.stringArea().deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -337,6 +364,7 @@ public class TestStringAreaInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<String> input2 = Input.stringArea().deferLocalization().placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});

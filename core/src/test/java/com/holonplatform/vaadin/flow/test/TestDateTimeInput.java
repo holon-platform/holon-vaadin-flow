@@ -117,6 +117,7 @@ public class TestDateTimeInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -236,6 +237,7 @@ public class TestDateTimeInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Date> input2 = Input.dateTime().deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -338,6 +340,7 @@ public class TestDateTimeInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Date> input2 = Input.dateTime().deferLocalization().placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
@@ -361,6 +364,7 @@ public class TestDateTimeInput {
 
 		assertEquals(Locale.US, ((DateTimePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.FRANCE);
+		UI.getCurrent().add(input2.getComponent());
 		ComponentUtil.onComponentAttach(input2.getComponent(), true);
 		assertEquals(Locale.FRANCE, ((DateTimePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.US);
@@ -382,6 +386,7 @@ public class TestDateTimeInput {
 			Input<Date> input3 = Input.dateTime().deferLocalization().localization().today("test", "test.code").set()
 					.build();
 			assertNull(((DateTimePicker) input3.getComponent()).getDatePickerI18n());
+			UI.getCurrent().add(input3.getComponent());
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
 			assertEquals("TestUS", ((DateTimePicker) input3.getComponent()).getDatePickerI18n().getToday());
 		});

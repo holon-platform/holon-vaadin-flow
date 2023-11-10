@@ -27,12 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.Validator;
@@ -62,13 +66,34 @@ import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestFilterableSingleSelectInput {
+
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -172,6 +197,7 @@ public class TestFilterableSingleSelectInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -293,6 +319,7 @@ public class TestFilterableSingleSelectInput {
 			Input<String> input2 = Input.singleSelect(String.class).deferLocalization().label("test", "test.code")
 					.build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -395,6 +422,7 @@ public class TestFilterableSingleSelectInput {
 			Input<String> input2 = Input.singleSelect(String.class).deferLocalization().placeholder("test", "test.code")
 					.build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
@@ -487,6 +515,7 @@ public class TestFilterableSingleSelectInput {
 			ItemLabelGenerator<Integer> lgx = ((ComboBox<Integer>) input3.getComponent()).getItemLabelGenerator();
 			assertEquals("1", lgx.apply(ints.get(0)));
 			assertEquals("test", lgx.apply(ints.get(1)));
+			UI.getCurrent().add(input3.getComponent());
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
 			assertEquals("TestUS", lgx.apply(ints.get(1)));
 		});
@@ -496,7 +525,7 @@ public class TestFilterableSingleSelectInput {
 	@Test
 	public void testHasValue() {
 
-		Input<String> input = Input.singleSelect(String.class).build();
+		Input<String> input = Input.singleSelect(String.class).addItem("test").build();
 		assertNull(input.getEmptyValue());
 
 		assertNull(input.getValue());

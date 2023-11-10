@@ -26,7 +26,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
-import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
+import com.vaadin.flow.component.contextmenu.ContextMenuBase.OpenedChangeEvent;
 import com.vaadin.flow.component.contextmenu.MenuItemBase;
 import com.vaadin.flow.component.contextmenu.SubMenuBase;
 

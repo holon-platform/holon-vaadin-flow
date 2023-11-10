@@ -24,10 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.i18n.Localizable;
@@ -40,6 +44,7 @@ import com.holonplatform.vaadin.flow.test.util.ComponentTestUtils;
 import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -49,8 +54,28 @@ import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.HasValueChangeMode;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestNumberInput {
+	
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -99,6 +124,7 @@ public class TestNumberInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -218,6 +244,7 @@ public class TestNumberInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Integer> input2 = Input.number(Integer.class).deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -265,6 +292,7 @@ public class TestNumberInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Integer> input2 = Input.number(Integer.class).deferLocalization().title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
 		});
@@ -274,6 +302,7 @@ public class TestNumberInput {
 					.label("test", "test.code").title("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
 			assertEquals("test", ComponentTestUtils.getTitle(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 			assertEquals("TestUS", ComponentTestUtils.getTitle(input2));
@@ -378,6 +407,7 @@ public class TestNumberInput {
 			Input<Integer> input2 = Input.number(Integer.class).deferLocalization().placeholder("test", "test.code")
 					.build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});

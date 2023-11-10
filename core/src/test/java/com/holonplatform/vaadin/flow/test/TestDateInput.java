@@ -128,6 +128,7 @@ public class TestDateInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -247,6 +248,7 @@ public class TestDateInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Date> input2 = Input.date().deferLocalization().label("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -349,6 +351,7 @@ public class TestDateInput {
 		LocalizationTestUtils.withTestLocalizationContext(() -> {
 			Input<Date> input2 = Input.date().deferLocalization().placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
@@ -373,6 +376,7 @@ public class TestDateInput {
 
 		assertEquals(Locale.US, ((DatePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.FRANCE);
+		UI.getCurrent().add(input2.getComponent());
 		ComponentUtil.onComponentAttach(input2.getComponent(), true);
 		assertEquals(Locale.FRANCE, ((DatePicker) input2.getComponent()).getLocale());
 		ui.setLocale(Locale.US);
@@ -401,6 +405,7 @@ public class TestDateInput {
 			Input<Date> input3 = Input.date().deferLocalization().localization().today("test", "test.code").set()
 					.build();
 			assertNull(((DatePicker) input3.getComponent()).getI18n());
+			UI.getCurrent().add(input3.getComponent());
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
 			assertEquals("TestUS", ((DatePicker) input3.getComponent()).getI18n().getToday());
 		});

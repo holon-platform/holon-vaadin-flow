@@ -28,7 +28,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dialog.Dialog.DialogResizeEvent;
-import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
+import com.vaadin.flow.component.dialog.Dialog.OpenedChangeEvent;
 
 /**
  * Abstract {@link DialogConfigurator}.

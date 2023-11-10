@@ -278,7 +278,7 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 			// check specific registry
 			if (getPropertyRendererRegistry().isPresent()) {
 				return getPropertyRendererRegistry().get().getRenderer(Input.class, property)
-						.map(r -> r.render(property));
+						.map(r -> (Input<V>) r.render(property));
 			} else {
 				// use default
 				return property.renderIfAvailable(Input.class).map(c -> (Input<V>) c);

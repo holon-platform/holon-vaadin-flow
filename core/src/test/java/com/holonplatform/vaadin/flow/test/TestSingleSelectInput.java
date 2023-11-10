@@ -27,12 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.Validator;
@@ -61,11 +65,32 @@ import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestSingleSelectInput {
+
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -167,6 +192,7 @@ public class TestSingleSelectInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -288,6 +314,7 @@ public class TestSingleSelectInput {
 			Input<String> input2 = Input.singleSimpleSelect(String.class).deferLocalization().label("test", "test.code")
 					.build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -377,6 +404,7 @@ public class TestSingleSelectInput {
 			Input<String> input2 = Input.singleSimpleSelect(String.class).deferLocalization()
 					.placeholder("test", "test.code").build();
 			assertEquals("test", ComponentTestUtils.getPlaceholder(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getPlaceholder(input2));
 		});
@@ -530,13 +558,10 @@ public class TestSingleSelectInput {
 		SingleSelect<String> input = Input
 				.singleSimpleSelect(String.class, Integer.class, ItemConverter.create(
 						item -> (item == null) ? null : item.toString(), value -> Optional.of(Integer.valueOf(value))))
-				.addItem(1)
-				.addItem(2)
-				.addItem(3)
-				.build();
-		
+				.addItem(1).addItem(2).addItem(3).build();
+
 		assertNull(input.getValue());
-		
+
 		input.setValue("2");
 		assertEquals("2", input.getValue());
 

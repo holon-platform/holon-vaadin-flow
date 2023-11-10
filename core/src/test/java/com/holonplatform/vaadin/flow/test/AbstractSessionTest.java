@@ -40,6 +40,7 @@ import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
 
 public abstract class AbstractSessionTest {
 
@@ -78,7 +79,8 @@ public abstract class AbstractSessionTest {
 	protected VaadinService createVaadinService() throws Exception {
 		VaadinServletService vaadinService = mock(VaadinServletService.class);
 		when(vaadinService.getDeploymentConfiguration())
-				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
+				.thenReturn(new DefaultDeploymentConfiguration(ApplicationConfiguration.get(vaadinService.getContext()),
+						VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
 		when(vaadinService.getInstantiator()).thenReturn(new DefaultInstantiator(vaadinService));

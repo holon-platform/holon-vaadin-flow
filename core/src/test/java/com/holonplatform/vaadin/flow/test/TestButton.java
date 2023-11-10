@@ -234,7 +234,7 @@ public class TestButton {
 		Icon icon = (Icon) button.getIcon();
 		assertEquals("20px", icon.getStyle().get(ElementConstants.STYLE_WIDTH));
 		assertEquals("20px", icon.getStyle().get(ElementConstants.STYLE_HEIGHT));
-		assertEquals("green", icon.getStyle().get(ElementConstants.STYLE_COLOR));
+		assertEquals("green", icon.getStyle().get("fill"));
 		assertEquals("test", icon.getClassName());
 
 		button = ButtonBuilder.create().iconConfigurator(new IronIcon("vaadin", "asterisk")).size("20px")

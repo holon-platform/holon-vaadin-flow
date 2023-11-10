@@ -28,11 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.core.datastore.Datastore;
@@ -58,13 +62,34 @@ import com.holonplatform.vaadin.flow.test.util.LocalizationTestUtils;
 import com.holonplatform.vaadin.flow.test.util.TestAdapter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
+import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestOptionsSingleSelectInput {
+
+	private static UI ui;
+
+	@BeforeAll
+	public static void beforeAll() {
+		ui = new UI();
+		ui.setLocale(Locale.US);
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@BeforeEach
+	public void before() {
+		CurrentInstance.set(UI.class, ui);
+	}
+
+	@AfterEach
+	public void after() {
+		CurrentInstance.set(UI.class, null);
+	}
 
 	@Test
 	public void testBuilders() {
@@ -166,6 +191,7 @@ public class TestOptionsSingleSelectInput {
 			attached.set(true);
 		}).build();
 
+		UI.getCurrent().add(input.getComponent());
 		ComponentUtil.onComponentAttach(input.getComponent(), true);
 		assertTrue(attached.get());
 
@@ -240,6 +266,7 @@ public class TestOptionsSingleSelectInput {
 			Input<String> input2 = Input.singleOptionSelect(String.class).deferLocalization().label("test", "test.code")
 					.build();
 			assertEquals("test", ComponentTestUtils.getLabel(input2));
+			UI.getCurrent().add(input2.getComponent());
 			ComponentUtil.onComponentAttach(input2.getComponent(), true);
 			assertEquals("TestUS", ComponentTestUtils.getLabel(input2));
 		});
@@ -334,6 +361,7 @@ public class TestOptionsSingleSelectInput {
 					.itemCaption(2, "test", "test.code").build();
 			assertEquals("1", getLabel(input3, ints.get(0)));
 			assertEquals("test", getLabel(input3, ints.get(1)));
+			UI.getCurrent().add(input3.getComponent());
 			ComponentUtil.onComponentAttach(input3.getComponent(), true);
 			assertEquals("TestUS", getLabel(input3, ints.get(1)));
 		});

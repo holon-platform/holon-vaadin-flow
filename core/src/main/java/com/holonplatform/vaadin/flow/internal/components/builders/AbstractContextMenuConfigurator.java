@@ -31,7 +31,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.contextmenu.ContextMenuBase;
-import com.vaadin.flow.component.contextmenu.GeneratedVaadinContextMenu.OpenedChangeEvent;
+import com.vaadin.flow.component.contextmenu.ContextMenuBase.OpenedChangeEvent;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.MenuItemBase;
 import com.vaadin.flow.component.contextmenu.SubMenuBase;

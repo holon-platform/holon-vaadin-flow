@@ -26,21 +26,19 @@ import com.vaadin.flow.dom.DomEventListener;
 
 /**
  * Default {@link FlexComponentConfigurator} implementation.
- * 
  * @param <C> Actual component type
- *
  * @since 5.2.0
  */
 public class DefaultFlexComponentConfigurator<C extends Component>
 		implements FlexComponentConfigurator<DefaultFlexComponentConfigurator<C>> {
 
-	private final FlexComponent<C> component;
+	private final FlexComponent component;
 
 	protected final DefaultHasSizeConfigurator sizeConfigurator;
 	protected final DefaultHasStyleConfigurator styleConfigurator;
 	protected final DefaultHasEnabledConfigurator enabledConfigurator;
 
-	public DefaultFlexComponentConfigurator(FlexComponent<C> component) {
+	public DefaultFlexComponentConfigurator(FlexComponent component) {
 		super();
 		ObjectUtils.argumentNotNull(component, "The component to configure must be not null");
 		this.component = component;
@@ -52,7 +50,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasComponentsConfigurator#add(com.vaadin.flow.component.
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasComponentsConfigurator#add(com.vaadin.flow.component.
 	 * Component[])
 	 */
 	@Override
@@ -73,7 +72,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
 	 * com.vaadin.flow.dom.DomEventListener)
 	 */
 	@Override
@@ -84,7 +84,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasElementConfigurator#withEventListener(java.lang.String,
 	 * com.vaadin.flow.dom.DomEventListener, java.lang.String)
 	 */
 	@Override
@@ -186,9 +187,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignItems(com.vaadin.flow.component.
-	 * orderedlayout.FlexComponent.Alignment)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignItems(com.vaadin.flow.
+	 * component. orderedlayout.FlexComponent.Alignment)
 	 */
 	@Override
 	public DefaultFlexComponentConfigurator<C> alignItems(Alignment alignment) {
@@ -198,9 +198,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignSelf(com.vaadin.flow.component.
-	 * orderedlayout.FlexComponent.Alignment, com.vaadin.flow.component.HasElement[])
+	 * @see com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignSelf(com.vaadin.flow.
+	 * component. orderedlayout.FlexComponent.Alignment, com.vaadin.flow.component.HasElement[])
 	 */
 	@Override
 	public DefaultFlexComponentConfigurator<C> alignSelf(Alignment alignment, HasElement... elementContainers) {
@@ -222,8 +221,8 @@ public class DefaultFlexComponentConfigurator<C extends Component>
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#justifyContentMode(com.vaadin.flow.
-	 * component.orderedlayout.FlexComponent.JustifyContentMode)
+	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#justifyContentMode(com.vaadin.
+	 * flow. component.orderedlayout.FlexComponent.JustifyContentMode)
 	 */
 	@Override
 	public DefaultFlexComponentConfigurator<C> justifyContentMode(JustifyContentMode justifyContentMode) {

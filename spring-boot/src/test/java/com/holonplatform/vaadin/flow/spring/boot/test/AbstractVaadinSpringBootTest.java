@@ -31,13 +31,13 @@ import org.junit.jupiter.api.BeforeEach;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
-import com.vaadin.flow.server.InitParameters;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.spring.SpringVaadinSession;
 
 public abstract class AbstractVaadinSpringBootTest {
@@ -86,7 +86,8 @@ public abstract class AbstractVaadinSpringBootTest {
 		WrappedSession wrappedSession = mock(WrappedSession.class);
 		VaadinServletService vaadinService = mock(VaadinServletService.class);
 		when(vaadinService.getDeploymentConfiguration())
-				.thenReturn(new DefaultDeploymentConfiguration(VaadinServletService.class, getDeploymentProperties()));
+				.thenReturn(new DefaultDeploymentConfiguration(ApplicationConfiguration.get(vaadinService.getContext()),
+						VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
 		SpringVaadinSession session = mock(SpringVaadinSession.class);
@@ -135,7 +136,7 @@ public abstract class AbstractVaadinSpringBootTest {
 	 */
 	protected Properties getDeploymentProperties() {
 		Properties properties = new Properties();
-		properties.put(InitParameters.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
+//		properties.put(InitParameters.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
 		return properties;
 	}
 
