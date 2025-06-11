@@ -121,6 +121,7 @@
 							<excludePackageNames>*.internal.*;*.examples.*</excludePackageNames>
 							<quiet>true</quiet>
 							<sourcepath>src/main/java</sourcepath>
+							<failOnWarnings>false</failOnWarnings>
 						</configuration>
 					</execution>
 				</executions>
