@@ -18,11 +18,12 @@ package com.holonplatform.vaadin.flow.navigator.internal.config;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-
 import com.holonplatform.core.internal.utils.ClassUtils;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
+import com.vaadin.flow.server.VaadinContext;
+
+import jakarta.servlet.ServletContext;
 
 /**
  * Registry for the {@link NavigationTargetConfiguration} bound to navigation target classes.
@@ -37,7 +38,7 @@ public interface NavigationTargetConfigurationRegistry extends Serializable {
 	 * @return The {@link NavigationTargetConfigurationException} for given navigation target class
 	 * @throws NavigationTargetConfigurationException If an error occurred
 	 */
-	NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget)
+	NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget, VaadinContext vaadinContext)
 			throws NavigationTargetConfigurationException;
 
 	/**
@@ -46,11 +47,18 @@ public interface NavigationTargetConfigurationRegistry extends Serializable {
 	 */
 	boolean isInitialized();
 
+//	/**
+//	 * Initialize the registry with the given class set.
+//	 * @param classes The initial class set
+//	 */
+//	void initialize(Set<Class<?>> classes);
+
 	/**
 	 * Initialize the registry with the given class set.
 	 * @param classes The initial class set
+	 * @param vaadinContext The Vaadin context
 	 */
-	void initialize(Set<Class<?>> classes);
+	void initialize(Set<Class<?>> classes, VaadinContext vaadinContext);
 
 	/**
 	 * Create a new {@link NavigationTargetConfigurationRegistry}.

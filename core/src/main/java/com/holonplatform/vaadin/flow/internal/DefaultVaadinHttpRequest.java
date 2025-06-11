@@ -127,9 +127,9 @@ public class DefaultVaadinHttpRequest extends AbstractHttpRequest implements Vaa
 	@Override
 	public Optional<Cookie> getRequestCookie(String name) {
 		ObjectUtils.argumentNotNull(name, "Cookie name must be not null");
-		javax.servlet.http.Cookie[] cookies = request.getCookies();
+		jakarta.servlet.http.Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			for (javax.servlet.http.Cookie cookie : cookies) {
+			for (jakarta.servlet.http.Cookie cookie : cookies) {
 				if (name.equals(cookie.getName())) {
 					return Optional.of(Cookie.builder().name(cookie.getName()).value(cookie.getValue())
 							.version(cookie.getVersion()).path(cookie.getPath()).domain(cookie.getDomain()).build());

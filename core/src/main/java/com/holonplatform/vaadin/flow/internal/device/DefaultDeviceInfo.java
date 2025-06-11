@@ -31,7 +31,8 @@ import com.vaadin.flow.component.page.BrowserWindowResizeListener;
 import com.vaadin.flow.component.page.Page;
 
 /**
- * Default {@link DeviceInfo} implementation using Vaadin {@link Page} to obtain client viewport dimensions.
+ * Default {@link DeviceInfo} implementation using Vaadin {@link Page} to obtain client viewport
+ * dimensions.
  *
  * @since 5.0.0
  */
@@ -68,8 +69,7 @@ public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListene
 			});
 			ui.getElement().appendVirtualChild(windowSizeReceiver.getElement());
 			try {
-				ui.getPage().executeJavaScript(
-						"$0.$server.windowSize(document.body.clientWidth,document.body.clientHeight);",
+				ui.getPage().executeJs("$0.$server.windowSize(document.body.clientWidth,document.body.clientHeight);",
 						windowSizeReceiver);
 			} catch (Exception e) {
 				LOGGER.error("Failed to execute window size detection JS [" + e.getMessage() + "]");
@@ -85,8 +85,8 @@ public class DefaultDeviceInfo implements DeviceInfo, BrowserWindowResizeListene
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.vaadin.flow.component.page.BrowserWindowResizeListener#browserWindowResized(com.vaadin.flow.component.page.
-	 * BrowserWindowResizeEvent)
+	 * com.vaadin.flow.component.page.BrowserWindowResizeListener#browserWindowResized(com.vaadin.flow.
+	 * component.page. BrowserWindowResizeEvent)
 	 */
 	@Override
 	public void browserWindowResized(BrowserWindowResizeEvent event) {

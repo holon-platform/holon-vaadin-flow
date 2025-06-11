@@ -23,22 +23,24 @@ import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.internal.components.BinderValidatorAdapter;
 import com.holonplatform.vaadin.flow.internal.components.ValidatorAdapter;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValueContext;
 
 /**
- * Interface to provide value validation support for a component, using the current component value as the value to
- * validate.
+ * Interface to provide value validation support for a component, using the current component value
+ * as the value to validate.
  * 
  * @since 5.0.0
  */
 public interface Validatable {
 
 	/**
-	 * Checks the validity of the current component value against every registered validator, if any. If the value is
-	 * not valid, an {@link ValidationException} is thrown.
+	 * Checks the validity of the current component value against every registered validator, if any. If
+	 * the value is not valid, an {@link ValidationException} is thrown.
 	 * <p>
-	 * The {@link ValidationException} is {@link Localizable}, providing optional message code and arguments for
-	 * validation message localization.
+	 * The {@link ValidationException} is {@link Localizable}, providing optional message code and
+	 * arguments for validation message localization.
 	 * </p>
 	 * @throws ValidationException If the value is not valid
 	 */
@@ -67,7 +69,7 @@ public interface Validatable {
 	 * @return Adapted validator
 	 */
 	static <T> Validator<T> adapt(com.vaadin.flow.data.binder.Validator<T> validator) {
-		return adapt(validator, () -> new ValueContext());
+		return adapt(validator, () -> new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 	}
 
 	/**
@@ -78,7 +80,7 @@ public interface Validatable {
 	 * @return Adapted validator
 	 */
 	static <T> Validator<T> adapt(com.vaadin.flow.data.binder.Validator<T> validator, Input<T> input) {
-		return adapt(validator, () -> new ValueContext(input.getComponent()));
+		return adapt(validator, () -> new ValueContext((Binder<?>) null, input.getComponent(), (HasValue<?, ?>) null));
 	}
 
 	/**
@@ -89,7 +91,7 @@ public interface Validatable {
 	 * @return Adapted validator
 	 */
 	static <T> Validator<T> adapt(com.vaadin.flow.data.binder.Validator<T> validator, Component component) {
-		return adapt(validator, () -> new ValueContext(component));
+		return adapt(validator, () -> new ValueContext((Binder<?>) null, component, (HasValue<?, ?>) null));
 	}
 
 	/**

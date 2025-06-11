@@ -1,0 +1,2 @@
+com.holonplatform.vaadin.flow.spring.boot.NavigatorAutoConfiguration
+com.holonplatform.vaadin.flow.spring.boot.LocalizationContextAutoConfiguration

@@ -37,10 +37,11 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
 import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.router.Location;
+import com.vaadin.flow.server.VaadinService;
 
 /**
- * An {@link AfterNavigationListener} to process navigation targets, setting {@link QueryParameter} values and firing
- * {@link OnShow} annotated methods.
+ * An {@link AfterNavigationListener} to process navigation targets, setting {@link QueryParameter}
+ * values and firing {@link OnShow} annotated methods.
  * 
  * @since 5.2.0
  */
@@ -52,7 +53,8 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.vaadin.flow.router.internal.AfterNavigationHandler#afterNavigation(com.vaadin.flow.router.
+	 * @see
+	 * com.vaadin.flow.router.internal.AfterNavigationHandler#afterNavigation(com.vaadin.flow.router.
 	 * AfterNavigationEvent)
 	 */
 	@Override
@@ -65,7 +67,7 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 						+ "] after navigation");
 				// configuration
 				final NavigationTargetConfiguration configuration = getNavigationTargetConfigurationRegistry()
-						.getConfiguration(navigationTarget.getClass());
+						.getConfiguration(navigationTarget.getClass(), VaadinService.getCurrent().getContext());
 				// set query parameters
 				setQueryParameterValues(navigationTarget, configuration, event.getLocation());
 				// fire OnShow methods
@@ -143,7 +145,8 @@ public class DefaultNavigationTargetAfterNavigationListener extends AbstractNavi
 	}
 
 	/**
-	 * Set the parameter value which corresponds to given definition on the provided navigation target instance.
+	 * Set the parameter value which corresponds to given definition on the provided navigation target
+	 * instance.
 	 * @param navigationTarget The navigation target instance
 	 * @param definition The parameter definition
 	 * @param value The parameter value

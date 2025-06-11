@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -41,6 +39,8 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.ApplicationConfiguration;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public abstract class AbstractSessionTest {
 
@@ -64,7 +64,7 @@ public abstract class AbstractSessionTest {
 
 		ui = new UI();
 		ui.getInternals().setSession(vaadinSession);
-		ui.doInit(request, TEST_UIID);
+		ui.doInit(request, TEST_UIID, vaadinService.getMainDivId(vaadinSession, request));
 
 		CurrentInstance.setCurrent(ui);
 	}

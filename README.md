@@ -1,6 +1,6 @@
 # Holon platform Vaadin Flow module
 
-> Latest release: [5.7.1](#obtain-the-artifacts)
+> Latest release: [6.0.0](#obtain-the-artifacts)
 
 This is the __Vaadin Flow UI__ module of the [Holon Platform](https://holon-platform.com), which represents the platform support for the [Vaadin Flow](https://vaadin.com/flow) web applications platform, focusing on the user interface components, navigation and data binding features.
 
@@ -23,6 +23,7 @@ The Holon platform Vaadin module is also available for previous Vaadin platform 
 * [Vaadin 8 series](https://github.com/holon-platform/holon-vaadin)
 * [Vaadin 7 series](https://github.com/holon-platform/holon-vaadin7)
 * [Vaadin 14 series](https://github.com/holon-platform/holon-vaadin-flow/tree/5.5.3)
+* [Vaadin 23 series](https://github.com/holon-platform/holon-vaadin-flow/tree/5.7.1)
 
 ## At-a-glance overview
 
@@ -122,7 +123,7 @@ See [Holon Platform code structure and conventions](https://github.com/holon-pla
 
 ### System requirements
 
-The Holon Platform is built using __Java 11__, so you need a JRE/JDK version 11 or above to use the platform artifacts.
+The Holon Platform is built using __Java 21__, so you need a JRE/JDK version 21 or above to use the platform artifacts.
 
 ### Releases
 
@@ -140,7 +141,7 @@ _Maven BOM:_
     <dependency>
         <groupId>com.holon-platform.vaadin</groupId>
         <artifactId>holon-vaadin-flow-bom</artifactId>
-        <version>5.7.1</version>
+        <version>6.0.0</version>
         <type>pom</type>
         <scope>import</scope>
     </dependency>

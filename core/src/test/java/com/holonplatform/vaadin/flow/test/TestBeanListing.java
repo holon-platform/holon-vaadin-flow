@@ -69,8 +69,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.function.ValueProvider;
 
 public class TestBeanListing {
@@ -266,16 +266,15 @@ public class TestBeanListing {
 		BeanListing<TestBean> listing = BeanListing.builder(TestBean.class).build();
 		assertTrue(listing.getComponent() instanceof Grid);
 		assertFalse(((Grid<?>) listing.getComponent()).isColumnReorderingAllowed());
-		assertFalse(((Grid<?>) listing.getComponent()).isHeightByRows());
+		assertFalse(((Grid<?>) listing.getComponent()).isAllRowsVisible());
 		assertTrue(((Grid<?>) listing.getComponent()).isDetailsVisibleOnClick());
 		assertFalse(((Grid<?>) listing.getComponent()).isMultiSort());
-		assertTrue(((Grid<?>) listing.getComponent()).isVerticalScrollingEnabled());
 
 		listing = BeanListing.builder(TestBean.class).columnReorderingAllowed(true).build();
 		assertTrue(((Grid<?>) listing.getComponent()).isColumnReorderingAllowed());
 
-		listing = BeanListing.builder(TestBean.class).heightByRows(true).build();
-		assertTrue(((Grid<?>) listing.getComponent()).isHeightByRows());
+		listing = BeanListing.builder(TestBean.class).allRowsVisible(true).build();
+		assertTrue(((Grid<?>) listing.getComponent()).isAllRowsVisible());
 
 		listing = BeanListing.builder(TestBean.class).itemDetailsVisibleOnClick(false).build();
 		assertFalse(((Grid<?>) listing.getComponent()).isDetailsVisibleOnClick());
@@ -286,9 +285,6 @@ public class TestBeanListing {
 
 		listing = BeanListing.builder(TestBean.class).pageSize(100).build();
 		assertEquals(100, ((Grid<?>) listing.getComponent()).getPageSize());
-
-		listing = BeanListing.builder(TestBean.class).verticalScrollingEnabled(false).build();
-		assertFalse(((Grid<?>) listing.getComponent()).isVerticalScrollingEnabled());
 
 	}
 
@@ -346,7 +342,7 @@ public class TestBeanListing {
 		listing = BeanListing.builder(TestBean.class).headerComponent(ID, btn).build();
 		assertEquals(btn, getImpl(listing).getColumnConfiguration(ID).getHeaderComponent().orElse(null));
 
-		final Renderer<TestBean> rnd = TemplateRenderer.of("test");
+		final Renderer<TestBean> rnd = LitRenderer.of("test");
 		listing = BeanListing.builder(TestBean.class).renderer(ID, rnd).build();
 		assertEquals(rnd, getImpl(listing).getColumnConfiguration(ID).getRenderer().orElse(null));
 

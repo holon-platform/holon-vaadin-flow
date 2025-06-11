@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.navigator.internal.config;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;

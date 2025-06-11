@@ -55,7 +55,8 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
- * Base {@link PasswordInputConfigurator} implementation using a {@link PasswordField} as concrete component.
+ * Base {@link PasswordInputConfigurator} implementation using a {@link PasswordField} as concrete
+ * component.
  *
  * @param <C> Concrete configurator type
  *
@@ -166,7 +167,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#emptyValuesAsNull(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#emptyValuesAsNull(
+	 * boolean)
 	 */
 	@Override
 	public C emptyValuesAsNull(boolean emptyValuesAsNull) {
@@ -176,7 +178,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#blankValuesAsNull(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#blankValuesAsNull(
+	 * boolean)
 	 */
 	@Override
 	public C blankValuesAsNull(boolean blankValuesAsNull) {
@@ -196,7 +199,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#clearButtonVisible(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#clearButtonVisible(
+	 * boolean)
 	 */
 	@Override
 	public C clearButtonVisible(boolean clearButtonVisible) {
@@ -216,7 +220,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
 	public C withValue(String value) {
@@ -246,7 +251,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#pattern(java.lang.String)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#pattern(java.lang.String)
 	 */
 	@Override
 	public C pattern(String pattern) {
@@ -256,18 +262,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.TextInputConfigurator#preventInvalidInput(boolean)
-	 */
-	@Override
-	public C preventInvalidInput(boolean preventInvalidInput) {
-		getComponent().setPreventInvalidInput(preventInvalidInput);
-		return getConfigurator();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutocompleteConfigurator#autocomplete(com.vaadin.flow.
-	 * component.textfield.Autocomplete)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasAutocompleteConfigurator#autocomplete(com.
+	 * vaadin.flow. component.textfield.Autocomplete)
 	 */
 	@Override
 	public C autocomplete(Autocomplete autocomplete) {
@@ -278,8 +275,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasAutocapitalizeConfigurator#autocapitalize(com.vaadin.flow.
-	 * component.textfield.Autocapitalize)
+	 * com.holonplatform.vaadin.flow.components.builders.HasAutocapitalizeConfigurator#autocapitalize(
+	 * com.vaadin.flow. component.textfield.Autocapitalize)
 	 */
 	@Override
 	public C autocapitalize(Autocapitalize autocapitalize) {
@@ -289,7 +286,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutocorrectConfigurator#autocorrect(boolean)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasAutocorrectConfigurator#autocorrect(boolean)
 	 */
 	@Override
 	public C autocorrect(boolean autocorrect) {
@@ -300,8 +298,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputNotifierConfigurator#withInputListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * com.holonplatform.vaadin.flow.components.builders.InputNotifierConfigurator#withInputListener(com
+	 * .vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public C withInputListener(ComponentEventListener<InputEvent> listener) {
@@ -312,8 +310,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyDownListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyDownListener(com
+	 * .vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public C withKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
@@ -324,8 +322,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyPressListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyPressListener(
+	 * com.vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public C withKeyPressListener(ComponentEventListener<KeyPressEvent> listener) {
@@ -335,8 +333,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyUpListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyUpListener(com.
+	 * vaadin.flow. component.ComponentEventListener)
 	 */
 	@Override
 	public C withKeyUpListener(ComponentEventListener<KeyUpEvent> listener) {
@@ -347,8 +346,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyDownListener(com.vaadin.flow.
-	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyDownListener(com
+	 * .vaadin.flow. component.Key, com.vaadin.flow.component.ComponentEventListener,
+	 * com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
 	public C withKeyDownListener(Key key, ComponentEventListener<KeyDownEvent> listener, KeyModifier... modifiers) {
@@ -359,8 +359,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyPressListener(com.vaadin.flow.
-	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyPressListener(
+	 * com.vaadin.flow. component.Key, com.vaadin.flow.component.ComponentEventListener,
+	 * com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
 	public C withKeyPressListener(Key key, ComponentEventListener<KeyPressEvent> listener, KeyModifier... modifiers) {
@@ -370,8 +371,10 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyUpListener(com.vaadin.flow.
-	 * component.Key, com.vaadin.flow.component.ComponentEventListener, com.vaadin.flow.component.KeyModifier[])
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.KeyNotifierConfigurator#withKeyUpListener(com.
+	 * vaadin.flow. component.Key, com.vaadin.flow.component.ComponentEventListener,
+	 * com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
 	public C withKeyUpListener(Key key, ComponentEventListener<KeyUpEvent> listener, KeyModifier... modifiers) {
@@ -382,8 +385,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasValueChangeModeConfigurator#valueChangeMode(com.vaadin.flow.
-	 * data.value.ValueChangeMode)
+	 * com.holonplatform.vaadin.flow.components.builders.HasValueChangeModeConfigurator#valueChangeMode(
+	 * com.vaadin.flow. data.value.ValueChangeMode)
 	 */
 	@Override
 	public C valueChangeMode(ValueChangeMode valueChangeMode) {
@@ -393,7 +396,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#autofocus(boolean)
 	 */
 	@Override
 	public C autofocus(boolean autofocus) {
@@ -413,8 +417,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.
+	 * vaadin.flow. component.ComponentEventListener)
 	 */
 	@SuppressWarnings("serial")
 	@Override
@@ -432,8 +437,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.
+	 * vaadin.flow. component.ComponentEventListener)
 	 */
 	@SuppressWarnings("serial")
 	@Override
@@ -451,8 +457,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
-	 * component.Key)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.
+	 * vaadin.flow. component.Key)
 	 */
 	@Override
 	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
@@ -462,8 +469,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPrefixAndSuffixConfigurator#prefixComponent(com.vaadin.flow.
-	 * component.Component)
+	 * com.holonplatform.vaadin.flow.components.builders.HasPrefixAndSuffixConfigurator#prefixComponent(
+	 * com.vaadin.flow. component.Component)
 	 */
 	@Override
 	public C prefixComponent(Component component) {
@@ -474,8 +481,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPrefixAndSuffixConfigurator#suffixComponent(com.vaadin.flow.
-	 * component.Component)
+	 * com.holonplatform.vaadin.flow.components.builders.HasPrefixAndSuffixConfigurator#suffixComponent(
+	 * com.vaadin.flow. component.Component)
 	 */
 	@Override
 	public C suffixComponent(Component component) {
@@ -485,9 +492,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#withCompositionStartListener(
-	 * com.vaadin.flow.component.ComponentEventListener)
+	 * @see com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#
+	 * withCompositionStartListener( com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
 	public C withCompositionStartListener(ComponentEventListener<CompositionStartEvent> listener) {
@@ -497,9 +503,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#withCompositionUpdateListener(
-	 * com.vaadin.flow.component.ComponentEventListener)
+	 * @see com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#
+	 * withCompositionUpdateListener( com.vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
 	public C withCompositionUpdateListener(ComponentEventListener<CompositionUpdateEvent> listener) {
@@ -509,9 +514,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#withCompositionEndListener(com.
-	 * vaadin.flow.component.ComponentEventListener)
+	 * @see com.holonplatform.vaadin.flow.components.builders.CompositionNotifierConfigurator#
+	 * withCompositionEndListener(com. vaadin.flow.component.ComponentEventListener)
 	 */
 	@Override
 	public C withCompositionEndListener(ComponentEventListener<CompositionEndEvent> listener) {
@@ -522,8 +526,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.holonplatform.core.
-	 * i18n.Localizable)
+	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.
+	 * holonplatform.core. i18n.Localizable)
 	 */
 	@Override
 	public C placeholder(Localizable placeholder) {
@@ -533,8 +537,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.
+	 * core.i18n. Localizable)
 	 */
 	@Override
 	public C label(Localizable label) {
@@ -544,8 +549,9 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(com.holonplatform.
+	 * core.i18n. Localizable)
 	 */
 	@Override
 	public C title(Localizable title) {
@@ -556,7 +562,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(java.lang.Enum[])
+	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator#withThemeVariants(
+	 * java.lang.Enum[])
 	 */
 	@Override
 	public C withThemeVariants(TextFieldVariant... variants) {
@@ -566,7 +573,8 @@ public abstract class AbstractPasswordInputBuilder<C extends PasswordInputConfig
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder#revealButtonVisible(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.PasswordInputBuilder#revealButtonVisible(
+	 * boolean)
 	 */
 	@Override
 	public C revealButtonVisible(boolean revealButtonVisible) {

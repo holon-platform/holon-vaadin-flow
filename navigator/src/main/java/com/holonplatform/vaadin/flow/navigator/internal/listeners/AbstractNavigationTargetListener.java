@@ -18,7 +18,7 @@ package com.holonplatform.vaadin.flow.navigator.internal.listeners;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;

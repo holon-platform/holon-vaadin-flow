@@ -26,8 +26,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +52,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
@@ -70,6 +67,8 @@ import com.vaadin.flow.server.VaadinSessionState;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public abstract class AbstractNavigatorTest {
 
@@ -127,8 +126,7 @@ public abstract class AbstractNavigatorTest {
 
 		ui = new UI();
 		ui.getInternals().setSession(vaadinSession);
-		// ui.getInternals().setAppId(TEST_UIID);
-		// ui.doInit(request, TEST_UIID);
+		// ui.getInternals().setAppId(TEST_UIID); ui.doInit(request, TEST_UIID);
 
 		ui.addBeforeEnterListener(new DefaultNavigationTargetBeforeEnterListener());
 		ui.addAfterNavigationListener(new DefaultNavigationTargetAfterNavigationListener());
@@ -157,9 +155,9 @@ public abstract class AbstractNavigatorTest {
 
 	protected VaadinService createVaadinService() throws Exception {
 		TestVaadinService vaadinService = mock(TestVaadinService.class);
-		when(vaadinService.getDeploymentConfiguration())
-				.thenReturn(new DefaultDeploymentConfiguration(ApplicationConfiguration.get(vaadinService.getContext()),
-						VaadinServletService.class, getDeploymentProperties()));
+//		when(vaadinService.getDeploymentConfiguration())
+//				.thenReturn(new DefaultDeploymentConfiguration(ApplicationConfiguration.get(vaadinService.getContext()),
+//						VaadinServletService.class, getDeploymentProperties()));
 		when(vaadinService.getMainDivId(any(VaadinSession.class), any(VaadinRequest.class)))
 				.thenReturn("test-main-div-id");
 		when(vaadinService.getRouter()).thenReturn(router);
@@ -228,8 +226,8 @@ public abstract class AbstractNavigatorTest {
 				List<Class<? extends Component>> errors) throws InvalidRouteConfigurationException {
 			super(context);
 			navigationTargets.forEach(navigationTarget -> {
-				String route = RouteUtil.getRoutePath(navigationTarget, navigationTarget.getAnnotation(Route.class));
-				setRoute(route, navigationTarget, RouteUtil.getParentLayouts(navigationTarget, route));
+				String route = RouteUtil.getRoutePath(context, navigationTarget);
+				setRoute(route, navigationTarget, RouteUtil.getParentLayouts(context, navigationTarget, route));
 			});
 			setErrorNavigationTargets(errors.stream().collect(Collectors.toSet()));
 		}

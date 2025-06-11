@@ -739,19 +739,6 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#
-	 * preventInvalidInput(boolean)
-	 */
-	@Override
-	public PropertyFilterableSingleSelectInputBuilder<T> preventInvalidInput(boolean preventInvalidInput) {
-		builder.preventInvalidInput(preventInvalidInput);
-		return this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#
 	 * autofocus(boolean)
 	 */
@@ -1332,20 +1319,6 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		@Override
 		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> pattern(String pattern) {
 			builder.pattern(pattern);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#
-		 * preventInvalidInput(boolean)
-		 */
-		@Override
-		public ValidatablePropertyFilterableSingleSelectInputBuilder<T> preventInvalidInput(
-				boolean preventInvalidInput) {
-			builder.preventInvalidInput(preventInvalidInput);
 			return this;
 		}
 
@@ -2100,19 +2073,6 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#
-		 * preventInvalidInput(boolean)
-		 */
-		@Override
-		public DatastorePropertyFilterableSingleSelectInputBuilder<T> preventInvalidInput(boolean preventInvalidInput) {
-			builder.preventInvalidInput(preventInvalidInput);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
 		 * com.holonplatform.vaadin.flow.components.builders.HasAutofocusConfigurator#
 		 * autofocus(boolean)
 		 */
@@ -2793,20 +2753,6 @@ public class DefaultPropertyFilterableSingleSelectInputBuilder<T> extends Abstra
 		@Override
 		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> pattern(String pattern) {
 			builder.pattern(pattern);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasPatternConfigurator#
-		 * preventInvalidInput(boolean)
-		 */
-		@Override
-		public ValidatableDatastorePropertyFilterableSingleSelectInputBuilder<T> preventInvalidInput(
-				boolean preventInvalidInput) {
-			builder.preventInvalidInput(preventInvalidInput);
 			return this;
 		}
 

@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.internal;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 
 import com.holonplatform.core.property.Property;
 import com.holonplatform.core.property.PropertyRenderer;

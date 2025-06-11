@@ -26,6 +26,7 @@ import java.util.Set;
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Localizable;
 import com.holonplatform.vaadin.flow.navigator.annotations.OnShow;
+import com.vaadin.flow.server.VaadinContext;
 
 /**
  * Navigation target class (view) configuration.
@@ -87,10 +88,11 @@ public interface NavigationTargetConfiguration extends Serializable {
 	/**
 	 * Create a new {@link NavigationTargetConfiguration} for given navigation target.
 	 * @param navigationTarget The navigation target class (not null)
+	 * @param vaadinContext The Vaadin context
 	 * @return A new {@link NavigationTargetConfiguration}
 	 */
-	static NavigationTargetConfiguration create(Class<?> navigationTarget) {
-		return new DefaultNavigationTargetConfiguration(navigationTarget);
+	static NavigationTargetConfiguration create(Class<?> navigationTarget, VaadinContext vaadinContext) {
+		return new DefaultNavigationTargetConfiguration(navigationTarget, vaadinContext);
 	}
 
 	// ------ parameter definitions

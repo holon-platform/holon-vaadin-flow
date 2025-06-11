@@ -182,8 +182,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	private ItemListingDataProviderAdapter<T, ?> dataProvider;
 
 	/**
-	 * A list of the item properties which correspond to a listing column, in the
-	 * display order
+	 * A list of the item properties which correspond to a listing column, in the display order
 	 */
 	private final transient LinkedList<P> properties = new LinkedList<>();
 
@@ -346,7 +345,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getDataProvider()
 	 */
 	@Override
@@ -359,7 +357,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getColumnSorts()
 	 */
 	@Override
@@ -371,8 +368,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Get the {@link ItemListingDataProviderAdapter} type data provider, if
-	 * available.
+	 * Get the {@link ItemListingDataProviderAdapter} type data provider, if available.
 	 * @return Optional data provider
 	 */
 	protected Optional<ItemListingDataProviderAdapter<T, ?>> getItemListingDataProvider() {
@@ -389,9 +385,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Requires an {@link ItemListingDataProviderAdapter} type data provider
 	 * @return The {@link ItemListingDataProviderAdapter} type data provider
-	 * @throws IllegalStateException If a data provider is not available or it is
-	 *                               not a {@link ItemListingDataProviderAdapter}
-	 *                               data provider type
+	 * @throws IllegalStateException If a data provider is not available or it is not a
+	 *         {@link ItemListingDataProviderAdapter} data provider type
 	 */
 	protected ItemListingDataProviderAdapter<T, ?> requireItemListingDataProvider() {
 		return getItemListingDataProvider().orElseThrow(() -> new IllegalStateException(
@@ -400,7 +395,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#getComponent()
 	 */
 	@Override
@@ -410,9 +404,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.HasComponent#setVisible(boolean)
 	 */
 	@Override
 	public void setVisible(boolean visible) {
@@ -421,7 +413,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#isVisible()
 	 */
 	@Override
@@ -431,7 +422,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasEnabled()
 	 */
 	@Override
@@ -441,7 +431,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasStyle()
 	 */
 	@Override
@@ -451,7 +440,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.HasComponent#hasSize()
 	 */
 	@Override
@@ -477,7 +465,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getHeader()
 	 */
 	@Override
@@ -487,7 +474,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getFooter()
 	 */
 	@Override
@@ -496,8 +482,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Get the specific {@link PropertyRendererRegistry} to use to render the
-	 * editors.
+	 * Get the specific {@link PropertyRendererRegistry} to use to render the editors.
 	 * @return Optional property renderer registry
 	 */
 	protected Optional<PropertyRendererRegistry> getPropertyRendererRegistry() {
@@ -505,8 +490,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Set the specific {@link PropertyRendererRegistry} to use to render the
-	 * editors.
+	 * Set the specific {@link PropertyRendererRegistry} to use to render the editors.
 	 * @param propertyRendererRegistry the property renderer registry to set
 	 */
 	protected void setPropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
@@ -546,8 +530,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Ensure unique column key, appending a numeric suffix to duplicate key names
-	 * if required.
+	 * Ensure unique column key, appending a numeric suffix to duplicate key names if required.
 	 * @param key The column key
 	 * @return The unique column key
 	 */
@@ -602,7 +585,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getVisibleColumns()
 	 */
 	@Override
@@ -614,10 +596,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#setColumnVisible(java.
-	 * lang.Object, boolean)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#setColumnVisible(java. lang.Object,
+	 * boolean)
 	 */
 	@Override
 	public void setColumnVisible(P property, boolean visible) {
@@ -630,10 +610,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#getColumnHeader(java.
-	 * lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getColumnHeader(java. lang.Object)
 	 */
 	@Override
 	public Optional<String> getColumnHeader(P property) {
@@ -675,13 +652,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Add an item property to be rendered as a listing column before the
-	 * <code>beforeProperty</code> property id.
-	 * @param property       The item property id to add (not null)
+	 * Add an item property to be rendered as a listing column before the <code>beforeProperty</code>
+	 * property id.
+	 * @param property The item property id to add (not null)
 	 * @param beforeProperty The property before to add the item property
-	 * @return <code>true</code> if the <code>beforeProperty</code> is available. If
-	 *         <code>false</code>, the property column will be added at the end of
-	 *         the list
+	 * @return <code>true</code> if the <code>beforeProperty</code> is available. If <code>false</code>,
+	 *         the property column will be added at the end of the list
 	 * @return the column configuration
 	 */
 	protected ItemListingColumn<P, T, ?> addPropertyColumnBefore(P property, P beforeProperty) {
@@ -697,13 +673,12 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Add an item property to be rendered as a listing column after the
-	 * <code>afterProperty</code> property id.
-	 * @param property      The item property id to add (not null)
+	 * Add an item property to be rendered as a listing column after the <code>afterProperty</code>
+	 * property id.
+	 * @param property The item property id to add (not null)
 	 * @param afterProperty The property after to add the item property
-	 * @return <code>true</code> if the <code>afterProperty</code> is available. If
-	 *         <code>false</code>, the property column will be added at the end of
-	 *         the list
+	 * @return <code>true</code> if the <code>afterProperty</code> is available. If <code>false</code>,
+	 *         the property column will be added at the end of the list
 	 * @return the column configuration
 	 */
 	protected ItemListingColumn<P, T, ?> addPropertyColumnAfter(P property, P afterProperty) {
@@ -721,8 +696,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Set to display given property as the first one.
 	 * @param property The property
-	 * @return <code>true</code> if the property is in the property set and was
-	 *         moved within the list
+	 * @return <code>true</code> if the property is in the property set and was moved within the list
 	 */
 	protected boolean setDisplayAsFirst(P property) {
 		if (property != null && properties.contains(property)) {
@@ -736,8 +710,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	/**
 	 * Set to display given property as the last one.
 	 * @param property The property
-	 * @return <code>true</code> if the property is in the property set and was
-	 *         moved within the list
+	 * @return <code>true</code> if the property is in the property set and was moved within the list
 	 */
 	protected boolean setDisplayAsLast(P property) {
 		if (property != null && properties.contains(property)) {
@@ -749,12 +722,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Set to display given property before the provided
-	 * <code>beforeProperty</code>.
-	 * @param property       The property
+	 * Set to display given property before the provided <code>beforeProperty</code>.
+	 * @param property The property
 	 * @param beforeProperty The property before to display the property
-	 * @return <code>true</code> if the property is in the property set and was
-	 *         moved within the list
+	 * @return <code>true</code> if the property is in the property set and was moved within the list
 	 */
 	protected boolean setDisplayBefore(P property, P beforeProperty) {
 		if (property != null && properties.contains(property) && beforeProperty != null
@@ -771,10 +742,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/**
 	 * Set to display given property after the provided <code>afterProperty</code>.
-	 * @param property      The property
+	 * @param property The property
 	 * @param afterProperty The property after to display the property
-	 * @return <code>true</code> if the property is in the property set and was
-	 *         moved within the list
+	 * @return <code>true</code> if the property is in the property set and was moved within the list
 	 */
 	protected boolean setDisplayAfter(P property, P afterProperty) {
 		if (property != null && properties.contains(property) && afterProperty != null
@@ -847,8 +817,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Build the listing, adding a Grid column for each item property and setting up
-	 * the item editor if <code>editable</code> is <code>true</code>.
+	 * Build the listing, adding a Grid column for each item property and setting up the item editor if
+	 * <code>editable</code> is <code>true</code>.
 	 * @param editable Whether the listing is editable
 	 */
 	public void build(boolean editable) {
@@ -913,7 +883,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 			column.setFlexGrow(configuration.getFlexGrow());
 		}
 		// style class name
-		configuration.getStyleNameGenerator().ifPresent(g -> column.setClassNameGenerator(item -> g.apply(item)));
+		configuration.getStyleNameGenerator().ifPresent(g -> column.setPartNameGenerator(item -> g.apply(item)));
 		// alignment
 		configuration.getAlignment().ifPresent(a -> column.setTextAlign(asColumnTextAlign(a)));
 		// sort
@@ -1030,8 +1000,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	protected abstract ItemListingColumn<P, T, ?> preProcessConfiguration(ItemListingColumn<P, T, ?> configuration);
 
 	/**
-	 * Get the {@link QuerySortOrder} property name for given property, if
-	 * available.
+	 * Get the {@link QuerySortOrder} property name for given property, if available.
 	 * @param property Property to sort
 	 * @return Optional sort property name
 	 */
@@ -1059,10 +1028,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#isItemDetailsVisible(
-	 * java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isItemDetailsVisible( java.lang.Object)
 	 */
 	@Override
 	public boolean isItemDetailsVisible(T item) {
@@ -1072,9 +1038,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#setItemDetailsVisible(
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#setItemDetailsVisible(
 	 * java.lang.Object, boolean)
 	 */
 	@Override
@@ -1085,9 +1049,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#sort(java.util.List)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#sort(java.util.List)
 	 */
 	@Override
 	public void sort(List<ItemSort<P>> sorts) {
@@ -1105,7 +1067,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemSet#refresh()
 	 */
 	@Override
@@ -1124,10 +1085,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#refreshItem(java.lang.
-	 * Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#refreshItem(java.lang. Object)
 	 */
 	@Override
 	public void refreshItem(T item) {
@@ -1161,7 +1119,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isFrozen()
 	 */
 	@Override
@@ -1171,7 +1128,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#setFrozen(boolean)
 	 */
 	@Override
@@ -1181,9 +1137,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#getAdditionalItems()
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#getAdditionalItems()
 	 */
 	@Override
 	public List<T> getAdditionalItems() {
@@ -1192,26 +1146,19 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#addAdditionalItem(java.
-	 * lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#addAdditionalItem(java. lang.Object)
 	 */
 	@Override
 	public void addAdditionalItem(T item) {
 		requireItemListingDataProvider().addAdditionalItem(item);
-		// ensure item key is created and registered
-		// this allows to handle the new item without errors, for example to use it in
-		// grid editor just after it's added
+		// ensure item key is created and registered this allows to handle the new item without errors, for
+		// example to use it in grid editor just after it's added
 		getGrid().getDataCommunicator().getKeyMapper().key(item);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItem(
-	 * java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItem( java.lang.Object)
 	 */
 	@Override
 	public boolean removeAdditionalItem(T item) {
@@ -1234,9 +1181,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItems()
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#removeAdditionalItems()
 	 */
 	@Override
 	public void removeAdditionalItems() {
@@ -1258,7 +1203,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.Selectable#getSelectedItems()
 	 */
 	@Override
@@ -1268,9 +1212,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.Selectable#getFirstSelectedItem()
+	 * @see com.holonplatform.vaadin.flow.components.Selectable#getFirstSelectedItem()
 	 */
 	@Override
 	public Optional<T> getFirstSelectedItem() {
@@ -1279,9 +1221,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.Selectable#select(java.lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.Selectable#select(java.lang.Object)
 	 */
 	@Override
 	public void select(T item) {
@@ -1294,9 +1234,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.Selectable#deselect(java.lang.
-	 * Object)
+	 * @see com.holonplatform.vaadin.flow.components.Selectable#deselect(java.lang. Object)
 	 */
 	@Override
 	public void deselect(T item) {
@@ -1309,7 +1247,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.Selectable#deselectAll()
 	 */
 	@Override
@@ -1319,7 +1256,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.Selectable#getSelectionMode()
 	 */
 	@Override
@@ -1329,9 +1265,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#setSelectionMode(com.
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#setSelectionMode(com.
 	 * holonplatform.vaadin.flow.components. Selectable.SelectionMode)
 	 */
 	@Override
@@ -1358,9 +1292,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.Selectable#addSelectionListener(com.
+	 * @see com.holonplatform.vaadin.flow.components.Selectable#addSelectionListener(com.
 	 * holonplatform.vaadin.flow.components .Selectable.SelectionListener)
 	 */
 	@Override
@@ -1398,10 +1330,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Get whether the current selection model is valid and is not
-	 * <code>NONE</code>.
-	 * @return Whether the current selection model is valid and is not
-	 *         <code>NONE</code>
+	 * Get whether the current selection model is valid and is not <code>NONE</code>.
+	 * @return Whether the current selection model is valid and is not <code>NONE</code>
 	 */
 	private boolean isSelectableSelectionModel() {
 		final GridSelectionModel<T> selectionModel = getGrid().getSelectionModel();
@@ -1424,7 +1354,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isEditable()
 	 */
 	@Override
@@ -1434,7 +1363,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#isEditing()
 	 */
 	@Override
@@ -1447,9 +1375,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.ItemListing#editItem(java.lang.
-	 * Object)
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#editItem(java.lang. Object)
 	 */
 	@Override
 	public void editItem(T item) {
@@ -1462,7 +1388,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#cancelEditing()
 	 */
 	@Override
@@ -1477,7 +1402,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ItemListing#saveEditingItem()
 	 */
 	@Override
@@ -1490,9 +1414,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing#refreshEditingItem()
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing#refreshEditingItem()
 	 */
 	@Override
 	public void refreshEditingItem() {
@@ -1637,8 +1559,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/**
 	 * Set the group validation status handler to use.
-	 * @param groupValidationStatusHandler the group validation status handler to
-	 *                                     set
+	 * @param groupValidationStatusHandler the group validation status handler to set
 	 */
 	protected void setGroupValidationStatusHandler(
 			GroupValidationStatusHandler<EditorComponentGroup<P, T>, P, Input<?>> groupValidationStatusHandler) {
@@ -1655,8 +1576,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/**
 	 * Set whether to refresh the property editors when an Input value changes
-	 * @param enableRefreshOnValueChange whether to refresh the property editors
-	 *                                   when an Input value changes
+	 * @param enableRefreshOnValueChange whether to refresh the property editors when an Input value
+	 *        changes
 	 */
 	protected void setEnableRefreshOnValueChange(boolean enableRefreshOnValueChange) {
 		this.enableRefreshOnValueChange = enableRefreshOnValueChange;
@@ -1753,11 +1674,11 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Configure the {@link Input} editor component using given configuration and
-	 * bind it to the editor Binder.
-	 * @param binder        The editor Binder
+	 * Configure the {@link Input} editor component using given configuration and bind it to the editor
+	 * Binder.
+	 * @param binder The editor Binder
 	 * @param configuration Property column configuration (not null)
-	 * @param input         The {@link Input} component to configure
+	 * @param input The {@link Input} component to configure
 	 * @return The editor binding
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1768,10 +1689,10 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/**
 	 * Configure the {@link Input} editor component using given configuration.
-	 * @param <V>           Input type
-	 * @param binder        The editor Binder
+	 * @param <V> Input type
+	 * @param binder The editor Binder
 	 * @param configuration Property column configuration (not null)
-	 * @param input         The {@link Input} component to configure
+	 * @param input The {@link Input} component to configure
 	 * @return The editor binding builder
 	 */
 	protected <V> BindingBuilder<T, V> configureInput(Binder<T> binder, ItemListingColumn<P, T, V> configuration,
@@ -1813,10 +1734,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.GroupValidationStatusHandler#
-	 * validationStatusChange(com.holonplatform.
-	 * vaadin.flow.components.GroupValidationStatusHandler.
+	 * validationStatusChange(com.holonplatform. vaadin.flow.components.GroupValidationStatusHandler.
 	 * GroupValidationStatusEvent)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1849,8 +1768,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	}
 
 	/**
-	 * Convert given binder validation status to a
-	 * {@link GroupValidationStatusEvent}.
+	 * Convert given binder validation status to a {@link GroupValidationStatusEvent}.
 	 * @param binderStatus The binder validation status
 	 * @return The {@link GroupValidationStatusEvent}
 	 */
@@ -1935,9 +1853,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 	protected abstract void refreshVirtualProperties();
 
 	/**
-	 * Build and obtain the property editor to use with given property, if
-	 * available.
-	 * @param <V>           Property value type
+	 * Build and obtain the property editor to use with given property, if available.
+	 * @param <V> Property value type
 	 * @param configuration The property column configuration
 	 * @return Optional property editor
 	 */
@@ -1975,7 +1892,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.ComponentGroup#getElements()
 	 */
 	@Override
@@ -1985,10 +1901,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java.
-	 * lang.Object)
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getElement(java. lang.Object)
 	 */
 	@Override
 	public Optional<Input<?>> getElement(P property) {
@@ -1998,9 +1911,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
+	 * @see com.holonplatform.vaadin.flow.components.BoundComponentGroup#getBindings()
 	 */
 	@Override
 	public Stream<Binding<P, Input<?>>> getBindings() {
@@ -2010,10 +1921,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup#
-	 * getItem()
+	 * @see com.holonplatform.vaadin.flow.components.ItemListing.EditorComponentGroup# getItem()
 	 */
 	@Override
 	public T getItem() {
@@ -2136,7 +2044,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getPropertyHolderType()
 		 */
 		@Override
@@ -2146,7 +2053,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getPropertySet()
 		 */
 		@Override
@@ -2156,7 +2062,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getName()
 		 */
 		@Override
@@ -2166,7 +2071,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getGetter()
 		 */
 		@Override
@@ -2176,7 +2080,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getSetter()
 		 */
 		@Override
@@ -2186,7 +2089,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getType()
 		 */
 		@Override
@@ -2196,7 +2098,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getCaption()
 		 */
 		@Override
@@ -2206,12 +2107,16 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.PropertyDefinition#getParent()
 		 */
 		@Override
 		public PropertyDefinition<T, ?> getParent() {
 			return null;
+		}
+
+		@Override
+		public boolean isGenericType() {
+			return false;
 		}
 
 	}
@@ -2231,7 +2136,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.vaadin.flow.data.binder.Binder#validate()
 		 */
 		@Override
@@ -2361,9 +2265,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(
 		 * java.lang.String)
 		 */
 		@Override
@@ -2374,9 +2276,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(
 		 * java.lang.String)
 		 */
 		@Override
@@ -2387,7 +2287,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
 		 * styleNames(java.lang.String[])
 		 */
@@ -2399,7 +2298,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
 		 * styleName(java.lang.String)
 		 */
@@ -2411,10 +2309,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
-		 * enabled(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator# enabled(boolean)
 		 */
 		@Override
 		public C enabled(boolean enabled) {
@@ -2424,9 +2319,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
-		 * tabIndex(int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator# tabIndex(int)
 		 */
 		@Override
 		public C tabIndex(int tabIndex) {
@@ -2436,7 +2329,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withFocusListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -2456,7 +2348,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withBlurListener(com.vaadin.flow. component.ComponentEventListener)
 		 */
@@ -2476,7 +2367,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 		 * withFocusShortcut(com.vaadin.flow. component.Key)
 		 */
@@ -2487,10 +2377,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.
-		 * HasItemsDataSourceConfigurator#dataSource(com.vaadin.flow.
-		 * data.provider.DataProvider)
+		 * HasItemsDataSourceConfigurator#dataSource(com.vaadin.flow. data.provider.DataProvider)
 		 */
 		@Override
 		public C dataSource(DataProvider<T, ?> dataProvider) {
@@ -2501,9 +2389,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#items(
 		 * java.lang.Iterable)
 		 */
 		@Override
@@ -2514,9 +2400,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasDataProviderConfigurator
 		 * #items(java.lang.Object[])
 		 */
 		@SuppressWarnings("unchecked")
@@ -2527,7 +2411,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasItemsConfigurator#
 		 * addItem(java.lang.Object)
 		 */
@@ -2540,9 +2423,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAsFirst(java.lang.Object)
 		 */
 		@Override
@@ -2553,9 +2434,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAsLast(java.lang.Object)
 		 */
 		@Override
@@ -2566,9 +2445,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayBefore(java.lang.Object, java.lang.Object)
 		 */
 		@Override
@@ -2579,9 +2456,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * displayAfter(java.lang.Object, java.lang.Object)
 		 */
 		@Override
@@ -2592,9 +2467,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * visibleColumns(java.util.List)
 		 */
 		@Override
@@ -2605,10 +2478,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * sortable(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# sortable(boolean)
 		 */
 		@Override
 		public C sortable(boolean sortable) {
@@ -2619,9 +2489,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortable(java.lang.Object, boolean)
 		 */
 		@Override
@@ -2632,9 +2500,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * resizable(boolean)
 		 */
 		@Override
@@ -2645,9 +2511,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * resizable(java.lang.Object, boolean)
 		 */
 		@Override
@@ -2658,9 +2522,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * visible(java.lang.Object, boolean)
 		 */
 		@Override
@@ -2671,9 +2533,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * readOnly(java.lang.Object, boolean)
 		 */
 		@Override
@@ -2684,9 +2544,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * frozen(java.lang.Object, boolean)
 		 */
 		@Override
@@ -2697,9 +2555,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * frozenColumns(int)
 		 */
 		@Override
@@ -2710,9 +2566,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * width(java.lang.Object, java.lang.String)
 		 */
 		@Override
@@ -2732,9 +2586,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * flexGrow(java.lang.Object, int)
 		 */
 		@Override
@@ -2745,24 +2597,20 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * styleNameGenerator(java.util. function.Function)
 		 */
 		@Override
 		public C styleNameGenerator(Function<T, String> styleNameGenerator) {
 			if (styleNameGenerator != null) {
-				instance.getGrid().setClassNameGenerator(item -> styleNameGenerator.apply(item));
+				instance.getGrid().setPartNameGenerator(item -> styleNameGenerator.apply(item));
 			}
 			return getConfigurator();
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * styleNameGenerator(java.lang. Object, java.util.function.Function)
 		 */
 		@Override
@@ -2773,9 +2621,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * expand(java.lang.Object)
 		 */
 		@Override
@@ -2792,12 +2638,9 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * alignment(java.lang.Object,
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
-		 * ColumnAlignment)
+		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator. ColumnAlignment)
 		 */
 		@Override
 		public C alignment(P property, ColumnAlignment alignment) {
@@ -2807,9 +2650,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * renderer(java.lang.Object, com.vaadin.flow.data.renderer.Renderer)
 		 */
 		@Override
@@ -2820,9 +2661,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * valueProvider(java.lang.Object, com.vaadin.flow.function.ValueProvider)
 		 */
 		@Override
@@ -2833,9 +2672,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortComparator(java.lang.Object, java.util.Comparator)
 		 */
 		@Override
@@ -2846,9 +2683,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortUsing(java.lang.Object, java.util.List)
 		 */
 		@Override
@@ -2859,9 +2694,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * sortProvider(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
@@ -2877,9 +2710,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * header(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
@@ -2890,9 +2721,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * headerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
@@ -2903,9 +2732,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * footer(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
@@ -2916,9 +2743,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * footerComponent(java.lang.Object, com.vaadin.flow.component.Component)
 		 */
 		@Override
@@ -2935,9 +2760,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * editorComponent(java.lang.Object, java.util.function.Function)
 		 */
 		@Override
@@ -2948,10 +2771,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * pageSize(int)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# pageSize(int)
 		 */
 		@Override
 		public C pageSize(int pageSize) {
@@ -2961,22 +2781,18 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * heightByRows(boolean)
 		 */
 		@Override
-		public C heightByRows(boolean heightByRows) {
-			instance.getGrid().setHeightByRows(heightByRows);
+		public C allRowsVisible(boolean allRowsVisible) {
+			instance.getGrid().setAllRowsVisible(allRowsVisible);
 			return getConfigurator();
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * columnReorderingAllowed(boolean)
 		 */
 		@Override
@@ -2987,9 +2803,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * itemDetailsRenderer(com.vaadin.flow .data.renderer.Renderer)
 		 */
 		@Override
@@ -3000,9 +2814,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * itemDetailsVisibleOnClick(boolean)
 		 */
 		@Override
@@ -3013,11 +2825,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * selectionMode(com.holonplatform.
-		 * vaadin.flow.components.Selectable.SelectionMode)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * selectionMode(com.holonplatform. vaadin.flow.components.Selectable.SelectionMode)
 		 */
 		@Override
 		public C selectionMode(SelectionMode selectionMode) {
@@ -3033,11 +2842,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withSelectionListener(com.
-		 * holonplatform.vaadin.flow.components.Selectable.SelectionListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withSelectionListener(com. holonplatform.vaadin.flow.components.Selectable.SelectionListener)
 		 */
 		@Override
 		public C withSelectionListener(SelectionListener<T> selectionListener) {
@@ -3047,11 +2853,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withItemClickListener(com.
-		 * holonplatform.vaadin.flow.components.events.ClickEventListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withItemClickListener(com. holonplatform.vaadin.flow.components.events.ClickEventListener)
 		 */
 		@Override
 		public C withItemClickListener(ClickEventListener<L, ItemClickEvent<L, T>> listener) {
@@ -3065,11 +2868,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withItemRefreshListener(com.
-		 * holonplatform.vaadin.flow.components.events.ItemEventListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withItemRefreshListener(com. holonplatform.vaadin.flow.components.events.ItemEventListener)
 		 */
 		@Override
 		public C withItemRefreshListener(ItemEventListener<L, T, ItemEvent<L, T>> listener) {
@@ -3080,9 +2880,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * multiSort(boolean)
 		 */
 		@Override
@@ -3093,22 +2891,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * verticalScrollingEnabled(boolean)
-		 */
-		@Override
-		public C verticalScrollingEnabled(boolean enabled) {
-			instance.getGrid().setVerticalScrollingEnabled(enabled);
-			return getConfigurator();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withThemeVariants(com.vaadin.flow. component.grid.GridVariant[])
 		 */
 		@Override
@@ -3119,10 +2902,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * contextMenu()
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# contextMenu()
 		 */
 		@Override
 		public ItemListingContextMenuBuilder<T, P, L, C> contextMenu() {
@@ -3132,9 +2912,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * header(java.util.function.Consumer)
 		 */
 		@Override
@@ -3145,9 +2923,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * footer(java.util.function.Consumer)
 		 */
 		@Override
@@ -3158,10 +2934,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * editable(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# editable(boolean)
 		 */
 		@Override
 		public C editable(boolean editable) {
@@ -3171,9 +2944,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * editorBuffered(boolean)
 		 */
 		@Override
@@ -3184,11 +2955,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorSaveListener(com.vaadin.
-		 * flow.component.grid.editor.EditorSaveListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorSaveListener(com.vaadin. flow.component.grid.editor.EditorSaveListener)
 		 */
 		@Override
 		public C withEditorSaveListener(EditorSaveListener<T, P> listener) {
@@ -3199,11 +2967,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorCancelListener(com.vaadin
-		 * .flow.component.grid.editor.EditorCancelListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCancelListener(com.vaadin .flow.component.grid.editor.EditorCancelListener)
 		 */
 		@Override
 		public C withEditorCancelListener(EditorCancelListener<T, P> listener) {
@@ -3214,11 +2979,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorOpenListener(com.vaadin.
-		 * flow.component.grid.editor.EditorOpenListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorOpenListener(com.vaadin. flow.component.grid.editor.EditorOpenListener)
 		 */
 		@Override
 		public C withEditorOpenListener(EditorOpenListener<T, P> listener) {
@@ -3229,11 +2991,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * withEditorCloseListener(com.vaadin.
-		 * flow.component.grid.editor.EditorCloseListener)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * withEditorCloseListener(com.vaadin. flow.component.grid.editor.EditorCloseListener)
 		 */
 		@Override
 		public C withEditorCloseListener(EditorCloseListener<T, P> listener) {
@@ -3244,9 +3003,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
 		 * withValidator(com.holonplatform. core.Validator)
 		 */
 		@Override
@@ -3257,9 +3014,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * required(java.lang.Object)
 		 */
 		@Override
@@ -3270,9 +3025,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * required(java.lang.Object, com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
@@ -3284,9 +3037,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * withPostProcessor(java.util.function .BiConsumer)
 		 */
 		@Override
@@ -3297,9 +3048,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * validationStatusHandler(java.lang. Object,
 		 * com.holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
@@ -3313,11 +3062,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
-		 * validationStatusHandler(com.
-		 * holonplatform.vaadin.flow.components.ValidationStatusHandler)
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * validationStatusHandler(com. holonplatform.vaadin.flow.components.ValidationStatusHandler)
 		 */
 		@Override
 		public C validationStatusHandler(ValidationStatusHandler<EditorComponentGroup<P, T>> validationStatusHandler) {
@@ -3327,9 +3073,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * groupValidationStatusHandler(com.
 		 * holonplatform.vaadin.flow.components.GroupValidationStatusHandler)
 		 */
@@ -3342,9 +3086,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.InputGroupConfigurator#
 		 * enableRefreshOnValueChange(boolean)
 		 */
 		@Override
@@ -3355,11 +3097,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
-		 * usePropertyRendererRegistry(com.
-		 * holonplatform.core.property.PropertyRendererRegistry)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * usePropertyRendererRegistry(com. holonplatform.core.property.PropertyRendererRegistry)
 		 */
 		@Override
 		public C usePropertyRendererRegistry(PropertyRendererRegistry propertyRendererRegistry) {
@@ -3369,9 +3108,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentGroupConfigurator#
 		 * withValueChangeListener(com.
 		 * holonplatform.vaadin.flow.components.ValueHolder.ValueChangeListener)
 		 */
@@ -3384,10 +3121,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator#
-		 * frozen(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator# frozen(boolean)
 		 */
 		@Override
 		public C frozen(boolean frozen) {
@@ -3514,9 +3248,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
 		 * openOnClick(boolean)
 		 */
 		@Override
@@ -3527,9 +3259,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
 		 * withOpenedChangeListener(com.vaadin .flow.component.ComponentEventListener)
 		 */
 		@Override
@@ -3541,7 +3271,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
 		 * styleNames(java.lang.String[])
 		 */
@@ -3553,7 +3282,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#
 		 * styleName(java.lang.String)
 		 */
@@ -3565,9 +3293,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
 		 * withItem(com.holonplatform.core. i18n.Localizable)
 		 */
 		@Override
@@ -3581,9 +3307,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator#
 		 * withItem(com.vaadin.flow.component. Component)
 		 */
 		@Override
@@ -3596,9 +3320,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingContextMenuBuilder#add()
 		 */
 		@Override
@@ -3608,7 +3330,6 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.internal.components.builders.
 		 * AbstractComponentConfigurator#getConfigurator()
 		 */
@@ -3639,9 +3360,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
+		 * @see com.holonplatform.vaadin.flow.components.builders.ComponentConfigurator#id(
 		 * java.lang.String)
 		 */
 		@Override
@@ -3653,10 +3372,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator#
-		 * enabled(boolean)
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasEnabledConfigurator# enabled(boolean)
 		 */
 		@Override
 		public MenuItemBuilder<ItemEventListener<GridMenuItem<T>, T, ItemListingItemEvent<GridMenuItem<T>, T, P>>, GridContextMenu<T>, GridMenuItem<T>, GridSubMenu<T>, B> enabled(
@@ -3667,9 +3383,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(
+		 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(
 		 * com.holonplatform.core.i18n. Localizable)
 		 */
 		@Override
@@ -3681,9 +3395,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
 		 * MenuItemBuilder#checkable(boolean)
 		 */
 		@Override
@@ -3695,9 +3407,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
 		 * MenuItemBuilder#checked(boolean)
 		 */
 		@Override
@@ -3712,9 +3422,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
 		 * MenuItemBuilder#withClickListener( java.util.EventListener)
 		 */
 		@Override
@@ -3727,9 +3435,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ContextMenuConfigurator.
 		 * MenuItemBuilder#add()
 		 */
 		@Override
@@ -3758,9 +3464,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.vaadin.flow.component.ComponentEventListener#onComponentEvent(com.vaadin.
+		 * @see com.vaadin.flow.component.ComponentEventListener#onComponentEvent(com.vaadin.
 		 * flow.component.ComponentEvent)
 		 */
 		@Override
@@ -3795,9 +3499,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# resizable(boolean)
 		 */
 		@Override
@@ -3808,9 +3510,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# visible(boolean)
 		 */
 		@Override
@@ -3821,9 +3521,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# frozen(boolean)
 		 */
 		@Override
@@ -3834,9 +3532,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator#width (java.lang.String)
 		 */
 		@Override
@@ -3856,9 +3552,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# flexGrow(int)
 		 */
 		@Override
@@ -3875,11 +3569,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
-		 * ItemListingColumnConfigurator#
-		 * styleNameGenerator(java.util.function.Function)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * ItemListingColumnConfigurator# styleNameGenerator(java.util.function.Function)
 		 */
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> styleNameGenerator(Function<T, String> styleNameGenerator) {
@@ -3889,9 +3580,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# sortComparator(java.util.Comparator)
 		 */
 		@Override
@@ -3902,9 +3591,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# sortUsing(java.util.List)
 		 */
 		@Override
@@ -3915,9 +3602,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# sortProvider(java.util.function.Function)
 		 */
 		@Override
@@ -3932,11 +3617,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
-		 * ItemListingColumnConfigurator#
-		 * header(com.holonplatform.core.i18n.Localizable)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * ItemListingColumnConfigurator# header(com.holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> header(Localizable header) {
@@ -3946,11 +3628,8 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
-		 * ItemListingColumnConfigurator#
-		 * headerComponent(com.vaadin.flow.component.Component)
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * ItemListingColumnConfigurator# headerComponent(com.vaadin.flow.component.Component)
 		 */
 		@Override
 		public ItemListingColumnBuilder<T, P, L, B> headerComponent(Component header) {
@@ -3960,9 +3639,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# editorComponent(java.util.function.Function)
 		 */
 		@Override
@@ -3974,9 +3651,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# displayAsFirst()
 		 */
 		@Override
@@ -3987,9 +3662,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# displayAsLast()
 		 */
 		@Override
@@ -4000,9 +3673,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# displayBefore(java.lang.Object)
 		 */
 		@Override
@@ -4013,9 +3684,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnConfigurator# displayAfter(java.lang.Object)
 		 */
 		@Override
@@ -4026,9 +3695,7 @@ public abstract class AbstractItemListing<T, P> implements ItemListing<T, P>, Ed
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
+		 * @see com.holonplatform.vaadin.flow.components.builders.ItemListingConfigurator.
 		 * ItemListingColumnBuilder#add()
 		 */
 		@Override

@@ -33,6 +33,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 
 /**
  * Base {@link ViewComponent} implementation.
@@ -47,7 +48,7 @@ public abstract class AbstractViewComponent<C extends Component, T> extends Comp
 
 	private static final long serialVersionUID = -1079320883460226029L;
 
-	private final Label label;
+	private final NativeLabel label;
 
 	private C content;
 
@@ -62,7 +63,7 @@ public abstract class AbstractViewComponent<C extends Component, T> extends Comp
 	public AbstractViewComponent(C content) {
 		super();
 		this.content = content;
-		this.label = new Label();
+		this.label = new NativeLabel();
 		this.label.addClassName("caption");
 
 		getContent().addClassName("h-viewcomponent");
@@ -84,7 +85,7 @@ public abstract class AbstractViewComponent<C extends Component, T> extends Comp
 	 * Get the component {@link Label} element.
 	 * @return the label element
 	 */
-	protected Label getLabel() {
+	protected NativeLabel getLabel() {
 		return label;
 	}
 
@@ -164,8 +165,9 @@ public abstract class AbstractViewComponent<C extends Component, T> extends Comp
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.vaadin.flow.
-	 * components.ValueHolder.ValueChangeListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.ValueHolder#addValueChangeListener(com.holonplatform.
+	 * vaadin.flow. components.ValueHolder.ValueChangeListener)
 	 */
 	@Override
 	public Registration addValueChangeListener(ValueChangeListener<T, ValueChangeEvent<T>> listener) {

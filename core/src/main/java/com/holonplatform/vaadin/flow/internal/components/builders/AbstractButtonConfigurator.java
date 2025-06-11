@@ -35,7 +35,6 @@ import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.IronIcon;
 
 /**
  * Base {@link ButtonConfigurator} implementation.
@@ -75,9 +74,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasThemeVariantConfigurator
 	 * #withThemeVariants(java.lang.Enum[])
 	 */
 	@Override
@@ -88,9 +85,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasIconConfigurator#icon(
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasIconConfigurator#icon(
 	 * com.vaadin.flow.component.Component)
 	 */
 	@Override
@@ -101,7 +96,6 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.HasIconConfigurator#
 	 * iconConfigurator(com.vaadin.flow.component. icon.Icon)
 	 */
@@ -113,21 +107,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasIconConfigurator#
-	 * iconConfigurator(com.vaadin.flow.component. icon.IronIcon)
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public IconConfigurator<C> iconConfigurator(IronIcon icon) {
-		return new DefaultIronIconConfigurator(this, icon);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTextConfigurator#text(
 	 * com.holonplatform.core.i18n. Localizable)
 	 */
 	@Override
@@ -138,9 +118,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTitleConfigurator#title(
 	 * com.holonplatform.core.i18n. Localizable)
 	 */
 	@Override
@@ -151,9 +129,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator#
-	 * disableOnClick()
+	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator# disableOnClick()
 	 */
 	@Override
 	public C disableOnClick() {
@@ -163,11 +139,8 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
-	 * withClickListener(com.holonplatform.
-	 * vaadin.flow.components.events.ClickEventListener)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
+	 * withClickListener(com.holonplatform. vaadin.flow.components.events.ClickEventListener)
 	 */
 	@Override
 	public C withClickListener(ClickEventListener<Button, ClickEvent<Button>> clickEventListener) {
@@ -177,11 +150,8 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
-	 * withClickShortcut(com.vaadin.flow. component.Key,
-	 * com.vaadin.flow.component.KeyModifier[])
+	 * @see com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
+	 * withClickShortcut(com.vaadin.flow. component.Key, com.vaadin.flow.component.KeyModifier[])
 	 */
 	@Override
 	public C withClickShortcutKey(Key key, KeyModifier... keyModifiers) {
@@ -191,9 +161,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
+	 * @see com.holonplatform.vaadin.flow.components.builders.ClickNotifierConfigurator#
 	 * withClickShortcut(com.vaadin.flow. component.Key)
 	 */
 	@Override
@@ -203,9 +171,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
-	 * tabIndex(int)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator# tabIndex(int)
 	 */
 	@Override
 	public C tabIndex(int tabIndex) {
@@ -215,7 +181,6 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withFocusListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
@@ -227,7 +192,6 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withBlurListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
@@ -239,7 +203,6 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withFocusShortcut(com.vaadin.flow. component.Key)
 	 */
@@ -250,9 +213,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator#
-	 * iconAfterText(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator# iconAfterText(boolean)
 	 */
 	@Override
 	public C iconAfterText(boolean iconAfterText) {
@@ -262,9 +223,7 @@ public abstract class AbstractButtonConfigurator<C extends ButtonConfigurator<C>
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator#
-	 * autofocus(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ButtonConfigurator# autofocus(boolean)
 	 */
 	@Override
 	public C autofocus(boolean autofocus) {

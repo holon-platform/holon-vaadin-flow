@@ -19,13 +19,9 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -41,10 +37,18 @@ import com.holonplatform.vaadin.flow.navigator.internal.config.AbstractNavigatio
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.VaadinContext;
+import com.vaadin.flow.server.VaadinServletContext;
+import com.vaadin.flow.server.startup.VaadinInitializerException;
+import com.vaadin.flow.server.startup.VaadinServletContextStartupInitializer;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
 
 /**
- * Navigation target registry servlet context initializer for Spring Boot Application, to enable initialization also
- * when Java application is used to run Spring Boot.
+ * Navigation target registry servlet context initializer for Spring Boot Application, to enable
+ * initialization also when Java application is used to run Spring Boot.
  * 
  * @since 5.2.0
  */
@@ -53,24 +57,21 @@ public class NavigatorServletContextInitializer implements ServletContextInitial
 	private static final Logger LOGGER = VaadinLogger.create();
 
 	private class NavigationTargetConfigurationServletContextListener
-			extends AbstractNavigationTargetConfigurationRegistryInitializer implements ServletContextListener {
+			extends AbstractNavigationTargetConfigurationRegistryInitializer
+			implements VaadinServletContextStartupInitializer, ServletContextListener {
 
 		@Override
-		public void contextInitialized(ServletContextEvent sce) {
-			final NavigationTargetConfigurationRegistry registry = getRegistry(sce.getServletContext());
+		public void initialize(Set<Class<?>> classSet, VaadinContext context) throws VaadinInitializerException {
+			final NavigationTargetConfigurationRegistry registry = getRegistry(
+					((VaadinServletContext) context).getContext());
 			if (!registry.isInitialized()) {
 				LOGGER.debug(
 						() -> "[Spring Boot] Initializing the servlet context bound NavigationTargetConfigurationRegistry...");
 				registry.initialize(findByAnnotation(getAutoScanPackages(), Route.class, RouteAlias.class)
-						.filter(this::isNavigationTargetClass).collect(Collectors.toSet()));
+						.filter(this::isNavigationTargetClass).collect(Collectors.toSet()), context);
 				LOGGER.debug(
 						() -> "[Spring Boot] Servlet context bound NavigationTargetConfigurationRegistry initialized.");
 			}
-		}
-
-		@Override
-		public void contextDestroyed(ServletContextEvent sce) {
-			// noop
 		}
 
 	}
@@ -79,16 +80,6 @@ public class NavigatorServletContextInitializer implements ServletContextInitial
 
 	public NavigatorServletContextInitializer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		NavigationTargetConfigurationRegistry registry = NavigationTargetConfigurationRegistry
-				.servletContext(servletContext);
-		if (!registry.isInitialized()) {
-			// Postpone at the end of context initialization cycle
-			servletContext.addListener(new NavigationTargetConfigurationServletContextListener());
-		}
 	}
 
 	/**
@@ -139,6 +130,16 @@ public class NavigatorServletContextInitializer implements ServletContextInitial
 			return AutoConfigurationPackages.get(applicationContext);
 		}
 		return Collections.emptyList();
+	}
+
+	@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		NavigationTargetConfigurationRegistry registry = NavigationTargetConfigurationRegistry
+				.servletContext(servletContext);
+		if (!registry.isInitialized()) {
+			// Postpone at the end of context initialization cycle
+			servletContext.addListener(new NavigationTargetConfigurationServletContextListener());
+		}
 	}
 
 }

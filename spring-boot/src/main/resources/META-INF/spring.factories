@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.holonplatform.vaadin.flow.spring.boot.NavigatorAutoConfiguration,\
-com.holonplatform.vaadin.flow.spring.boot.LocalizationContextAutoConfiguration

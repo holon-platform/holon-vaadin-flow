@@ -440,15 +440,6 @@ public class TestPasswordInput {
 		assertTrue(input.getComponent() instanceof PasswordField);
 		assertEquals("[0-9]*", ((PasswordField) input.getComponent()).getPattern());
 
-		input = Input.password().pattern("[0-9]*").preventInvalidInput(true).build();
-		assertTrue(input.getComponent() instanceof PasswordField);
-		assertEquals("[0-9]*", ((PasswordField) input.getComponent()).getPattern());
-		assertTrue(((PasswordField) input.getComponent()).isPreventInvalidInput());
-
-		input = Input.password().pattern("[0-9]*").preventInvalidInput().build();
-		assertTrue(input.getComponent() instanceof PasswordField);
-		assertTrue(((PasswordField) input.getComponent()).isPreventInvalidInput());
-
 	}
 
 	@Test

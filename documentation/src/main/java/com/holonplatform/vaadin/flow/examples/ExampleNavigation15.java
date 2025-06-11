@@ -47,7 +47,7 @@ public class ExampleNavigation15 {
 		Navigator navigator = Navigator.get(); // <1>
 
 		navigator.navigation("some/path") // <2>
-				.withQueryParameter("myparam", new Integer(1)) // <3>
+				.withQueryParameter("myparam", Integer.valueOf(1)) // <3>
 				.withQueryParameter("multi", "a", "b", "c") // <4>
 				.navigate(); // <5>
 
@@ -56,11 +56,11 @@ public class ExampleNavigation15 {
 				.navigate(); // <8>
 
 		Location location = navigator.navigation("some/path") //
-				.withQueryParameter("myparam", new Integer(1)) //
+				.withQueryParameter("myparam", Integer.valueOf(1)) //
 				.asLocation(); // <9>
 
 		String url = navigator.navigation(View.class) //
-				.withQueryParameter("myparam", new Integer(1)) //
+				.withQueryParameter("myparam", Integer.valueOf(1)) //
 				.asLocationURL(); // <10>
 		// end::navigator1[]
 	}
@@ -88,7 +88,7 @@ public class ExampleNavigation15 {
 	public void navigator4() {
 		// tag::navigator4[]
 		Navigator.get().navigation("some/path") // <1>
-				.withQueryParameter("myparam", new Integer(1)) // <2>
+				.withQueryParameter("myparam", Integer.valueOf(1)) // <2>
 				.withQueryParameter("multi", "a", "b", "c") // <3>
 				.encodeQueryParameters(false) // <4>
 				.navigate(); // <5>

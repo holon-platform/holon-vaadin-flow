@@ -70,8 +70,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestFilterableSingleSelectInput {
@@ -436,15 +436,6 @@ public class TestFilterableSingleSelectInput {
 		assertTrue(input.getComponent() instanceof ComboBox<?>);
 		assertEquals("[0-9]*", ((ComboBox<?>) input.getComponent()).getPattern());
 
-		input = Input.singleSelect(String.class).pattern("[0-9]*").preventInvalidInput(true).build();
-		assertTrue(input.getComponent() instanceof ComboBox<?>);
-		assertEquals("[0-9]*", ((ComboBox<?>) input.getComponent()).getPattern());
-		assertTrue(((ComboBox<?>) input.getComponent()).isPreventInvalidInput());
-
-		input = Input.singleSelect(String.class).pattern("[0-9]*").preventInvalidInput().build();
-		assertTrue(input.getComponent() instanceof ComboBox<?>);
-		assertTrue(((ComboBox<?>) input.getComponent()).isPreventInvalidInput());
-
 	}
 
 	@Test
@@ -459,7 +450,7 @@ public class TestFilterableSingleSelectInput {
 	@Test
 	public void testRenderer() {
 
-		final Renderer<String> renderer = TemplateRenderer.of("[[index]]");
+		final Renderer<String> renderer = LitRenderer.of("[[index]]");
 		Input.singleSelect(String.class).renderer(renderer).build();
 
 	}

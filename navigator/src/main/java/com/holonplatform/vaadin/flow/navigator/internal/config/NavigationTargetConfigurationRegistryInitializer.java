@@ -18,34 +18,39 @@ package com.holonplatform.vaadin.flow.navigator.internal.config;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
-
 import com.holonplatform.core.internal.Logger;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.VaadinContext;
+import com.vaadin.flow.server.VaadinServletContext;
+import com.vaadin.flow.server.startup.VaadinInitializerException;
+import com.vaadin.flow.server.startup.VaadinServletContextStartupInitializer;
+
+import jakarta.servlet.annotation.HandlesTypes;
 
 /**
  * Servlet initializer to initialize the {@link NavigationTargetConfigurationRegistry}.
  *
  */
 @HandlesTypes({ Route.class, RouteAlias.class })
-public class NavigationTargetConfigurationRegistryInitializer
-		extends AbstractNavigationTargetConfigurationRegistryInitializer implements ServletContainerInitializer {
+public class NavigationTargetConfigurationRegistryInitializer extends
+		AbstractNavigationTargetConfigurationRegistryInitializer implements VaadinServletContextStartupInitializer {
 
 	private static final Logger LOGGER = VaadinLogger.create();
 
 	@Override
-	public void onStartup(Set<Class<?>> classSet, ServletContext servletContext) throws ServletException {
+	public void initialize(Set<Class<?>> classSet, VaadinContext context) throws VaadinInitializerException {
+
 		LOGGER.debug(() -> "Initializing the servlet context bound NavigationTargetConfigurationRegistry...");
-		final NavigationTargetConfigurationRegistry registry = getRegistry(servletContext);
+		final NavigationTargetConfigurationRegistry registry = getRegistry(
+				((VaadinServletContext) context).getContext());
 		if (classSet != null) {
-			registry.initialize(classSet.stream().filter(this::isNavigationTargetClass).collect(Collectors.toSet()));
+			registry.initialize(classSet.stream().filter(this::isNavigationTargetClass).collect(Collectors.toSet()),
+					context);
 		}
 		LOGGER.debug(() -> "Servlet context bound NavigationTargetConfigurationRegistry initialized.");
+
 	}
 
 }

@@ -23,8 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfiguration;
@@ -38,13 +42,27 @@ import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget5;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget6;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget7;
 import com.holonplatform.vaadin.flow.navigator.test.data.NavigationTarget8;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinSession;
 
 public class TestViewConfiguration {
+
+	private int count;
+	private MockUI ui;
+
+	@BeforeEach
+	public void init() {
+		ui = new MockUI();
+		UI.setCurrent(ui);
+	}
 
 	@Test
 	public void testDefault() {
 
-		final NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget1.class);
+		final NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget1.class,
+				ui.getSession().getService().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget1.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -60,7 +78,8 @@ public class TestViewConfiguration {
 	@Test
 	public void testQueryParameters() {
 
-		final NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget2.class);
+		final NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget2.class,
+				VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget2.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -146,7 +165,8 @@ public class TestViewConfiguration {
 	@Test
 	public void testOnShow() {
 
-		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget3.class);
+		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget3.class,
+				VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget3.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -165,7 +185,7 @@ public class TestViewConfiguration {
 		assertEquals("onShow1", m.getName());
 		assertEquals(0, m.getParameterTypes().length);
 
-		cfg = NavigationTargetConfiguration.create(NavigationTarget4.class);
+		cfg = NavigationTargetConfiguration.create(NavigationTarget4.class, VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget4.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -182,7 +202,7 @@ public class TestViewConfiguration {
 		assertEquals("onShow2", m.getName());
 		assertEquals(1, m.getParameterTypes().length);
 
-		cfg = NavigationTargetConfiguration.create(NavigationTarget5.class);
+		cfg = NavigationTargetConfiguration.create(NavigationTarget5.class, VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget5.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -204,7 +224,8 @@ public class TestViewConfiguration {
 	@Test
 	public void testAuth() {
 
-		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget6.class);
+		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget6.class,
+				VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget6.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -215,7 +236,7 @@ public class TestViewConfiguration {
 		assertTrue(cfg.getQueryParameters().isEmpty());
 		assertTrue(cfg.getOnShowMethods().isEmpty());
 
-		cfg = NavigationTargetConfiguration.create(NavigationTarget7.class);
+		cfg = NavigationTargetConfiguration.create(NavigationTarget7.class, VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget7.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -234,7 +255,8 @@ public class TestViewConfiguration {
 	@Test
 	public void testCaption() {
 
-		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget8.class);
+		NavigationTargetConfiguration cfg = NavigationTargetConfiguration.create(NavigationTarget8.class,
+				VaadinService.getCurrent().getContext());
 		assertNotNull(cfg);
 		assertEquals(NavigationTarget8.class, cfg.getNavigationTarget());
 		assertTrue(cfg.getRoutePath().isPresent());
@@ -249,6 +271,86 @@ public class TestViewConfiguration {
 		assertEquals("test", cfg.getCaption().get().getMessage());
 		assertEquals("test.code", cfg.getCaption().get().getMessageCode());
 
+	}
+
+	public static class MockUI extends UI {
+
+		public MockUI() {
+			this(findOrcreateSession());
+		}
+
+		public MockUI(VaadinSession session) {
+			getInternals().setSession(session);
+			setCurrent(this);
+		}
+
+		@Override
+		protected void init(VaadinRequest request) {
+			// Do nothing
+		}
+
+		private static VaadinSession findOrcreateSession() {
+			VaadinSession session = VaadinSession.getCurrent();
+			if (session == null) {
+				session = new AlwaysLockedVaadinSession(null);
+				VaadinSession.setCurrent(session);
+			}
+			return session;
+		}
+
+		public static class AlwaysLockedVaadinSession extends MockVaadinSession {
+
+			public AlwaysLockedVaadinSession(VaadinService service) {
+				super(service);
+				lock();
+			}
+		}
+
+		public static class MockVaadinSession extends VaadinSession {
+			/*
+			 * Used to make sure there's at least one reference to the mock session while it's locked. This is
+			 * used to prevent the session from being eaten by GC in tests where @Before creates a session and
+			 * sets it as the current instance without keeping any direct reference to it. This pattern has a
+			 * chance of leaking memory if the session is not unlocked in the right way, but it should be
+			 * acceptable for testing use.
+			 */
+			private static final ThreadLocal<MockVaadinSession> referenceKeeper = new ThreadLocal<>();
+
+			public MockVaadinSession(VaadinService service) {
+				super(service);
+			}
+
+			@Override
+			public void close() {
+				super.close();
+				closeCount++;
+			}
+
+			public int getCloseCount() {
+				return closeCount;
+			}
+
+			@Override
+			public Lock getLockInstance() {
+				return lock;
+			}
+
+			@Override
+			public void lock() {
+				super.lock();
+				referenceKeeper.set(this);
+			}
+
+			@Override
+			public void unlock() {
+				super.unlock();
+				referenceKeeper.remove();
+			}
+
+			private int closeCount;
+
+			private ReentrantLock lock = new ReentrantLock();
+		}
 	}
 
 }

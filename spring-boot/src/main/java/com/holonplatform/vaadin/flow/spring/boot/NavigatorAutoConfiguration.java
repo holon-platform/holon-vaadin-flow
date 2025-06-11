@@ -16,6 +16,7 @@
 package com.holonplatform.vaadin.flow.spring.boot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,25 +33,25 @@ import com.holonplatform.vaadin.flow.spring.EnableNavigator;
 import com.holonplatform.vaadin.flow.spring.boot.internal.NavigatorServletContextInitializer;
 
 /**
- * A Spring Boot auto-configuration class to setup a UI-scoped {@link Navigator} bean and register the default error
- * components for the {@link UnauthorizedNavigationException} and {@link ForbiddenNavigationException} navigation
- * exceptions.
+ * A Spring Boot auto-configuration class to setup a UI-scoped {@link Navigator} bean and register
+ * the default error components for the {@link UnauthorizedNavigationException} and
+ * {@link ForbiddenNavigationException} navigation exceptions.
  * <p>
- * The UI-scoped {@link Navigator} bean is registered only if there is not another {@link Navigator} type bean
- * registered in context.
+ * The UI-scoped {@link Navigator} bean is registered only if there is not another {@link Navigator}
+ * type bean registered in context.
  * </p>
  * <p>
- * The <code>holon.vaadin.navigator.errors.enabled</code> boolean configuration property can be used to disable the
- * default error components registration, setting its value to <code>false</code>.
+ * The <code>holon.vaadin.navigator.errors.enabled</code> boolean configuration property can be used
+ * to disable the default error components registration, setting its value to <code>false</code>.
  * </p>
  * <p>
- * Furthermore, this class sets up a servlet context initializer to pre-load the navigation target classes
- * configurations.
+ * Furthermore, this class sets up a servlet context initializer to pre-load the navigation target
+ * classes configurations.
  * </p>
  * 
  * @since 5.2.0
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(Navigator.class)
 @AutoConfigureBefore(com.vaadin.flow.spring.SpringBootAutoConfiguration.class)
 @AutoConfigureAfter(com.vaadin.flow.spring.VaadinScopesConfig.class)

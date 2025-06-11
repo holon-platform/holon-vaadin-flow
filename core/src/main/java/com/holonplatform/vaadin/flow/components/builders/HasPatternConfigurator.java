@@ -25,28 +25,11 @@ package com.holonplatform.vaadin.flow.components.builders;
 public interface HasPatternConfigurator<C extends HasPatternConfigurator<C>> {
 
 	/**
-	 * A regular expression that the value is checked against. The pattern must match the entire value, not just some
-	 * subset.
+	 * A regular expression that the value is checked against. The pattern must match the entire value,
+	 * not just some subset.
 	 * @param pattern the value to set
 	 * @return this
 	 */
 	C pattern(String pattern);
-
-	/**
-	 * When set to true, user is prevented from typing a value that conflicts with the pattern configured through
-	 * {@link #pattern(String)}.
-	 * @param preventInvalidInput the value to set
-	 * @return this
-	 */
-	C preventInvalidInput(boolean preventInvalidInput);
-
-	/**
-	 * Set that the user is prevented from typing a value that conflicts with the pattern configured through
-	 * {@link #pattern(String)}.
-	 * @return this
-	 */
-	default C preventInvalidInput() {
-		return preventInvalidInput(true);
-	}
 
 }

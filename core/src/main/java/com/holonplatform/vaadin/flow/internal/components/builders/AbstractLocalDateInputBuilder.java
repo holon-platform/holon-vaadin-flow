@@ -52,7 +52,8 @@ import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * Base {@link LocalDateInputConfigurator} implementation using a {@link DatePicker} as concrete component.
+ * Base {@link LocalDateInputConfigurator} implementation using a {@link DatePicker} as concrete
+ * component.
  *
  * @param <C> Concrete configurator type
  *
@@ -166,7 +167,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue(java.lang.Object)
 	 */
 	@Override
 	public C withValue(LocalDate value) {
@@ -201,8 +203,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusListener(com.
+	 * vaadin.flow. component.ComponentEventListener)
 	 */
 	@SuppressWarnings("serial")
 	@Override
@@ -220,8 +223,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.vaadin.flow.
-	 * component.ComponentEventListener)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withBlurListener(com.
+	 * vaadin.flow. component.ComponentEventListener)
 	 */
 	@SuppressWarnings("serial")
 	@Override
@@ -239,8 +243,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.vaadin.flow.
-	 * component.Key)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#withFocusShortcut(com.
+	 * vaadin.flow. component.Key)
 	 */
 	@Override
 	public ShortcutConfigurator<C> withFocusShortcut(Key key) {
@@ -250,8 +255,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.holonplatform.core.
-	 * i18n.Localizable)
+	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#placeholder(com.
+	 * holonplatform.core. i18n.Localizable)
 	 */
 	@Override
 	public C placeholder(Localizable placeholder) {
@@ -261,8 +266,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.core.i18n.
-	 * Localizable)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(com.holonplatform.
+	 * core.i18n. Localizable)
 	 */
 	@Override
 	public C label(Localizable label) {
@@ -288,7 +294,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#updateLocaleOnAttach(boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#updateLocaleOnAttach(
+	 * boolean)
 	 */
 	@Override
 	public C updateLocaleOnAttach(boolean updateLocaleOnAttach) {
@@ -331,7 +338,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#initialPosition(java.time.LocalDate)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#initialPosition(java.time.
+	 * LocalDate)
 	 */
 	@Override
 	public C initialPosition(LocalDate initialPosition) {
@@ -341,7 +350,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#weekNumbersVisible(boolean)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#weekNumbersVisible(boolean)
 	 */
 	@Override
 	public C weekNumbersVisible(boolean weekNumbersVisible) {
@@ -352,8 +362,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#localization(com.holonplatform.vaadin.flow.
-	 * components.builders.DateInputBuilder.CalendarLocalization)
+	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#localization(com.holonplatform
+	 * .vaadin.flow. components.builders.DateInputBuilder.CalendarLocalization)
 	 */
 	@Override
 	public C localization(CalendarLocalization localization) {
@@ -387,9 +397,6 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		if (localization.getFirstDayOfWeek() != null) {
 			dpi.setFirstDayOfWeek(localization.getFirstDayOfWeek().intValue());
 		}
-		localization.getWeek().ifPresent(m -> dpi.setWeek(LocalizationProvider.localize(m).orElse("")));
-		localization.getCalendar().ifPresent(m -> dpi.setCalendar(LocalizationProvider.localize(m).orElse("")));
-		localization.getClear().ifPresent(m -> dpi.setClear(LocalizationProvider.localize(m).orElse("")));
 		localization.getToday().ifPresent(m -> dpi.setToday(LocalizationProvider.localize(m).orElse("")));
 		localization.getCancel().ifPresent(m -> dpi.setCancel(LocalizationProvider.localize(m).orElse("")));
 		return dpi;
@@ -410,8 +417,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#monthNames(
-		 * java.util.List)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * monthNames( java.util.List)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> monthNames(List<Localizable> monthNames) {
@@ -422,8 +429,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#weekDays(java.
-		 * util.List)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * weekDays(java. util.List)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> weekDays(List<Localizable> weekDays) {
@@ -434,8 +441,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#weekDaysShort(
-		 * java.util.List)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * weekDaysShort( java.util.List)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> weekDaysShort(List<Localizable> weekDaysShort) {
@@ -446,8 +453,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#firstDayOfWeek
-		 * (int)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * firstDayOfWeek (int)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> firstDayOfWeek(int firstDayOfWeek) {
@@ -457,8 +464,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#week(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * week(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> week(Localizable message) {
@@ -469,8 +477,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#calendar(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * calendar(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> calendar(Localizable message) {
@@ -481,8 +489,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#clear(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * clear(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> clear(Localizable message) {
@@ -493,8 +501,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#today(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * today(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> today(Localizable message) {
@@ -505,8 +513,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#cancel(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * cancel(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> cancel(Localizable message) {
@@ -516,7 +524,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#set()
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalizationBuilder#
+		 * set()
 		 */
 		@Override
 		public B set() {
@@ -575,7 +585,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getMonthNames()
+		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#
+		 * getMonthNames()
 		 */
 		@Override
 		public List<Localizable> getMonthNames() {
@@ -584,7 +595,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getWeekdays()
+		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#
+		 * getWeekdays()
 		 */
 		@Override
 		public List<Localizable> getWeekdays() {
@@ -593,8 +605,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getWeekdaysShort()
+		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#
+		 * getWeekdaysShort()
 		 */
 		@Override
 		public List<Localizable> getWeekdaysShort() {
@@ -603,8 +615,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see
-		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getFirstDayOfWeek()
+		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#
+		 * getFirstDayOfWeek()
 		 */
 		@Override
 		public Integer getFirstDayOfWeek() {
@@ -613,7 +625,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getWeek()
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getWeek()
 		 */
 		@Override
 		public Optional<Localizable> getWeek() {
@@ -622,7 +635,8 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getCalendar()
+		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#
+		 * getCalendar()
 		 */
 		@Override
 		public Optional<Localizable> getCalendar() {
@@ -631,7 +645,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getClear()
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getClear(
+		 * )
 		 */
 		@Override
 		public Optional<Localizable> getClear() {
@@ -640,7 +656,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getToday()
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getToday(
+		 * )
 		 */
 		@Override
 		public Optional<Localizable> getToday() {
@@ -649,7 +667,9 @@ public abstract class AbstractLocalDateInputBuilder<C extends LocalDateInputConf
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getCancel()
+		 * @see
+		 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.CalendarLocalization#getCancel
+		 * ()
 		 */
 		@Override
 		public Optional<Localizable> getCancel() {

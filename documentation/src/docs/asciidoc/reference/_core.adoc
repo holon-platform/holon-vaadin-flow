@@ -843,7 +843,6 @@ include::{examplesdir}/com/holonplatform/vaadin/flow/examples/ExampleListing.jav
 <3> Set whether the columns can by resized by the user
 <4> Set the number of _frozen_ columns, i.e. the fixed columns, not involved in horizontal scrolling
 <5> Set whether the listing's height is defined by the number of its rows
-<6> Set whether the vertical scrolling is enabled
 <7> Set whether multiple column sorting is enabled on the client-side
 <8> Set the column auto-width mode for the `ID` property
 <9> Set the auto-width mode for all the listing columns

@@ -52,14 +52,15 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.vaadin.flow.router.internal.BeforeEnterHandler#beforeEnter(com.vaadin.flow.router.BeforeEnterEvent)
+	 * @see com.vaadin.flow.router.internal.BeforeEnterHandler#beforeEnter(com.vaadin.flow.router.
+	 * BeforeEnterEvent)
 	 */
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
 		final Class<?> navigationTarget = event.getNavigationTarget();
 		if (navigationTarget != null) {
 			final NavigationTargetConfiguration configuration = getNavigationTargetConfigurationRegistry()
-					.getConfiguration(navigationTarget);
+					.getConfiguration(navigationTarget, VaadinService.getCurrent().getContext());
 			// check authentication
 			if (checkAuthentication(event, configuration)) {
 				// check parameters
@@ -143,9 +144,9 @@ public class DefaultNavigationTargetBeforeEnterListener extends AbstractNavigati
 	}
 
 	/**
-	 * Get the current {@link Authentication} from given {@link AuthContext}, if available. The {@link Authenticate}
-	 * annotation, if available, is used to obtain the authentication schemes allowed and perform authentication using
-	 * the current request, if available.
+	 * Get the current {@link Authentication} from given {@link AuthContext}, if available. The
+	 * {@link Authenticate} annotation, if available, is used to obtain the authentication schemes
+	 * allowed and perform authentication using the current request, if available.
 	 * @param configuration Navigation target configuration
 	 * @param authContext AuthContext
 	 * @return The current {@link Authentication}, or <code>null</code> if none

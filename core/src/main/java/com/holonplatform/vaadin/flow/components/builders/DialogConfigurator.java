@@ -36,8 +36,7 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	/**
 	 * Add given component to the dialog content.
 	 * <p>
-	 * If a dialog message is configured, the component will be placed after the
-	 * dialog message element.
+	 * If a dialog message is configured, the component will be placed after the dialog message element.
 	 * </p>
 	 * @param component The component to add (not null)
 	 * @return this
@@ -47,8 +46,7 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	/**
 	 * Add given {@link HasComponent} component to the dialog content.
 	 * <p>
-	 * If a dialog message is configured, the component will be placed after the
-	 * dialog message element.
+	 * If a dialog message is configured, the component will be placed after the dialog message element.
 	 * </p>
 	 * @param component The component to add (not null)
 	 * @return this
@@ -59,16 +57,15 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	}
 
 	/**
-	 * Add given component to the dialog toolbar, shown at the bottom of the dialog
-	 * area.
+	 * Add given component to the dialog toolbar, shown at the bottom of the dialog area.
 	 * @param component The toolbar component to add (not null)
 	 * @return this
 	 */
 	C withToolbarComponent(Component component);
 
 	/**
-	 * Add given {@link HasComponent} component to the dialog toolbar, shown at the
-	 * bottom of the dialog area.
+	 * Add given {@link HasComponent} component to the dialog toolbar, shown at the bottom of the dialog
+	 * area.
 	 * @param component The toolbar component to add (not null)
 	 * @return this
 	 */
@@ -82,11 +79,11 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	 * @param listener the listener to add (not null)
 	 * @return this
 	 */
-	C withOpenedChangeListener(ComponentEventListener<OpenedChangeEvent<Dialog>> listener);
+	C withOpenedChangeListener(ComponentEventListener<OpenedChangeEvent> listener);
 
 	/**
-	 * Adds a listener that is called after user finishes resizing the overlay. It
-	 * is called only if resizing is enabled.
+	 * Adds a listener that is called after user finishes resizing the overlay. It is called only if
+	 * resizing is enabled.
 	 * @param listener the listener to add (not null)
 	 * @return this
 	 * @since 5.5.0
@@ -95,8 +92,8 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 
 	/**
 	 * Sets whether dialog can be resized by user or not.
-	 * @param resizable <code>true</code> to enabled resizing of the dialog,
-	 *                  <code>false</code> otherwise.
+	 * @param resizable <code>true</code> to enabled resizing of the dialog, <code>false</code>
+	 *        otherwise.
 	 * @return this
 	 * @since 5.5.0
 	 */
@@ -105,11 +102,9 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	/**
 	 * Sets whether dialog is enabled to be dragged by the user or not.
 	 * <p>
-	 * To allow an element inside the dialog to be dragged by the user (for
-	 * instance, a header inside the dialog), a class {@code "draggable"} can be
-	 * added to it.
-	 * @param draggable <code>true</code> to enable dragging of the dialog,
-	 *                  <code>false</code> otherwise
+	 * To allow an element inside the dialog to be dragged by the user (for instance, a header inside
+	 * the dialog), a class {@code "draggable"} can be added to it.
+	 * @param draggable <code>true</code> to enable dragging of the dialog, <code>false</code> otherwise
 	 * @return this
 	 * @since 5.5.0
 	 */
@@ -118,12 +113,11 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 	/**
 	 * Sets whether component will open modal or modeless dialog.
 	 * <p>
-	 * Note: When dialog is set to be modeless, then it's up to you to provide means
-	 * for it to be closed (eg. a button). The reason being that a modeless dialog
-	 * allows user to interact with the interface under it and won't be closed by
-	 * clicking outside or the ESC key.
-	 * @param modal <code>false</code> to enable dialog to open as modeless modal,
-	 *              <code>true</code> otherwise.
+	 * Note: When dialog is set to be modeless, then it's up to you to provide means for it to be closed
+	 * (eg. a button). The reason being that a modeless dialog allows user to interact with the
+	 * interface under it and won't be closed by clicking outside or the ESC key.
+	 * @param modal <code>false</code> to enable dialog to open as modeless modal, <code>true</code>
+	 *        otherwise.
 	 * @return this
 	 * @since 5.5.0
 	 */
@@ -143,8 +137,8 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 		 * <p>
 		 * By default, the dialog is closable with esc.
 		 * </p>
-		 * @param closeOnEsc <code>true</code> to enable closing this dialog with the
-		 *                   esc-key, <code>false</code> to disable it
+		 * @param closeOnEsc <code>true</code> to enable closing this dialog with the esc-key,
+		 *        <code>false</code> to disable it
 		 * @return this
 		 */
 		C closeOnEsc(boolean closeOnEsc);
@@ -154,9 +148,8 @@ public interface DialogConfigurator<C extends DialogConfigurator<C>> extends Com
 		 * <p>
 		 * By default, the dialog is closable with an outside click.
 		 * </p>
-		 * @param closeOnOutsideClick <code>true</code> to enable closing this dialog
-		 *                            with an outside click, <code>false</code> to
-		 *                            disable it
+		 * @param closeOnOutsideClick <code>true</code> to enable closing this dialog with an outside click,
+		 *        <code>false</code> to disable it
 		 * @return this
 		 */
 		C closeOnOutsideClick(boolean closeOnOutsideClick);

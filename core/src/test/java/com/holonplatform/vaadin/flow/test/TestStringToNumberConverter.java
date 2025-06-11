@@ -30,7 +30,10 @@ import org.junit.jupiter.api.Test;
 import com.holonplatform.core.Context;
 import com.holonplatform.core.i18n.LocalizationContext;
 import com.holonplatform.vaadin.flow.components.converters.StringToNumberConverter;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.internal.CurrentInstance;
@@ -44,24 +47,28 @@ public class TestStringToNumberConverter {
 
 		StringToNumberConverter<Double> converter = StringToNumberConverter.create(Double.class);
 
-		String text = converter.convertToPresentation(dbl, new ValueContext(Locale.US));
+		String text = converter.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12345.67", text);
 
 		StringToNumberConverter<Double> converter1 = StringToNumberConverter.create(Double.class);
 		converter1.setUseGrouping(true);
 
-		text = converter1.convertToPresentation(dbl, new ValueContext(Locale.US));
+		text = converter1.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12,345.67", text);
 
-		Result<Double> result = converter1.convertToModel(text, new ValueContext(Locale.US));
+		Result<Double> result = converter1.convertToModel(text,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(result);
 		assertFalse(result.isError());
 		assertEquals(dbl, result.getOrThrow(error -> new RuntimeException(error)));
 
 		withUILocale(Locale.US, () -> {
-			String text2 = converter1.convertToPresentation(dbl, new ValueContext());
+			String text2 = converter1.convertToPresentation(dbl,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 			assertNotNull(text2);
 			assertEquals("12,345.67", text2);
 
@@ -70,7 +77,8 @@ public class TestStringToNumberConverter {
 		});
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter1.convertToPresentation(dbl, new ValueContext((Locale) null));
+			String text2 = converter1.convertToPresentation(dbl,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, (Locale) null));
 			assertNotNull(text2);
 			assertEquals("12.345,67", text2);
 
@@ -82,29 +90,36 @@ public class TestStringToNumberConverter {
 		StringToNumberConverter<Double> converter2 = StringToNumberConverter.create(Double.class, Locale.US);
 		converter2.setUseGrouping(true);
 
-		text = converter2.convertToPresentation(dbl, new ValueContext(Locale.US));
+		text = converter2.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12,345.67", text);
-		text = converter2.convertToPresentation(dbl, new ValueContext());
+		text = converter2.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 		assertNotNull(text);
 		assertEquals("12,345.67", text);
-		text = converter2.convertToPresentation(dbl, new ValueContext(Locale.ITALIAN));
+		text = converter2.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.ITALIAN));
 		assertNotNull(text);
 		assertEquals("12,345.67", text);
 
 		withUILocale(Locale.FRANCE, () -> {
-			String text2 = converter2.convertToPresentation(dbl, new ValueContext());
+			String text2 = converter2.convertToPresentation(dbl,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 			assertNotNull(text2);
 			assertEquals("12,345.67", text2);
 		});
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter2.convertToPresentation(dbl, new ValueContext());
+			String text2 = converter2.convertToPresentation(dbl,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 			assertNotNull(text2);
 			assertEquals("12,345.67", text2);
 		});
 
-		Double dv = converter2.convertToModel("123.", new ValueContext(Locale.US))
+		Double dv = converter2
+				.convertToModel("123.",
+						new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US))
 				.getOrThrow(error -> new RuntimeException(error));
 		assertEquals(Double.valueOf(123d), dv);
 
@@ -112,30 +127,36 @@ public class TestStringToNumberConverter {
 		StringToNumberConverter<Double> converter4 = StringToNumberConverter.create(Double.class,
 				new DecimalFormat("#.00", new DecimalFormatSymbols(Locale.ITALY)));
 
-		text = converter4.convertToPresentation(dbl, new ValueContext(Locale.US));
+		text = converter4.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12345,67", text);
 
-		text = converter4.convertToPresentation(dbl, new ValueContext());
+		text = converter4.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 		assertNotNull(text);
 		assertEquals("12345,67", text);
 
-		text = converter4.convertToPresentation(12345.6d, new ValueContext());
+		text = converter4.convertToPresentation(12345.6d,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 		assertNotNull(text);
 		assertEquals("12345,60", text);
 
 		// fixed pattern
 		StringToNumberConverter<Double> converter5 = StringToNumberConverter.create(Double.class, "#.00");
 
-		text = converter5.convertToPresentation(dbl, new ValueContext(Locale.US));
+		text = converter5.convertToPresentation(dbl,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12345.67", text);
-		text = converter5.convertToPresentation(12345.6d, new ValueContext(Locale.US));
+		text = converter5.convertToPresentation(12345.6d,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12345.60", text);
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter5.convertToPresentation(dbl, new ValueContext((Locale) null));
+			String text2 = converter5.convertToPresentation(dbl,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, (Locale) null));
 			assertNotNull(text2);
 			assertEquals("12345,67", text2);
 		});
@@ -148,11 +169,13 @@ public class TestStringToNumberConverter {
 		StringToNumberConverter<Double> converter1 = StringToNumberConverter.builder(Double.class).minDecimals(2)
 				.build();
 
-		String text = converter1.convertToPresentation(123.5d, new ValueContext(Locale.US));
+		String text = converter1.convertToPresentation(123.5d,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("123.50", text);
 
-		text = converter1.convertToPresentation(123d, new ValueContext(Locale.US));
+		text = converter1.convertToPresentation(123d,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("123.00", text);
 
@@ -165,24 +188,28 @@ public class TestStringToNumberConverter {
 
 		StringToNumberConverter<Integer> converter = StringToNumberConverter.create(Integer.class);
 
-		String text = converter.convertToPresentation(itg, new ValueContext(Locale.US));
+		String text = converter.convertToPresentation(itg,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12345", text);
 
 		StringToNumberConverter<Integer> converter1 = StringToNumberConverter.create(Integer.class);
 		converter1.setUseGrouping(true);
 
-		text = converter1.convertToPresentation(itg, new ValueContext(Locale.US));
+		text = converter1.convertToPresentation(itg,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(text);
 		assertEquals("12,345", text);
 
-		Result<Integer> result = converter1.convertToModel(text, new ValueContext(Locale.US));
+		Result<Integer> result = converter1.convertToModel(text,
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(result);
 		assertFalse(result.isError());
 		assertEquals(itg, result.getOrThrow(error -> new RuntimeException(error)));
 
 		withUILocale(Locale.US, () -> {
-			String text2 = converter1.convertToPresentation(itg, new ValueContext());
+			String text2 = converter1.convertToPresentation(itg,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null));
 			assertNotNull(text2);
 			assertEquals("12,345", text2);
 
@@ -190,7 +217,8 @@ public class TestStringToNumberConverter {
 		});
 
 		withContextLocale(Locale.ITALY, () -> {
-			String text2 = converter1.convertToPresentation(itg, new ValueContext((Locale) null));
+			String text2 = converter1.convertToPresentation(itg,
+					new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, (Locale) null));
 			assertNotNull(text2);
 			assertEquals("12.345", text2);
 
@@ -201,7 +229,8 @@ public class TestStringToNumberConverter {
 		StringToNumberConverter<Integer> converter3 = StringToNumberConverter.create(Integer.class);
 		converter3.setAllowNegatives(false);
 
-		result = converter3.convertToModel("-123", new ValueContext(Locale.US));
+		result = converter3.convertToModel("-123",
+				new ValueContext((Binder<?>) null, (Component) null, (HasValue<?, ?>) null, Locale.US));
 		assertNotNull(result);
 		assertTrue(result.isError());
 

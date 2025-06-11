@@ -200,8 +200,7 @@ public class ExampleListing {
 				.columnReorderingAllowed(true) // <2>
 				.resizable(true) // <3>
 				.frozenColumns(1) // <4>
-				.heightByRows(true) // <5>
-				.verticalScrollingEnabled(true) // <6>
+				.allRowsVisible(true) // <5>
 				.multiSort(true) // <7>
 				.autoWidth(ID) // <8>
 				.columnsAutoWidth() // <9>

@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.navigator.test.data;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;

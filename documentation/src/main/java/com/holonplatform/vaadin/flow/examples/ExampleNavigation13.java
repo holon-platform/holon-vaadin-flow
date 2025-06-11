@@ -47,7 +47,7 @@ public class ExampleNavigation13 {
 		Navigator navigator = Navigator.get(); // <1>
 
 		navigator.navigateTo(View.class, "value"); // <2>
-		navigator.navigateTo(View.class, "value", Collections.singletonMap("myparam", new Integer(1))); // <3>
+		navigator.navigateTo(View.class, "value", Collections.singletonMap("myparam", Integer.valueOf(1))); // <3>
 		// end::navigator1[]
 	}
 

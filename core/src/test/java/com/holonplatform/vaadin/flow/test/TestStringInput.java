@@ -57,7 +57,7 @@ import com.vaadin.flow.dom.ElementConstants;
 import com.vaadin.flow.internal.CurrentInstance;
 
 public class TestStringInput {
-	
+
 	private static UI ui;
 
 	@BeforeAll
@@ -460,15 +460,6 @@ public class TestStringInput {
 		Input<String> input = Input.string().pattern("[0-9]*").build();
 		assertTrue(input.getComponent() instanceof TextField);
 		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
-
-		input = Input.string().pattern("[0-9]*").preventInvalidInput(true).build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertEquals("[0-9]*", ((TextField) input.getComponent()).getPattern());
-		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
-
-		input = Input.string().pattern("[0-9]*").preventInvalidInput().build();
-		assertTrue(input.getComponent() instanceof TextField);
-		assertTrue(((TextField) input.getComponent()).isPreventInvalidInput());
 
 	}
 

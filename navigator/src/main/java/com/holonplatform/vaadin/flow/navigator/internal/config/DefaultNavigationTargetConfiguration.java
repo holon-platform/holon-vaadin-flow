@@ -38,9 +38,6 @@ import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-
 import com.holonplatform.auth.annotations.Authenticate;
 import com.holonplatform.core.i18n.Caption;
 import com.holonplatform.core.i18n.Localizable;
@@ -58,6 +55,10 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.router.internal.RouteUtil;
+import com.vaadin.flow.server.VaadinContext;
+
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 /**
  * Default {@link NavigationTargetConfiguration} implementation.
@@ -71,6 +72,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	private static final Logger LOGGER = VaadinLogger.create();
 
 	private final Class<?> navigationTarget;
+	private final VaadinContext vaadinContext;
 
 	private final String routePath;
 
@@ -89,16 +91,17 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	 * @param navigationTarget The navigation target class (not null)
 	 * @throws NavigationTargetConfigurationException If a configuration error occurred
 	 */
-	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget) {
+	public DefaultNavigationTargetConfiguration(Class<?> navigationTarget, VaadinContext vaadinContext) {
 		super();
 		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
 		this.navigationTarget = navigationTarget;
+		this.vaadinContext = vaadinContext;
 		this.authenticate = getAuthentication(navigationTarget);
 		final Optional<Set<String>> roles = getAuthorizationRoles(navigationTarget);
 		this.authorization = roles.orElse(Collections.emptySet());
 		this.authenticationRequired = (this.authenticate != null) || roles.isPresent();
 		if (navigationTarget.isAnnotationPresent(Route.class)) {
-			this.routePath = RouteUtil.resolve(navigationTarget, navigationTarget.getAnnotation(Route.class));
+			this.routePath = RouteUtil.resolve(vaadinContext, navigationTarget);
 		} else {
 			this.routePath = null;
 		}
@@ -115,7 +118,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getNavigationTarget()
+	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#
+	 * getNavigationTarget()
 	 */
 	@Override
 	public Class<?> getNavigationTarget() {
@@ -124,7 +128,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getRoutePath()
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getRoutePath()
 	 */
 	@Override
 	public Optional<String> getRoutePath() {
@@ -142,7 +147,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getURLParameters()
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getURLParameters()
 	 */
 	@Override
 	public Map<String, QueryParameterDefinition> getQueryParameters() {
@@ -151,7 +157,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getOnShowMethods()
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getOnShowMethods()
 	 */
 	@Override
 	public List<Method> getOnShowMethods() {
@@ -160,7 +167,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#isAuthenticationRequired()
+	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#
+	 * isAuthenticationRequired()
 	 */
 	@Override
 	public boolean isAuthenticationRequired() {
@@ -169,7 +177,9 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthentication()
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthentication(
+	 * )
 	 */
 	@Override
 	public Optional<Authenticate> getAuthentication() {
@@ -178,7 +188,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthorization()
+	 * @see
+	 * com.holonplatform.vaadin.flow.navigator.internal.NavigationTargetConfiguration#getAuthorization()
 	 */
 	@Override
 	public Set<String> getAuthorization() {
@@ -186,21 +197,22 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Get the {@link Authenticate} annotation of the given navigation target, checking its parent layouts too.
+	 * Get the {@link Authenticate} annotation of the given navigation target, checking its parent
+	 * layouts too.
 	 * @param navigationTarget The navigation target
 	 * @return The {@link Authenticate} annotation, <code>null</code> if not found
 	 */
-	private static Authenticate getAuthentication(Class<?> navigationTarget) {
+	private Authenticate getAuthentication(Class<?> navigationTarget) {
 		// check target class
 		if (navigationTarget.isAnnotationPresent(Authenticate.class)) {
 			return navigationTarget.getAnnotation(Authenticate.class);
 		}
 		// check parent layouts
 		final String route = navigationTarget.isAnnotationPresent(Route.class)
-				? RouteUtil.getRoutePath(navigationTarget, navigationTarget.getAnnotation(Route.class))
+				? RouteUtil.getRoutePath(vaadinContext, navigationTarget)
 				: null;
 		final List<Class<? extends RouterLayout>> layouts = (route != null)
-				? RouteUtil.getParentLayouts(navigationTarget, route)
+				? RouteUtil.getParentLayouts(vaadinContext, navigationTarget, route)
 				: RouteUtil.getParentLayoutsForNonRouteTarget(navigationTarget);
 		for (Class<? extends RouterLayout> layout : layouts) {
 			if (layout.isAnnotationPresent(Authenticate.class)) {
@@ -247,7 +259,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Check given method to control if it is valid for given annotation type and optional parameter type.
+	 * Check given method to control if it is valid for given annotation type and optional parameter
+	 * type.
 	 * @param navigationTarget Navigation target class
 	 * @param annotationType Method annotation type
 	 * @param optionalParameterType Optional method parameter type
@@ -453,8 +466,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Get the <code>public</code> annotated class methods with given <code>annotationType</code>, inspecting the class
-	 * hierarchy.
+	 * Get the <code>public</code> annotated class methods with given <code>annotationType</code>,
+	 * inspecting the class hierarchy.
 	 * @param cls The class to inspect
 	 * @param annotationType The annotation class to detect
 	 * @return Stream of <code>public</code> annotated class methods
@@ -476,8 +489,8 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 	}
 
 	/**
-	 * Get the <code>public</code> annotated class methods with given <code>annotationType</code>, inspecting the class
-	 * hierarchy.
+	 * Get the <code>public</code> annotated class methods with given <code>annotationType</code>,
+	 * inspecting the class hierarchy.
 	 * @param cls The class to inspect
 	 * @param annotationType The annotation class to detect
 	 * @return Stream of annotated fields

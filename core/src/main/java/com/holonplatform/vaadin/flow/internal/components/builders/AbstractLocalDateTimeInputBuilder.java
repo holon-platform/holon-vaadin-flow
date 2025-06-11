@@ -51,8 +51,8 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * Base {@link LocalDateTimeInputConfigurator} implementation using a
- * {@link DateTimePicker} as concrete component.
+ * Base {@link LocalDateTimeInputConfigurator} implementation using a {@link DateTimePicker} as
+ * concrete component.
  *
  * @param <C> Concrete configurator type
  *
@@ -168,46 +168,37 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#
+	 * @see com.holonplatform.vaadin.flow.components.builders.LocalDateTimeInputBuilder#
 	 * spacing(boolean)
 	 */
 	@Deprecated
 	@Override
 	public C spacing(boolean spacing) {
-		// Not supported in Vaadin DateTimePicker
-		// getComponent().setSpacing(spacing);
+		// Not supported in Vaadin DateTimePicker getComponent().setSpacing(spacing);
 		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#
 	 * timeInputWidth(java.lang.String)
 	 */
 	@Deprecated
 	@Override
 	public C timeInputWidth(String timeInputWidth) {
-		// Not supported in Vaadin DateTimePicker
-		// getComponent().setTimeInputWidth(timeInputWidth);
+		// Not supported in Vaadin DateTimePicker getComponent().setTimeInputWidth(timeInputWidth);
 		return getConfigurator();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasTimeInputConfigurator#
 	 * timeStep(java.time.Duration)
 	 */
 	@Deprecated
 	@Override
 	public C timeStep(Duration step) {
-		// Not supported in Vaadin DateTimePicker
-		// getComponent().setStep(step);
+		// Not supported in Vaadin DateTimePicker getComponent().setStep(step);
 		return getConfigurator();
 	}
 
@@ -219,10 +210,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly(
-	 * boolean)
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#readOnly( boolean)
 	 */
 	@Override
 	public C readOnly(boolean readOnly) {
@@ -232,9 +220,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#withValue
 	 * (java.lang.Object)
 	 */
 	@Override
@@ -245,10 +231,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required(
-	 * )
+	 * @see com.holonplatform.vaadin.flow.components.builders.InputConfigurator#required( )
 	 */
 	@Override
 	public C required() {
@@ -257,9 +240,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
-	 * tabIndex(int)
+	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator# tabIndex(int)
 	 */
 	@Override
 	public C tabIndex(int tabIndex) {
@@ -269,7 +250,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withFocusListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
@@ -289,7 +269,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withBlurListener(com.vaadin.flow. component.ComponentEventListener)
 	 */
@@ -309,7 +288,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.FocusableConfigurator#
 	 * withFocusShortcut(com.vaadin.flow. component.Key)
 	 */
@@ -320,9 +298,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasPlaceholderConfigurator#
 	 * placeholder(com.holonplatform.core. i18n.Localizable)
 	 */
 	@Override
@@ -333,9 +309,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasLabelConfigurator#label(
 	 * com.holonplatform.core.i18n. Localizable)
 	 */
 	@Override
@@ -346,10 +320,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#locale(
-	 * java.util.Locale)
+	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#locale( java.util.Locale)
 	 */
 	@Override
 	public C locale(Locale locale) {
@@ -359,7 +330,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.BaseDateInputBuilder#
 	 * updateLocaleOnAttach(boolean)
 	 */
@@ -384,10 +354,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#min(java.
-	 * time.LocalDate)
+	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#min(java. time.LocalDate)
 	 */
 	@Override
 	public C min(LocalDateTime min) {
@@ -397,10 +364,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#max(java.
-	 * time.LocalDate)
+	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#max(java. time.LocalDate)
 	 */
 	@Override
 	public C max(LocalDateTime max) {
@@ -410,7 +374,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#
 	 * weekNumbersVisible(boolean)
 	 */
@@ -422,7 +385,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#
 	 * localization(com.holonplatform.vaadin.flow.
 	 * components.builders.DateInputBuilder.CalendarLocalization)
@@ -435,9 +397,7 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder#
-	 * localization()
+	 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder# localization()
 	 */
 	@Override
 	public CalendarLocalizationBuilder<LocalDateTime, C> localization() {
@@ -461,9 +421,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 		if (localization.getFirstDayOfWeek() != null) {
 			dpi.setFirstDayOfWeek(localization.getFirstDayOfWeek().intValue());
 		}
-		localization.getWeek().ifPresent(m -> dpi.setWeek(LocalizationProvider.localize(m).orElse("")));
-		localization.getCalendar().ifPresent(m -> dpi.setCalendar(LocalizationProvider.localize(m).orElse("")));
-		localization.getClear().ifPresent(m -> dpi.setClear(LocalizationProvider.localize(m).orElse("")));
 		localization.getToday().ifPresent(m -> dpi.setToday(LocalizationProvider.localize(m).orElse("")));
 		localization.getCancel().ifPresent(m -> dpi.setCancel(LocalizationProvider.localize(m).orElse("")));
 		return dpi;
@@ -483,7 +440,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#monthNames( java.util.List)
 		 */
@@ -495,7 +451,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#weekDays(java. util.List)
 		 */
@@ -507,7 +462,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#weekDaysShort( java.util.List)
 		 */
@@ -519,7 +473,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#firstDayOfWeek (int)
 		 */
@@ -531,7 +484,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#week(com. holonplatform.core.i18n.Localizable)
 		 */
@@ -543,10 +495,8 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
-		 * CalendarLocalizationBuilder#calendar(com.
-		 * holonplatform.core.i18n.Localizable)
+		 * CalendarLocalizationBuilder#calendar(com. holonplatform.core.i18n.Localizable)
 		 */
 		@Override
 		public CalendarLocalizationBuilder<D, B> calendar(Localizable message) {
@@ -556,7 +506,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#clear(com. holonplatform.core.i18n.Localizable)
 		 */
@@ -568,7 +517,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#today(com. holonplatform.core.i18n.Localizable)
 		 */
@@ -580,7 +528,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#cancel(com. holonplatform.core.i18n.Localizable)
 		 */
@@ -592,7 +539,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalizationBuilder#set()
 		 */
@@ -653,7 +599,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getMonthNames()
 		 */
@@ -664,7 +609,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getWeekdays()
 		 */
@@ -675,7 +619,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getWeekdaysShort()
 		 */
@@ -686,7 +629,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getFirstDayOfWeek()
 		 */
@@ -697,7 +639,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getWeek()
 		 */
@@ -708,7 +649,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getCalendar()
 		 */
@@ -719,7 +659,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getClear()
 		 */
@@ -730,7 +669,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getToday()
 		 */
@@ -741,7 +679,6 @@ public abstract class AbstractLocalDateTimeInputBuilder<C extends LocalDateTimeI
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.holonplatform.vaadin.flow.components.builders.DateInputBuilder.
 		 * CalendarLocalization#getCancel()
 		 */

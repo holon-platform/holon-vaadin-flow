@@ -23,6 +23,7 @@ import com.holonplatform.core.internal.Logger;
 import com.holonplatform.core.internal.utils.ObjectUtils;
 import com.holonplatform.vaadin.flow.internal.VaadinLogger;
 import com.holonplatform.vaadin.flow.navigator.exceptions.NavigationTargetConfigurationException;
+import com.vaadin.flow.server.VaadinContext;
 
 /**
  * Default {@link NavigationTargetConfigurationRegistry} implementation.
@@ -58,26 +59,21 @@ public class DefaultNavigationTargetConfigurationRegistry implements NavigationT
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#isInitialized()
+	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#
+	 * isInitialized()
 	 */
 	@Override
 	public boolean isInitialized() {
 		return initialized;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#initialize(java.
-	 * util.Set)
-	 */
 	@Override
-	public void initialize(Set<Class<?>> classes) {
+	public void initialize(Set<Class<?>> classes, VaadinContext vaadinContext) {
 		if (classes != null) {
 			for (Class<?> cls : classes) {
 				if (cls != null) {
 					LOGGER.debug(() -> "Create NavigationTargetConfiguration for [" + cls.getName() + "]");
-					configurations.put(cls, NavigationTargetConfiguration.create(cls));
+					configurations.put(cls, NavigationTargetConfiguration.create(cls, vaadinContext));
 				}
 			}
 		}
@@ -87,16 +83,16 @@ public class DefaultNavigationTargetConfigurationRegistry implements NavigationT
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#getConfiguration(
-	 * java.lang.Class)
+	 * com.holonplatform.vaadin.flow.navigator.internal.config.NavigationTargetConfigurationRegistry#
+	 * getConfiguration( java.lang.Class)
 	 */
 	@Override
-	public NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget)
+	public NavigationTargetConfiguration getConfiguration(Class<?> navigationTarget, VaadinContext vaadinContext)
 			throws NavigationTargetConfigurationException {
 		ObjectUtils.argumentNotNull(navigationTarget, "Navigation target class must be not null");
 		return configurations.computeIfAbsent(navigationTarget, ntc -> {
 			LOGGER.debug(() -> "Create NavigationTargetConfiguration for [" + navigationTarget.getName() + "]");
-			return NavigationTargetConfiguration.create(ntc);
+			return NavigationTargetConfiguration.create(ntc, vaadinContext);
 		});
 	}
 

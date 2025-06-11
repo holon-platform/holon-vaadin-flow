@@ -15,7 +15,7 @@
  */
 package com.holonplatform.vaadin.flow.examples;
 
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;

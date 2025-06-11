@@ -54,10 +54,10 @@ public class ExampleNavigation12 {
 		Navigator navigator = Navigator.get(); // <1>
 
 		navigator.navigateTo("some/path"); // <2>
-		navigator.navigateTo("some/path", Collections.singletonMap("myparam", new Integer(1))); // <3>
+		navigator.navigateTo("some/path", Collections.singletonMap("myparam", Integer.valueOf(1))); // <3>
 
 		navigator.navigateTo(View.class); // <4>
-		navigator.navigateTo(View.class, Collections.singletonMap("myparam", new Integer(1))); // <5>
+		navigator.navigateTo(View.class, Collections.singletonMap("myparam", Integer.valueOf(1))); // <5>
 
 		navigator.navigateToLocation("some/path?myparam=1"); // <6>
 		// end::navigator3[]

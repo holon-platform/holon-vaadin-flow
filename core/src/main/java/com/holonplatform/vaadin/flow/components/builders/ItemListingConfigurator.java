@@ -563,12 +563,12 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * If <code>true</code>, the listing's height is defined by the number of its
 	 * rows. All items are fetched from the data provider, and the Grid shows no
 	 * vertical scroll bar.
-	 * @param heightByRows <code>true</code> to make listing compute its height by
+	 * @param allRowsVisible <code>true</code> to make listing compute its height by
 	 *                     the number of rows, <code>false</code> for the default
 	 *                     behavior
 	 * @return this
 	 */
-	C heightByRows(boolean heightByRows);
+	C allRowsVisible(boolean allRowsVisible);
 
 	/**
 	 * Sets whether column reordering is allowed or not.
@@ -701,15 +701,6 @@ public interface ItemListingConfigurator<T, P, L extends ItemListing<T, P>, C ex
 	 * @return this
 	 */
 	C multiSort(boolean multiSort);
-
-	/**
-	 * Enables or disables the vertical scrolling on the Grid web component. By
-	 * default, the scrolling is enabled.
-	 * @param enabled <code>true</code> to enable vertical scrolling,
-	 *                <code>false</code> to disabled it
-	 * @return this
-	 */
-	C verticalScrollingEnabled(boolean enabled);
 
 	/**
 	 * Get a {@link ItemListingContextMenuBuilder} to configure and add a context
