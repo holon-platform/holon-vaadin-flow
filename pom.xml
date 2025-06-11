@@ -108,6 +108,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<doclint>none</doclint>
+				</configuration>
 				<executions>
 					<execution>
 						<id>aggregate-javadocs</id>
@@ -121,7 +124,6 @@
 							<excludePackageNames>*.internal.*;*.examples.*</excludePackageNames>
 							<quiet>true</quiet>
 							<sourcepath>src/main/java</sourcepath>
-							<doclint>none</doclint>
 						</configuration>
 					</execution>
 				</executions>
