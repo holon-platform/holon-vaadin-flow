@@ -542,7 +542,7 @@ public class DefaultNavigationTargetConfiguration implements NavigationTargetCon
 			Boolean present = SECURITY_ANNOTATIONS_PRESENT.get(classLoader);
 			return (present != null && present.booleanValue());
 		}
-		boolean present = ClassUtils.isPresent("javax.annotation.security.RolesAllowed", classLoader);
+		boolean present = ClassUtils.isPresent("jakarta.annotation.security.RolesAllowed", classLoader);
 		SECURITY_ANNOTATIONS_PRESENT.put(classLoader, present);
 		return present;
 	}
