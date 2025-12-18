@@ -72,7 +72,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#padding(boolean)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#padding(boolean)
 	 */
 	@Override
 	public C padding(boolean padding) {
@@ -82,7 +83,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#spacing(boolean)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#spacing(boolean)
 	 */
 	@Override
 	public C spacing(boolean spacing) {
@@ -92,8 +94,9 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#boxSizing(com.vaadin.flow.
-	 * component. orderedlayout.BoxSizing)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#boxSizing(com.vaadin
+	 * .flow. component. orderedlayout.BoxSizing)
 	 */
 	@Override
 	public C boxSizing(BoxSizing boxSizing) {
@@ -101,10 +104,17 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 		return getConfigurator();
 	}
 
+	@Override
+	public C wrap(boolean wrap) {
+		themableLayoutConfigurator.wrap(wrap);
+		return getConfigurator();
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignItems(com.vaadin.flow.
-	 * component. orderedlayout.FlexComponent.Alignment)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignItems(com.vaadin
+	 * .flow. component. orderedlayout.FlexComponent.Alignment)
 	 */
 	@Override
 	public C alignItems(Alignment alignment) {
@@ -114,8 +124,9 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignSelf(com.vaadin.flow.
-	 * component. orderedlayout.FlexComponent.Alignment, com.vaadin.flow.component.HasElement[])
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#alignSelf(com.vaadin.
+	 * flow. component. orderedlayout.FlexComponent.Alignment, com.vaadin.flow.component.HasElement[])
 	 */
 	@Override
 	public C alignSelf(Alignment alignment, HasElement... elementContainers) {
@@ -137,8 +148,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#justifyContentMode(com.vaadin.
-	 * flow. component.orderedlayout.FlexComponent.JustifyContentMode)
+	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#justifyContentMode(
+	 * com.vaadin. flow. component.orderedlayout.FlexComponent.JustifyContentMode)
 	 */
 	@Override
 	public C justifyContentMode(JustifyContentMode justifyContentMode) {
@@ -149,8 +160,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#expand(com.vaadin.flow.component.
-	 * Component[])
+	 * com.holonplatform.vaadin.flow.components.builders.FlexComponentConfigurator#expand(com.vaadin.
+	 * flow.component. Component[])
 	 */
 	@Override
 	public C expand(Component... componentsToExpand) {
@@ -160,7 +171,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.String[])
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleNames(java.lang.
+	 * String[])
 	 */
 	@Override
 	public C styleNames(String... styleNames) {
@@ -170,7 +182,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.String)
+	 * @see com.holonplatform.vaadin.flow.components.builders.HasStyleConfigurator#styleName(java.lang.
+	 * String)
 	 */
 	@Override
 	public C styleName(String styleName) {
@@ -180,7 +193,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#width(java.lang.String)
 	 */
 	@Override
 	public C width(String width) {
@@ -190,7 +204,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
+	 * @see
+	 * com.holonplatform.vaadin.flow.components.builders.HasSizeConfigurator#height(java.lang.String)
 	 */
 	@Override
 	public C height(String height) {
@@ -201,8 +216,8 @@ public abstract class AbstractThemableFlexComponentConfigurator<L extends Compon
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.holonplatform.vaadin.flow.components.builders.HasComponentsConfigurator#add(com.vaadin.flow.component.
-	 * Component[])
+	 * com.holonplatform.vaadin.flow.components.builders.HasComponentsConfigurator#add(com.vaadin.flow.
+	 * component. Component[])
 	 */
 	@Override
 	public C add(Component... components) {

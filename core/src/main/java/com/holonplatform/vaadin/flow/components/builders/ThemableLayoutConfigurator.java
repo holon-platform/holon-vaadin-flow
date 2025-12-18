@@ -28,16 +28,17 @@ import com.vaadin.flow.component.orderedlayout.ThemableLayout;
 public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator<C>> extends HasElementConfigurator<C> {
 
 	/**
-	 * Enable or disable layout margins, i.e. toggles <code>margin</code> theme setting for the element. If a theme
-	 * supports this attribute, it will apply or remove margin to the element.
-	 * @param margin adds <code>margin</code> theme setting if <code>true</code> or removes it if <code>false</code>
+	 * Enable or disable layout margins, i.e. toggles <code>margin</code> theme setting for the element.
+	 * If a theme supports this attribute, it will apply or remove margin to the element.
+	 * @param margin adds <code>margin</code> theme setting if <code>true</code> or removes it if
+	 *        <code>false</code>
 	 * @return this
 	 */
 	C margin(boolean margin);
 
 	/**
-	 * Enable layout margins, i.e. toggles {@code margin} theme setting for the element. If a theme supports this
-	 * attribute, it will apply margin to the element.
+	 * Enable layout margins, i.e. toggles {@code margin} theme setting for the element. If a theme
+	 * supports this attribute, it will apply margin to the element.
 	 * @return this
 	 */
 	default C margin() {
@@ -45,8 +46,8 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	}
 
 	/**
-	 * Disable layout margins, i.e. toggles {@code margin} theme setting for the element. If a theme supports this
-	 * attribute, it will remove margin to the element.
+	 * Disable layout margins, i.e. toggles {@code margin} theme setting for the element. If a theme
+	 * supports this attribute, it will remove margin to the element.
 	 * @return this
 	 */
 	default C withoutMargin() {
@@ -54,16 +55,17 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	}
 
 	/**
-	 * Toggles <code>padding</code> theme setting for the element. If a theme supports this attribute, it will apply or
-	 * remove padding to the element.
-	 * @param padding adds <code>padding</code> theme setting if <code>true</code> or removes it if <code>false</code>
+	 * Toggles <code>padding</code> theme setting for the element. If a theme supports this attribute,
+	 * it will apply or remove padding to the element.
+	 * @param padding adds <code>padding</code> theme setting if <code>true</code> or removes it if
+	 *        <code>false</code>
 	 * @return this
 	 */
 	C padding(boolean padding);
 
 	/**
-	 * Add the <code>padding</code> theme setting for the element. If a theme supports this attribute, it will apply
-	 * padding to the element.
+	 * Add the <code>padding</code> theme setting for the element. If a theme supports this attribute,
+	 * it will apply padding to the element.
 	 * @return this
 	 */
 	default C padding() {
@@ -71,8 +73,8 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	}
 
 	/**
-	 * Remove the <code>padding</code> theme setting for the element. If a theme supports this attribute, it will remove
-	 * padding to the element.
+	 * Remove the <code>padding</code> theme setting for the element. If a theme supports this
+	 * attribute, it will remove padding to the element.
 	 * @return this
 	 */
 	default C withoutPadding() {
@@ -80,11 +82,11 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	}
 
 	/**
-	 * Toggles <code>spacing</code> theme setting for the element. If a theme supports this attribute, it will apply or
-	 * remove spacing to the element.
+	 * Toggles <code>spacing</code> theme setting for the element. If a theme supports this attribute,
+	 * it will apply or remove spacing to the element.
 	 * <p>
-	 * This method adds medium spacing to the component theme, to set other options, use {@link #withThemeName(String)}.
-	 * List of options possible:
+	 * This method adds medium spacing to the component theme, to set other options, use
+	 * {@link #withThemeName(String)}. List of options possible:
 	 * <ul>
 	 * <li>spacing-xs
 	 * <li>spacing-s
@@ -92,14 +94,15 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	 * <li>spacing-l
 	 * <li>spacing-xl
 	 * </ul>
-	 * @param spacing adds <code>spacing</code> theme setting if <code>true</code> or removes it if <code>false</code>
+	 * @param spacing adds <code>spacing</code> theme setting if <code>true</code> or removes it if
+	 *        <code>false</code>
 	 * @return this
 	 */
 	C spacing(boolean spacing);
 
 	/**
-	 * Apply <code>spacing</code> theme setting for the element. If a theme supports this attribute, it will apply
-	 * spacing to the element.
+	 * Apply <code>spacing</code> theme setting for the element. If a theme supports this attribute, it
+	 * will apply spacing to the element.
 	 * @return this
 	 * @see #spacing(boolean)
 	 */
@@ -108,8 +111,8 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 	}
 
 	/**
-	 * Remove <code>spacing</code> theme setting for the element. If a theme supports this attribute, it will remove
-	 * spacing to the element.
+	 * Remove <code>spacing</code> theme setting for the element. If a theme supports this attribute, it
+	 * will remove spacing to the element.
 	 * @return this
 	 * @see #spacing(boolean)
 	 */
@@ -119,9 +122,40 @@ public interface ThemableLayoutConfigurator<C extends ThemableLayoutConfigurator
 
 	/**
 	 * Sets the {@code box-sizing} CSS property of the layout.
-	 * @param boxSizing the box-sizing of the layout. <code>null</code> is interpreted as {@link BoxSizing#UNDEFINED}
+	 * @param boxSizing the box-sizing of the layout. <code>null</code> is interpreted as
+	 *        {@link BoxSizing#UNDEFINED}
 	 * @return this
 	 */
 	C boxSizing(BoxSizing boxSizing);
+
+	/**
+	 * Sets whether items should wrap to new lines/columns when they exceed the layout's boundaries.
+	 * When enabled, items maintain their size and create new rows or columns as needed, depending on
+	 * the layout's orientation.
+	 * <p>
+	 * When disabled, items will be compressed to fit within a single row/column.
+	 *
+	 * @param wrap true to enable wrapping, false to force items into a single row/column
+	 * @return this
+	 */
+	C wrap(boolean wrap);
+
+	/**
+	 * Sets the <code>wrap</code> theme setting for the element. If a theme supports this attribute, it
+	 * will apply wrap to the element.
+	 * @return this
+	 */
+	default C wrap() {
+		return wrap(true);
+	}
+
+	/**
+	 * Remove the <code>wrap</code> theme setting for the element. If a theme supports this attribute,
+	 * it will remove wrap to the element.
+	 * @return this
+	 */
+	default C withoutWrap() {
+		return wrap(false);
+	}
 
 }

@@ -466,6 +466,18 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 			return configureAndBuild();
 		}
 
+		@Override
+		public BeanListingBuilder<T> emptyStateText(String text) {
+			getInstance().getGrid().setEmptyStateText(text);
+			return getConfigurator();
+		}
+
+		@Override
+		public BeanListingBuilder<T> emptyStateComponent(Component component) {
+			getInstance().getGrid().setEmptyStateComponent(component);
+			return getConfigurator();
+		}
+
 	}
 
 	public static class DefaultDatastoreBeanListingBuilder<T> implements DatastoreBeanListingBuilder<T> {
@@ -1594,6 +1606,18 @@ public class DefaultBeanListing<T> extends AbstractItemListing<T, String> implem
 		@Override
 		public BeanListing<T> build() {
 			return builder.build();
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> emptyStateText(String text) {
+			builder.emptyStateText(text);
+			return this;
+		}
+
+		@Override
+		public DatastoreBeanListingBuilder<T> emptyStateComponent(Component component) {
+			builder.emptyStateComponent(component);
+			return this;
 		}
 
 	}

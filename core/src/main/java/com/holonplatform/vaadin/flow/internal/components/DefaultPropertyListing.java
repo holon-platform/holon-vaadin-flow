@@ -491,6 +491,18 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 			return configureAndBuild();
 		}
 
+		@Override
+		public PropertyListingBuilder emptyStateText(String text) {
+			getInstance().getGrid().setEmptyStateText(text);
+			return getConfigurator();
+		}
+
+		@Override
+		public PropertyListingBuilder emptyStateComponent(Component component) {
+			getInstance().getGrid().setEmptyStateComponent(component);
+			return getConfigurator();
+		}
+
 	}
 
 	public static class DefaultDatastorePropertyListingBuilder implements DatastorePropertyListingBuilder {
@@ -1661,6 +1673,18 @@ public class DefaultPropertyListing extends AbstractItemListing<PropertyBox, Pro
 		@Override
 		public PropertyListing build() {
 			return builder.build();
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder emptyStateText(String text) {
+			builder.emptyStateText(text);
+			return this;
+		}
+
+		@Override
+		public DatastorePropertyListingBuilder emptyStateComponent(Component component) {
+			builder.emptyStateComponent(component);
+			return this;
 		}
 
 	}

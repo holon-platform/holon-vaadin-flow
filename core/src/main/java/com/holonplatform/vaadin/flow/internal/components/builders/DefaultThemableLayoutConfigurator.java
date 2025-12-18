@@ -112,4 +112,14 @@ public class DefaultThemableLayoutConfigurator
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.holonplatform.vaadin.flow.components.builders.ThemableLayoutConfigurator#wrap(boolean)
+	 */
+	@Override
+	public DefaultThemableLayoutConfigurator wrap(boolean wrap) {
+		component.setWrap(wrap);
+		return this;
+	}
+
 }
